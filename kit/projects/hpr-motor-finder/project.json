@@ -1,0 +1,11 @@
+{
+  "name": "HPR Motor Finder",
+  "code": "FS",
+  "tag": "SW",
+  "number": "001",
+  "desc": "AeroTech, Cesaroni & Loki motor stock and pricing, aggregated across major U.S. vendors.",
+  "kind": "Tool",
+  "discipline": "Software",
+  "designation": "FS \u00b7 SW \u00b7 TOOL 001",
+  "slug": "hpr-motor-finder"
+}

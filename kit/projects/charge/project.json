@@ -1,0 +1,11 @@
+{
+  "name": "Charge",
+  "code": "FS",
+  "tag": "SW",
+  "number": "002",
+  "desc": "Black-powder ejection-charge calculator for high-power rocketry.",
+  "kind": "Tool",
+  "discipline": "Software",
+  "designation": "FS \u00b7 SW \u00b7 TOOL 002",
+  "slug": "charge"
+}

@@ -1,0 +1,57 @@
+[
+  {
+    "name": "bug",
+    "color": "B34F0C",
+    "description": "Something is broken"
+  },
+  {
+    "name": "feature",
+    "color": "3350D6",
+    "description": "New capability"
+  },
+  {
+    "name": "enhancement",
+    "color": "768DF5",
+    "description": "Improve something that works"
+  },
+  {
+    "name": "docs",
+    "color": "A188CB",
+    "description": "Documentation"
+  },
+  {
+    "name": "hardware",
+    "color": "DA7C30",
+    "description": "PCBs, wiring, mechanical, machining"
+  },
+  {
+    "name": "firmware",
+    "color": "D07D7A",
+    "description": "Embedded and flight software"
+  },
+  {
+    "name": "test",
+    "color": "566079",
+    "description": "Tests, verification, CI"
+  },
+  {
+    "name": "question",
+    "color": "98A1B8",
+    "description": "Needs an answer"
+  },
+  {
+    "name": "blocked",
+    "color": "0B0F1C",
+    "description": "Waiting on something else"
+  },
+  {
+    "name": "good first issue",
+    "color": "D6DAE4",
+    "description": "Small and well-scoped"
+  },
+  {
+    "name": "wontfix",
+    "color": "2A3248",
+    "description": "Decided against"
+  }
+]

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+     xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+     xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     width="1400" height="150" viewBox="0 0 1400 150" version="1.1">
+<title>Spectral classes</title>
+<sodipodi:namedview id="namedview" pagecolor="#F3F4F7" bordercolor="#98A1B8" borderopacity="1"
+     inkscape:pageopacity="0" inkscape:pagecheckerboard="false" inkscape:deskcolor="#d6dae4"
+     inkscape:document-units="px" showgrid="false"/>
+<metadata><rdf:RDF><cc:Work rdf:about=""><dc:title>Spectral classes</dc:title><dc:description>Seven stellar classes O B A F G K M, hottest to coolest. O and M are the Fusion gradient ends: the O- and M-class star colours, deepened on 2 October 2026 so the whole gradient holds at least 3:1 on white. B to K are the star colours sampled from the Harvard classification.</dc:description>
+<dc:creator><cc:Agent><dc:title>Neer Patel · FusionSpace</dc:title></cc:Agent></dc:creator></cc:Work></rdf:RDF></metadata>
+<defs id="defs"></defs>
+<g inkscape:groupmode="layer" id="layer-spectral-bar" inkscape:label="Spectral bar">
+<rect inkscape:label="Class O" x="0" y="0" width="200.4" height="80" fill="#768DF5"/>
+<text x="0" y="112.4" fill="#0B0F1C" style="font-family:'Cascadia Mono',monospace;font-size:25.2px;font-weight:600">O</text>
+<text x="0" y="141.2" fill="#566079" style="font-family:'Cascadia Mono',monospace;font-size:14.4px">≥ 33,000 K</text>
+<rect inkscape:label="Class B" x="200" y="0" width="200.4" height="80" fill="#AABFFF"/>
+<text x="200" y="112.4" fill="#0B0F1C" style="font-family:'Cascadia Mono',monospace;font-size:25.2px;font-weight:600">B</text>
+<text x="200" y="141.2" fill="#566079" style="font-family:'Cascadia Mono',monospace;font-size:14.4px">10,000–33,000 K</text>
+<rect inkscape:label="Class A" x="400" y="0" width="200.4" height="80" fill="#CAD7FF"/>
+<text x="400" y="112.4" fill="#0B0F1C" style="font-family:'Cascadia Mono',monospace;font-size:25.2px;font-weight:600">A</text>
+<text x="400" y="141.2" fill="#566079" style="font-family:'Cascadia Mono',monospace;font-size:14.4px">7,300–10,000 K</text>
+<rect inkscape:label="Class F" x="600" y="0" width="200.4" height="80" fill="#F8F7FF"/>
+<text x="600" y="112.4" fill="#0B0F1C" style="font-family:'Cascadia Mono',monospace;font-size:25.2px;font-weight:600">F</text>
+<text x="600" y="141.2" fill="#566079" style="font-family:'Cascadia Mono',monospace;font-size:14.4px">6,000–7,300 K</text>
+<rect inkscape:label="Class G" x="800" y="0" width="200.4" height="80" fill="#FFF4EA"/>
+<text x="800" y="112.4" fill="#0B0F1C" style="font-family:'Cascadia Mono',monospace;font-size:25.2px;font-weight:600">G</text>
+<text x="800" y="141.2" fill="#566079" style="font-family:'Cascadia Mono',monospace;font-size:14.4px">5,300–6,000 K</text>
+<rect inkscape:label="Class K" x="1000" y="0" width="200.4" height="80" fill="#FFD2A1"/>
+<text x="1000" y="112.4" fill="#0B0F1C" style="font-family:'Cascadia Mono',monospace;font-size:25.2px;font-weight:600">K</text>
+<text x="1000" y="141.2" fill="#566079" style="font-family:'Cascadia Mono',monospace;font-size:14.4px">3,900–5,300 K</text>
+<rect inkscape:label="Class M" x="1200" y="0" width="200" height="80" fill="#DA7C30"/>
+<text x="1200" y="112.4" fill="#0B0F1C" style="font-family:'Cascadia Mono',monospace;font-size:25.2px;font-weight:600">M</text>
+<text x="1200" y="141.2" fill="#566079" style="font-family:'Cascadia Mono',monospace;font-size:14.4px">2,300–3,900 K</text>
+</g>
+</svg>

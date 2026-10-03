@@ -1,0 +1,11 @@
+{
+  "name": "Muster",
+  "code": "FS",
+  "tag": "SW",
+  "number": "004",
+  "desc": "Motor-hardware compatibility for high-power rocketry.",
+  "kind": "Tool",
+  "discipline": "Software",
+  "designation": "FS \u00b7 SW \u00b7 TOOL 004",
+  "slug": "muster"
+}

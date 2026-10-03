@@ -1,0 +1,10 @@
+{
+ "autodeskProduct": "Fusion360",
+ "type": "script",
+ "author": "FusionSpace",
+ "description": {
+  "": "FusionSpace badge: a parametric badge with the exact mark, driven by user parameters"
+ },
+ "supportedOS": "windows|mac",
+ "editEnabled": true
+}

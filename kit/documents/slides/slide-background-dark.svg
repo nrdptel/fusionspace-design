@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+     xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+     xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     width="1920" height="1080" viewBox="0 0 1920 1080" version="1.1">
+<title>FusionSpace slide background (dark)</title>
+<sodipodi:namedview id="namedview" pagecolor="#0B0F1C" bordercolor="#98A1B8" borderopacity="1"
+     inkscape:pageopacity="0" inkscape:pagecheckerboard="false" inkscape:deskcolor="#d6dae4"
+     inkscape:document-units="px" showgrid="false"/>
+<metadata><rdf:RDF><cc:Work rdf:about=""><dc:title>FusionSpace slide background (dark)</dc:title><dc:description></dc:description>
+<dc:creator><cc:Agent><dc:title>Neer Patel · FusionSpace</dc:title></cc:Agent></dc:creator></cc:Work></rdf:RDF></metadata>
+<defs id="defs"><linearGradient id="sl-strip" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1920" y2="0"><stop offset="0.0" stop-color="#DA7C30"/><stop offset="0.35" stop-color="#D07D7A"/><stop offset="0.65" stop-color="#A188CB"/><stop offset="1.0" stop-color="#768DF5"/></linearGradient></defs>
+<g inkscape:groupmode="layer" id="layer-background" inkscape:label="Background">
+<rect inkscape:label="Background" width="1920" height="1080" fill="#0B0F1C"/>
+<path inkscape:label="Grid" d="M0,0V1080M120,0V1080M240,0V1080M360,0V1080M480,0V1080M600,0V1080M720,0V1080M840,0V1080M960,0V1080M1080,0V1080M1200,0V1080M1320,0V1080M1440,0V1080M1560,0V1080M1680,0V1080M1800,0V1080M1920,0V1080M0,0H1920M0,120H1920M0,240H1920M0,360H1920M0,480H1920M0,600H1920M0,720H1920M0,840H1920M0,960H1920M0,1080H1920" stroke="#2A3248" stroke-width="1.5" opacity="0.55" fill="none"/>
+<rect inkscape:label="Fusion gradient strip" x="0" y="1068" width="1920" height="12" fill="url(#sl-strip)"/>
+</g>
+</svg>

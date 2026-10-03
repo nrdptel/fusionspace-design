@@ -1,0 +1,26 @@
+GIMP Palette
+Name: FusionSpace
+Columns: 8
+#
+# FusionSpace palette: Fusion gradient stops, Core, Signal, Spectral (O-M).
+218 124  48	Gradient 0% M orange #DA7C30
+208 125 122	Gradient 35% Rose #D07D7A
+161 136 203	Gradient 65% Lavender #A188CB
+118 141 245	Gradient 100% O blue #768DF5
+ 11  15  28	Void #0B0F1C
+ 20  26  43	Abyss #141A2B
+ 42  50  72	Graphite #2A3248
+ 86  96 121	Slate #566079
+152 161 184	Haze #98A1B8
+214 218 228	Mist #D6DAE4
+243 244 247	Paper #F3F4F7
+255 255 255	White #FFFFFF
+ 51  80 214	Ion #3350D6
+179  79  12	Ember #B34F0C
+118 141 245	Spectral O #768DF5
+170 191 255	Spectral B #AABFFF
+202 215 255	Spectral A #CAD7FF
+248 247 255	Spectral F #F8F7FF
+255 244 234	Spectral G #FFF4EA
+255 210 161	Spectral K #FFD2A1
+218 124  48	Spectral M #DA7C30

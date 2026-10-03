@@ -1,0 +1,9 @@
+{
+  "name": "fusionspace-build",
+  "private": true,
+  "description": "Node packages for tools/build/kit_office.js (slide and Word templates). Install with: npm install --prefix tools/build",
+  "dependencies": {
+    "docx": "^9.0.0",
+    "pptxgenjs": "^4.0.0"
+  }
+}

@@ -1,0 +1,10 @@
+# Build output (rebuild with tools/build/build.py)
+_build/
+# Generated for publishing the tuner artifact (assemble.py --artifact)
+tools/mark-tuner/src/artifact.html
+# macOS
+.DS_Store
+__pycache__/
+# Python virtual environment and local node packages
+.venv/
+node_modules/

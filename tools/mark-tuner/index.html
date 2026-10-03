@@ -1,0 +1,1087 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="../../logo/favicon/favicon.svg">
+<title>FusionSpace Mark Tuner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400..600&family=Cascadia+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --void:#0B0F1C;--abyss:#141A2B;--graphite:#2A3248;--slate:#566079;--haze:#98A1B8;--mist:#D6DAE4;--paper:#F3F4F7;
+  --o:#768DF5;--m:#DA7C30;--ion:#3350D6;--ember:#B34F0C;--bad:#FF7A7A;
+  --grad:linear-gradient(90deg,#DA7C30 0%,#D07D7A 35%,#A188CB 65%,#768DF5 100%);
+  --text:'Archivo',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'Cascadia Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--paper)}
+body{margin:0;font-family:var(--text);font-size:14px;line-height:1.5;padding-inline:16px;padding-block:0 48px;
+  background-image:linear-gradient(var(--abyss) 1px,transparent 1px),linear-gradient(90deg,var(--abyss) 1px,transparent 1px);
+  background-size:48px 48px;background-position:-1px -1px}
+.strip{height:6px;margin-inline:-16px;background:var(--grad)}
+.wrap{max-width:1440px;margin:0 auto}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding-block:22px 18px;flex-wrap:wrap}
+h1{font-family:var(--mono);font-weight:600;font-size:clamp(22px,3vw,30px);line-height:1.1;margin:4px 0 0}
+.eyebrow,.lab{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--haze)}
+.sub{color:var(--haze);max-width:70ch;margin:6px 0 0}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+button,.btn{font:600 12px/1 var(--mono);letter-spacing:.04em;color:var(--paper);background:var(--abyss);border:1px solid var(--graphite);padding:10px 14px;cursor:pointer;border-radius:3px}
+button:hover{border-color:var(--haze)}
+button.primary{background:var(--paper);color:var(--void);border-color:var(--paper)}
+button.primary:hover{background:#fff}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--o);outline-offset:2px}
+.layout{display:grid;grid-template-columns:minmax(300px,360px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}}
+.panel{background:rgba(20,26,43,.94);border:1px solid var(--graphite)}
+.controls{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);max-height:calc(100vh - 24px);overflow:auto}
+@media (max-width:900px){.controls{position:static;max-height:none}}
+.group{padding:14px 16px;border-bottom:1px solid var(--graphite);display:grid;gap:12px}
+.group:last-child{border-bottom:0}
+.group h2{font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--haze);margin:0;display:flex;justify-content:space-between;gap:8px}
+.group h2 code{font-weight:400;text-transform:none;letter-spacing:0;color:var(--slate)}
+.ctl{display:grid;grid-template-columns:minmax(0,1fr) 78px;gap:4px 10px;align-items:center}
+.ctl label{font-size:13px;display:flex;gap:6px;align-items:baseline;min-width:0}
+.ctl .was{font:11px var(--mono);color:var(--m);margin-left:auto;white-space:nowrap}
+.ctl input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--o);margin:0}
+input[type=number],select,textarea{font:13px var(--mono);color:var(--paper);background:var(--void);border:1px solid var(--graphite);border-radius:3px;padding:5px 6px;width:100%;font-variant-numeric:tabular-nums}
+.ctl.changed label span.k::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--m);margin-left:6px;vertical-align:1px}
+.cone{display:grid;grid-template-columns:62px minmax(0,1fr);gap:8px 10px;align-items:start;padding-top:10px;border-top:1px dashed var(--graphite)}
+.cone:first-of-type{border-top:0;padding-top:0}
+.cone .nm{font:600 12px var(--mono);padding-top:6px}
+.cone .nm small{display:block;font-weight:400;color:var(--haze);font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+.cone .body{display:grid;gap:8px;min-width:0}
+.cone select.changed{border-color:var(--m)}
+.toggles{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.toggles label{display:flex;gap:8px;align-items:center;font-size:13px;cursor:pointer}
+.toggles input{accent-color:var(--o)}
+.seg{display:inline-flex;border:1px solid var(--graphite);border-radius:3px;overflow:hidden}
+.seg button{border:0;border-radius:0;padding:7px 10px;font-weight:400;background:transparent;color:var(--haze)}
+.seg button[aria-pressed=true]{background:var(--graphite);color:var(--paper)}
+.main{display:grid;gap:20px;min-width:0}
+.card{padding:16px;display:grid;gap:12px;min-width:0}
+.cardhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.cardhead h2{font:600 13px/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;margin:0}
+.stage{border:1px solid var(--graphite);line-height:0}
+.stage svg{width:100%;height:auto;display:block}
+.bg-void{background:#0B0F1C}.bg-paper{background:#F3F4F7}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.pair{grid-template-columns:1fr}}
+.pair .stage{padding:0}
+.cap{font:11px/1.4 var(--mono);color:var(--haze);letter-spacing:.03em;margin-top:6px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.stat{border-left:2px solid var(--graphite);padding:2px 0 2px 10px}
+.stat b{display:block;font:600 16px var(--mono);font-variant-numeric:tabular-nums}
+.stat span{font:11px var(--mono);color:var(--haze)}
+table.dist{border-collapse:collapse;font:12px var(--mono);font-variant-numeric:tabular-nums;width:100%}
+table.dist td,table.dist th{padding:5px 8px;border-bottom:1px solid var(--graphite);text-align:left;white-space:nowrap}
+table.dist th{font-weight:400;color:var(--haze);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+table.dist td.n{text-align:right}
+.pill{display:inline-block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:2px;border:1px solid currentColor}
+.pill.bad{color:var(--bad)}.pill.tight{color:var(--m)}.pill.ok{color:var(--haze);border-color:var(--graphite)}
+.scroll{overflow-x:auto}
+.icons{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-end;padding:20px;background:#141A2B;border:1px solid var(--graphite)}
+.icons figure{margin:0;display:grid;gap:8px;justify-items:start}
+.icons figcaption{font:11px/1.4 var(--mono);color:var(--haze)}
+.px{display:flex;gap:10px;align-items:flex-end}
+canvas.zoom{image-rendering:pixelated;image-rendering:crisp-edges;border:1px solid var(--graphite)}
+.out{display:grid;gap:10px}
+pre#copyText{margin:0;font:12px/1.55 var(--mono);white-space:pre;overflow:auto;background:var(--void);border:1px solid var(--graphite);padding:12px;max-height:340px;color:var(--mist)}
+textarea{min-height:120px;resize:vertical}
+details summary{cursor:pointer;font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--haze)}
+.note{font-size:12px;color:var(--haze)}
+.feet td svg{width:52px;height:78px;display:block;background:#F3F4F7;border:1px solid var(--graphite)}
+table.dist td.mid{vertical-align:middle}
+.export{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--paper);color:var(--void);font:600 12px var(--mono);padding:10px 14px;border-radius:3px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+
+</head>
+<body>
+<div class="strip"></div>
+<div class="wrap">
+<header>
+  <div>
+    <div class="eyebrow">FusionSpace · Rev C · brand tools</div>
+    <h1>Mark tuner · diamond</h1>
+    <p class="sub">Tune the four-cone cluster and both lockups. The geometry is a direct port of <code>tools/build/geo.py</code> and the lockup rules in <code>build.py</code>, so the preview matches what the build writes. When you like it, copy the values into <code>geo.py</code> and <code>build.py</code>.</p>
+  </div>
+  <div class="actions">
+    <button id="resetBtn" type="button">Reset to current values</button>
+    <button id="copyBtn" type="button" class="primary">Copy values</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="panel controls" id="controls" aria-label="Parameters"></aside>
+
+  <main class="main">
+    <section class="panel card" aria-labelledby="h-mark">
+      <div class="cardhead">
+        <h2 id="h-mark">Mark · construction view</h2>
+        <div class="actions">
+        <div class="seg" role="group" aria-label="Lean shown">
+          <button type="button" id="lnLean" aria-pressed="true">Leaned</button>
+          <button type="button" id="lnUp" aria-pressed="false">Upright 0°</button>
+        </div>
+        <div class="seg" role="group" aria-label="Construction background">
+          <button type="button" id="cbVoid" aria-pressed="true">Void</button>
+          <button type="button" id="cbPaper" aria-pressed="false">Paper</button>
+        </div></div>
+      </div>
+      <div class="stage bg-void" id="consStage"></div>
+      <div class="stats" id="stats"></div>
+      <div class="scroll"><table class="dist" id="distTable"></table></div>
+    </section>
+
+    <section class="panel card" aria-labelledby="h-lock">
+      <div class="cardhead">
+        <h2 id="h-lock">Lockups</h2>
+        <div class="seg" role="group" aria-label="Fill">
+          <button type="button" id="fmColor" aria-pressed="true">Fusion gradient</button>
+          <button type="button" id="fmMono" aria-pressed="false">One colour</button>
+        </div>
+      </div>
+      <div class="pair">
+        <div><div class="stage bg-void" id="stVoid"></div><div class="cap" id="stCap1">Stacked · Void</div></div>
+        <div><div class="stage bg-paper" id="stPaper"></div><div class="cap" id="stCap2">Stacked · Paper</div></div>
+      </div>
+      <div class="stage bg-void" id="hoVoid"></div><div class="cap" id="hoCap1">Horizontal · Void</div>
+      <div class="stage bg-paper" id="hoPaper"></div><div class="cap" id="hoCap2">Horizontal · Paper</div>
+    </section>
+
+    <section class="panel card" aria-labelledby="h-icons">
+      <div class="cardhead"><h2 id="h-icons">Icons</h2><span class="note">Same framing as <code>build.icon_svg</code>. Small sizes are rasterised by your browser and shown again at 4×; the 16 px favicon is pixel-hinted the way the build does it.</span></div>
+      <div class="icons" id="icons"></div>
+    </section>
+
+    <section class="panel card" aria-labelledby="h-prod">
+      <div class="cardhead"><h2 id="h-prod">Production · minimum feature sizes</h2><span class="note">Feet at the cut-file size (<code>build.dxf_geometry</code>) and in pixels at small sizes. Set the DXF size and foot floor under Production.</span></div>
+      <div class="stats" id="prodStats"></div>
+      <div class="scroll"><table class="dist feet" id="featTable"></table></div>
+      <p class="note" style="margin:0">Thumbnails: each cone's right foot, upright and magnified. Red is what the DXF floor trims off the master outline. Laser vendors typically need features of about half the material thickness; ask yours.</p>
+    </section>
+
+    <section class="panel card" aria-labelledby="h-exp">
+      <div class="cardhead"><h2 id="h-exp">Export SVG</h2>
+        <div class="seg" role="group" aria-label="Export fill">
+          <button type="button" id="exColor" aria-pressed="true">Gradient</button>
+          <button type="button" id="exVoid" aria-pressed="false">Void</button>
+          <button type="button" id="exWhite" aria-pressed="false">White</button>
+        </div>
+      </div>
+      <div class="export">
+        <button type="button" id="exMark">Mark</button>
+        <button type="button" id="exStacked">Stacked lockup</button>
+        <button type="button" id="exHoriz">Horizontal lockup</button>
+        <button type="button" id="exCut">Cut outline (mm)</button>
+        <span class="note" id="exMsg"></span>
+      </div>
+      <p class="note" style="margin:0">Files use the current tuning, so a candidate can be shared before a rebuild. The wordmark is outlined. The cut outline is the DXF geometry (trimmed feet, true size in mm) as hairline paths, for vendors that take SVG. These are previews: the build's files stay the reference.</p>
+    </section>
+
+    <section class="panel card" aria-labelledby="h-out">
+      <div class="cardhead"><h2 id="h-out">Values to paste back</h2><button type="button" id="copyBtn2">Copy values</button></div>
+      <pre id="copyText" tabindex="0"></pre>
+      <details>
+        <summary>Load values from text</summary>
+        <div class="out" style="margin-top:10px">
+          <label class="note" for="loadText">Paste a block copied from this tool (or the matching lines from <code>geo.py</code> / <code>build.py</code>).</label>
+          <textarea id="loadText" spellcheck="false"></textarea>
+          <div class="actions"><button type="button" id="loadBtn">Load values</button><span class="note" id="loadMsg"></span></div>
+        </div>
+      </details>
+    </section>
+  </main>
+</div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+// ---- FusionSpace Rev C geometry: a line-for-line port of tools/build/geo.py and the lockup/icon
+// ---- geometry in tools/build/build.py. Keep in step with those files.
+const VK_SEGS = [[[0.0,0.0],[0.003444702564086392,0.0],[0.013518973238600625,0.00214641965292764],[0.020711354457486033,0.004]],[[0.020711354457486033,0.004],[0.045388484892322195,0.01035965233267237],[0.07272118207941179,0.02105737016132732],[0.09349567164037693,0.03]],[[0.09349567164037693,0.03],[0.1531509894464188,0.055679351758909215],[0.20870406080102846,0.08722664836372555],[0.26071522170854233,0.12]],[[0.26071522170854233,0.12],[0.3671616201383083,0.1870741661074845],[0.4657951196538054,0.2647472802029792],[0.5584969403591541,0.35]],[[0.5584969403591541,0.35],[0.8416531867690914,0.6104030854009941],[1.0,0.8908407745374308],[1.0,1.0]]];
+// VK_SEGS is geo.VK_SEGS (the Nelder-Mead fit of the LD-Haack curve, max error 0.19%), normalised:
+// (radius / R, distance from tip / L). It does not depend on any tunable parameter.
+const ORDER = ["main", "west", "east", "south"];
+const DRAW_ORDER = ["south", "west", "east", "main"];   // back to front: the ogive tail sits behind the Von Kármán
+const NAMES = {main: "Main", west: "West", east: "East", south: "South"};
+const PROFILE_NAMES = {vonkarman: "Von Kármán", conical: "conical", ogive: "tangent ogive", elliptical: "elliptical"};
+const WM_W = 535.737;
+
+function rot(p, c, deg) {
+  const a = deg * Math.PI / 180, x = p[0] - c[0], y = p[1] - c[1];
+  return [c[0] + x * Math.cos(a) - y * Math.sin(a), c[1] + x * Math.sin(a) + y * Math.cos(a)];
+}
+
+function fnum(v) {                     // geo.fnum: f"{v:.3f}".rstrip("0").rstrip(".")
+  let s = v.toFixed(3);
+  if (s.indexOf(".") >= 0) s = s.replace(/0+$/, "").replace(/\.$/, "");
+  return (s === "-0" || s === "") ? "0" : s;
+}
+
+function bez1(P, u) {
+  const m = 1 - u;
+  return [m * m * m * P[0][0] + 3 * m * m * u * P[1][0] + 3 * m * u * u * P[2][0] + u * u * u * P[3][0],
+          m * m * m * P[0][1] + 3 * m * m * u * P[1][1] + 3 * m * u * u * P[2][1] + u * u * u * P[3][1]];
+}
+function vkAt(tn) {                    // geo._vk_at
+  let i = 0, P;
+  for (i = 0; i < VK_SEGS.length; i++) { P = VK_SEGS[i]; if (P[3][1] >= tn || i === VK_SEGS.length - 1) break; }
+  if (tn >= P[3][1]) return [i, 1.0, P[3][0]];
+  let lo = 0, hi = 1;
+  for (let k = 0; k < 60; k++) { const mid = (lo + hi) / 2; if (bez1(P, mid)[1] < tn) lo = mid; else hi = mid; }
+  const u = (lo + hi) / 2;
+  return [i, u, bez1(P, u)[0]];
+}
+function flankX(kind, W, L, h) {       // geo.flank_x
+  if (kind === "conical") return W * (L - h) / L;
+  if (kind === "ogive") { const rho = (W * W + L * L) / (2 * W); return Math.sqrt(Math.max(rho * rho - h * h, 0)) + W - rho; }
+  if (kind === "elliptical") return W * Math.sqrt(Math.max(1 - h * h / (L * L), 0));
+  return W * vkAt((L - h) / L)[2];
+}
+function splitBez(P, u) {              // geo._split
+  if (u >= 1) return P.map(p => [p[0], p[1]]);
+  const l = (a, b) => [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u];
+  const a = l(P[0], P[1]), b = l(P[1], P[2]), c = l(P[2], P[3]), d = l(a, b), e = l(b, c);
+  return [[P[0][0], P[0][1]], a, d, l(d, e)];
+}
+const FOOT_STEPS = 400;
+
+// P = {TILT, H_K, W_K, TIP_K, SAG_K, FOOT_K, SIZE:{}, KINDS:{}, GAP_W_R, GAP_E_R, WING_R, TAIL_R}
+function makeGeo(P) {
+  const {TILT, H_K, W_K, TIP_K, SAG_K, FOOT_K, SIZE, KINDS, GAP_W_R, GAP_E_R, WING_R, TAIL_R} = P;
+  const footCache = new Map();
+  function foot(kind, s, minWall = 0) { // geo.foot (minWall: production floor, units of a; 0 = brand foot)
+    const key = kind + "|" + s + "|" + minWall;
+    if (footCache.has(key)) return footCache.get(key);
+    const W = W_K * s, L = H_K * s;
+    const sag = SAG_K * W, Rn = (W * W + sag * sag) / (2 * sag), c = Rn - sag;
+    const xa = h => Math.sqrt(Math.max(Rn * Rn - (h + c) * (h + c), 0));
+    const wall = Math.max(FOOT_K * W, minWall);
+    const d = h => flankX(kind, W, L, h) - xa(h) - wall;
+    let lo = 0, found = false;
+    for (let i = FOOT_STEPS - 1; i >= 0; i--) { const h = sag * i / FOOT_STEPS; if (d(h) < 0) { lo = h; found = true; break; } }
+    let res;
+    if (!found) res = [0, W, W];
+    else {
+      let hi = lo + sag / FOOT_STEPS;
+      for (let k = 0; k < 60; k++) { const mid = (lo + hi) / 2; if (d(mid) < 0) lo = mid; else hi = mid; }
+      res = [hi, flankX(kind, W, L, hi), xa(hi)];
+    }
+    footCache.set(key, res);
+    return res;
+  }
+
+  function centroidY(kind, s) {         // geo.centroid_y: area centroid height from the cone centre (y down)
+    const pts = sample(coneSegments(null, 1, [0, 0], {tilt: 0, kind, size: s, pos: [0, 0]}), 200);
+    let a2 = 0, cy = 0;
+    for (let i = 0; i < pts.length; i++) {
+      const [x0, y0] = pts[i], [x1, y1] = pts[(i + 1) % pts.length];
+      const c = x0 * y1 - x1 * y0;
+      a2 += c; cy += (y0 + y1) * c;
+    }
+    return cy / (3 * a2);
+  }
+  function layout() {                  // geo.layout (diamond: VK north, ogive tail south, wings west/east on one centroid line)
+    const r = W_K, B = (1 - TIP_K) * H_K;
+    const F = {}, cf = {}, X = {};
+    for (const n in SIZE) { F[n] = foot(KINDS[n], SIZE[n]); cf[n] = B * SIZE[n] - F[n][0]; X[n] = F[n][1]; }
+    const yf = cf.main, wing = yf + WING_R * r;
+    const up = {main: [0, 0]};
+    up.west = [-X.main - GAP_W_R * r - X.west, wing - centroidY(KINDS.west, SIZE.west)];
+    up.east = [X.main + GAP_E_R * r + X.east, wing - centroidY(KINDS.east, SIZE.east)];
+    up.south = [0, yf + TAIL_R * r + TIP_K * H_K * SIZE.south];
+    const pos = {}; for (const n in up) pos[n] = rot(up[n], [0, 0], TILT);
+    return [pos, up];
+  }
+  const [POS, POS_UPRIGHT] = layout();
+
+  function coneSegments(name, A = 1, origin = [0, 0], o = {}) {
+    const tilt = o.tilt === undefined ? TILT : o.tilt;
+    const s = o.size === undefined ? SIZE[name] : o.size;
+    const [cx, cy] = o.pos === undefined ? POS[name] : o.pos;
+    const kind = o.kind || KINDS[name];
+    const H = H_K * s, W = W_K * s;
+    const ytip = cy - TIP_K * H, yb = cy + (1 - TIP_K) * H, L = yb - ytip;
+    const c = [cx, cy];
+    const T = p => { const q = rot(p, c, tilt); return [origin[0] + A * q[0], origin[1] + A * q[1]]; };
+    const [hf, xf, xa] = foot(kind, s, o.minWall || 0);
+    const yf = yb - hf, tip = [cx, ytip];
+    const fr = [cx + xf, yf], fl = [cx - xf, yf], nr = [cx + xa, yf], nl = [cx - xa, yf];
+    let vk = null;
+    if (kind === "vonkarman") { const [i, u] = vkAt((L - hf) / L); vk = VK_SEGS.slice(0, i).concat([splitBez(VK_SEGS[i], u)]); }
+    const segs = [["M", T(tip)]];
+    function flank(p_to, side) {
+      if (kind === "conical") return [["L", T(p_to)]];
+      if (kind === "ogive") { const rho = (W * W + L * L) / (2 * W); return [["A", A * rho, A * rho, 0, 0, 1, T(p_to)]]; }
+      if (kind === "elliptical") return [["A", A * W, A * L, tilt, 0, 1, T(p_to)]];
+      if (kind === "vonkarman") {
+        const segsN = side > 0 ? vk : vk.slice().reverse().map(Q => Q.slice().reverse());
+        return segsN.map(Q => {
+          const pts = Q.map(q => [cx + side * q[0] * W, ytip + q[1] * L]);
+          return ["C", T(pts[1]), T(pts[2]), T(pts[3])];
+        });
+      }
+    }
+    segs.push(...flank(fr, +1));
+    if (hf > 0) segs.push(["L", T(nr)]);
+    const sag = SAG_K * W, Rn = (W * W + sag * sag) / (2 * sag);
+    segs.push(["A", A * Rn, A * Rn, 0, 0, 0, T(nl)]);
+    if (hf > 0) segs.push(["L", T(fl)]);
+    segs.push(...flank(tip, -1));
+    segs.push(["Z"]);
+    return segs;
+  }
+
+  function cluster(A = 1, origin = [0, 0]) {
+    const o = {}; for (const n of ORDER) o[n] = coneSegments(n, A, origin); return o;
+  }
+  function bbox(cl) {
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const n in cl) for (const p of sample(cl[n])) {
+      if (p[0] < x0) x0 = p[0]; if (p[1] < y0) y0 = p[1]; if (p[0] > x1) x1 = p[0]; if (p[1] > y1) y1 = p[1];
+    }
+    return [x0, y0, x1, y1];
+  }
+  function fitCluster({height, width, x0 = 0, y0 = 0}) {
+    const b = bbox(cluster());
+    const w = b[2] - b[0], h = b[3] - b[1];
+    const A = height ? height / h : width / w;
+    const org = [x0 - A * b[0], y0 - A * b[1]];
+    const cl = cluster(A, org);
+    return {cl, A, org, bb: bbox(cl)};
+  }
+  return {P, POS, POS_UPRIGHT, foot, flankX, centroidY, coneSegments, cluster, bbox, fitCluster};
+}
+
+// ---------- SVG arc / segment sampling (geo._arc_center, seg_param, sample)
+function arcCenter(p0, p1, rx, ry, phi, fa, fs) {
+  const ph = phi * Math.PI / 180, cp = Math.cos(ph), sp = Math.sin(ph);
+  const dx = (p0[0] - p1[0]) / 2, dy = (p0[1] - p1[1]) / 2;
+  const x1 = cp * dx + sp * dy, y1 = -sp * dx + cp * dy;
+  const lam = x1 * x1 / (rx * rx) + y1 * y1 / (ry * ry);
+  if (lam > 1) { rx *= Math.sqrt(lam); ry *= Math.sqrt(lam); }
+  const num = rx * rx * ry * ry - rx * rx * y1 * y1 - ry * ry * x1 * x1;
+  const den = rx * rx * y1 * y1 + ry * ry * x1 * x1;
+  const co = Math.sqrt(Math.max(0, num / den)) * (fa === fs ? -1 : 1);
+  const cx1 = co * rx * y1 / ry, cy1 = -co * ry * x1 / rx;
+  const cx = cp * cx1 - sp * cy1 + (p0[0] + p1[0]) / 2;
+  const cy = sp * cx1 + cp * cy1 + (p0[1] + p1[1]) / 2;
+  const ang = (u, v) => Math.atan2(u[0] * v[1] - u[1] * v[0], u[0] * v[0] + u[1] * v[1]);
+  const t1 = ang([1, 0], [(x1 - cx1) / rx, (y1 - cy1) / ry]);
+  let dt = ang([(x1 - cx1) / rx, (y1 - cy1) / ry], [(-x1 - cx1) / rx, (-y1 - cy1) / ry]);
+  if (!fs && dt > 0) dt -= 2 * Math.PI;
+  if (fs && dt < 0) dt += 2 * Math.PI;
+  return [[cx, cy], rx, ry, t1, dt];
+}
+function segParam(p0, sg) {
+  const k = sg[0];
+  if (k === "L") { const p1 = sg[1]; return t => [p0[0] + (p1[0] - p0[0]) * t, p0[1] + (p1[1] - p0[1]) * t]; }
+  if (k === "A") {
+    const [c, rx, ry, t1, dt] = arcCenter(p0, sg[6], sg[1], sg[2], sg[3], sg[4], sg[5]);
+    const ph = sg[3] * Math.PI / 180, cp = Math.cos(ph), sp = Math.sin(ph);
+    return t => { const a = t1 + dt * t, x = rx * Math.cos(a), y = ry * Math.sin(a); return [c[0] + cp * x - sp * y, c[1] + sp * x + cp * y]; };
+  }
+  if (k === "C") {
+    const c1 = sg[1], c2 = sg[2], p1 = sg[3];
+    return t => { const m = 1 - t; return [m*m*m*p0[0] + 3*m*m*t*c1[0] + 3*m*t*t*c2[0] + t*t*t*p1[0], m*m*m*p0[1] + 3*m*m*t*c1[1] + 3*m*t*t*c2[1] + t*t*t*p1[1]]; };
+  }
+}
+function sample(segs, n = 120) {
+  const pts = []; let cur = null;
+  for (const sg of segs) {
+    if (sg[0] === "M") { cur = sg[1]; pts.push(cur); continue; }
+    if (sg[0] === "Z") continue;
+    const f = segParam(cur, sg);
+    for (let i = 1; i <= n; i++) pts.push(f(i / n));
+    cur = sg[sg.length - 1];
+  }
+  return pts;
+}
+function segToD(segs) {
+  const out = [];
+  for (const sg of segs) {
+    const k = sg[0];
+    if (k === "M" || k === "L") out.push(`${k}${fnum(sg[1][0])},${fnum(sg[1][1])}`);
+    else if (k === "A") out.push(`A${fnum(sg[1])},${fnum(sg[2])} ${fnum(sg[3])} ${sg[4]} ${sg[5]} ${fnum(sg[6][0])},${fnum(sg[6][1])}`);
+    else if (k === "C") out.push("C" + sg.slice(1).map(p => `${fnum(p[0])},${fnum(p[1])}`).join(" "));
+    else if (k === "Z") out.push("Z");
+  }
+  return out.join(" ");
+}
+
+// ---------- build.py lockup + icon geometry
+// Wordmark metrics are the constants build.py reads from the Rev B originals it uses as input.
+const WM_H = {bbox: [262.699, 64.972, 807.516, 149.437], cap_top: 70, base: 130};   // horizontal file
+const WM_S = {top: 223.056, cap_top: 228, bottom: 306.113};                                         // stacked file
+
+function stackedGeometry(G, L) {           // build.stacked_geometry (L.STACK_POS: "above" | "below")
+  const b = G.bbox(G.cluster());
+  const A = L.STACK_H / (b[3] - b[1]), w = A * (b[2] - b[0]);
+  const cx = WM_W / 2;
+  const STACK_GAP = L.STACK_GAP_K * L.STACK_H;
+  let f, dy, H;
+  if (L.STACK_POS === "below") {           // wordmark on top, mark under the descenders
+    dy = -WM_S.top;
+    const y0 = WM_S.bottom + dy + STACK_GAP;
+    f = G.fitCluster({height: L.STACK_H, x0: cx - w / 2, y0});
+    H = y0 + L.STACK_H;
+  } else {                                 // mark on top, gap to the cap line
+    f = G.fitCluster({height: L.STACK_H, x0: cx - w / 2, y0: 0});
+    dy = L.STACK_H + STACK_GAP - WM_S.cap_top;
+    H = WM_S.bottom + dy;
+  }
+  return {cl: f.cl, bb: f.bb, A: f.A, org: f.org, dy, W: WM_W, H, capTop: WM_S.cap_top + dy, gap: STACK_GAP};
+}
+function horizontalGeometry(G, L) {        // build.horizontal_geometry (L.H_POS: "before" | "after")
+  const mark_h = L.H_MARK, wb = WM_H.bbox;
+  const capc = (WM_H.cap_top + WM_H.base) / 2;
+  const b = G.bbox(G.cluster()); const A = mark_h / (b[3] - b[1]); const w = A * (b[2] - b[0]);
+  const top = Math.min(capc - mark_h / 2, wb[1]);
+  const bottom = Math.max(capc + mark_h / 2, wb[3]);
+  let f, x_wm, W;
+  if (L.H_POS === "after") {
+    x_wm = 0;
+    const x_mk = (wb[2] - wb[0]) + L.H_GAP_K * mark_h;
+    f = G.fitCluster({height: mark_h, x0: x_mk, y0: capc - mark_h / 2 - top});
+    W = x_mk + w;
+  } else {
+    f = G.fitCluster({height: mark_h, x0: 0, y0: capc - mark_h / 2 - top});
+    x_wm = w + L.H_GAP_K * mark_h;
+    W = wb[2] - wb[0] + x_wm;
+  }
+  const dx = x_wm - wb[0], dy = -top;
+  return {cl: f.cl, bb: f.bb, A: f.A, org: f.org, dx, dy, W, H: bottom - top, x_wm, markW: w, gapW: L.H_GAP_K * mark_h,
+          capTop: WM_H.cap_top + dy, baseline: WM_H.base + dy, wmX0: wb[0] + dx, wmX1: wb[2] + dx};
+}
+const FAV_FILL = 0.87, FAV_RX = 96, APP_SAFE_R = 0.40;   // build.FAV_FILL, build.FAV_RX, build.APP_SAFE_R
+const FAV_SHIFT = [-10.72, 10.07];                        // build.FAV_SHIFT (of 512): evens the gap to the tile edge
+const FAV_ARROWS = ["west", "east"];                      // build.FAV_ARROWS
+function appFrac(G) {                      // build.app_frac
+  const b = G.bbox(G.cluster()), w = b[2] - b[0], h = b[3] - b[1];
+  const cx = (b[0] + b[2]) / 2, cy = (b[1] + b[3]) / 2;
+  let r = 0;
+  for (const n of ORDER) for (const p of sample(G.coneSegments(n), 400)) r = Math.max(r, Math.hypot(p[0] - cx, p[1] - cy));
+  return APP_SAFE_R * Math.max(w, h) / r;
+}
+function dxfGeometry(G, heightMm, minWallMm) { // build.dxf_geometry: trimmed feet, scaled to heightMm tall, top-left at 0,0
+  let A = G.fitCluster({height: heightMm}).A, b0;
+  const trimmed = (A_, org) => { const o = {}; for (const n of ORDER) o[n] = G.coneSegments(n, A_, org, {minWall: minWallMm / A}); return o; };
+  for (let k = 0; k < 4; k++) { b0 = G.bbox(trimmed(1, [0, 0])); A = heightMm / (b0[3] - b0[1]); }
+  const org = [-A * b0[0], -A * b0[1]];
+  const cl = trimmed(A, org);
+  return {cl, A, org, bb: G.bbox(cl)};
+}
+function iconGeometry(G, kind) {           // build.icon_svg (geometry only)
+  const S = 512;
+  const [frac, rx] = kind === "favicon" ? [FAV_FILL, FAV_RX] : kind === "icon" ? [0.765, 112] : [appFrac(G), 0];
+  const b = G.bbox(G.cluster()), w = b[2] - b[0], h = b[3] - b[1];
+  const A = frac * S / Math.max(w, h);
+  const sh = kind === "favicon" ? FAV_SHIFT : [0, 0];
+  const org = [S / 2 - A * (b[0] + b[2]) / 2 + sh[0], S / 2 - A * (b[1] + b[3]) / 2 + sh[1]];
+  const cl = G.cluster(A, org), bb = G.bbox(cl);
+  return {rx, A, names: DRAW_ORDER, paths: DRAW_ORDER.map(n => segToD(cl[n])), gx0: bb[0], gx1: bb[2]};
+}
+
+if (typeof module !== "undefined") module.exports = {DRAW_ORDER, makeGeo, segToD, sample, stackedGeometry, horizontalGeometry, iconGeometry, dxfGeometry, ORDER, fnum, FAV_FILL, FAV_RX, FAV_SHIFT, APP_SAFE_R, FAV_ARROWS};
+
+</script>
+<script>
+const WM_STACKED = "M0 287V228H10.013V287ZM0 264.563V255.298H31.993V264.563ZM0 237.224V228H39.887V237.224ZM62.158 287.831Q55.593 287.831 52.02 283.697Q48.446 279.563 48.446 272.042V242.958H58.709V270.38Q58.709 274.161 60.62 276.218Q62.532 278.275 65.897 278.275Q70.218 278.275 72.4 275.221Q74.581 272.167 74.581 264.979L76.825 278.524H73.625Q72.587 283.011 69.574 285.421Q66.562 287.831 62.158 287.831ZM75.329 287.415 74.581 276.862V269.134H84.844V277.776L90.91 278.69V287ZM74.581 274.535V242.958H84.844V272.042ZM114.177 287.831Q109.15 287.831 105.411 287.519Q101.671 287.208 98.721 286.585L99.926 276.945Q104.787 277.61 108.277 277.942Q111.768 278.275 114.177 278.275Q120.244 278.275 122.965 277.277Q125.687 276.28 125.687 274.12Q125.687 272.749 124.897 272.001Q124.108 271.253 122.404 270.796L109.732 267.264Q104.496 265.81 101.941 263.255Q99.386 260.699 99.386 256.046Q99.386 248.899 105.182 245.513Q110.978 242.127 123.235 242.127Q126.227 242.127 129.156 242.335Q132.085 242.542 135.285 242.958L134.204 252.265Q130.589 251.932 127.868 251.808Q125.146 251.683 122.986 251.683Q116.13 251.683 113.035 252.639Q109.939 253.594 109.939 255.713Q109.939 257.126 110.854 257.791Q111.768 258.456 113.679 258.954L124.315 261.821Q130.506 263.4 133.477 266.267Q136.448 269.134 136.448 274.078Q136.448 281.142 131.026 284.486Q125.604 287.831 114.177 287.831ZM165.242 287V245.451H175.463V287ZM148.746 287V277.693H166.073V287ZM174.632 287V277.693H188.717V287ZM151.239 252.265V242.958H175.463V252.265ZM169.937 236.601Q166.987 236.601 165.075 234.689Q163.164 232.778 163.164 229.828Q163.164 226.878 165.075 224.967Q166.987 223.056 169.937 223.056Q172.887 223.056 174.798 224.967Q176.709 226.878 176.709 229.828Q176.709 232.778 174.798 234.689Q172.887 236.601 169.937 236.601ZM217.303 287.831Q207.954 287.831 202.781 281.848Q197.608 275.865 197.608 264.979Q197.608 254.051 202.781 248.089Q207.954 242.127 217.303 242.127Q226.693 242.127 231.845 248.089Q236.997 254.051 236.997 264.979Q236.997 275.865 231.845 281.848Q226.693 287.831 217.303 287.831ZM217.303 278.275Q221.707 278.275 224.075 274.805Q226.444 271.336 226.444 264.979Q226.444 258.58 224.055 255.132Q221.665 251.683 217.303 251.683Q212.94 251.683 210.551 255.132Q208.162 258.58 208.162 264.979Q208.162 271.336 210.551 274.805Q212.94 278.275 217.303 278.275ZM275.264 287V259.993Q275.264 256.004 273.436 253.844Q271.608 251.683 268.284 251.683Q259.06 251.683 259.06 263.899L256.484 250.935H260.057Q260.556 246.489 263.152 244.308Q265.749 242.127 270.901 242.127Q277.882 242.127 281.704 246.365Q285.527 250.603 285.527 258.331V287ZM248.797 287V242.958H258.021L259.06 252.265V287ZM314.985 287.831Q309.958 287.831 305.367 287Q300.775 286.169 297.036 284.59L298.365 274.494Q302.936 276.446 307.34 277.464Q311.744 278.482 315.65 278.482Q320.636 278.482 323.191 276.717Q325.746 274.951 325.746 271.544Q325.746 267.098 320.677 264.771L311.495 260.408Q305.304 257.5 301.96 253.22Q298.615 248.941 298.615 243.373Q298.615 235.645 303.538 231.407Q308.462 227.169 317.478 227.169Q323.129 227.169 327.886 229.018Q332.644 230.867 336.591 234.606L329.735 242.168Q326.536 239.343 323.524 237.91Q320.511 236.476 317.52 236.476Q313.614 236.476 311.454 238.242Q309.293 240.008 309.293 243.373Q309.293 245.7 310.768 247.466Q312.243 249.232 315.027 250.644L323.295 254.758Q329.652 257.915 333.038 262.05Q336.425 266.184 336.425 271.585Q336.425 279.521 330.961 283.676Q325.497 287.831 314.985 287.831ZM348.515 306.113V242.958H357.947L358.778 252.265V306.113ZM370.827 287.831Q366.049 287.831 363.141 285.587Q360.232 283.344 359.651 279.023H355.787L358.778 265.602Q358.778 272.167 361.001 275.325Q363.224 278.482 368.168 278.482Q372.946 278.482 375.398 275.117Q377.849 271.751 377.849 265.187Q377.849 258.539 375.356 255.007Q372.863 251.475 368.168 251.475Q363.515 251.475 361.146 254.654Q358.778 257.832 358.778 264.397L356.036 250.935H359.36Q360.066 246.614 362.892 244.37Q365.717 242.127 370.786 242.127Q379.22 242.127 383.729 248.068Q388.237 254.01 388.237 265.187Q388.237 276.197 383.729 282.014Q379.22 287.831 370.827 287.831ZM425.215 287.415 424.426 274.369 423.844 269.466V259.744Q423.844 255.88 420.811 254.072Q417.778 252.265 411.754 252.099L400.785 251.808L401.615 242.542L410.923 242.667Q422.473 242.833 428.082 247.383Q433.692 251.932 433.692 260.658V277.776L440.339 278.69V287ZM410.05 287.831Q403.07 287.831 399.226 284.424Q395.383 281.017 395.383 274.785Q395.383 267.555 400.535 263.691Q405.687 259.827 415.119 259.827Q418.858 259.827 421.684 260.242Q424.509 260.658 427.085 261.53L425.257 269.175Q422.556 268.552 420.23 268.448Q417.903 268.344 415.368 268.344Q405.563 268.344 405.563 274.12Q405.563 276.654 407.287 277.984Q409.011 279.313 412.294 279.313Q416.116 279.313 418.692 277.921Q421.268 276.53 422.556 274.39Q423.844 272.25 423.844 269.965V266.392L425.839 277.693H422.307L423.761 276.363Q423.678 280.186 421.995 282.741Q420.313 285.296 417.28 286.564Q414.246 287.831 410.05 287.831ZM471.377 287.831Q459.66 287.831 453.282 281.91Q446.904 275.989 446.904 264.896Q446.904 254.093 452.804 248.11Q458.704 242.127 469.673 242.127Q476.363 242.127 481.12 244.682Q485.877 247.237 487.872 251.891L480.268 257.832Q478.44 254.882 475.594 253.283Q472.748 251.683 469.341 251.683Q463.69 251.683 460.532 255.007Q457.375 258.331 457.375 264.48Q457.375 271.211 461.26 274.743Q465.144 278.275 472.374 278.275Q475.407 278.275 478.419 277.984Q481.432 277.693 484.299 277.194L485.379 286.585Q482.013 287.332 478.399 287.582Q474.784 287.831 471.377 287.831ZM520.073 287.831Q508.73 287.831 502.539 281.91Q496.348 275.989 496.348 264.896Q496.348 254.093 501.604 248.11Q506.86 242.127 516.416 242.127Q525.64 242.127 530.688 247.611Q535.737 253.096 535.737 263.525Q535.737 266.558 535.487 269.217H503.744V261.821H525.931Q525.931 256.794 523.438 254.093Q520.945 251.392 516.499 251.392Q511.638 251.392 508.937 254.799Q506.237 258.206 506.237 264.48Q506.237 271.253 510.101 274.805Q513.965 278.358 521.07 278.358Q523.978 278.358 526.783 278.046Q529.587 277.735 532.496 277.194L533.576 286.668Q529.504 287.415 526.097 287.623Q522.69 287.831 520.073 287.831Z";
+const WM_HORIZ = "M262.699 130V70H272.882V130ZM262.699 107.183V97.761H295.234V107.183ZM262.699 79.38V70H303.263V79.38ZM325.91 130.845Q319.234 130.845 315.601 126.641Q311.967 122.437 311.967 114.789V85.211H322.403V113.099Q322.403 116.944 324.347 119.035Q326.291 121.127 329.713 121.127Q334.108 121.127 336.326 118.021Q338.544 114.915 338.544 107.606L340.826 121.38H337.572Q336.516 125.944 333.453 128.394Q330.389 130.845 325.91 130.845ZM339.305 130.423 338.544 119.69V111.831H348.981V120.62L355.15 121.549V130ZM338.544 117.324V85.211H348.981V114.789ZM378.812 130.845Q373.699 130.845 369.896 130.528Q366.094 130.211 363.094 129.577L364.319 119.775Q369.263 120.451 372.812 120.789Q376.361 121.127 378.812 121.127Q384.981 121.127 387.748 120.113Q390.516 119.099 390.516 116.901Q390.516 115.507 389.713 114.746Q388.91 113.986 387.178 113.521L374.291 109.93Q368.967 108.451 366.368 105.852Q363.77 103.254 363.77 98.521Q363.77 91.254 369.664 87.81Q375.558 84.366 388.023 84.366Q391.065 84.366 394.044 84.577Q397.023 84.789 400.277 85.211L399.178 94.676Q395.502 94.338 392.734 94.211Q389.967 94.085 387.77 94.085Q380.798 94.085 377.65 95.056Q374.502 96.028 374.502 98.183Q374.502 99.62 375.432 100.296Q376.361 100.972 378.305 101.479L389.122 104.394Q395.417 106 398.439 108.915Q401.46 111.831 401.46 116.859Q401.46 124.042 395.946 127.444Q390.432 130.845 378.812 130.845ZM430.741 130V87.746H441.136V130ZM413.967 130V120.535H431.587V130ZM440.291 130V120.535H454.615V130ZM416.502 94.676V85.211H441.136V94.676ZM435.516 78.746Q432.516 78.746 430.572 76.803Q428.629 74.859 428.629 71.859Q428.629 68.859 430.572 66.915Q432.516 64.972 435.516 64.972Q438.516 64.972 440.46 66.915Q442.403 68.859 442.403 71.859Q442.403 74.859 440.46 76.803Q438.516 78.746 435.516 78.746ZM483.685 130.845Q474.178 130.845 468.917 124.761Q463.657 118.676 463.657 107.606Q463.657 96.493 468.917 90.43Q474.178 84.366 483.685 84.366Q493.234 84.366 498.474 90.43Q503.713 96.493 503.713 107.606Q503.713 118.676 498.474 124.761Q493.234 130.845 483.685 130.845ZM483.685 121.127Q488.164 121.127 490.572 117.599Q492.981 114.07 492.981 107.606Q492.981 101.099 490.551 97.592Q488.122 94.085 483.685 94.085Q479.248 94.085 476.819 97.592Q474.389 101.099 474.389 107.606Q474.389 114.07 476.819 117.599Q479.248 121.127 483.685 121.127ZM542.629 130V102.535Q542.629 98.479 540.77 96.282Q538.91 94.085 535.53 94.085Q526.15 94.085 526.15 106.507L523.53 93.324H527.164Q527.671 88.803 530.312 86.585Q532.953 84.366 538.192 84.366Q545.291 84.366 549.178 88.676Q553.065 92.986 553.065 100.845V130ZM515.713 130V85.211H525.094L526.15 94.676V130ZM583.023 130.845Q577.91 130.845 573.241 130Q568.572 129.155 564.77 127.549L566.122 117.282Q570.77 119.268 575.248 120.303Q579.727 121.338 583.699 121.338Q588.77 121.338 591.368 119.542Q593.967 117.746 593.967 114.282Q593.967 109.761 588.812 107.394L579.474 102.958Q573.178 100 569.777 95.648Q566.375 91.296 566.375 85.634Q566.375 77.775 571.382 73.465Q576.389 69.155 585.558 69.155Q591.305 69.155 596.143 71.035Q600.981 72.915 604.995 76.718L598.023 84.408Q594.77 81.535 591.706 80.077Q588.643 78.62 585.601 78.62Q581.629 78.62 579.432 80.415Q577.234 82.211 577.234 85.634Q577.234 88 578.734 89.796Q580.234 91.592 583.065 93.028L591.474 97.211Q597.939 100.423 601.382 104.627Q604.826 108.831 604.826 114.324Q604.826 122.394 599.27 126.62Q593.713 130.845 583.023 130.845ZM617.122 149.437V85.211H626.713L627.558 94.676V149.437ZM639.812 130.845Q634.953 130.845 631.995 128.563Q629.037 126.282 628.446 121.887H624.516L627.558 108.239Q627.558 114.915 629.819 118.127Q632.079 121.338 637.108 121.338Q641.967 121.338 644.46 117.915Q646.953 114.493 646.953 107.817Q646.953 101.056 644.417 97.465Q641.882 93.873 637.108 93.873Q632.375 93.873 629.967 97.106Q627.558 100.338 627.558 107.014L624.77 93.324H628.15Q628.868 88.93 631.741 86.648Q634.615 84.366 639.77 84.366Q648.347 84.366 652.932 90.408Q657.516 96.451 657.516 107.817Q657.516 119.014 652.932 124.93Q648.347 130.845 639.812 130.845ZM695.122 130.423 694.319 117.155 693.727 112.169V102.282Q693.727 98.352 690.643 96.514Q687.558 94.676 681.432 94.507L670.277 94.211L671.122 84.789L680.587 84.915Q692.333 85.085 698.037 89.711Q703.741 94.338 703.741 103.211V120.62L710.502 121.549V130ZM679.699 130.845Q672.601 130.845 668.692 127.38Q664.784 123.915 664.784 117.577Q664.784 110.225 670.023 106.296Q675.263 102.366 684.854 102.366Q688.657 102.366 691.53 102.789Q694.403 103.211 697.023 104.099L695.164 111.873Q692.417 111.239 690.051 111.134Q687.685 111.028 685.108 111.028Q675.136 111.028 675.136 116.901Q675.136 119.479 676.889 120.831Q678.643 122.183 681.981 122.183Q685.868 122.183 688.488 120.768Q691.108 119.352 692.417 117.176Q693.727 115 693.727 112.676V109.042L695.756 120.535H692.164L693.643 119.183Q693.558 123.07 691.847 125.669Q690.136 128.268 687.051 129.556Q683.967 130.845 679.699 130.845ZM742.065 130.845Q730.15 130.845 723.664 124.824Q717.178 118.803 717.178 107.521Q717.178 96.535 723.178 90.451Q729.178 84.366 740.333 84.366Q747.136 84.366 751.974 86.965Q756.812 89.563 758.84 94.296L751.108 100.338Q749.248 97.338 746.354 95.711Q743.46 94.085 739.995 94.085Q734.248 94.085 731.037 97.465Q727.826 100.845 727.826 107.099Q727.826 113.944 731.777 117.535Q735.727 121.127 743.079 121.127Q746.164 121.127 749.227 120.831Q752.291 120.535 755.206 120.028L756.305 129.577Q752.882 130.338 749.206 130.592Q745.53 130.845 742.065 130.845ZM791.587 130.845Q780.051 130.845 773.756 124.824Q767.46 118.803 767.46 107.521Q767.46 96.535 772.805 90.451Q778.15 84.366 787.868 84.366Q797.248 84.366 802.382 89.944Q807.516 95.521 807.516 106.127Q807.516 109.211 807.263 111.915H774.981V104.394H797.544Q797.544 99.282 795.009 96.535Q792.474 93.789 787.953 93.789Q783.009 93.789 780.263 97.254Q777.516 100.718 777.516 107.099Q777.516 113.986 781.446 117.599Q785.375 121.211 792.601 121.211Q795.558 121.211 798.41 120.894Q801.263 120.577 804.22 120.028L805.319 129.662Q801.178 130.423 797.713 130.634Q794.248 130.845 791.587 130.845Z";
+const W_K = 0.40;
+const STOPS = [["0", "#DA7C30"], ["0.35", "#D07D7A"], ["0.65", "#A188CB"], ["1", "#768DF5"]];
+const KIND_OPTS = [["vonkarman", "Von Kármán"], ["conical", "Conical"], ["ogive", "Tangent ogive"], ["elliptical", "Elliptical"]];
+const POS_LABEL = {main: "north · nose", west: "west · wing", east: "east · wing", south: "south · tail"};
+
+// Current values in tools/build (geo.py + build.py). "Reset" returns here.
+const CURRENT = {
+  TILT: 45.0, RATIO: 3.50, TIP_K: 0.58, SAG_K: 1.00, FOOT_K: 0.05,
+  KINDS: {main: "vonkarman", west: "conical", east: "elliptical", south: "ogive"},
+  SIZE: {main: 1.0, west: 0.40, east: 0.30, south: 0.50},
+  GAP_W_R: 0.19, GAP_E_R: 0.23, WING_R: 0.47, TAIL_R: 0.21,
+  STACK_H: 125, STACK_GAP_K: 0.10, STACK_POS: "above", H_MARK: 115, H_GAP_K: 21 / 115, H_POS: "before",
+  DXF_H_MM: 50, DXF_MIN_WALL_MM: 0.5,
+};
+const SPECS = [
+  {g: "Cluster", where: "geo.py", items: [
+    {k: "TILT", label: "Lean (° clockwise)", min: 0, max: 90, step: 0.5, dp: 1},
+  ]},
+  {g: "Cones (at 0° lean)", where: "geo.KINDS · geo.SIZE", cones: true},
+  {g: "Profile", where: "geo.py", items: [
+    {k: "RATIO", label: "Length / base radius", min: 1.5, max: 6, step: 0.05, dp: 2},
+    {k: "SAG_K", label: "Notch depth / base radius", min: 0.05, max: 1, step: 0.01, dp: 2},
+    {k: "FOOT_K", label: "Foot width / base radius", min: 0, max: 0.3, step: 0.005, dp: 3},
+  ]},
+  {g: "Diamond (in r)", where: "geo.py", items: [
+    {k: "GAP_W_R", label: "West gap: Von Kármán foot to conical foot", min: -0.3, max: 1.5, step: 0.01, dp: 2},
+    {k: "GAP_E_R", label: "East gap: Von Kármán foot to elliptical foot", min: -0.3, max: 1.5, step: 0.01, dp: 2},
+    {k: "WING_R", label: "Wing centroid line below Von Kármán feet", min: -2, max: 2.5, step: 0.01, dp: 2},
+    {k: "TAIL_R", label: "Tail tip below Von Kármán feet (− = into the notch)", min: -1, max: 2, step: 0.01, dp: 2},
+  ]},
+  {g: "Stacked lockup", where: "build.py", choice: {k: "STACK_POS", label: "Mark", opts: [["above", "Above wordmark"], ["below", "Below wordmark"]]}, items: [
+    {k: "STACK_H", label: "Cluster height (units)", min: 100, max: 220, step: 1, dp: 0},
+    {k: "STACK_GAP_K", label: "Gap (× cluster height): to cap line above, under descenders below", min: 0.05, max: 0.5, step: 0.005, dp: 3},
+  ]},
+  {g: "Horizontal lockup", where: "build.py", choice: {k: "H_POS", label: "Mark", opts: [["before", "Before wordmark"], ["after", "After wordmark"]]}, items: [
+    {k: "H_MARK", label: "Mark height (units, cap = 60)", min: 60, max: 150, step: 1, dp: 0},
+    {k: "H_GAP_K", label: "Gap to wordmark (× mark height)", min: 0.1, max: 0.8, step: 0.005, dp: 3},
+  ]},
+  {g: "Production", where: "build.py", items: [
+    {k: "DXF_H_MM", label: "DXF mark height (mm)", min: 10, max: 300, step: 1, dp: 0},
+    {k: "DXF_MIN_WALL_MM", label: "DXF foot floor (mm, 0 = exact master)", min: 0, max: 2, step: 0.05, dp: 2},
+  ]},
+];
+const SIZE_SPEC = {min: 0.1, max: 1.5, step: 0.01, dp: 2};
+const ALL_ITEMS = SPECS.flatMap(s => s.items || []);
+const ALL_CHOICES = SPECS.filter(s => s.choice).map(s => s.choice);
+const clone = o => JSON.parse(JSON.stringify(o));
+const STORE = "fs-mark-tuner-v5";
+
+let S = clone(CURRENT);
+try { const raw = localStorage.getItem(STORE); if (raw) S = sanitize(Object.assign(clone(CURRENT), JSON.parse(raw))); } catch (e) {}
+const view = {consBg: "void", fill: "color", ov: {grid: true, bases: true, gaps: true, edges: true, names: true, artboard: false, onLockups: false}, upright: false};
+
+function sanitize(o) {
+  const out = clone(CURRENT);
+  for (const it of ALL_ITEMS) if (Number.isFinite(+o[it.k])) out[it.k] = +o[it.k];
+  for (const ch of ALL_CHOICES) if (ch.opts.some(([v]) => v === o[ch.k])) out[ch.k] = o[ch.k];
+  for (const n of ORDER) {
+    if (o.SIZE && Number.isFinite(+o.SIZE[n])) out.SIZE[n] = +o.SIZE[n];
+    if (o.KINDS && KIND_OPTS.some(k => k[0] === o.KINDS[n])) out.KINDS[n] = o.KINDS[n];
+  }
+  out.SAG_K = Math.min(1, Math.max(0.01, out.SAG_K));
+  out.FOOT_K = Math.max(0, out.FOOT_K);
+  out.RATIO = Math.max(0.2, out.RATIO);
+  for (const n of ORDER) out.SIZE[n] = Math.max(0.02, out.SIZE[n]);
+  out.DXF_H_MM = Math.max(1, out.DXF_H_MM);
+  out.DXF_MIN_WALL_MM = Math.max(0, out.DXF_MIN_WALL_MM);
+  return out;
+}
+const geoParams = s => ({TILT: s.TILT, H_K: s.RATIO * W_K, W_K, TIP_K: s.TIP_K, SAG_K: s.SAG_K, FOOT_K: s.FOOT_K, SIZE: s.SIZE, KINDS: s.KINDS, GAP_W_R: s.GAP_W_R, GAP_E_R: s.GAP_E_R, WING_R: s.WING_R, TAIL_R: s.TAIL_R});
+const fx = (v, dp) => (+v).toFixed(dp);
+const r2 = v => fx(v, 2);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+
+// ------------------------------------------------------------------ controls
+const controlsEl = document.getElementById("controls");
+function numCtl(id, label, spec, get, set, current) {
+  const w = document.createElement("div"); w.className = "ctl";
+  w.innerHTML = `<label for="${id}n"><span class="k">${label}</span><span class="was"></span></label>
+    <input type="number" id="${id}n" min="${spec.min}" max="${spec.max}" step="${spec.step}">
+    <input type="range" id="${id}r" min="${spec.min}" max="${spec.max}" step="${spec.step}" aria-label="${esc(label)}">`;
+  const n = w.querySelector("input[type=number]"), r = w.querySelector("input[type=range]"), was = w.querySelector(".was");
+  const sync = () => {
+    const v = get(); n.value = fx(v, spec.dp); r.value = v;
+    const ch = Math.abs(v - current()) > 1e-9; w.classList.toggle("changed", ch);
+    was.textContent = ch ? `was ${fx(current(), spec.dp)}` : "";
+  };
+  r.addEventListener("input", () => { set(+r.value); sync(); schedule(); });
+  n.addEventListener("input", () => { if (n.value !== "" && Number.isFinite(+n.value)) { set(+n.value); r.value = +n.value; w.classList.toggle("changed", Math.abs(+n.value - current()) > 1e-9); schedule(); } });
+  n.addEventListener("change", sync);
+  w._sync = sync; return w;
+}
+const syncers = [];
+function buildControls() {
+  controlsEl.innerHTML = "";
+  for (const grp of SPECS) {
+    const g = document.createElement("div"); g.className = "group";
+    g.innerHTML = `<h2>${grp.g}<code>${grp.where}</code></h2>`;
+    if (grp.cones) {
+      for (const n of ORDER) {
+        const c = document.createElement("div"); c.className = "cone";
+        c.innerHTML = `<div class="nm">${NAMES[n]}<small>${POS_LABEL[n]}</small></div><div class="body">
+          <select id="kind-${n}" aria-label="${NAMES[n]} cone profile">${KIND_OPTS.map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select></div>`;
+        const sel = c.querySelector("select");
+        const syncSel = () => { sel.value = S.KINDS[n]; sel.classList.toggle("changed", S.KINDS[n] !== CURRENT.KINDS[n]); sel.title = S.KINDS[n] !== CURRENT.KINDS[n] ? `was ${PROFILE_NAMES[CURRENT.KINDS[n]]}` : ""; };
+        sel.addEventListener("change", () => { S.KINDS[n] = sel.value; syncSel(); schedule(); });
+        syncers.push(syncSel);
+        const ctl = numCtl(`size-${n}`, "Base radius (r)", SIZE_SPEC, () => S.SIZE[n], v => S.SIZE[n] = v, () => CURRENT.SIZE[n]);
+        c.querySelector(".body").appendChild(ctl); syncers.push(ctl._sync);
+        g.appendChild(c);
+      }
+    } else {
+      if (grp.choice) {
+        const ch = grp.choice, w = document.createElement("div"); w.className = "ctl";
+        w.innerHTML = `<label><span class="k">${ch.label}</span><span class="was"></span></label><div class="seg" role="group" aria-label="${grp.g}: ${ch.label}" style="grid-column:1/-1">${ch.opts.map(([v, t]) => `<button type="button" id="ch-${ch.k}-${v}" data-v="${v}">${t}</button>`).join("")}</div>`;
+        const btns = [...w.querySelectorAll("button")], was = w.querySelector(".was");
+        const sync = () => {
+          btns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === S[ch.k])));
+          const changed = S[ch.k] !== CURRENT[ch.k]; w.classList.toggle("changed", changed);
+          was.textContent = changed ? `was ${CURRENT[ch.k]}` : "";
+        };
+        btns.forEach(b => b.addEventListener("click", () => { S[ch.k] = b.dataset.v; sync(); schedule(); }));
+        g.appendChild(w); syncers.push(sync);
+      }
+      for (const it of grp.items) {
+        const ctl = numCtl(`p-${it.k}`, it.label, it, () => S[it.k], v => S[it.k] = v, () => CURRENT[it.k]);
+        g.appendChild(ctl); syncers.push(ctl._sync);
+      }
+    }
+    controlsEl.appendChild(g);
+  }
+  const og = document.createElement("div"); og.className = "group";
+  og.innerHTML = `<h2>Overlays</h2><div class="toggles">
+    ${[["grid", "Leaned grid"], ["bases", "Foot lines + axis"], ["gaps", "Gap dimensions"], ["edges", "Edge distances"], ["names", "Cone names"], ["artboard", "Artboard edges"], ["onLockups", "Also on lockups"]]
+      .map(([k, t]) => `<label><input type="checkbox" id="ov-${k}" ${view.ov[k] ? "checked" : ""}> ${t}</label>`).join("")}
+  </div><p class="note" style="margin:0">r is the Von Kármán base radius (<code>W_K</code> = 0.40 a). The diamond is laid out upright (Von Kármán north, ogive tail south on the same axis, wings west and east) and then the whole grid leans. Each foot is cut flat where the wall between flank and notch reaches the foot width. The two gaps are measured horizontally from the Von Kármán foot corners; w is the line through both wings' area centroids (⊕) and t the tail tip, both from the Von Kármán foot line.</p>`;
+  og.querySelectorAll("input").forEach(i => i.addEventListener("change", () => { view.ov[i.id.slice(3)] = i.checked; schedule(); }));
+  controlsEl.appendChild(og);
+  syncers.forEach(f => f());
+}
+
+// ------------------------------------------------------------------ svg helpers
+function gradDef(id, x1, x2) {
+  return `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${fnum(x1)}" y1="0" x2="${fnum(x2)}" y2="0">${STOPS.map(([o, c]) => `<stop offset="${o}" stop-color="${c}"/>`).join("")}</linearGradient>`;
+}
+const INKS = {
+  void: {grid: "#2A3248", gridMaj: "#3B4663", base: "#768DF5", dim: "#D6DAE4", ext: "#566079", edge: "#DA7C30", bad: "#FF7A7A", labelBg: "#0B0F1C", art: "#566079"},
+  paper: {grid: "#E1E4EC", gridMaj: "#C9CEDA", base: "#3350D6", dim: "#0B0F1C", ext: "#98A1B8", edge: "#B34F0C", bad: "#C62828", labelBg: "#F3F4F7", art: "#98A1B8"},
+};
+
+// Distances between the cone outlines, in units of a (main cone size).
+function edgeDistances(G) {
+  const cl = G.cluster(), poly = {};
+  for (const n of ORDER) poly[n] = sample(cl[n], 24);
+  const inside = (p, P) => { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const a = P[i], b = P[j]; if ((a[1] > p[1]) !== (b[1] > p[1]) && p[0] < (b[0] - a[0]) * (p[1] - a[1]) / (b[1] - a[1]) + a[0]) c = !c; } return c; };
+  const segd = (p, a, b) => { const dx = b[0] - a[0], dy = b[1] - a[1], L = dx * dx + dy * dy; let t = L ? ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / L : 0; t = Math.max(0, Math.min(1, t)); const q = [a[0] + t * dx, a[1] + t * dy]; return [Math.hypot(p[0] - q[0], p[1] - q[1]), q]; };
+  const out = [];
+  for (let i = 0; i < ORDER.length; i++) for (let j = i + 1; j < ORDER.length; j++) {
+    const A = poly[ORDER[i]], B = poly[ORDER[j]];
+    let best = [Infinity, null, null], overlap = null;
+    for (const p of A) if (inside(p, B)) { overlap = p; break; }
+    if (!overlap) for (const p of B) if (inside(p, A)) { overlap = p; break; }
+    const scan = (X, Y, flip) => { for (const p of X) for (let k = 0; k < Y.length - 1; k++) { const [d, q] = segd(p, Y[k], Y[k + 1]); if (d < best[0]) best = flip ? [d, q, p] : [d, p, q]; } };
+    scan(A, B, false); scan(B, A, true);
+    out.push({a: ORDER[i], b: ORDER[j], d: overlap ? 0 : best[0], p: best[1], q: best[2], overlap});
+  }
+  return out.sort((x, y) => x.d - y.d);
+}
+
+// Construction overlays. Upright frame drawn inside a group rotated by TILT (like construction.py),
+// so labels on the grid lean with it. Distances between cones are drawn in the page frame.
+function overlaySVG(G, A, org, ink, opt) {
+  const P = G.P, r = P.W_K, B = (1 - P.TIP_K) * P.H_K, up = G.POS_UPRIGHT, s = P.SIZE;
+  const sw = opt.sw, fs = opt.fs, labels = opt.labels, out = [], under = [], inner = [];
+  const X = u => A * u;
+  // upright extents of the cluster, in a
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  for (const n of ORDER) { const w = P.W_K * s[n], c = up[n]; x0 = Math.min(x0, c[0] - w); x1 = Math.max(x1, c[0] + w); y0 = Math.min(y0, c[1] - P.TIP_K * P.H_K * s[n]); y1 = Math.max(y1, c[1] + B * s[n]); }
+  const ft = {}; for (const n of ORDER) ft[n] = G.foot(P.KINDS[n], s[n]);         // [height above base, flank x, notch x]
+  const footY = n => up[n][1] + B * s[n] - ft[n][0];                                  // foot line of each cone (upright)
+  const ybMain = footY("main"), ybWing = up.west[1] + G.centroidY(P.KINDS.west, s.west), ybTail = footY("south");
+  const corner = (n, side) => [up[n][0] + side * ft[n][1], footY(n)];
+  const text = (x, y, t, anchor = "middle", fill = ink.dim) => labels ? `<text x="${fnum(x)}" y="${fnum(y)}" text-anchor="${anchor}" fill="${fill}" font-family="Cascadia Mono, ui-monospace, monospace" font-size="${fs}" paint-order="stroke" stroke="${ink.labelBg}" stroke-width="${fs * 0.35}" stroke-linejoin="round">${t}</text>` : "";
+  const arrow = (x, y, deg) => `<path d="M0,0 L${-fs * 0.6},${-fs * 0.22} L${-fs * 0.6},${fs * 0.22} Z" fill="${ink.dim}" transform="translate(${fnum(x)},${fnum(y)}) rotate(${deg})"/>`;
+  if (opt.ov.grid) {
+    const step = 0.5 * r, pad = 1.5 * r, ox = 0, oy = ybMain;   // grid origin: Von Kármán base centre
+    const gx0 = x0 - pad, gx1 = x1 + pad, gy0 = y0 - pad, gy1 = y1 + pad;
+    for (let k = Math.ceil((gx0 - ox) / step); ox + k * step <= gx1; k++) { const x = ox + k * step; under.push(`<path d="M${fnum(X(x))},${fnum(X(gy0))} V${fnum(X(gy1))}" stroke="${k % 2 ? ink.grid : ink.gridMaj}" stroke-width="${sw * (k === 0 ? 1.4 : k % 2 ? 0.6 : 0.9)}"/>`); }
+    for (let k = Math.ceil((gy0 - oy) / step); oy + k * step <= gy1; k++) { const y = oy + k * step; under.push(`<path d="M${fnum(X(gx0))},${fnum(X(y))} H${fnum(X(gx1))}" stroke="${k % 2 ? ink.grid : ink.gridMaj}" stroke-width="${sw * (k === 0 ? 1.4 : k % 2 ? 0.6 : 0.9)}"/>`); }
+  }
+  if (opt.ov.bases) {
+    const xl = X(x0 - 0.8 * r), xr = X(x1 + 0.8 * r);
+    const lines = [[ybMain, `${NAMES.main} feet`], [ybWing, `wing centroids`], [ybTail, `tail feet`]];
+    for (const [y, t] of lines) {
+      under.push(`<path d="M${fnum(xl)},${fnum(X(y))} H${fnum(xr)}" stroke="${ink.base}" stroke-width="${sw * 1.1}" stroke-dasharray="${sw * 7} ${sw * 4}" fill="none"/>`);
+      if (labels) under.push(text(xl, X(y) - fs * 0.5, t, "start", ink.base));
+    }
+    // area centroids: wings on the shared line, nose and tail for reference
+    for (const n of ORDER) {
+      const cx = X(up[n][0]), cy = X(up[n][1] + G.centroidY(P.KINDS[n], s[n])), k = fs * 0.45, wing = n === "west" || n === "east";
+      inner.push(`<circle cx="${fnum(cx)}" cy="${fnum(cy)}" r="${fnum(k * 0.55)}" fill="none" stroke="${wing ? ink.dim : ink.ext}" stroke-width="${sw}"/><path d="M${fnum(cx - k)},${fnum(cy)} H${fnum(cx + k)} M${fnum(cx)},${fnum(cy - k)} V${fnum(cy + k)}" stroke="${wing ? ink.dim : ink.ext}" stroke-width="${sw * 0.8}"/>`);
+    }
+    // shared axis of the nose and the tail
+    under.push(`<path d="M0,${fnum(X(y0 - 0.5 * r))} V${fnum(X(y1 + 0.5 * r))}" stroke="${ink.ext}" stroke-width="${sw * 0.9}" stroke-dasharray="${sw * 12} ${sw * 3} ${sw * 2} ${sw * 3}" fill="none"/>`);
+  }
+  if (opt.ov.gaps) {
+    const pairs = [[corner("west", 1), corner("main", -1)], [corner("main", 1), corner("east", -1)]];
+    const yd = X(Math.max(ybMain, footY("west"), footY("east"))) + fs * 2.2;
+    for (const [[p, q], gl] of pairs.map((pq, i) => [pq, i ? "g east" : "g west"])) {
+      const px = X(p[0]), qx = X(q[0]);
+      inner.push(`<path d="M${fnum(px)},${fnum(X(p[1]) + fs * 0.3)} V${fnum(yd + fs * 0.5)} M${fnum(qx)},${fnum(X(q[1]) + fs * 0.3)} V${fnum(yd + fs * 0.5)}" stroke="${ink.ext}" stroke-width="${sw * 0.75}"/>`);
+      inner.push(`<path d="M${fnum(px)},${fnum(yd)} H${fnum(qx)}" stroke="${ink.dim}" stroke-width="${sw}"/>`);
+      if (labels) { inner.push(arrow(px, yd, qx >= px ? 180 : 0) + arrow(qx, yd, qx >= px ? 0 : 180)); inner.push(text((px + qx) / 2, yd + fs * 1.35, `${gl} ${r2((q[0] - p[0]) / r)} r`)); }
+    }
+    const vdim = (x, ya, yb, label, side) => {         // vertical dimension between two upright heights
+      if (Math.abs(yb - ya) < 1e-6) { if (labels) inner.push(text(x + side * fs * 0.5, X(ya) - fs * 0.4, label, side > 0 ? "start" : "end")); return; }
+      inner.push(`<path d="M${fnum(x)},${fnum(X(ya))} V${fnum(X(yb))}" stroke="${ink.dim}" stroke-width="${sw}"/>`);
+      if (labels) {
+        const dn = yb > ya;
+        inner.push(arrow(x, X(ya), dn ? -90 : 90) + arrow(x, X(yb), dn ? 90 : -90));
+        inner.push(text(x + side * fs * 0.5, (X(ya) + X(yb)) / 2 + fs * 0.35, label, side > 0 ? "start" : "end"));
+      }
+    };
+    // wing foot line relative to the Von Kármán feet, just outside the east wing
+    const wx = X(x1) + fs * 1.4;
+    inner.push(`<path d="M${fnum(X(corner("east", 1)[0]) + fs * 0.3)},${fnum(X(ybWing))} H${fnum(wx + fs * 0.5)} M${fnum(X(corner("main", 1)[0]) + fs * 0.3)},${fnum(X(ybMain))} H${fnum(wx + fs * 0.5)}" stroke="${ink.ext}" stroke-width="${sw * 0.75}"/>`);
+    vdim(wx, ybMain, ybWing, `w ${r2((ybWing - ybMain) / r)} r`, 1);
+    // tail tip relative to the Von Kármán feet, beside the tail
+    const tt = up.south[1] - P.TIP_K * P.H_K * s.south;
+    const tx = -X(P.W_K * s.south) - fs * 1.6;
+    inner.push(`<path d="M${fnum(-fs * 0.3)},${fnum(X(tt))} H${fnum(tx - fs * 0.5)}" stroke="${ink.ext}" stroke-width="${sw * 0.75}"/>`);
+    vdim(tx, ybMain, tt, `t ${r2((tt - ybMain) / r)} r`, -1);
+  }
+  if (opt.ov.names && labels) {
+    const nm = {main: "N · nose", west: "W · wing", east: "E · wing", south: "S · tail"};
+    for (const n of ORDER) {          // above each tip; the tail's tip sits in the notch, so its name goes under its feet
+      const x = X(up[n][0]);
+      const y = n === "south" ? X(footY("south")) + fs * 2.4 : X(up[n][1] - P.TIP_K * P.H_K * s[n]) - fs * 1.6;
+      inner.push(text(x, y, nm[n], "middle", ink.dim));
+      inner.push(text(x, y + fs * 1.15, PROFILE_NAMES[P.KINDS[n]], "middle", ink.ext));
+    }
+  }
+  const grp = a => a.length ? `<g transform="translate(${fnum(org[0])},${fnum(org[1])}) rotate(${P.TILT})">${a.join("")}</g>` : "";
+  out.push(grp(under), "<!--top-->", grp(inner));
+  if (opt.ov.edges && opt.dist) {
+    for (const e of opt.dist) {
+      if ((e.a === "west" && e.b === "east") || (e.a === "east" && e.b === "west")) continue;   // all diamond edges + nose–tail; skip the far west–east pair
+      const T = p => [org[0] + A * p[0], org[1] + A * p[1]];
+      if (e.overlap) { const c = T(e.overlap); out.push(`<circle cx="${fnum(c[0])}" cy="${fnum(c[1])}" r="${fs * 0.5}" fill="none" stroke="${ink.bad}" stroke-width="${sw * 1.5}"/>`); if (labels) out.push(text(c[0], c[1] - fs * 0.8, "overlap", "middle", ink.bad)); continue; }
+      const p = T(e.p), q = T(e.q);
+      out.push(`<path d="M${fnum(p[0])},${fnum(p[1])} L${fnum(q[0])},${fnum(q[1])}" stroke="${ink.edge}" stroke-width="${sw * 1.3}"/><circle cx="${fnum(p[0])}" cy="${fnum(p[1])}" r="${sw * 2}" fill="${ink.edge}"/><circle cx="${fnum(q[0])}" cy="${fnum(q[1])}" r="${sw * 2}" fill="${ink.edge}"/>`);
+      if (labels) out.push(text((p[0] + q[0]) / 2 + fs * 0.6, (p[1] + q[1]) / 2 - fs * 0.5, `${r2(e.d / r)} r`, "start", ink.edge));
+    }
+  }
+  return out.join("");
+}
+
+function clusterPaths(cl, fill) { return DRAW_ORDER.map(n => `<path fill="${fill}" d="${segToD(cl[n])}"/>`).join(""); }
+
+// ------------------------------------------------------------------ renderers
+function renderConstruction(G0, dist0) {
+  const G = view.upright ? makeGeo(Object.assign({}, G0.P, {TILT: 0})) : G0;
+  const dist = view.upright ? edgeDistances(G) : dist0;
+  const VW = 1000, VH = 620, m = 90;
+  const b = G.bbox(G.cluster());
+  const A = Math.min((VW - 2 * m) / (b[2] - b[0]), (VH - 2 * m) / (b[3] - b[1]));
+  const org = [VW / 2 - A * (b[0] + b[2]) / 2, VH / 2 - A * (b[1] + b[3]) / 2];
+  const cl = G.cluster(A, org), bb = G.bbox(cl);
+  const ink = INKS[view.consBg];
+  const ov = overlaySVG(G, A, org, ink, {ov: view.ov, sw: 1.2, fs: 14, labels: true, dist});
+  const art = view.ov.artboard ? `<rect x="${fnum(bb[0])}" y="${fnum(bb[1])}" width="${fnum(bb[2] - bb[0])}" height="${fnum(bb[3] - bb[1])}" fill="none" stroke="${ink.art}" stroke-dasharray="4 4"/>` : "";
+  document.getElementById("consStage").innerHTML =
+    `<svg viewBox="0 0 ${VW} ${VH}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mark with construction overlays"><defs>${gradDef("cons-g", bb[0], bb[2])}</defs>
+${underlay(ov)}${clusterPaths(cl, "url(#cons-g)")}${overlayTop(ov)}${art}</svg>`;
+}
+// grid + base lines sit under the cones; dimensions and distances on top
+function underlay(ov) { return ov.split("<!--top-->")[0]; }
+function overlayTop(ov) { const i = ov.indexOf("<!--top-->"); return i < 0 ? "" : ov.slice(i); }
+
+function lockupStage(el, kind, bg, G, geom, dist) {
+  const dark = bg === "void", mono = view.fill === "mono";
+  const monoFill = dark ? "#FFFFFF" : "#0B0F1C";
+  const id = `${kind}-${bg}`;
+  const pad = 40;
+  const W = geom.W, H = geom.H;
+  let defs = "", fm = monoFill, fw = monoFill;
+  if (!mono) {
+    defs = gradDef(`${id}-m`, geom.bb[0], geom.bb[2]) + (kind === "st" ? gradDef(`${id}-w`, 0, WM_W) : gradDef(`${id}-w`, WM_H.bbox[0], WM_H.bbox[2]));
+    fm = `url(#${id}-m)`; fw = `url(#${id}-w)`;
+  }
+  const wmT = kind === "st" ? `translate(0 ${fnum(geom.dy)})` : `translate(${fnum(geom.dx)} ${fnum(geom.dy)})`;
+  const wm = kind === "st" ? WM_STACKED : WM_HORIZ;
+  const ink = INKS[bg];
+  const ov = view.ov.onLockups ? overlaySVG(G, geom.A, geom.org, ink, {ov: view.ov, sw: kind === "st" ? 0.6 : 0.4, fs: 6, labels: false, dist}) : "";
+  const art = view.ov.artboard ? `<rect x="0" y="0" width="${fnum(W)}" height="${fnum(H)}" fill="none" stroke="${ink.art}" stroke-width="${kind === "st" ? 1 : 0.8}" stroke-dasharray="4 4"/>` : "";
+  el.innerHTML = `<svg viewBox="${-pad} ${-pad} ${fnum(W + 2 * pad)} ${fnum(H + 2 * pad)}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${kind === "st" ? "Stacked" : "Horizontal"} lockup on ${dark ? "Void" : "Paper"}"><defs>${defs}</defs>
+    ${underlay(ov)}${clusterPaths(geom.cl, fm)}<path fill="${fw}" transform="${wmT}" d="${wm}"/>${overlayTop(ov)}${art}</svg>`;
+}
+
+function iconSVG(G, kind) {
+  const g = iconGeometry(G, kind), id = `ic-${kind}`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><defs>${gradDef(id, g.gx0, g.gx1)}</defs><rect width="512" height="512" rx="${g.rx}" fill="#0B0F1C"/>${g.paths.map(d => `<path fill="url(#${id})" d="${d}"/>`).join("")}</svg>`;
+}
+// build.hinted_favicon: render the tile and each cone apart at 16 × 32 px. A pixel is a cone's (its mean gradient
+// colour, opaque) when that cone covers at least half of it, or plain tile. The wing cones (FAV_ARROWS) are drawn as a
+// 2 × 2 arrow pointing up and right (top left, top right, bottom right) in the 2 × 2 box holding most of their outline-hinted pixels, in their mean colour.
+function drawHinted(svg, ids, gen, G, n = 16, ss = 32) {
+  const N = n * ss;
+  const sized = t => t.replace('width="512" height="512"', `width="${N}" height="${N}"`);
+  const paths = svg.match(/<path [^>]*\/>/g), names = iconGeometry(G, "favicon").names;
+  const bare = svg.replace(/<rect [^>]*\/>/, "").replace(/<path [^>]*\/>/g, "");
+  const layers = [sized(svg.replace(/<path [^>]*\/>/g, ""))].concat(paths.map(p => sized(bare.replace("</svg>", p + "</svg>"))));
+  const load = t => new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(t); });
+  Promise.all(layers.map(load)).then(ims => {
+    if (gen !== iconGen) return;
+    const px = im => { const c = document.createElement("canvas"); c.width = c.height = N; const x = c.getContext("2d"); x.drawImage(im, 0, 0, N, N); return x.getImageData(0, 0, N, N).data; };
+    const T = px(ims[0]), out = new ImageData(n, n), m = ss * ss;
+    for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
+      let at = 0;
+      for (let y = j * ss; y < (j + 1) * ss; y++) for (let x = i * ss; x < (i + 1) * ss; x++) at += T[4 * (y * N + x) + 3] / 255;
+      const q = 4 * (j * n + i); out.data[q] = 11; out.data[q + 1] = 15; out.data[q + 2] = 28; out.data[q + 3] = Math.round(255 * at / m);
+    }
+    const put = (i, j, c) => { const q = 4 * (j * n + i); out.data[q] = Math.round(c[0]); out.data[q + 1] = Math.round(c[1]); out.data[q + 2] = Math.round(c[2]); out.data[q + 3] = 255; };
+    names.forEach((name, k) => {
+      const C = px(ims[k + 1]), cov = [], col = [];
+      let W = 0, R = 0, Gs = 0, B = 0;
+      for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
+        let ac = 0, r = 0, g = 0, b = 0;
+        for (let y = j * ss; y < (j + 1) * ss; y++) for (let x = i * ss; x < (i + 1) * ss; x++) {
+          const z = 4 * (y * N + x), a = C[z + 3] / 255; ac += a; r += C[z] * a; g += C[z + 1] * a; b += C[z + 2] * a;
+        }
+        cov[j * n + i] = ac / m; col[j * n + i] = ac ? [r / ac, g / ac, b / ac] : [0, 0, 0];
+        W += ac; R += r; Gs += g; B += b;
+      }
+      if (FAV_ARROWS.includes(name)) {
+        let best = -1, x0 = 0, y0 = 0; const c = [R / W, Gs / W, B / W];
+        for (let j = 0; j < n - 1; j++) for (let i = 0; i < n - 1; i++) {
+          const k = q => (cov[q] >= 0.5 ? 10 : 0) + cov[q], v = k(j * n + i) + k(j * n + i + 1) + k((j + 1) * n + i) + k((j + 1) * n + i + 1);
+          if (v > best) { best = v; x0 = i; y0 = j; }
+        }
+        for (const [dx, dy] of [[0, 0], [1, 0], [1, 1]]) put(x0 + dx, y0 + dy, c);
+      } else for (let q = 0; q < n * n; q++) if (cov[q] >= 0.5) put(q % n, Math.floor(q / n), col[q]);
+    });
+    for (const id of ids) { const c = document.getElementById(id); c.getContext("2d").putImageData(out, 0, 0); }
+  }).catch(() => {});
+}
+let iconGen = 0;
+function renderIcons(G) {
+  const gen = ++iconGen, host = document.getElementById("icons");
+  const svgs = {app: iconSVG(G, "app"), favicon: iconSVG(G, "favicon"), icon: iconSVG(G, "icon")};
+  if (!host.dataset.built) {
+    host.innerHTML = `
+      <figure><div id="ic180" style="width:180px;height:180px;line-height:0"></div><figcaption>180 px · apple-touch-icon<br>app-icon.svg, full-bleed</figcaption></figure>
+      <figure><div class="px"><canvas id="fv32" width="32" height="32"></canvas><canvas id="fv32z" class="zoom" width="32" height="32" style="width:128px;height:128px"></canvas></div><figcaption>32 px · favicon-32</figcaption></figure>
+      <figure><div class="px"><canvas id="fv16" width="16" height="16"></canvas><canvas id="fv16z" class="zoom" width="16" height="16" style="width:64px;height:64px"></canvas></div><figcaption>16 px · favicon-16,<br>pixel-hinted as built (wing cones as arrows)</figcaption></figure>
+      <figure><div class="px"><canvas id="ic32" width="32" height="32"></canvas><canvas id="ic16" width="16" height="16"></canvas><canvas id="ic32z" class="zoom" width="32" height="32" style="width:128px;height:128px"></canvas></div><figcaption>icon.svg at 32 and 16 px, plain browser scaling,<br>for comparison with the hinted favicon</figcaption></figure>`;
+    host.dataset.built = "1";
+  }
+  document.getElementById("ic180").innerHTML = svgs.app.replace('width="512" height="512"', 'width="180" height="180"');
+  const draw = (svg, ids, size) => {
+    const img = new Image();
+    img.onload = () => { if (gen !== iconGen) return; for (const id of ids) { const c = document.getElementById(id), x = c.getContext("2d"); x.clearRect(0, 0, size, size); x.drawImage(img, 0, 0, size, size); } };
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg.replace('width="512" height="512"', `width="${size}" height="${size}"`));
+  };
+  draw(svgs.favicon, ["fv32", "fv32z"], 32);
+  drawHinted(svgs.favicon, ["fv16", "fv16z"], gen, G);
+  draw(svgs.icon, ["ic32", "ic32z"], 32);
+  draw(svgs.icon, ["ic16"], 16);
+}
+
+function renderStats(G, st, ho, dist) {
+  const r = W_K, b = G.bbox(G.cluster());
+  const w = (b[2] - b[0]) / r, h = (b[3] - b[1]) / r;
+  const G0 = makeGeo(Object.assign({}, G.P, {TILT: 0})), b0 = G0.bbox(G0.cluster()), uw = b0[2] - b0[0], uh = b0[3] - b0[1];
+  const stW = st.bb[2] - st.bb[0];
+  const markW = ho.bb[2] - ho.bb[0];
+  const stat = (v, l) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`;
+  document.getElementById("stats").innerHTML =
+    stat(`${r2(w)} × ${r2(h)} r`, "cluster width × height") +
+    stat(`${r2(w / h)}`, `width / height (1.00 = square); upright ${r2(uw / uh)}`) +
+    stat(`${fx(stW, 1)} of ${fx(WM_W, 1)}`, `stacked: cluster width vs wordmark (${Math.round(100 * stW / WM_W)}%)`) +
+    stat(`${fx(st.W, 1)} × ${fx(st.H, 1)}`, "stacked artboard (units)") +
+    stat(`${fx(ho.W, 1)} × ${fx(ho.H, 1)}`, `horizontal artboard; mark ${fx(markW, 1)} wide, gap ${fx(ho.gapW, 1)}`);
+  const status = e => e.overlap ? `<span class="pill bad">overlap</span>` : e.d / r < 0.15 ? `<span class="pill tight">tight</span>` : `<span class="pill ok">clear</span>`;
+  document.getElementById("distTable").innerHTML =
+    `<thead><tr><th>Edge to edge</th><th>Profiles</th><th class="n">Distance</th><th></th></tr></thead><tbody>` +
+    dist.map(e => `<tr><td>${NAMES[e.a]} – ${NAMES[e.b]}</td><td>${PROFILE_NAMES[S.KINDS[e.a]]} – ${PROFILE_NAMES[S.KINDS[e.b]]}</td><td class="n">${e.overlap ? "—" : r2(e.d / r) + " r"}</td><td>${status(e)}</td></tr>`).join("") + `</tbody>`;
+}
+
+// ------------------------------------------------------------------ production: minimum feature sizes
+function footThumb(G, n, minWall) {
+  const P = G.P, s = P.SIZE[n], kind = P.KINDS[n], W = P.W_K * s, L = P.H_K * s;
+  const sag = P.SAG_K * W, Rn = (W * W + sag * sag) / (2 * sag), c0 = Rn - sag;
+  const xaH = h => Math.sqrt(Math.max(Rn * Rn - (h + c0) * (h + c0), 0));
+  const [hm] = G.foot(kind, s), [hd] = G.foot(kind, s, minWall);
+  const H = Math.min(1.6 * Math.max(hm, hd, 0.02 * W), 0.9 * sag);
+  const yb = (1 - P.TIP_K) * L;                         // base line, cone centre at 0,0, upright
+  const x0 = xaH(H) - 0.03 * W, x1 = W * 1.04, y0 = yb - H, y1 = yb + 0.04 * W;
+  const o = {tilt: 0, pos: [0, 0]};
+  const dm = segToD(G.coneSegments(n, 1, [0, 0], o)), dd = segToD(G.coneSegments(n, 1, [0, 0], Object.assign({minWall}, o)));
+  return `<svg viewBox="${x0} ${y0} ${x1 - x0} ${y1 - y0}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="${dm}" fill="#FF7A7A"/><path d="${dd}" fill="#0B0F1C"/><path d="M${x0} ${yb} H${x1}" stroke="#566079" stroke-width="${(y1 - y0) / 120}" stroke-dasharray="${(y1 - y0) / 30} ${(y1 - y0) / 60}"/></svg>`;
+}
+function renderProduction(G) {
+  const P = G.P, hmm = S.DXF_H_MM, floor = S.DXF_MIN_WALL_MM;
+  const dg = dxfGeometry(G, hmm, floor), A = dg.A, mw = floor / A;
+  const fav = iconGeometry(G, "favicon").A, clH = (b => b[3] - b[1])(G.bbox(G.cluster()));
+  const rows = ORDER.map(n => {
+    const k = P.KINDS[n], s = P.SIZE[n];
+    const m = G.foot(k, s), d = G.foot(k, s, mw);
+    return {n, k, W: P.W_K * s * A, fm: (m[1] - m[2]) * A, fd: (d[1] - d[2]) * A, up: (d[0] - m[0]) * A,
+            fa: m[1] - m[2]};
+  });
+  const thin = rows.reduce((a, b) => b.fm < a.fm ? b : a);
+  const need = thin.fm > 0 ? hmm * floor / thin.fm : Infinity;
+  const stat = (v, l) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`;
+  document.getElementById("prodStats").innerHTML =
+    stat(`${fx(dg.bb[2] - dg.bb[0], 2)} × ${fx(dg.bb[3] - dg.bb[1], 2)} mm`, "DXF outline, after the foot trim") +
+    stat(`${fx(thin.fm, 2)} mm`, `thinnest master foot (${PROFILE_NAMES[thin.k]}) at ${fx(hmm, 0)} mm`) +
+    stat(floor > 0 ? (Number.isFinite(need) ? `${fx(need, 0)} mm` : "—") : "—", floor > 0 ? `mark height where every master foot reaches ${fx(floor, 2)} mm untrimmed` : "no floor set") +
+    stat(`${fx(rows[0].fa * fav * 16 / 512, 2)} px`, `main foot at 16 px favicon (${fx(rows[0].fa * fav * 32 / 512, 2)} px at 32)`);
+  const pill = r => floor <= 0 || r.fm >= floor - 1e-9 ? `<span class="pill ok">as master</span>` : `<span class="pill tight">trimmed</span>`;
+  document.getElementById("featTable").innerHTML =
+    `<thead><tr><th>Foot</th><th>Cone</th><th class="n">Base radius</th><th class="n">Master foot</th><th class="n">DXF foot</th><th class="n">Foot raised</th><th class="n">At 24 px cluster</th><th></th></tr></thead><tbody>` +
+    rows.map(r => `<tr><td>${footThumb(G, r.n, mw)}</td><td class="mid">${NAMES[r.n]} · ${PROFILE_NAMES[r.k]}</td><td class="n mid">${fx(r.W, 2)} mm</td><td class="n mid">${fx(r.fm, 2)} mm</td><td class="n mid">${fx(r.fd, 2)} mm</td><td class="n mid">${r.up > 1e-6 ? fx(r.up, 2) + " mm" : "—"}</td><td class="n mid">${fx(r.fa * 24 / clH, 2)} px</td><td class="mid">${pill(r)}</td></tr>`).join("") + `</tbody>`;
+}
+
+// ------------------------------------------------------------------ export SVG
+const EXPORT_FILLS = {color: null, void: "#0B0F1C", white: "#FFFFFF"};
+let exFill = "color";
+function svgDoc(w, h, title, defs, body, units = "") {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${fnum(w)}${units}" height="${fnum(h)}${units}" viewBox="0 0 ${fnum(w)} ${fnum(h)}" version="1.1">
+<title>${title}</title>
+<desc>Exported from the FusionSpace mark tuner (Rev C), ${new Date().toISOString().slice(0, 10)}. A preview of the current tuning, not a build file.</desc>
+${defs ? `<defs>${defs}</defs>\n` : ""}${body}
+</svg>
+`;
+}
+function markGroup(cl, fill) {
+  return `<g id="mark">\n` + DRAW_ORDER.map(n => `  <path id="mark-${n}" fill="${fill}" d="${segToD(cl[n])}"><title>${NAMES[n]} cone (${PROFILE_NAMES[S.KINDS[n]]})</title></path>`).join("\n") + `\n</g>`;
+}
+function exportFile(kind) {
+  const G = makeGeo(geoParams(S)), mono = EXPORT_FILLS[exFill];
+  const suffix = exFill === "color" ? "color" : exFill;
+  if (kind === "cut") {
+    const dg = dxfGeometry(G, S.DXF_H_MM, S.DXF_MIN_WALL_MM), w = dg.bb[2], h = dg.bb[3];
+    const body = `<g id="cut" fill="none" stroke="#000000" stroke-width="0.01">\n` + ORDER.map(n => `  <path id="cut-${n}" d="${segToD(dg.cl[n])}"/>`).join("\n") + `\n</g>`;
+    return [`fusion-space-mark-${fx(S.DXF_H_MM, 0)}mm-cut.svg`, svgDoc(w, h, `FusionSpace mark, cut outline, ${fx(S.DXF_H_MM, 0)} mm`, "", body, "mm")];
+  }
+  if (kind === "mark") {
+    const f = G.fitCluster({height: 200}), W = f.bb[2];
+    const fill = mono || "url(#fusion-gradient)";
+    return [`fusion-space-mark-${suffix}-tuned.svg`, svgDoc(W, 200, "FusionSpace mark (tuner export)", mono ? "" : gradDef("fusion-gradient", 0, W), markGroup(f.cl, fill))];
+  }
+  const st = kind === "stacked", g = st ? stackedGeometry(G, S) : horizontalGeometry(G, S);
+  const fm = mono || "url(#fusion-gradient)", fw = mono || "url(#wordmark-gradient)";
+  const defs = mono ? "" : gradDef("fusion-gradient", g.bb[0], g.bb[2]) + (st ? gradDef("wordmark-gradient", 0, WM_W) : gradDef("wordmark-gradient", WM_H.bbox[0] + g.dx, WM_H.bbox[2] + g.dx));
+  const wmT = st ? `translate(0 ${fnum(g.dy)})` : `translate(${fnum(g.dx)} ${fnum(g.dy)})`;
+  const wm = `<path id="wordmark" fill="${fw}" transform="${wmT}" d="${st ? WM_STACKED : WM_HORIZ}"><title>FusionSpace (outlined)</title></path>`;
+  const body = markGroup(g.cl, fm) + "\n" + wm;
+  return [`fusion-space-${st ? "stacked" : "horizontal"}-${suffix}-tuned.svg`, svgDoc(g.W, g.H, `FusionSpace ${st ? "stacked" : "horizontal"} lockup (tuner export)`, defs, body)];
+}
+async function saveFile(name, text) {
+  const msg = document.getElementById("exMsg");
+  let dl = null;
+  /*__SAVE_HOOK__*/
+  if (dl) {
+    try { await dl.save({filename: name, data: text}); msg.textContent = `Saved ${name}`; }
+    catch (e) { msg.textContent = e && e.code === "declined" ? "Save cancelled." : `Couldn't save (${(e && e.code) || "error"}).`; }
+    return;
+  }
+  try {
+    const url = URL.createObjectURL(new Blob([text], {type: "image/svg+xml"}));
+    const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    msg.textContent = `Downloaded ${name}`;
+  } catch (e) { msg.textContent = "Downloads aren't available here."; }
+}
+
+function copyText() {
+  const s = S, H_K = +(s.RATIO * W_K).toFixed(6);
+  const sz = ORDER.map(n => `"${n}": ${fx(s.SIZE[n], 2)}`).join(", ");
+  const kd = ORDER.map(n => `"${n}": "${s.KINDS[n]}"`).join(", ");
+  const changes = [];
+  for (const it of ALL_ITEMS) if (Math.abs(s[it.k] - CURRENT[it.k]) > 1e-9) changes.push(`${it.k} ${fx(CURRENT[it.k], it.dp)} -> ${fx(s[it.k], it.dp)}`);
+  for (const ch of ALL_CHOICES) if (s[ch.k] !== CURRENT[ch.k]) changes.push(`${ch.k} ${CURRENT[ch.k]} -> ${s[ch.k]}`);
+  for (const n of ORDER) {
+    if (Math.abs(s.SIZE[n] - CURRENT.SIZE[n]) > 1e-9) changes.push(`SIZE.${n} ${fx(CURRENT.SIZE[n], 2)} -> ${fx(s.SIZE[n], 2)}`);
+    if (s.KINDS[n] !== CURRENT.KINDS[n]) changes.push(`KINDS.${n} ${CURRENT.KINDS[n]} -> ${s.KINDS[n]}`);
+  }
+  const d = new Date(), date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  return `# FusionSpace mark tuner values (Rev C), ${date}
+# geo.py
+TILT = ${fx(s.TILT, 1)}
+H_K, W_K, TIP_K = ${H_K}, 0.40, ${fx(s.TIP_K, 2)}   # length / base radius = ${fx(s.RATIO, 2)}
+SAG_K = ${fx(s.SAG_K, 2)}
+FOOT_K = ${fx(s.FOOT_K, 3)}
+KINDS = {${kd}}
+SIZE = {${sz}}
+GAP_W_R = ${fx(s.GAP_W_R, 2)}
+GAP_E_R = ${fx(s.GAP_E_R, 2)}
+WING_R = ${fx(s.WING_R, 2)}
+TAIL_R = ${fx(s.TAIL_R, 2)}
+# build.py
+STACK_H = ${fx(s.STACK_H, 1)}
+STACK_GAP = ${fx(s.STACK_GAP_K, 3)} * STACK_H
+STACK_POS = "${s.STACK_POS}"
+H_MARK = ${fx(s.H_MARK, 1)}
+H_GAP_CAP = ${fx(s.H_GAP_K * s.H_MARK / 60, 3)}   # gap in cap heights (H_GAP_K = ${fx(s.H_GAP_K, 3)} x mark height)
+H_POS = "${s.H_POS}"
+DXF_H_MM = ${fx(s.DXF_H_MM, 1)}
+DXF_MIN_WALL_MM = ${fx(s.DXF_MIN_WALL_MM, 2)}
+# changed from current: ${changes.length ? changes.join("; ") : "nothing"}`;
+}
+
+function parseValues(t) {
+  const o = clone(S); let hits = 0;
+  const num = (re, fn) => { const m = t.match(re); if (m) { fn(m); hits++; } };
+  num(/^\s*TILT\s*=\s*(-?[\d.]+)/m, m => o.TILT = +m[1]);
+  num(/^\s*H_K\s*,\s*W_K\s*,\s*TIP_K\s*=\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)/m, m => { o.RATIO = +m[1] / +m[2]; o.TIP_K = +m[3]; });
+  num(/^\s*SAG_K\s*=\s*([\d.]+)/m, m => o.SAG_K = +m[1]);
+  num(/^\s*FOOT_K\s*=\s*([\d.]+)/m, m => o.FOOT_K = +m[1]);
+  num(/^\s*GAP_W_R\s*=\s*(-?[\d.]+)/m, m => o.GAP_W_R = +m[1]);
+  num(/^\s*GAP_E_R\s*=\s*(-?[\d.]+)/m, m => o.GAP_E_R = +m[1]);
+  num(/^\s*WING_R\s*=\s*(-?[\d.]+)/m, m => o.WING_R = +m[1]);
+  num(/^\s*TAIL_R\s*=\s*(-?[\d.]+)/m, m => o.TAIL_R = +m[1]);
+  num(/^\s*STACK_H\s*=\s*([\d.]+)/m, m => o.STACK_H = +m[1]);
+  num(/^\s*STACK_GAP\s*=\s*([\d.]+)\s*\*\s*STACK_H/m, m => o.STACK_GAP_K = +m[1]);
+  num(/^\s*H_MARK\s*=\s*([\d.]+)/m, m => o.H_MARK = +m[1]);
+  num(/^\s*H_GAP_K\s*=\s*([\d.]+)/m, m => o.H_GAP_K = +m[1]);
+  num(/^\s*H_GAP_CAP\s*=\s*([\d.]+)/m, m => o.H_GAP_K = +m[1] * 60 / o.H_MARK);
+  num(/^\s*STACK_POS\s*=\s*["'](above|below)["']/m, m => o.STACK_POS = m[1]);
+  num(/^\s*H_POS\s*=\s*["'](before|after)["']/m, m => o.H_POS = m[1]);
+  num(/^\s*DXF_H_MM\s*=\s*([\d.]+)/m, m => o.DXF_H_MM = +m[1]);
+  num(/^\s*DXF_MIN_WALL_MM\s*=\s*([\d.]+)/m, m => o.DXF_MIN_WALL_MM = +m[1]);
+  num(/^\s*KINDS\s*=\s*\{([^}]*)\}/m, m => { for (const [, k, v] of m[1].matchAll(/["'](\w+)["']\s*:\s*["'](\w+)["']/g)) if (o.KINDS[k] !== undefined) o.KINDS[k] = v; });
+  num(/^\s*SIZE\s*=\s*\{([^}]*)\}/m, m => { for (const [, k, v] of m[1].matchAll(/["'](\w+)["']\s*:\s*([\d.]+)/g)) if (o.SIZE[k] !== undefined) o.SIZE[k] = +v; });
+  return [sanitize(o), hits];
+}
+
+// ------------------------------------------------------------------ main loop
+let pending = false;
+function schedule() { if (!pending) { pending = true; requestAnimationFrame(() => { pending = false; render(); }); } }
+function render() {
+  const G = makeGeo(geoParams(S));
+  const dist = edgeDistances(G);
+  const st = stackedGeometry(G, S), ho = horizontalGeometry(G, S);
+  renderConstruction(G, dist);
+  lockupStage(document.getElementById("stVoid"), "st", "void", G, st, dist);
+  lockupStage(document.getElementById("stPaper"), "st", "paper", G, st, dist);
+  lockupStage(document.getElementById("hoVoid"), "ho", "void", G, ho, dist);
+  lockupStage(document.getElementById("hoPaper"), "ho", "paper", G, ho, dist);
+  renderIcons(G);
+  renderStats(G, st, ho, dist);
+  renderProduction(G);
+  document.getElementById("copyText").textContent = copyText();
+  try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) {}
+}
+
+function toast(msg) { const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("on"), 1800); }
+async function doCopy() {
+  const txt = copyText();
+  try { await navigator.clipboard.writeText(txt); toast("Values copied"); }
+  catch (e) { const pre = document.getElementById("copyText"); const rg = document.createRange(); rg.selectNodeContents(pre); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(rg); pre.scrollIntoView({block: "nearest"}); toast("Selected. Press Cmd/Ctrl+C to copy"); }
+}
+document.getElementById("copyBtn").addEventListener("click", doCopy);
+document.getElementById("copyBtn2").addEventListener("click", doCopy);
+document.getElementById("resetBtn").addEventListener("click", () => { S = clone(CURRENT); syncers.forEach(f => f()); render(); toast("Reset to current values"); });
+document.getElementById("loadBtn").addEventListener("click", () => {
+  const [o, hits] = parseValues(document.getElementById("loadText").value);
+  const msg = document.getElementById("loadMsg");
+  if (!hits) { msg.textContent = "No values found. Paste lines like TILT = 22.5."; return; }
+  S = o; syncers.forEach(f => f()); render(); msg.textContent = `Loaded ${hits} line${hits > 1 ? "s" : ""}.`;
+});
+const segBtns = (a, b, set) => { const A = document.getElementById(a), B = document.getElementById(b);
+  A.addEventListener("click", () => { A.setAttribute("aria-pressed", "true"); B.setAttribute("aria-pressed", "false"); set(0); render(); });
+  B.addEventListener("click", () => { B.setAttribute("aria-pressed", "true"); A.setAttribute("aria-pressed", "false"); set(1); render(); }); };
+segBtns("cbVoid", "cbPaper", i => { view.consBg = i ? "paper" : "void"; document.getElementById("consStage").className = "stage bg-" + view.consBg; });
+segBtns("fmColor", "fmMono", i => { view.fill = i ? "mono" : "color"; });
+segBtns("lnLean", "lnUp", i => { view.upright = !!i; });
+for (const [id, v] of [["exColor", "color"], ["exVoid", "void"], ["exWhite", "white"]])
+  document.getElementById(id).addEventListener("click", () => { exFill = v; for (const b of ["exColor", "exVoid", "exWhite"]) document.getElementById(b).setAttribute("aria-pressed", String(b === id)); });
+for (const [id, k] of [["exMark", "mark"], ["exStacked", "stacked"], ["exHoriz", "horizontal"], ["exCut", "cut"]])
+  document.getElementById(id).addEventListener("click", () => { const [name, text] = exportFile(k); saveFile(name, text); });
+
+buildControls();
+render();
+</script>
+</body>
+</html>

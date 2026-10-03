@@ -1,0 +1,140 @@
+{
+  "gradient": [
+    {
+      "offset": 0.0,
+      "hex": "#FFB56C",
+      "name": "M orange"
+    },
+    {
+      "offset": 0.35,
+      "hex": "#F2B3A0",
+      "name": "Rose"
+    },
+    {
+      "offset": 0.65,
+      "hex": "#C3B3E0",
+      "name": "Lavender"
+    },
+    {
+      "offset": 1.0,
+      "hex": "#9BB0FF",
+      "name": "O blue"
+    }
+  ],
+  "core": {
+    "Void": {
+      "hex": "#0B0F1C",
+      "use": "Primary dark. Backgrounds, one-colour marks, text on light"
+    },
+    "Abyss": {
+      "hex": "#141A2B",
+      "use": "Raised dark surface"
+    },
+    "Graphite": {
+      "hex": "#2A3248",
+      "use": "Rules and borders on dark"
+    },
+    "Slate": {
+      "hex": "#566079",
+      "use": "Secondary text on light"
+    },
+    "Haze": {
+      "hex": "#98A1B8",
+      "use": "Secondary text on dark"
+    },
+    "Mist": {
+      "hex": "#D6DAE4",
+      "use": "Rules and borders on light"
+    },
+    "Paper": {
+      "hex": "#F3F4F7",
+      "use": "Primary light background"
+    },
+    "White": {
+      "hex": "#FFFFFF",
+      "use": "Pure white, reversed marks"
+    }
+  },
+  "signal": {
+    "Ion": {
+      "hex": "#3350D6",
+      "use": "O-class accent for links, UI and text on light (5.9:1 on Paper)"
+    },
+    "Ember": {
+      "hex": "#B34F0C",
+      "use": "M-class accent for warnings and highlights on light (4.7:1 on Paper)"
+    }
+  },
+  "spectral": {
+    "O": {
+      "hex": "#9BB0FF",
+      "temperature": "≥ 33,000 K",
+      "name": "blue"
+    },
+    "B": {
+      "hex": "#AABFFF",
+      "temperature": "10,000–33,000 K",
+      "name": "bluish white"
+    },
+    "A": {
+      "hex": "#CAD7FF",
+      "temperature": "7,300–10,000 K",
+      "name": "white"
+    },
+    "F": {
+      "hex": "#F8F7FF",
+      "temperature": "6,000–7,300 K",
+      "name": "yellowish white"
+    },
+    "G": {
+      "hex": "#FFF4EA",
+      "temperature": "5,300–6,000 K",
+      "name": "yellow"
+    },
+    "K": {
+      "hex": "#FFD2A1",
+      "temperature": "3,900–5,300 K",
+      "name": "light orange"
+    },
+    "M": {
+      "hex": "#FFB56C",
+      "temperature": "2,300–3,900 K",
+      "name": "orangish red"
+    }
+  },
+  "type": {
+    "wordmark": "Cascadia Mono SemiBold",
+    "display": "Cascadia Mono SemiBold",
+    "text": "Archivo",
+    "mono": "Cascadia Mono"
+  },
+  "mark": {
+    "stars": [
+      {
+        "name": "Main",
+        "dx": 0.0,
+        "dy": 0.0,
+        "size": 1.0
+      },
+      {
+        "name": "West",
+        "dx": -0.82,
+        "dy": 0.69,
+        "size": 0.4
+      },
+      {
+        "name": "East",
+        "dx": 1.02,
+        "dy": 0.57,
+        "size": 0.45
+      },
+      {
+        "name": "South",
+        "dx": 0.44,
+        "dy": 1.14,
+        "size": 0.32
+      }
+    ],
+    "units": "A = main star centre-to-tip; dx, dy from main star centre, y down"
+  }
+}

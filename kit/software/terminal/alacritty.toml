@@ -1,0 +1,26 @@
+# FusionSpace
+[colors.primary]
+background = "#0B0F1C"
+foreground = "#E6E8EF"
+[colors.cursor]
+cursor = "#768DF5"
+[colors.selection]
+background = "#2A3248"
+[colors.normal]
+black = "#141A2B"
+red = "#F07A6A"
+green = "#8FD1A8"
+yellow = "#DA7C30"
+blue = "#768DF5"
+magenta = "#A188CB"
+cyan = "#8FD3E8"
+white = "#D6DAE4"
+[colors.bright]
+black = "#566079"
+red = "#FF9C8C"
+green = "#B2E5C5"
+yellow = "#FFD2A1"
+blue = "#CAD7FF"
+magenta = "#E2D6F5"
+cyan = "#B9E8F5"
+white = "#FFFFFF"

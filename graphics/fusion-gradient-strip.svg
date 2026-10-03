@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+     xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+     xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     width="1400" height="16" viewBox="0 0 1400 16" version="1.1">
+<title>Fusion gradient strip</title>
+<sodipodi:namedview id="namedview" pagecolor="#F3F4F7" bordercolor="#98A1B8" borderopacity="1"
+     inkscape:pageopacity="0" inkscape:pagecheckerboard="false" inkscape:deskcolor="#d6dae4"
+     inkscape:document-units="px" showgrid="false"/>
+<metadata><rdf:RDF><cc:Work rdf:about=""><dc:title>Fusion gradient strip</dc:title><dc:description></dc:description>
+<dc:creator><cc:Agent><dc:title>Neer Patel · FusionSpace</dc:title></cc:Agent></dc:creator></cc:Work></rdf:RDF></metadata>
+<defs id="defs"><linearGradient id="strip" inkscape:label="Fusion gradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1400" y2="0"><stop offset="0.0" stop-color="#DA7C30"/><stop offset="0.35" stop-color="#D07D7A"/><stop offset="0.65" stop-color="#A188CB"/><stop offset="1.0" stop-color="#768DF5"/></linearGradient></defs>
+<g inkscape:groupmode="layer" id="layer-strip" inkscape:label="Strip">
+<rect inkscape:label="Fusion gradient strip" x="0" y="0" width="1400" height="16" fill="url(#strip)"/>
+</g>
+</svg>

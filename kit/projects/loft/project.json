@@ -1,0 +1,11 @@
+{
+  "name": "Loft",
+  "code": "FS",
+  "tag": "SW",
+  "number": "006",
+  "desc": "High-power rocketry flight simulator that runs in your browser and on a phone.",
+  "kind": "Tool",
+  "discipline": "Software",
+  "designation": "FS \u00b7 SW \u00b7 TOOL 006",
+  "slug": "loft"
+}

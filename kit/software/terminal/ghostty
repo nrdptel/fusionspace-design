@@ -1,0 +1,21 @@
+# FusionSpace (save as ~/.config/ghostty/themes/FusionSpace)
+background = #0B0F1C
+foreground = #E6E8EF
+cursor-color = #768DF5
+selection-background = #2A3248
+palette = 0=#141A2B
+palette = 1=#F07A6A
+palette = 2=#8FD1A8
+palette = 3=#DA7C30
+palette = 4=#768DF5
+palette = 5=#A188CB
+palette = 6=#8FD3E8
+palette = 7=#D6DAE4
+palette = 8=#566079
+palette = 9=#FF9C8C
+palette = 10=#B2E5C5
+palette = 11=#FFD2A1
+palette = 12=#CAD7FF
+palette = 13=#E2D6F5
+palette = 14=#B9E8F5
+palette = 15=#FFFFFF

@@ -1,0 +1,11 @@
+{
+  "name": "Window",
+  "code": "FS",
+  "tag": "SW",
+  "number": "003",
+  "desc": "Launch-weather board for US high-power and model rocketry.",
+  "kind": "Tool",
+  "discipline": "Software",
+  "designation": "FS \u00b7 SW \u00b7 TOOL 003",
+  "slug": "window"
+}

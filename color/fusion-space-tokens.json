@@ -1,0 +1,211 @@
+{
+  "gradient": [
+    {
+      "offset": 0.0,
+      "hex": "#DA7C30",
+      "name": "M orange"
+    },
+    {
+      "offset": 0.35,
+      "hex": "#D07D7A",
+      "name": "Rose"
+    },
+    {
+      "offset": 0.65,
+      "hex": "#A188CB",
+      "name": "Lavender"
+    },
+    {
+      "offset": 1.0,
+      "hex": "#768DF5",
+      "name": "O blue"
+    }
+  ],
+  "core": {
+    "Void": {
+      "hex": "#0B0F1C",
+      "use": "Primary dark. Backgrounds, one-colour marks, text on light"
+    },
+    "Abyss": {
+      "hex": "#141A2B",
+      "use": "Raised dark surface"
+    },
+    "Graphite": {
+      "hex": "#2A3248",
+      "use": "Rules and borders on dark"
+    },
+    "Slate": {
+      "hex": "#566079",
+      "use": "Secondary text on light"
+    },
+    "Haze": {
+      "hex": "#98A1B8",
+      "use": "Secondary text on dark"
+    },
+    "Mist": {
+      "hex": "#D6DAE4",
+      "use": "Rules and borders on light"
+    },
+    "Paper": {
+      "hex": "#F3F4F7",
+      "use": "Primary light background"
+    },
+    "White": {
+      "hex": "#FFFFFF",
+      "use": "Pure white, reversed marks"
+    }
+  },
+  "signal": {
+    "Ion": {
+      "hex": "#3350D6",
+      "use": "O-class accent for links, UI and text on light (5.9:1 on Paper). Not a logo colour"
+    },
+    "Ember": {
+      "hex": "#B34F0C",
+      "use": "M-class accent for warnings and highlights on light (4.7:1 on Paper). Not a logo colour"
+    }
+  },
+  "spectral": {
+    "O": {
+      "hex": "#768DF5",
+      "temperature": "≥ 33,000 K",
+      "name": "blue"
+    },
+    "B": {
+      "hex": "#AABFFF",
+      "temperature": "10,000–33,000 K",
+      "name": "bluish white"
+    },
+    "A": {
+      "hex": "#CAD7FF",
+      "temperature": "7,300–10,000 K",
+      "name": "white"
+    },
+    "F": {
+      "hex": "#F8F7FF",
+      "temperature": "6,000–7,300 K",
+      "name": "yellowish white"
+    },
+    "G": {
+      "hex": "#FFF4EA",
+      "temperature": "5,300–6,000 K",
+      "name": "yellow"
+    },
+    "K": {
+      "hex": "#FFD2A1",
+      "temperature": "3,900–5,300 K",
+      "name": "light orange"
+    },
+    "M": {
+      "hex": "#DA7C30",
+      "temperature": "2,300–3,900 K",
+      "name": "orangish red"
+    }
+  },
+  "type": {
+    "wordmark": "Cascadia Mono SemiBold",
+    "display": "Cascadia Mono SemiBold",
+    "text": "Archivo",
+    "mono": "Cascadia Mono"
+  },
+  "mark": {
+    "cones": [
+      {
+        "name": "Main",
+        "profile": "Von Kármán",
+        "base_radius_r": 1.0,
+        "base_centre_uv_r": [
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "West",
+        "profile": "conical",
+        "base_radius_r": 0.4,
+        "base_centre_uv_r": [
+          -1.4872,
+          0.7804
+        ]
+      },
+      {
+        "name": "East",
+        "profile": "elliptical",
+        "base_radius_r": 0.3,
+        "base_centre_uv_r": [
+          1.4993,
+          0.6538
+        ]
+      },
+      {
+        "name": "South",
+        "profile": "tangent ogive",
+        "base_radius_r": 0.5,
+        "base_centre_uv_r": [
+          0.0,
+          1.5695
+        ]
+      }
+    ],
+    "cone": {
+      "length_over_base_radius": 3.5,
+      "notch_depth_over_base_radius": 1.0,
+      "notch_radius_over_base_radius": 1.0,
+      "foot_width_over_base_radius": 0.05,
+      "profiles": "Standard nose-cone equations (conical, tangent ogive, elliptical, LD-Haack/Von Karman C = 0)"
+    },
+    "tilt_deg": 45.0,
+    "spacing_rule": "Diamond, measured on a grid leaned 45 deg (lay out upright, then rotate the whole cluster). r = Von Karman base radius. Each foot is cut flat, parallel to the base, where the wall between flank and notch is FOOT_K x its base radius wide. With the lean at 0 the Von Karman is north and the ogive is the tail, south on the same axis, with its tip +0.21 r from the Von Karman foot line (+ = below). The area centroids of the conical (west) and elliptical (east) wings share a line +0.47 r from the Von Karman foot line. The west wing's inner foot corner is 0.19 r from the left Von Karman foot corner and the east wing's is 0.23 r from the right one (horizontal gaps)",
+    "cluster_size": {
+      "width": 1.653,
+      "height": 1.658
+    },
+    "lockups": {
+      "horizontal": "mark before the wordmark, mark height 1.917 x cap height, gap 0.35 x cap height (0.183 x mark height)",
+      "stacked": "mark above the wordmark, cluster height H, gap 0.100 H to the cap line, wordmark width 4.29 H"
+    },
+    "two_tone": {
+      "rule": "Each cone takes the gradient end nearest its own position in the sweep",
+      "warm_cones": [
+        "west",
+        "south"
+      ],
+      "cool_cones": [
+        "main",
+        "east"
+      ],
+      "warm": "#DA7C30",
+      "cool": "#768DF5",
+      "note": "One cone pair on every background; only the wordmark flips",
+      "on_dark": {
+        "warm": "#DA7C30",
+        "cool": "#768DF5",
+        "wordmark": "#FFFFFF"
+      },
+      "on_light": {
+        "warm": "#DA7C30",
+        "cool": "#768DF5",
+        "wordmark": "#0B0F1C"
+      }
+    },
+    "small_size": "On light backgrounds, a horizontal lockup under 32 px tall uses the one-colour Void lockup (`fusion-space-horizontal-void`): at that size the thin gradient details are too faint on light.",
+    "production": {
+      "dxf_height_mm": 50.0,
+      "dxf_min_foot_wall_mm": 0.5,
+      "note": "The DXF trims each foot so the wall is at least dxf_min_foot_wall_mm wide and scales the trimmed outline to dxf_height_mm tall; otherwise it matches the master outline. Tips are true points."
+    },
+    "units": "r = Von Karman base radius. u, v are on the leaned grid, from the Von Karman base centre, v down (toward the bases)."
+  },
+  "gradient_note": "One gradient for every background, always left to right. WCAG 2 contrast of every stop: about 3.0:1 on white, 6.3:1 on Void, 2.8:1 on Paper (accepted; the target was white).",
+  "accent_on_dark": {
+    "M orange": {
+      "hex": "#DA7C30",
+      "use": "Warm accent on dark: labels, warnings (6.3:1 on Void)"
+    },
+    "O blue": {
+      "hex": "#768DF5",
+      "use": "Cool accent on dark: labels, links, taglines (6.3:1 on Void)"
+    }
+  },
+  "spectral_note": "O and M are the Fusion gradient ends: the O- and M-class star colours, deepened on 2 October 2026 so the whole gradient holds at least 3:1 on white. B to K are the star colours sampled from the Harvard classification."
+}

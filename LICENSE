@@ -1,0 +1,19 @@
+FusionSpace brand system
+Copyright (c) 2026 Neer Patel
+
+This repository holds two kinds of material under different terms.
+
+1. Code in tools/ is licensed under the Apache License, Version 2.0; see
+   tools/LICENSE. That licence covers the source code only. It grants no
+   rights to the FusionSpace name, logo or other trademarks (Apache-2.0,
+   section 6), including the artwork the code produces.
+
+2. Everything else is copyright (c) 2026 Neer Patel. All rights reserved.
+   This includes the FusionSpace name, the four-cone mark and both lockups,
+   and every brand file in logo/, kit/, guide/, graphics/, color/,
+   templates/ and source/. These files are published to show the work, not
+   for reuse. No licence is granted to copy, modify or distribute them,
+   except as described in TRADEMARKS.md.
+
+3. The fonts in type/fonts/ are third-party and are distributed under the
+   SIL Open Font License 1.1; see the licence file next to each font.
