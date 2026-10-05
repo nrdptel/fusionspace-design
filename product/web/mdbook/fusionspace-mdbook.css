@@ -30,7 +30,7 @@
   --code-bg: #141A2B;
 }
 html { font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif; }
-body { border-top: 4px solid transparent; border-image: linear-gradient(90deg,#DA7C30 0%,#D07D7A 35%,#A188CB 65%,#768DF5 100%) 1; }
+body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg,#DA7C30 0%,#D07D7A 35%,#A188CB 65%,#768DF5 100%); z-index: 1000; }
 code, pre, kbd, .hljs { font-family: 'Cascadia Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace !important; font-variant-numeric: tabular-nums slashed-zero; }
 h1, h2, h3, .menu-title { font-family: 'Cascadia Mono', ui-monospace, Menlo, monospace; font-weight: 600; letter-spacing: 0; }
 h2 { border-top: 2px solid var(--fg); padding-top: 0.6em; }

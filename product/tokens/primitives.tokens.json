@@ -217,7 +217,7 @@
   },
   "signal": {
     "flare": {
-      "$description": "Flare: Danger, failure, live energetics (ARMED)",
+      "$description": "Flare: Danger: live energetics (ARMED), unfired charges, hazards that can injure",
       "fill": {
         "$type": "color",
         "$value": {
@@ -268,7 +268,7 @@
       }
     },
     "sodium": {
-      "$description": "Sodium: Caution, off-nominal, needs attention",
+      "$description": "Sodium: Caution: off-nominal, a fault to fix before flight, near a limit",
       "fill": {
         "$type": "color",
         "$value": {
@@ -739,6 +739,23 @@
         },
         "lineHeight": 1.4,
         "fontWeight": 400,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    "subtitle": {
+      "$type": "typography",
+      "$description": "Sheet names and sub-screen titles",
+      "$value": {
+        "fontFamily": "{font.display}",
+        "fontSize": {
+          "value": 20,
+          "unit": "px"
+        },
+        "lineHeight": 1.2,
+        "fontWeight": 600,
         "letterSpacing": {
           "value": 0,
           "unit": "px"

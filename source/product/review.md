@@ -24,7 +24,7 @@ these are FusionSpace:
 | Smell | Instead |
 |---|---|
 | Indigo or violet primary buttons (Tailwind's `indigo-500`, which its author has since apologised for) | Ink buttons; Ion only for links and focus |
-| A centred hero with a gradient headline and a glow, blob or starfield behind it | Left-aligned intro: label, title, one sentence, two buttons |
+| A centred hero with a gradient headline and a glow, blob or starfield behind it | Left-aligned intro: designation tag, title, one sentence, two buttons |
 | A badge or pill above the headline ("New", "Now in beta") | The designation tag and a status chip, when there's real status |
 | Rows of three cards with an icon on top of each | A table, a register, or prose |
 | Large radii (`rounded-2xl`) and soft drop shadows | Square corners, 1 px rules, no shadows |
@@ -72,10 +72,17 @@ here they are confined to the places a drawing uses them (labels, title blocks, 
 
 - [ ] The checklist in [`mobile.md`](mobile.md#checklist).
 
+### macOS, Windows and Linux
+
+- [ ] The checklist in [`desktop.md`](desktop.md#checklist).
+
 ### Devices and boards
 
-- [ ] Physical arming; SAFE right of or below ARM; commanded vs confirmed shown.
-- [ ] Three-state channels on screen, LEDs and beeps; zero is a long tone; the beep card printed.
+- [ ] Physical arming; app arming is a second, two-action step; SAFE right of or below ARM; commanded vs confirmed shown.
+- [ ] Energetics behaviour as in [`embedded.md`](embedded.md#energetics-behaviour): outputs off at power-up and reset,
+  continuity current far under no-fire, lockouts, ground-test mode, backup, UNFIRED reported first after landing.
+- [ ] Channel states on screen, LEDs and beeps as in the table; a fault never looks like ARMED; zero is a long tone; 95 dB at
+  10 cm and heard at 10 m; the beep card printed.
 - [ ] Two flash rates only; no blue or white status LEDs; every LED labelled.
 - [ ] Silkscreen at least {{SILK['text_mm']}} mm; pyro terminals boxed and named; board title block on the back.
 - [ ] Connectors that could be swapped dangerously are keyed differently.
@@ -97,6 +104,9 @@ The rules cite these; the research notes behind them are kept with the project's
   Blue Raven, Altus Metrum, Eggtimer, PerfectFlite StratoLogger, Missile Works RRC3, Entacore AIM; ThrustCurve.org.
 - Web and CLI: WCAG 2.2; web.dev (Core Web Vitals, install criteria, offline cookbook); MDN; GOV.UK Design System; WebKit
   blog; clig.dev; no-color.org; force-color.org; GitHub CLI accessibility; clap and anstream documentation.
+- Desktop: Apple HIG for macOS (menu bar, toolbars, settings, app icons); Microsoft's Windows app design guidance (Mica,
+  title bar, typography, text scaling, contrast themes, access keys, app icons, code signing); GNOME HIG and libadwaita; KDE
+  HIG; freedesktop icon theme, desktop entry and base directory specifications; Flathub requirements; Tauri 2 documentation.
 - Mobile: Apple Human Interface Guidelines (branding, colour, typography, accessibility, Live Activities, widgets, app icons);
   Material 3 (colour, motion, type scale); Android developer guides (edge-to-edge, adaptive icons, companion devices).
 - Data: W. S. Cleveland, banking to 45°; Padilla, Kay and Hullman on uncertainty visualisation; Chartability; Paul Tol's

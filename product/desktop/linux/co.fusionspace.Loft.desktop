@@ -1,0 +1,12 @@
+[Desktop Entry]
+# FusionSpace desktop entry template. Rename the file and every co.fusionspace.Loft to your app's id.
+Type=Application
+Name=Loft
+GenericName=Rocket flight simulator
+Comment=High-power rocketry flight simulator
+Exec=loft %F
+Icon=co.fusionspace.Loft
+Terminal=false
+Categories=Science;Engineering;Education;
+Keywords=rocket;rocketry;simulator;flight;
+StartupWMClass=loft

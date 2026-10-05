@@ -1,0 +1,4 @@
+# FusionSpace devices: let the logged-in user open their serial ports without joining dialout or uucp.
+# Install to /etc/udev/rules.d/ (packages: /usr/lib/udev/rules.d/), then: sudo udevadm control --reload && sudo udevadm trigger
+# Set the vendor and product ids to your device's. Open-source hardware can get a free product id under pid.codes (vendor 1209).
+SUBSYSTEM=="tty", ATTRS{idVendor}=="1209", ATTRS{idProduct}=="0001", MODE="0660", TAG+="uaccess"

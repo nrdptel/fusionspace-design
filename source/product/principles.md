@@ -43,7 +43,7 @@ product says which, and how good it is. It never turns an estimate into a verdic
 - Precision matches knowledge: 5 104 ft, not 5 103.87 ft, for a barometric apogee.
 - A "How far to trust it" note sits on every result that someone might fly on: what it was checked against, and how well it
   matched.
-- No go/no-go verdicts. The motor's printed data, the manufacturer's manual and the RSO are authoritative. The tool informs them.
+- No go/no-go verdicts. The motor's printed data, the manufacturer's manual and the range safety officer (RSO) are authoritative. The tool informs them.
 
 **Test:** would a careful flyer be misled about how certain this is?
 
@@ -54,7 +54,8 @@ signal. Design for the worst place it will be used.
 
 - Offline once loaded. Nothing needed at the pad depends on a connection.
 - A field theme: white canvas, darker text, stronger rules, for a screen in sunlight.
-- Controls used at the pad are at least {{TARGET['field']}} pt/px tall; critical ones sit in the lower half of a phone screen.
+- Controls used at the pad are at least {{TARGET['field']}} pt (about 15 mm) on a touch screen, and the one critical control used
+  with gloves {{TARGET['glove']}} pt (about 20 mm); critical ones sit in the lower half of a phone screen.
 - Everything that matters prints well in black on white: flight cards, checklists, charge logs.
 - Units are always on screen, and ft AGL is the default altitude for US flyers, always labelled.
 
@@ -67,7 +68,8 @@ this (14 CFR 25.1322, FAA AC 25-11B, NASA-STD-3001): red for warnings, amber for
 never colour alone.
 
 - Four signal colours, reserved: Flare (danger), Sodium (caution), Aurora (normal), Nebula (predicted). Nothing else uses them.
-- Normal is mostly neutral ink. Aurora confirms a positive state where confirmation matters (continuity, armed and ready, fired).
+- Normal is mostly neutral ink. Aurora confirms a positive state where confirmation matters (continuity, a charge that fired,
+  a value back within limits). ARMED is Flare: live energetics are a danger state, however routine.
 - An unused channel or an empty field is grey and says "Not used", never red. False alarms train people to ignore real ones.
 - Every status has a word and a shape as well as a colour. It reads in greyscale, on e-paper, and with any colour vision.
 - Only two flash rates exist, and only for "act now": {{FLASH['warning'][0]:g}} Hz for warnings, {{FLASH['advisory'][0]:g}} Hz
@@ -77,8 +79,10 @@ never colour alone.
 
 ## 6. One sweep
 
-The brand appears once per view, and gets out of the way. The Fusion gradient is identity: a thin strip along the top edge, the
-mark in the header, the lockup on a splash screen. It is never a button, a status, a chart series, a text effect or a background.
+The brand appears once per view, and gets out of the way. The Fusion gradient is identity, and in a product it has one place:
+the thin strip along the top edge. The logo in a product's header is one colour (Void on light, Paper on dark); the gradient
+lockup is for splash screens, covers and anywhere the logo stands alone. The gradient is never a button, a status, a chart
+series, a text effect or a background.
 
 - One gradient strip per view, along the top.
 - The logo follows the brand rules exactly (clear space, minimum sizes, one-colour Void on light under 32 px tall).
@@ -89,7 +93,7 @@ mark in the header, the lockup on a splash screen. It is never a button, a statu
 ## 7. Numbered like parts
 
 Everything FusionSpace makes has a designation and a revision, like a part on a drawing: `FS · SW · TOOL 002`, `FS-VEGA-001
-rev B`, `FS-VEGA · ELEC · 004`. The designation is how a printout, a board, a screenshot and a bug report find each other.
+rev B`, `FS-VEGA · ELEC · BOARD 004`. The designation is how a printout, a board, a screenshot and a bug report find each other.
 
 - Software shows its designation and version in its title block or about screen; hardware carries both on silkscreen or a
   label.
@@ -101,7 +105,8 @@ rev B`, `FS-VEGA · ELEC · 004`. The designation is how a printout, a board, a 
 
 ## 8. Native where it counts
 
-A FusionSpace iPhone app behaves like an iPhone app; an Android app like an Android app; a CLI like a good Unix tool. The
+A FusionSpace iPhone app behaves like an iPhone app; an Android app like an Android app; a Mac, Windows or Linux app like a
+good app on that desktop; a CLI like a good Unix tool. The
 platform owns behaviour (navigation, gestures, controls, text scaling, back, accessibility). FusionSpace owns content: colour
 roles, data display, numbers and units, line types, icons for the domain, the voice.
 

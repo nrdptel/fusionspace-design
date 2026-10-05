@@ -17,7 +17,7 @@
 #define FS_INK_RGB565 0xF7BEu
 #define FS_INK_MUTED_RGB888 0x98A1B8u   /* Secondary text: labels, units, captions, sources */
 #define FS_INK_MUTED_RGB565 0x9D17u
-#define FS_INK_FAINT_RGB888 0x566079u   /* Disabled text, placeholders, hatching (not for anything that must be read) */
+#define FS_INK_FAINT_RGB888 0x566079u   /* Disabled text and hatching (not for anything that must be read, placeholders included) */
 #define FS_INK_FAINT_RGB565 0x530Fu
 #define FS_ACTION_RGB888 0x768DF5u   /* Links, selection, focus, the one interactive accent */
 #define FS_ACTION_RGB565 0x747Eu

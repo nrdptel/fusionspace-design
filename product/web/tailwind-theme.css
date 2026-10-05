@@ -40,7 +40,6 @@
   --color-series-1: var(--fs-series-1);
   --color-series-2: var(--fs-series-2);
   --color-series-3: var(--fs-series-3);
-  --color-series-4: var(--fs-series-4);
   --font-text: var(--fs-font-text);
   --font-mono: var(--fs-font-mono);
   --font-display: var(--fs-font-display);
@@ -54,6 +53,8 @@
   --text-body--line-height: 24px;
   --text-lead: 20px;
   --text-lead--line-height: 28px;
+  --text-subtitle: 20px;
+  --text-subtitle--line-height: 24px;
   --text-heading: 14px;
   --text-heading--line-height: 20px;
   --text-title: 28px;

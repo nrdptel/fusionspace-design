@@ -233,7 +233,7 @@ def collect():
                 with Image.open(p) as im: w, hh = im.size
                 info[r]["px"] = [w, hh]
                 m = DIMS.search(os.path.basename(r))
-                if m and "preview" not in r:
+                if m and "preview" not in r and "/msix/" not in r:     # MSIX names are Windows' (Square44x44Logo.scale-200 is 88 px)
                     W, H = int(m.group(1)), int(m.group(2)); sc = 2 if "@2x" in r else 4 if "@4x" in r else 1
                     if (w, hh) != (W * sc, H * sc): flags.append(f"{os.path.basename(r)} is {w}×{hh}, name says {W}×{H}" + (f" @{sc}x" if sc > 1 else ""))
                 h.update(phash_png(p).encode())
@@ -392,13 +392,14 @@ REPS = [   # (representative, [items it covers], why it stands for them)
     ("product/hardware/preview", [r"^product/hardware/"], "the KiCad footprints (front and back) and their README"),
     ("product/rockets/preview", [r"^product/rockets/"], "the wraps for every airframe size (SVG, PDF) and their README"),
     ("product/cli/preview", [r"^product/cli/"], "the Rust and Python styles and the sample output"),
+    ("product/desktop/linux/hicolor/256x256/apps/co.fusionspace.Loft", [r"^product/desktop/"], "the Windows ICO and MSIX tiles, the Linux icons and the templates"),
 ]
 CORE = (r"^(guide/|product/|logo/|kit/web/|kit/apps/|kit/github/|kit/social/|kit/documents/|README\.md$|kit/projects/(hpr-motor-finder|charge|window|muster|debrief|loft)/|kit/production/stickers/sticker-mark-50mm-dark$)")
            # focus items people will see from you first (identity, web, GitHub, social, documents) and the open options;
            # the rest of focus is the discipline kits (screens, PCB, software, games, video, wallpapers, merch, production)
 FOCUS_TEXT = {"README.md", "kit/github/profile-README.md", "kit/documents/email-signature/signature.html", "kit/web/site/metadata.ts",
               "kit/3d-print/README.md", "kit/3d-print/parametric/FusionSpace_Badge.FCMacro",
-              *(f"product/{d}.md" for d in ("README", "principles", "foundations", "data", "writing", "web", "cli", "mobile", "embedded",
+              *(f"product/{d}.md" for d in ("README", "principles", "foundations", "data", "writing", "web", "cli", "mobile", "desktop", "embedded",
                                              "hardware", "rockets", "review"))}   # text people read: always in focus
 KNOWN_FLAGS = ()                    # expected audit flags; others pull an item into focus
 

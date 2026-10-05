@@ -19,13 +19,15 @@ CG, CP, contact and pyro-warning decals laid out to the tube's circumference. De
   roll pattern on the fins or the body above them. The brand shows in the two-tone mark (M orange and O blue cones) and the
   designation band, not in the body colour. Where a fluorescent finish isn't possible, M orange `{{M_ORANGE}}` is the
   nearest brand colour.
+- **Heat.** Black absorbs sun: on a desert field a black airframe and av-bay get hot enough to stress batteries and motors.
+  Keep the rocket shaded until it goes to the pad, or fly a white or fluorescent airframe in summer.
 - **Parachutes and streamers:** fluorescent orange or pink, never sky blue, white or camouflage colours.
 
 ## Roll pattern
 
 Quadrants of black and white (or black and fluorescent orange) on the body tube, alternating around the circumference, so
 on-board and ground video can measure roll, as the V-2 and Saturn V did. The wrap sheets lay out four quadrants per
-circumference; for two-bit roll coding (as the Saturn V interstage did), use the 8-segment variant.
+circumference.
 
 ## Markings
 
@@ -48,16 +50,23 @@ circumference; for two-bit roll coding (as the Saturn V interstage did), use the
 
 Every flight has a card, printed from the tool that planned it (Charge, Loft), A6 or half-letter, in the title-block layout:
 designation and flight number, motor (`J350W-L`, with its delay set), mass, CG and CP stations and the stability margin in
-calibers, charges in grams for each channel, altimeter settings, expected apogee with its spread, the waiver, the flyer's
-name and certification level, and boxes to tick for the pad checklist. It is designed to be read and signed by the RSO.
+calibres, charges in grams for each channel, altimeter settings, expected apogee with its spread, the waiver, the flyer's
+name and certification level, and boxes to tick for the pad checklist. It is designed to be read and signed by the range safety officer (RSO).
 
 ## Pad checklist
 
 Printed on the back of the flight card, in the order the safety codes and good practice put it:
 
-1. Rocket on the pad, rail through the buttons, blast deflector in place.
-2. Electronics on (switch or key), in the order the manual gives; listen for the channel report.
-3. Continuity confirmed on every configured channel; unused channels report NOT USED.
-4. Remove Before Flight streamers removed and counted.
-5. Igniter installed last, after all flight electronics are on (Tripoli).
-6. Clear the pad; tell the LCO the rocket is ready.
+1. The launch control officer (LCO) says the range is open for your pad; the launch system is safe and its key is out.
+2. Rocket on the rail, rail buttons on the rail, blast deflector in place.
+3. Remove Before Flight pins pulled and counted (with a pull-pin switch, this is what turns the electronics on).
+4. Electronics on (switch or key), in the order the manual gives; listen for the channel report.
+5. Continuity confirmed on every configured channel; unused channels report NOT USED.
+6. Igniter installed last, after all flight electronics are on (Tripoli).
+7. Clear the pad; tell the LCO the rocket is ready.
+
+**After a misfire:** wait as the LCO directs, then disarm the flight electronics before touching the rocket, and only then
+remove the igniter.
+
+**At recovery:** if the device reports UNFIRED, or you can't tell, treat the rocket as live. Approach from the side, keep
+clear of the airframe ends, and switch the electronics off before handling it.

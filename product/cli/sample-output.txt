@@ -3,16 +3,16 @@ vega.ork: FS-VEGA-001 rev B, configuration "J350W-L, dual deploy"
 flown with hpr 0.9.2: 6-DOF, standard atmosphere, wind 4 m/s from 270°
 
 apogee            1672 m (5486 ft) AGL at 18.3 s
-max speed         203 m/s (668 ft/s), Mach 0.58 at 1.8 s
+max speed         203 m/s (668 ft/s), Mach 0.60 at 1.8 s
 rail exit         24.1 m/s (79 ft/s), above the 15 m/s guideline
 stability         1.9 cal at rail exit, 2.4 cal at burnout
-landing           101.3 s, 8.0 m/s (26 ft/s) under the main, 412 m (1352 ft) downwind
+landing           116.1 s, 5.4 m/s (18 ft/s) under the main, 412 m (1352 ft) downwind
 
-channel           fires at                        state
-1 DROGUE          apogee + 0.4 s                  CONT
-2 MAIN            213 m (700 ft) descending       CONT
-3 -               not used                        NOT USED
+channel           set to                          fires (simulated)
+1 DROGUE          apogee + 0.4 s                  18.7 s at 1672 m
+2 MAIN            213 m (700 ft) descending       77.3 s at 213 m
+3 -               not used
 
-warning: rail exit assumes a 1.5 m (60 in) rail; pass --rail to set yours
+warning: rail exit assumes a 1.5 m (59 in) rail; pass --rail to set yours
 how far to trust it: within 3 % of OpenRocket on this design; on 12 real flights hpr's apogee was within 8 %
 (an example: these numbers are made up to show the layout)

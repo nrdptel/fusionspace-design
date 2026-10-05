@@ -34,7 +34,7 @@
     "ink-faint": {
       "$type": "color",
       "$value": "{core.slate}",
-      "$description": "Disabled text, placeholders, hatching (not for anything that must be read)"
+      "$description": "Disabled text and hatching (not for anything that must be read, placeholders included)"
     },
     "action": {
       "$type": "color",
@@ -113,10 +113,6 @@
         "$value": "{brand.o-blue}"
       },
       "3": {
-        "$type": "color",
-        "$value": "{brand.m-orange}"
-      },
-      "4": {
         "$type": "color",
         "$value": "{core.haze}"
       }

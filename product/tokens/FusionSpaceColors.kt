@@ -128,4 +128,5 @@ val FsDarkScheme = darkColorScheme(
     error = Color(0xFFFB8083),
 )
 
-const val FS_FIELD_TARGET_DP = 64  // controls used at the pad
+const val FS_FIELD_TARGET_DP = 96  // controls used at the pad (about 15 mm)
+const val FS_GLOVE_TARGET_DP = 128  // the one critical control used with gloves (about 20 mm)

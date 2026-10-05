@@ -29,26 +29,29 @@ adaptive layers with a monochrome layer, macOS, Google Play).
   screen at most. Signal colours exactly as in [`foundations.md`](foundations.md#colour), with the same fills on every theme.
   Android uses a **static** brand scheme (`FsLightScheme`, `FsDarkScheme`): Material allows it, and anything carrying meaning
   must not shift with the wallpaper. Dynamic colour may be offered as a setting for chrome only.
-- **Type in content.** Cascadia Mono for readouts, labels, codes and screen titles inside content; Archivo for headings in
-  content; both scaled with `relativeTo:` (iOS) and `sp` (Android) so they follow the user's text size. Fonts ship in the app
+- **Type in content.** Cascadia Mono for titles, section heads, labels, readouts and codes; Archivo for longer prose in
+  content (help, descriptions); controls and list text in the system font. All scaled with `relativeTo:` (iOS) and `sp`
+  (Android) so they follow the user's text size. Fonts ship in the app
   bundle (SIL OFL).
 - **Data display.** Readouts, charts, tables, units and line types as in [`data.md`](data.md). Charts with Swift Charts or
   Compose Canvas/Vico, styled to the chart rules, with an audio graph (iOS) or a semantics summary (Android).
 - **The sheet and the title block** inside scrolling content: 2 px top rules on sections, `SHEET n / N` labels, the title block
   as the About screen (designation, version, build, data versions, licences).
 - **Domain icons** from [`icons/`](icons/), as SF Symbols custom symbols (drawn on the SF Symbols template from the 24 px
-  masters) and Android vector drawables. System actions use SF Symbols and Material Symbols.
+  masters) and the Android vector drawables in `icons/android/`. System actions use SF Symbols and Material Symbols.
 
 ## Field use
 
-- **Theme.** Follow the system appearance. The field theme is the Increase Contrast variant on iOS (`FS.*` colours switch
-  automatically) and the high-contrast level on Android; offer a manual Field switch too. Countdown, arming and recovery
-  screens default to it.
-- **Targets.** 44 × 44 pt (iOS) and 48 × 48 dp (Android) minimum; **64 pt/dp** for controls used at the pad,
-  with critical ones in the lower half of the screen, reachable with a thumb. MIL-STD-1472H asks for about 15 mm targets, and
-  20 mm with gloves, for touchscreens used in the field.
+- **Theme.** Follow the system appearance. The field theme is an app-level theme: on iOS set `.environment(\.fsTheme, .field)`
+  and read colours through `FSPaletteReader`; on Android provide `FieldFsColors` through `LocalFsColors`. Increase Contrast in
+  light appearance (iOS) and the high-contrast setting (Android) turn it on too. Countdown, arming and recovery screens use it by
+  default, and a Field switch is offered everywhere else. Dark has no separate high-contrast set: its text already clears 7 : 1.
+- **Targets.** 44 × 44 pt (iOS) and 48 × 48 dp (Android) minimum; **96 pt/dp** (about 15 mm) for controls used
+  at the pad and **128 pt/dp** (about 20 mm) for the one critical control used with gloves, which is what
+  MIL-STD-1472H asks of touchscreens in the field. Critical controls sit in the lower half of the screen, reachable with a
+  thumb.
 - **Irreversible and energetic actions** (arm, fire, erase a log, flash firmware) take two separate actions: a hold or slide to
-  confirm, with an ordinary button alternative for accessibility. A touchscreen is never the only way to make a pyro channel
+  confirm, with an accessible alternative that is still two steps (a button that opens a confirmation). A touchscreen is never the only way to make a pyro channel
   safe; the hardware switch is.
 - **Commanded and confirmed** state shown separately for anything sent to hardware ([`data.md`](data.md#live-telemetry)).
 - **Offline first.** Weather, map tiles, motor data and simulations are saved before the trip, each with its "as of" time.
@@ -61,7 +64,7 @@ adaptive layers with a monochrome layer, macOS, Google Play).
 
 Pairing with a FusionSpace flight computer or tracker uses the system picker: **AccessorySetupKit** on iOS 18 and later,
 **Companion Device Manager** on Android (no location permission needed), filtered by the device's service UUID. Show the
-device's designation and board revision (`FS-VEGA · ELEC · 004 rev B`) and firmware version once connected, and its signal
+device's designation and board revision (`FS-VEGA-004 rev B`) and firmware version once connected, and its signal
 strength and link age at all times.
 
 ## Glanceable surfaces

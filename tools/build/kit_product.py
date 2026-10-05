@@ -34,8 +34,8 @@ CORE = {"Void": VOID, "Abyss": "#141A2B", "Graphite": "#2A3248", "Slate": "#5660
 STEEL = "#6D7790"     # control borders on dark: 3:1 on Abyss, which Slate (2.76:1) misses. Same hue as the core neutrals.
 SIGNALS = {
     # key: (name, role, fill, text on fill, ink on light, ink on dark)
-    "danger":    ("Flare",  "Danger, failure, live energetics (ARMED)", "#AC001E", WHITE, "#AC001E", "#FB8083"),
-    "caution":   ("Sodium", "Caution, off-nominal, needs attention",    "#F5AF20", VOID,  EMBER,     "#F5AF20"),
+    "danger":    ("Flare",  "Danger: live energetics (ARMED), unfired charges, hazards that can injure", "#AC001E", WHITE, "#AC001E", "#FB8083"),
+    "caution":   ("Sodium", "Caution: off-nominal, a fault to fix before flight, near a limit",    "#F5AF20", VOID,  EMBER,     "#F5AF20"),
     "ok":        ("Aurora", "Normal, safe, within limits",               "#0A6355", WHITE, "#0A6355", "#6AD5B6"),
     "predicted": ("Nebula", "Predicted, simulated, forecast, target",    None,      None,  "#A22488", "#ED89D2"),
 }
@@ -51,7 +51,7 @@ ROLES = [
     ("rule-strong",  "#566079",       STEEL,           VOID,            "Control borders and chart axes (3:1 against canvas and surface)"),
     ("ink",          VOID,            PAPER,           VOID,            "Text, primary lines, measured data"),
     ("ink-muted",    "#566079",       "#98A1B8",       "#2A3248",       "Secondary text: labels, units, captions, sources"),
-    ("ink-faint",    "#98A1B8",       "#566079",       "#566079",       "Disabled text, placeholders, hatching (not for anything that must be read)"),
+    ("ink-faint",    "#98A1B8",       "#566079",       "#566079",       "Disabled text and hatching (not for anything that must be read, placeholders included)"),
     ("action",       ION,             O_BLUE,          ION,             "Links, selection, focus, the one interactive accent"),
     ("on-action",    WHITE,           VOID,            WHITE,           "Text on an action fill"),
     ("focus",        ION,             O_BLUE,          ION,             "Focus ring (2 px outline, 2 px offset)"),
@@ -69,9 +69,9 @@ def role(name, theme):
         if r[0] == name: return r[1 + THEMES.index(theme)]
     raise KeyError(name)
 
-# Data colours. Measured data is ink. Comparison series use the gradient's ends as inks (Ion and Ember are the O and M ends
-# deepened for light backgrounds), then Aurora-free, Flare-free extras so a status colour never looks like a series.
-SERIES = {"light": [VOID, ION, EMBER, "#566079"], "dark": [PAPER, O_BLUE, M_ORANGE, "#98A1B8"]}
+# Data colours. Measured data is ink. A second series is Ion / O blue (the gradient's cool end as an ink), a third is
+# Slate / Haze. No warm series: Ember is the caution ink, and no data line may look like a status. More: small multiples.
+SERIES = {"light": [VOID, ION, "#566079"], "dark": [PAPER, O_BLUE, "#98A1B8"]}   # ink, O, Slate/Haze: no warm series, Ember is the caution ink
 SERIES["field"] = SERIES["light"]
 # Sequential and diverging ramps from the spectral classes (never the gradient: its stops have equal lightness).
 SPECTRAL = {"O": "#768DF5", "B": "#AABFFF", "A": "#CAD7FF", "F": "#F8F7FF", "G": "#FFF4EA", "K": "#FFD2A1", "M": "#DA7C30"}
@@ -155,6 +155,7 @@ TYPE = [  # (token, size, line height, family, weight, case, tracking em, use)
     ("small",    14, 20, "text",    400, "none",  0,    "Captions, helper text, sources, footnotes"),
     ("body",     16, 24, "text",    400, "none",  0,    "Running text and controls"),
     ("lead",     20, 28, "text",    400, "none",  0,    "The one-sentence summary under a page title"),
+    ("subtitle", 20, 24, "display", 600, "none",  0,    "Sheet names and sub-screen titles"),
     ("heading",  14, 20, "display", 600, "upper", 0.04, "Section heads inside a sheet"),
     ("title",    28, 32, "display", 600, "none",  -0.005, "Page and screen titles"),
     ("display",  40, 44, "display", 600, "none",  -0.01, "The one big title on a landing page"),
@@ -169,7 +170,9 @@ DASH = {"dashed": "8 4", "chain": "24 3 1 3", "dotted": "1 3"}   # at 1-2 px: hi
 CHAMFER = {"s": 4, "m": 8}                                  # 45 degree corner cuts, px
 MOTION = {"quick": 100, "base": 160, "slow": 240}            # ms
 EASE = {"standard": "cubic-bezier(0.2, 0, 0, 1)", "exit": "cubic-bezier(0.3, 0, 1, 1)"}
-TARGET = {"web": 24, "touch": 44, "field": 64}              # minimum targets: CSS px / pt / pt for controls used at the pad
+TARGET = {"web": 24, "touch": 44, "field": 96, "glove": 128, "field-pointer": 64}
+# minimum targets: CSS px (WCAG 2.5.8) / pt or dp (Apple, Material) / pt for pad controls on a touch screen (about 15 mm,
+# MIL-STD-1472H) / pt for the one critical control used with gloves (about 20 mm) / px for pad controls with a mouse
 MEASURE = 68                                                 # max line length, characters
 FLASH = {"warning": (3.0, 0.5), "advisory": (0.8, 0.7)}      # Hz, duty: NASA-STD-3001 Vol 2 rates, the only two allowed
 
@@ -260,47 +263,83 @@ def css_tokens():
             "@media (prefers-color-scheme: dark) {", "  :root:not([data-theme]) {", "\n".join("  " + x for x in block("dark").split("\n")), "  }", "}",
             ":root[data-theme=\"dark\"] {", "  color-scheme: dark;", block("dark"), "}",
             ":root[data-theme=\"field\"] {", "  color-scheme: light;", block("field"), "}",
-            ":root[data-theme=\"light\"] { color-scheme: light; }"])
+            ":root[data-theme=\"light\"] { color-scheme: light; }", "",
+            "/* Print: always the light values, whatever the theme (browsers don't print page backgrounds, and dark inks fail on white). */",
+            "@media print {", "  :root, :root[data-theme] {", "    color-scheme: light;", "\n".join("  " + x for x in block("light").split("\n")).replace("--fs-canvas: #F3F4F7", "--fs-canvas: #FFFFFF"), "  }", "}"])
     return "\n".join(body) + "\n"
 
 def swift_tokens():
-    def col(l, d, f):
-        return f"dynamic(light: 0x{l[1:]}, dark: 0x{d[1:]}, increasedContrast: 0x{f[1:]})"
+    ident = lambda n: re.sub(r"-(\w)", lambda m: m.group(1).upper(), n)
+    names = [r[0] for r in ROLES]
     L = ["// FusionSpace product colours for SwiftUI. Generated by tools/build/kit_product.py; edit there, not here.",
-         "// Light and dark follow the system appearance; the field theme is used for Increase Contrast.",
+         "// FS.<role> follows the system: light, dark, and the field theme when Increase Contrast is on in light appearance.",
+         "// For a screen that must be in the field theme (countdown, arming, recovery), read FS.palette(for: .field, ...) or set",
+         "// .environment(\\.fsTheme, .field) and use the palette from the environment (see FSPaletteReader below).",
          "import SwiftUI", "#if canImport(UIKit)", "import UIKit", "#endif", "",
-         "public enum FS {",
-         "    // Semantic roles"]
+         "public enum FSTheme: Sendable { case system, light, dark, field }", "",
+         "public struct FSPalette: Sendable {"]
+    L += [f"    public let {ident(n)}: Color" for n in names]
+    L += ["}", "", "public enum FS {"]
+    for t in THEMES:
+        args = ", ".join(f"{ident(n)}: Color(hex: 0x{role(n, t)[1:]})" for n in names)
+        L.append(f"    public static let {t}Palette = FSPalette({args})")
+    L += ["", "    /// The palette for a theme; .system resolves from the colour scheme and contrast.",
+          "    public static func palette(for theme: FSTheme, scheme: ColorScheme, contrast: ColorSchemeContrast) -> FSPalette {",
+          "        switch theme {",
+          "        case .light: return lightPalette",
+          "        case .dark: return darkPalette",
+          "        case .field: return fieldPalette",
+          "        case .system: return scheme == .dark ? darkPalette : (contrast == .increased ? fieldPalette : lightPalette)",
+          "        }", "    }", "", "    // Semantic roles that follow the system (light, dark, field on Increase Contrast in light)"]
     for name, l, d, f, use in ROLES:
-        ident = re.sub(r"-(\w)", lambda m: m.group(1).upper(), name)
         L.append(f"    /// {use}")
-        L.append(f"    public static let {ident} = {col(l, d, f)}")
+        L.append(f"    public static let {ident(name)} = dynamic(light: 0x{l[1:]}, dark: 0x{d[1:]}, increasedContrast: 0x{f[1:]})")
     L.append("    // Signal fills: the same on every background, like a safety sign")
     for name, fill, on in FILLS:
-        ident = re.sub(r"-(\w)", lambda m: m.group(1).upper(), name)
-        L.append(f"    public static let {ident} = Color(hex: 0x{fill[1:]})")
-        L.append(f"    public static let on{ident[0].upper() + ident[1:]} = Color(hex: 0x{on[1:]})")
+        i_ = ident(name)
+        L.append(f"    public static let {i_} = Color(hex: 0x{fill[1:]})")
+        L.append(f"    public static let on{i_[0].upper() + i_[1:]} = Color(hex: 0x{on[1:]})")
     L += ["    /// Identity only, always leading to trailing. Never a status or a data scale.",
           "    public static let gradient = LinearGradient(colors: [" + ", ".join(f"Color(hex: 0x{c[1:]})" for _, c in build.STOPS) + "], startPoint: .leading, endPoint: .trailing)",
           "",
-          "    // Type: brand faces for titles, labels and numbers; body text stays in the system font (Dynamic Type).",
-          "    public static func title(_ style: Font.TextStyle = .title2) -> Font { .custom(\"CascadiaMono-SemiBold\", size: 28, relativeTo: style) }",
-          "    public static func label() -> Font { .custom(\"CascadiaMono-Regular\", size: 12, relativeTo: .caption) }",
+          "    // Type: Cascadia Mono for titles, section heads, labels, readouts and codes; Archivo for prose in content; controls and",
+          "    // list text stay in the system font. All scale with Dynamic Type.",
+          "    public static func title() -> Font { .custom(\"CascadiaMono-SemiBold\", size: 28, relativeTo: .title) }",
+          "    public static func heading() -> Font { .custom(\"CascadiaMono-SemiBold\", size: 14, relativeTo: .headline) }   // with .textCase(.uppercase)",
+          "    public static func label() -> Font { .custom(\"CascadiaMono-Regular\", size: 12, relativeTo: .caption) }      // with .textCase(.uppercase)",
           "    public static func readout(_ size: CGFloat = 28, relativeTo style: Font.TextStyle = .title) -> Font { .custom(\"CascadiaMono-Regular\", size: size, relativeTo: style).monospacedDigit() }",
-          "    public static func heading() -> Font { .custom(\"Archivo-SemiBold\", size: 17, relativeTo: .headline) }",
+          "    public static func prose() -> Font { .custom(\"Archivo-Regular\", size: 17, relativeTo: .body) }",
           "",
-          f"    public static let fieldTarget: CGFloat = {TARGET['field']}   // pt, controls used at the pad",
+          f"    public static let fieldTarget: CGFloat = {TARGET['field']}   // pt, controls used at the pad (about 15 mm)",
+          f"    public static let gloveTarget: CGFloat = {TARGET['glove']}   // pt, the one critical control used with gloves (about 20 mm)",
           "",
           "    static func dynamic(light: UInt32, dark: UInt32, increasedContrast: UInt32) -> Color {",
           "        #if canImport(UIKit)",
           "        return Color(UIColor { t in",
-          "            if t.accessibilityContrast == .high && t.userInterfaceStyle != .dark { return UIColor(hex: increasedContrast) }",
-          "            return UIColor(hex: t.userInterfaceStyle == .dark ? dark : light)",
+          "            if t.userInterfaceStyle == .dark { return UIColor(hex: dark) }",
+          "            return UIColor(hex: t.accessibilityContrast == .high ? increasedContrast : light)",
           "        })",
           "        #else",
           "        return Color(hex: light)",
           "        #endif",
           "    }",
+          "}", "",
+          "private struct FSThemeKey: EnvironmentKey { static let defaultValue: FSTheme = .system }",
+          "extension EnvironmentValues {",
+          "    /// The FusionSpace theme for this part of the view tree (.system unless a screen forces .field).",
+          "    public var fsTheme: FSTheme {",
+          "        get { self[FSThemeKey.self] }",
+          "        set { self[FSThemeKey.self] = newValue }",
+          "    }",
+          "}", "",
+          "/// Hands its content the palette for the current theme, colour scheme and contrast.",
+          "public struct FSPaletteReader<Content: View>: View {",
+          "    @Environment(\\.fsTheme) private var theme",
+          "    @Environment(\\.colorScheme) private var scheme",
+          "    @Environment(\\.colorSchemeContrast) private var contrast",
+          "    private let content: (FSPalette) -> Content",
+          "    public init(@ViewBuilder content: @escaping (FSPalette) -> Content) { self.content = content }",
+          "    public var body: some View { content(FS.palette(for: theme, scheme: scheme, contrast: contrast)) }",
           "}", "",
           "extension Color {",
           "    init(hex: UInt32) { self.init(.sRGB, red: Double((hex >> 16) & 0xFF) / 255, green: Double((hex >> 8) & 0xFF) / 255, blue: Double(hex & 0xFF) / 255) }",
@@ -340,7 +379,8 @@ def kotlin_tokens():
               f"    outline = {c('rule-strong')}, outlineVariant = {c('rule')},",
               f"    error = {c('danger')},",
               ")", ""]
-    L += [f"const val FS_FIELD_TARGET_DP = {TARGET['field']}  // controls used at the pad", ""]
+    L += [f"const val FS_FIELD_TARGET_DP = {TARGET['field']}  // controls used at the pad (about 15 mm)",
+          f"const val FS_GLOVE_TARGET_DP = {TARGET['glove']}  // the one critical control used with gloves (about 20 mm)", ""]
     return "\n".join(L)
 
 def c_tokens():
@@ -384,7 +424,7 @@ def example_flight(seed=7):
     def fly(mass_kg, cd, noise):
         dt = 0.01; t = 0.0; h = 0.0; v = 0.0; out = []; ev = {}
         burn = 1.8; thrust_avg = 390.0; prop = 0.36; area = math.pi * 0.0285 ** 2
-        drogue_cda, main_cda, main_ft = 0.08, 0.62, 700.0
+        drogue_cda, main_cda, main_ft = 0.08, 1.6, 700.0
         deployed = None
         while t < 400:
             m = mass_kg + prop * max(0.0, 1 - t / burn)
@@ -424,12 +464,12 @@ def chart_svg(pred, meas, width=880, standalone_theme=None, title="Altitude, spe
     o = [f'<svg class="fs-chart" viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="{title}">']
     if standalone_theme:
         c = lambda r: role(r, standalone_theme)
-        o.append("<style>" + f"text{{fill:{c('ink-muted')};font:11px 'Cascadia Mono',monospace}} .t-ink{{fill:{c('ink')};paint-order:stroke;stroke:{c('canvas')};stroke-width:4px;stroke-linejoin:round}} .grid{{stroke:{c('rule')};stroke-width:1}} "
+        o.append("<style>" + f"text{{fill:{c('ink-muted')};font:12px 'Cascadia Mono',monospace}} .t-ink{{fill:{c('ink')};paint-order:stroke;stroke:{c('canvas')};stroke-width:4px;stroke-linejoin:round}} .grid{{stroke:{c('rule')};stroke-width:1}} "
                  f".axis{{stroke:{c('rule-strong')};stroke-width:1}} .measured{{fill:none;stroke:{c('ink')};stroke-width:2;stroke-linejoin:round}} "
                  f".predicted{{fill:none;stroke:{c('predicted')};stroke-width:2;stroke-dasharray:8 4}} .band{{fill:{c('predicted')};fill-opacity:.10}} "
                  f".reference{{fill:none;stroke:{c('ink-muted')};stroke-width:1;stroke-dasharray:24 3 1 3}} .event{{stroke:{c('ink-muted')};stroke-width:1;stroke-dasharray:1 3}} "
-                 f".balloon circle{{fill:{c('canvas')};stroke:{c('ink')};stroke-width:1}} .balloon text{{fill:{c('ink')};font-size:10px;text-anchor:middle}} "
-                 f".limit{{stroke:{c('danger')};stroke-width:1.5}}</style>")
+                 f".balloon circle{{fill:{c('canvas')};stroke:{c('ink')};stroke-width:1}} .balloon text{{fill:{c('ink')};font-size:12px;text-anchor:middle}} "
+                 f".limit{{stroke:{c('danger')};stroke-width:2}}</style>")
         o.append(f'<rect width="{width}" height="{height}" fill="{c("canvas")}"/>')
     order = [("liftoff", "Liftoff"), ("burnout", "Burnout"), ("apogee", "Apogee"), ("drogue", "Drogue out"), ("main", "Main out"), ("landing", "Landing")]
     ev = meas["events"]
@@ -438,11 +478,11 @@ def chart_svg(pred, meas, width=880, standalone_theme=None, title="Altitude, spe
     placed = []
     for i, (k, _) in enumerate(order):
         x = X(ev[k]); bx = x
-        while any(abs(bx - p) < 22 for p in placed): bx += 22
+        while any(abs(bx - p) < 26 for p in placed): bx += 26
         placed.append(bx)
         o.append(f'<line class="event" x1="{x:.1f}" y1="{y0 - (4 if bx != x else 39)}" x2="{x:.1f}" y2="{y1}"/>')
         if bx != x: o.append(f'<line class="event" x1="{x:.1f}" y1="{y0 - 4}" x2="{bx:.1f}" y2="{y0 - 39}"/>')
-        o.append(f'<g class="balloon"><circle cx="{bx:.1f}" cy="{y0 - 48}" r="9"/><text x="{bx:.1f}" y="{y0 - 44.5}">{i + 1}</text></g>')
+        o.append(f'<g class="balloon"><circle cx="{bx:.1f}" cy="{y0 - 48}" r="11"/><text x="{bx:.1f}" y="{y0 - 43.8}">{i + 1}</text></g>')
     panels = [("ALTITUDE · ft AGL", "alt", True), ("VERTICAL SPEED · ft/s", "vel", False), ("ACCELERATION · g", "acc", False)]
     y = top
     for (label, key, with_pred), h in zip(panels, ph):
@@ -525,10 +565,9 @@ def build_stylesheet():
     return s
 
 def _logo(prefix):
-    L = lambda m: open(os.path.join(build.OUT, f"logo/lockup/fusion-space-horizontal-{m}.svg"), encoding="utf-8").read()
-    light = build.inline(L("void"), prefix + "l", "height:24px;width:auto").replace("#0B0F1C", "currentColor").replace('<svg ', '<svg class="on-light" ', 1)
-    dark = build.inline(L("color"), prefix + "d", "height:24px;width:auto").replace('<svg ', '<svg class="on-dark" ', 1)
-    return light + dark
+    """The header lockup in one colour (currentColor): Void on light, Paper on dark. The strip carries the gradient."""
+    L = open(os.path.join(build.OUT, "logo/lockup/fusion-space-horizontal-void.svg"), encoding="utf-8").read()
+    return build.inline(L, prefix, "height:24px;width:auto").replace("#0B0F1C", "currentColor")
 
 THEME_JS = """<script>
 (function () {
@@ -545,6 +584,12 @@ EXAMPLE_NOTE = ('<p class="fs-small fs-muted fs-hatch" style="margin-top:16px;pa
                 '<span style="background:var(--fs-canvas);padding:0 4px">Example screen. The layout is the point; the numbers are made up.</span></p>')
 THEME_SWITCH = ('<div class="fs-seg" role="group" aria-label="Theme">' + "".join(
     f'<button type="button" data-set-theme="{t}" aria-pressed="false">{n}</button>' for t, n in (("auto", "Auto"), ("light", "Light"), ("dark", "Dark"), ("field", "Field"))) + "</div>")
+
+def _units(body):
+    """Unit symbols in table heads stay as written: 'Time · s' must not become 'TIME · S'."""
+    body = re.sub(r'(<th[^>]*>)([^<]*?) · ([^<]+)</th>', r'\1\2 · <span class="u">\3</span></th>', body)
+    # on a phone, say that a wide table scrolls (the hint is hidden above 640 px)
+    return body.replace('<div class="fs-table-wrap"', '<p class="fs-scroll-hint" aria-hidden="true">Wide table: scroll it sideways.</p><div class="fs-table-wrap"')
 
 def page(title, body, rel="", desc="", nav=None, theme_attr="", example=False):
     nav = nav or [("index.html", "Specimen"), ("examples/home.html", "Home"), ("examples/charge.html", "Charge"),
@@ -573,7 +618,7 @@ def page(title, body, rel="", desc="", nav=None, theme_attr="", example=False):
   {THEME_SWITCH}
 </header>
 <main>
-{EXAMPLE_NOTE if example else ""}{body}
+{EXAMPLE_NOTE if example else ""}{_units(body)}
 </main>
 </div>
 {THEME_JS}
@@ -595,8 +640,10 @@ def titleblock(cells):
     body += "".join(f'<div{" class=\"wide\"" if len(v) > 26 else ""}><span class="k">{k}</span><span class="v">{v}</span></div>' for k, v in cells)
     return f'<footer class="fs-titleblock" aria-label="Title block">{body}</footer>'
 def note(kind, head, text, icon=None):
-    icon = icon or {"note": "info", "caution": "caution", "warning": "danger", "trust": "dimension"}[kind]
-    return (f'<aside class="fs-note" data-kind="{kind}"><div class="fs-note-head">{ico(icon, "")}{head}</div>'
+    """A note panel. DANGER, WARNING and CAUTION carry the safety-alert triangle (ANSI Z535); NOTICE carries no symbol."""
+    icon = icon or {"note": "info", "caution": "caution", "warning": "caution", "danger": "caution", "notice": "", "trust": "dimension"}[kind]
+    if kind == "notice": icon = ""
+    return (f'<aside class="fs-note" data-kind="{kind}"><div class="fs-note-head">{ico(icon, "") if icon else ""}{head}</div>'
             f'<div class="fs-note-body">{text}</div></aside>')
 def readout(label, value, unit, qual="", kind="", size=""):
     return (f'<div class="fs-readout"{f" data-kind={chr(34)}{kind}{chr(34)}" if kind else ""}{f" data-size={chr(34)}{size}{chr(34)}" if size else ""}>'
@@ -621,8 +668,8 @@ def specimen(contrast_rows):
     roles = (f'<div class="fs-table-wrap"><table class="fs-table"><caption>Semantic roles. Contrast is against the canvas of the same theme '
              f'(WCAG 2 ratio, light · dark · field). Use roles in code, never hex values.</caption><thead><tr><th>Role</th><th>Light</th><th>Dark</th><th>Field</th>'
              f'<th class="n">Contrast</th><th>Use</th></tr></thead><tbody>{rows}</tbody></table></div>')
-    chips = " ".join([status("danger", "Armed"), status("caution", "Gust 19 mph"), status("ok", "Continuity"), status("info", "Advisory"),
-                      status("off", "Not used"), status("stale", "4 h old"), status("predicted", "Simulated")])
+    chips = " ".join([status("danger", "Armed"), status("caution", "Near limit"), status("ok", "Cont", "continuity"), status("info", "Advisory"),
+                      status("off", "Not used"), status("stale", 'Stale · <span class="u">4 h</span>'), status("predicted", "Simulated")])
     sig = "".join(f'<tr><td><b>{n}</b></td><td>{SIGNALS[k][1]}</td><td>{sw(SIGNALS[k][2]) if SIGNALS[k][2] else "none: data only"}</td>'
                   f'<td>{sw(SIGNALS[k][4])}</td><td>{sw(SIGNALS[k][5])}</td></tr>' for k, n in SIGNAL_NAMES.items())
     ramps = "".join(f'<div class="fs-stack" style="gap:6px"><span class="fs-label">{k} · {" → ".join(v)}</span><div style="display:flex;height:20px;border:1px solid var(--fs-rule)">'
@@ -672,7 +719,7 @@ def specimen(contrast_rows):
           f'<label class="fs-check"><input type="checkbox" checked> Dual deploy</label><span class="fs-tag">FS · SW · TOOL 002</span><span class="fs-tag" data-tone="action">REV 1.4.0</span></div>'
           f'<div class="fs-tabs" role="tablist"><button role="tab" aria-selected="true">Flight</button><button role="tab" aria-selected="false">Channels</button><button role="tab" aria-selected="false">Raw log</button></div>'
           f'<p class="fs-small fs-muted">Square corners, 1 px borders, no shadows. The primary button is ink, not a colour: colour is saved for links, focus and signals. '
-          f'Numbers are typed into text fields with <code>inputmode="decimal"</code>, with the unit fixed beside the value. Controls used at the pad are {TARGET["field"]} px tall.</p>'
+          f'Numbers are typed into text fields with <code>inputmode="decimal"</code>, with the unit fixed beside the value. Controls used at the pad are {TARGET["field"]} px tall on touch screens and {TARGET["field-pointer"]} px with a mouse.</p>'
           f'<div><button class="fs-btn" data-size="field">{ico("download", "")}Save flight card</button></div>')
     # 5 data
     pred, meas = example_flight()
@@ -683,31 +730,33 @@ def specimen(contrast_rows):
           f'{readout("Main at", num(700), "ft AGL", "Set 700 ft, fired at 71.3 s")}</div>'
           f'{chart_svg(pred, meas)}'
           f'<div class="fs-table-wrap"><table class="fs-table"><caption>Events. Times from liftoff; altitudes above the pad.</caption><thead><tr><th></th><th>Event</th><th class="n">Time · s</th><th class="n">Altitude · ft AGL</th><th>Source</th></tr></thead><tbody>'
-          + "".join(f'<tr><td><span class="fs-balloon">{i + 1}</span></td><td>{n}</td><td class="n">{ev[k]:.2f}</td><td class="n">{num(float(meas["alt"][min(len(meas["alt"]) - 1, int(ev[k] / 0.01))]))}</td><td class="fs-small fs-muted">{src}</td></tr>'
+          + "".join(f'<tr><td><span class="fs-balloon">{i + 1}</span></td><td>{n}</td><td class="n">{ev[k]:.2f}</td><td class="n">{num(0.0 if k in ("liftoff", "landing") else float(meas["alt"][min(len(meas["alt"]) - 1, int(ev[k] / 0.01))]))}</td><td class="fs-small fs-muted">{src}</td></tr>'
                     for i, (k, n, src) in enumerate([("liftoff", "Liftoff", "Accelerometer"), ("burnout", "Burnout", "Accelerometer"), ("apogee", "Apogee", "Barometer"),
                                                      ("drogue", "Drogue out", "Channel 1 fired"), ("main", "Main out", "Channel 2 fired"), ("landing", "Landing", "Barometer, still for 2 s")]))
           + '</tbody></table></div>')
     # 6 status and notes
     s6 = (f'<div class="fs-grid">{note("note", "Note", "<p>Times are from liftoff, detected when acceleration first passed 3 g.</p>")}'
           f'{note("caution", "Caution", "<p>Ground-test this charge before you fly it. The estimate assumes a sealed bay.</p>")}'
-          f'{note("warning", "Warning", "<p>Channel 2 is armed. Keep clear of the airframe ends.</p>")}'
+          f'{note("warning", "Warning", "<p>Channel 2 is armed. Its ejection charge can fire and cause serious injury. Keep clear of the airframe ends.</p>")}'
+          f'{note("notice", "Notice", "<p>Importing a new log replaces the unsaved notes on this flight.</p>", "info")}'
           f'{note("trust", "How far to trust it", "<p>An estimate from a model, not a measurement, and never a go/no-go verdict. Checked against 37 flown charges: within 12 % on 33.</p>")}</div>'
           f'<div class="fs-hazard" style="max-width:420px"><div class="fs-stack" style="padding:16px"><span class="fs-label">Channel 2 · main</span>'
-          f'<div class="fs-row"><button class="fs-btn" data-variant="danger" data-size="field">Arm</button><button class="fs-btn" data-variant="secondary" data-size="field">Safe</button></div>'
-          f'<span class="fs-small fs-muted">Commanded: SAFE · Confirmed: SAFE (2 s ago)</span></div></div>'
+          f'<div class="fs-row"><button class="fs-btn" data-variant="danger" data-size="field">Arm channel 2…</button><button class="fs-btn" data-variant="secondary" data-size="field">Safe</button></div>'
+          f'<span class="fs-small fs-muted">Arming is two actions: this opens a confirmation that is held for 2 s. The physical switch must already be on. '
+          f'Commanded: SAFE · Confirmed: SAFE (2 s ago)</span></div></div>'
           f'<div class="fs-stack" style="max-width:420px"><span class="fs-label">Uploading log · 62 %</span><div class="fs-progress"><span style="--value:62%"></span></div>'
           f'<span class="fs-label">Waiting for GPS fix</span><div class="fs-progress" data-indeterminate><span></span></div></div>'
           f'<div class="fs-empty"><span class="fs-label">No flight loaded</span><span>Drop a log file here, or pick one.</span><button class="fs-btn" data-variant="secondary">Choose file</button></div>')
     # 7 icons
-    icons = "".join(f'<div style="display:grid;gap:6px;justify-items:center;padding:12px 4px;border:1px solid var(--fs-rule)">{kit_icons.inline(n, "")[:4]} width="24" height="24"{kit_icons.inline(n, "")[4:]}<span class="fs-small fs-muted" style="font:11px/14px var(--fs-font-mono)">{n}</span></div>'
+    icons = "".join(f'<div style="display:grid;gap:6px;justify-items:center;padding:12px 4px;border:1px solid var(--fs-rule)">{kit_icons.inline(n, "")[:4]} width="24" height="24"{kit_icons.inline(n, "")[4:]}<span class="fs-small fs-muted" style="font:12px/16px var(--fs-font-mono)">{n}</span></div>'
                     for g, ns in kit_icons.GROUPS for n in ns)
     s7 = (f'<p>{len(kit_icons.ICONS)} icons on a 24 px grid: 1.5 px strokes, square ends, 45° and 90° angles, drawn from the real objects. '
-          f'Files in <code>product/icons/</code>, one SVG each plus <code>sprite.svg</code>.</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px">{icons}</div>')
+          f'Files in <code>product/icons/</code>: one SVG each, <code>sprite.svg</code>, and Android vector drawables.</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px">{icons}</div>')
     s8 = ("<p>The title block closes every page, report, printout and about screen. It answers: what is this, which version, from whom, when, "
           "in which units, from what data, and how finished it is.</p>"
-          + titleblock([("Title", "Product system specimen"), ("Designation", "FS · DESIGN · SPEC 001"), ("Rev", "A"), ("Date", "2026-10-04"),
+          + titleblock([("Title", "Product system specimen"), ("Designation", "FS · SPEC 001"), ("Rev", "A"), ("Date", "2026-10-04"),
                         ("Units", "px, ms"), ("Status", "IN PREPARATION"), ("Sheet", f"{T} / {T}")]))
-    body = (f'<section style="padding:48px 0 32px;display:grid;gap:16px"><span class="fs-tag">FS · DESIGN · SPEC 001</span><h1 style="font:var(--fs-type-display)">Product system</h1>'
+    body = (f'<section style="padding:48px 0 32px;display:grid;gap:16px"><span class="fs-tag">FS · SPEC 001</span><h1 style="font:var(--fs-type-display)">Product system</h1>'
             f'<p class="fs-lead">How FusionSpace tools, apps and boards look and behave. The rules are in <code>product/</code>; this page shows each part working, '
             f'in light, dark and the outdoor field theme.</p></section>'
             + sheet(1, T, "Colour", s1) + sheet(2, T, "Type", s2) + sheet(3, T, "Lines", s3) + sheet(4, T, "Controls", s4)
@@ -724,25 +773,26 @@ TOOLS = [  # the drawing register on the example home page: (designation, name, 
 ]
 def ex_home():
     rows = "".join(f'<tr><td><span class="fs-tag">{d}</span></td><td><a href="#"><b>{n}</b></a><div class="fs-small fs-muted">{w}</div></td>'
-                   f'<td>{status("ok", "Released", "check") if s == "RELEASED" else status("off", "In prep.", "edit")}</td><td class="fs-mono fs-small">{u}</td></tr>' for d, n, w, s, u in TOOLS)
-    body = (f'<section style="padding:56px 0 40px;display:grid;gap:20px;max-width:760px"><span class="fs-label">FusionSpace · drawing register</span>'
-            f'<h1 style="font:var(--fs-type-display)">Free tools for high-power rocketry.</h1>'
+                   f'<td>{status("ok", "Released", "check") if s == "RELEASED" else status("off", "In preparation", "edit")}</td><td class="fs-mono fs-small">{u}</td></tr>' for d, n, w, s, u in TOOLS)
+    body = (f'<section style="padding:56px 0 40px;display:grid;gap:20px;max-width:760px"><span class="fs-tag">FS · SITE 001</span>'
+            f'<h1 style="font:var(--fs-type-display)">Free tools for high‑power rocketry.</h1>'
             f'<p class="fs-lead">Free and open source. Each tool shows its working, says how far to trust it, and works offline at the field.</p>'
             f'<div class="fs-row"><a class="fs-btn" href="#register">See the tools</a><a class="fs-btn" data-variant="secondary" href="#">Source on GitHub {ico("external", "")}</a></div></section>'
             + sheet(1, 2, "Register", f'<div class="fs-table-wrap" id="register"><table class="fs-table"><caption>Every tool, numbered like a drawing. Released tools are maintained; in preparation means usable but changing.</caption>'
                     f'<thead><tr><th>No.</th><th>Title</th><th>Status</th><th>Where</th></tr></thead><tbody>{rows}</tbody></table></div>')
-            + sheet(2, 2, "Principles", '<div class="fs-grid">'
-                    + "".join(f'<div class="fs-stack" style="gap:6px;border-top:1px solid var(--fs-rule);padding-top:12px"><h3>{h}</h3><p class="fs-small">{t}</p></div>' for h, t in (
+            + sheet(2, 2, "Principles", '<dl class="fs-stack" style="max-width:var(--fs-measure)">'
+                    + "".join(f'<div style="border-top:1px solid var(--fs-rule);padding-top:12px;display:grid;gap:4px"><dt><h3>{h}</h3></dt><dd style="margin:0">{t}</dd></div>' for h, t in (
                         ("Shows its working", "Every formula, constant and source is one click away. No black boxes."),
                         ("Says how far to trust it", "Estimates are labelled as estimates, with their spread. Never a go/no-go verdict."),
                         ("Works at the field", "Offline once loaded, readable in sun, big targets for cold hands."),
-                        ("No accounts, no tracking", "Your logs stay in your browser unless you export them."))) + "</div>")
-            + titleblock([("Title", "FusionSpace tools"), ("Designation", "FS · SITE · 001"), ("Rev", "C"), ("Date", "2026-10-04"), ("Contact", "NeerDPatel@FusionSpace.co"), ("Status", "RELEASED")]))
+                        ("No accounts, no tracking", "Your logs stay in your browser unless you export them."))) + "</dl>")
+            + titleblock([("Title", "FusionSpace tools"), ("Designation", "FS · SITE 001"), ("Rev", "C"), ("Date", "2026-10-04"), ("Contact", "NeerDPatel@FusionSpace.co"), ("Status", "RELEASED")]))
     return page("Home · example", body, rel="../", example=True, desc="Example: the FusionSpace home page as a drawing register.")
 
 def ex_charge():
     D, L, P = 3.9, 12.0, 15.0
-    g = 0.00052 * P * D * D * L
+    V = math.pi / 4 * D * D * L
+    g = 0.00052 * P * V
     form = (f'<form class="fs-stack" onsubmit="return false"><div class="fs-grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr))">'
             f'<div class="fs-field"><label for="id">Inner diameter</label><div class="fs-input-group"><input class="fs-input" id="id" inputmode="decimal" value="{D:.2f}"><span class="fs-unit">in</span></div></div>'
             f'<div class="fs-field"><label for="len">Bay length</label><div class="fs-input-group"><input class="fs-input" id="len" inputmode="decimal" value="{L:.1f}"><span class="fs-unit">in</span></div><span class="fs-help">From the bulkhead to the coupler, empty.</span></div>'
@@ -753,17 +803,17 @@ def ex_charge():
     result = (f'<div class="fs-stack fs-sticky"><div class="fs-panel fs-stack" style="border:2px solid var(--fs-ink)">'
               f'{readout("Primary charge", f"{g:.2f}", "g", "FFFFg black powder, rounded up to 0.05 g on the scale: <b>" + f"{math.ceil(g / 0.05) * 0.05:.2f}" + " g</b>")}'
               f'{readout("Backup", f"{g * 1.25:.2f}", "g", "Primary + 25 %", size="m")}'
-              f'<details><summary class="fs-btn" data-variant="quiet" style="display:inline-flex">Show the maths</summary><pre>grams = 0.00052 × P × D² × L\n      = 0.00052 × {P:.0f} psi × ({D:.2f} in)² × {L:.1f} in\n      = {g:.3f} g</pre>'
-              f'<p class="fs-small fs-muted">0.00052 g/(psi·in³) is the ideal-gas yield of FFFFg at 3307 °R (R = 22.16 ft·lbf/(lbm·°R)), with no losses. Source: the formula most HPR charge calculators share.</p></details></div>'
-              f'{note("trust", "How far to trust it", "<p>An ideal-gas estimate. Real bays leak and real powder varies, so the charge that separates on the ground is the one to fly. 23 logged ground tests in this tool needed between 0.9× and 1.3× the estimate.</p>")}'
+              f'<details><summary class="fs-btn" data-variant="quiet" style="display:inline-flex">Show the maths</summary><pre>V     = π/4 × D² × L = π/4 × ({D:.2f} in)² × {L:.1f} in = {V:.1f} in³\ngrams = 0.00052 × P × V\n      = 0.00052 × {P:.0f} psi × {V:.1f} in³\n      = {g:.3f} g</pre>'
+              f'<p class="fs-small fs-muted">0.00052 g per psi per in³ is the ideal-gas yield of black powder at 3307 °R (R = 22.16 ft·lbf/(lbm·°R)), with no losses: the same as the common rule of 0.006 g × D² × L at 15 psi.</p></details></div>'
+              f'{note("trust", "How far to trust it", "<p>An ideal-gas estimate. Real bays leak and real powder varies, so the charge that separates on the ground is the one to fly. In this example log, ground tests needed 0.9 to 1.3 times the estimate.</p>")}'
               f'{note("caution", "Caution", "<p>Ground-test before every first flight, and after any change to the bay, pins or powder.</p>")}</div>')
     body = (f'<section style="padding:40px 0 24px;display:grid;gap:12px"><div class="fs-row"><span class="fs-tag">FS · SW · TOOL 002</span>{status("ok", "Released", "check")}</div>'
             f'<h1>Charge</h1><p class="fs-lead">Size a black-powder ejection charge, then prove it on the ground.</p></section>'
             + sheet(1, 2, "Size", f'<div class="fs-split"><div class="fs-stack">{form}</div>{result}</div>')
             + sheet(2, 2, "Ground tests", '<div class="fs-table-wrap"><table class="fs-table"><caption>Your bench log, kept in this browser. Export it with the flight card.</caption><thead><tr><th>Date</th><th class="n">Charge · g</th><th class="n">× estimate</th><th>Result</th><th>Note</th></tr></thead><tbody>'
-                    f'<tr><td class="fs-mono">2026-09-12</td><td class="n">1.20</td><td class="n">0.84</td><td>{status("caution", "Partial", "caution")}</td><td class="fs-small">Nose cone moved 2 in, chute stayed in.</td></tr>'
-                    f'<tr><td class="fs-mono">2026-09-12</td><td class="n">1.45</td><td class="n">1.02</td><td>{status("ok", "Clean", "ok")}</td><td class="fs-small">Full separation, shock cord taut.</td></tr>'
-                    f'<tr><td class="fs-mono">2026-09-19</td><td class="n">1.45</td><td class="n">1.02</td><td>{status("ok", "Clean", "ok")}</td><td class="fs-small">Repeat with flight pins.</td></tr></tbody></table></div>'
+                    f'<tr><td class="fs-mono">2026-09-12</td><td class="n">1.00</td><td class="n">{1.00 / g:.2f}</td><td>{status("caution", "Partial", "caution")}</td><td class="fs-small">Nose cone moved 2 in, chute stayed in.</td></tr>'
+                    f'<tr><td class="fs-mono">2026-09-12</td><td class="n">1.20</td><td class="n">{1.20 / g:.2f}</td><td>{status("ok", "Separated", "ok")}</td><td class="fs-small">Full separation, shock cord taut.</td></tr>'
+                    f'<tr><td class="fs-mono">2026-09-19</td><td class="n">1.20</td><td class="n">{1.20 / g:.2f}</td><td>{status("ok", "Separated", "ok")}</td><td class="fs-small">Repeat with flight pins.</td></tr></tbody></table></div>'
                     '<div class="fs-row"><button class="fs-btn" data-variant="secondary">Add a test</button><button class="fs-btn" data-variant="secondary">' + ico("print", "") + 'Print flight card</button></div>')
             + titleblock([("Title", "Charge"), ("Designation", "FS · SW · TOOL 002"), ("Rev", "1.4.0"), ("Date", "2026-10-04"), ("Units", "in, psi, g"),
                           ("Data", "Constants set 2026-09"), ("Status", "RELEASED")]))
@@ -773,35 +823,35 @@ def ex_debrief():
     pred, meas = example_flight(); ev = meas["events"]
     ap, pap = float(meas["alt"].max()), float(pred["alt"].max())
     chan = (f'<div class="fs-table-wrap"><table class="fs-table"><thead><tr><th>Channel</th><th>Set to</th><th>Continuity</th><th>Fired</th><th class="n">At · s</th><th class="n">At · ft AGL</th></tr></thead><tbody>'
-            f'<tr><td class="fs-mono">1 · DROGUE</td><td>Apogee + 0.4 s</td><td>{status("ok", "Good", "continuity")}</td><td>{status("ok", "Fired", "check")}</td><td class="n">{ev["drogue"]:.2f}</td><td class="n">{num(ap)}</td></tr>'
-            f'<tr><td class="fs-mono">2 · MAIN</td><td>700 ft descending</td><td>{status("ok", "Good", "continuity")}</td><td>{status("ok", "Fired", "check")}</td><td class="n">{ev["main"]:.2f}</td><td class="n">{num(700)}</td></tr>'
+            f'<tr><td class="fs-mono">1 · DROGUE</td><td>Apogee + 0.4 s</td><td>{status("ok", "Cont", "continuity")}</td><td>{status("ok", "Fired", "check")}</td><td class="n">{ev["drogue"]:.2f}</td><td class="n">{num(ap)}</td></tr>'
+            f'<tr><td class="fs-mono">2 · MAIN</td><td>700 ft descending</td><td>{status("ok", "Cont", "continuity")}</td><td>{status("ok", "Fired", "check")}</td><td class="n">{ev["main"]:.2f}</td><td class="n">{num(700)}</td></tr>'
             f'<tr><td class="fs-mono">3 · —</td><td class="fs-muted">Not used</td><td>{status("off", "Not used")}</td><td>{status("off", "Not used")}</td><td class="n fs-muted">—</td><td class="n fs-muted">—</td></tr></tbody></table></div>'
             '<p class="fs-small fs-muted">An unused channel is grey and says so. Red is only for a real fault, so a fault is never lost among false alarms.</p>')
     body = (f'<section style="padding:40px 0 24px;display:grid;gap:12px"><div class="fs-row"><span class="fs-tag">FS-VEGA-001 · FLIGHT 03</span>{status("info", "Debrief 0.6", "flight-log")}</div>'
-            f'<h1>Flight 03 · J350W-L</h1><p class="fs-lead">Dual deploy, nominal. Apogee {(1 - ap / pap) * 100:.1f} % under the prediction, inside its spread for a heavier rocket.</p></section>'
+            f'<h1>Flight 03 · J350W-L</h1><p class="fs-lead">Dual deploy, nominal. Apogee {num(pap - ap)} ft ({(1 - ap / pap) * 100:.1f} %) under the prediction, outside its ±{num(0.04 * pap + 8)} ft spread: the rocket flew heavier than its design file says.</p></section>'
             + sheet(1, 3, "Flight", f'<div class="fs-readouts">{readout("Apogee", num(ap), "ft AGL", "Barometer, 20 Hz")}'
                     f'{readout("Predicted", num(pap), "ft AGL", f"±{num(0.04 * pap + 8)} ft · Loft 0.9 with the flown mass", "predicted")}'
-                    f'{readout("Max speed", num(float(meas["vel"].max())), "ft/s", "Mach 0.58")}{readout("Descent · main", "26", "ft/s", "Under 35 ft/s (Tripoli limit)")}</div>'
-                    + chart_svg(pred, meas) + '<p class="fs-small fs-muted">Solid: measured. Dashed with a band: Loft\'s prediction and its spread. Dotted lines with balloons: events (sheet 2).</p>')
+                    f'{readout("Max speed", num(float(meas["vel"].max())), "ft/s", "Mach 0.58")}{readout("Descent · main", f"{abs(float(meas['vel'][-60])):.0f}", "ft/s", "Average over the last 30 s")}</div>'
+                    + chart_svg(pred, meas) + '<p class="fs-small fs-muted">Solid: measured. Dashed with a band: Loft\'s prediction and its spread. Dotted lines with balloons: events, in order: 1 liftoff, 2 burnout, 3 apogee, 4 drogue out, 5 main out, 6 landing.</p>')
             + sheet(2, 3, "Channels", chan)
             + sheet(3, 3, "Source", '<dl class="fs-titleblock" style="margin-top:0">' + "".join(f'<div><dt>{k}</dt><dd>{v}</dd></div>' for k, v in (
-                ("File", "vega-flight-03.csv"), ("Logger", "Barometer 20 Hz, accelerometer 100 Hz"), ("Filter", "None; raw samples"), ("Pad elevation", "1 219 m MSL"),
+                ("File", "vega-flight-03.csv"), ("Logger", "Barometer 20 Hz, accelerometer 100 Hz"), ("Filter", "None; raw samples"), ("Pad elevation", "4 000 ft MSL"),
                 ("Imported", "2026-10-04 14:22"), ("Hash", "sha256 9f3c…b21e"))) + "</dl>")
             + titleblock([("Title", "Flight 03 debrief"), ("Designation", "FS-VEGA-001 · FLIGHT 03"), ("Rev", "A"), ("Date", "2026-10-04"), ("Units", "ft, ft/s, g, s"), ("Status", "RELEASED")]))
     return page("Debrief · example", body, rel="../", example=True, desc="Example: a flight-log debrief in the FusionSpace product system.")
 
 def ex_window():
     aloft = [(0, 12, 19, 270), (1000, 16, None, 275), (3000, 22, None, 280), (6000, 31, None, 285), (9000, 38, None, 290)]
-    rows = "".join(f'<tr><td class="n">{num(h)}</td><td class="n">{w}</td><td class="n">{g if g else "—"}</td><td class="n">{d}°</td>'
-                   f'<td>{status("caution", "Gusty", "caution") if g and g > 15 else status("predicted", "Forecast", "simulate") if h else status("ok", "Measured", "windsock")}</td></tr>' for h, w, g, d in aloft)
-    body = (f'<section style="padding:40px 0 24px;display:grid;gap:12px"><div class="fs-row"><span class="fs-tag">FS · SW · TOOL 003</span>{status("stale", "Upper air 4 h old")}</div>'
+    rows = "".join(f'<tr><td>{status("predicted", "Forecast", "simulate") if h else status("info", "Measured", "windsock")}</td><td class="n">{num(h)}</td><td class="n">{w}</td>'
+                   f'<td class="n">{g if g else "—"}</td><td class="n">{d}°</td></tr>' for h, w, g, d in aloft)
+    body = (f'<section style="padding:40px 0 24px;display:grid;gap:12px"><div class="fs-row"><span class="fs-tag">FS · SW · TOOL 003</span>{status("stale", 'Stale · upper air <span class="u">4 h</span>')}</div>'
             f'<h1>Window · Example field</h1><p class="fs-lead">Surface wind under the 20 mph limit, gusting close to it. Ceiling under the waiver. No verdict: your RSO decides.</p></section>'
             + sheet(1, 2, "Now", f'<div class="fs-readouts">{readout("Surface wind", "12", "mph", "Gusts 19 mph · from 270° · measured 14:10")}'
-                    f'{readout("Ceiling", num(6500), "ft AGL", "Under the 8 000 ft waiver")}{readout("Temperature", "21.5", "°C", "Density altitude 5 620 ft")}'
+                    f'{readout("Ceiling", num(6500), "ft AGL", "Under the waiver: 8 000 ft AGL")}{readout("Temperature", "21.5", "°C", "Density altitude 5 620 ft")}'
                     f'{readout("Upper winds", "31", "mph", "At 6 000 ft · issued 10:00, 4 h old", "stale")}</div>'
                     f'{note("caution", "Caution", "<p>Gusts of 19 mph are within 1 mph of the NAR and Tripoli 20 mph limit.</p>")}')
             + sheet(2, 2, "Aloft", f'<div class="fs-table-wrap"><table class="fs-table"><caption>Winds by height. Forecast rows are model output, dashed in charts and tagged here.</caption>'
-                    f'<thead><tr><th class="n">Height · ft AGL</th><th class="n">Wind · mph</th><th class="n">Gust · mph</th><th class="n">From</th><th>Kind</th></tr></thead><tbody>{rows}</tbody></table></div>'
+                    f'<thead><tr><th>Kind</th><th class="n">Height · ft AGL</th><th class="n">Wind · mph</th><th class="n">Gust · mph</th><th class="n">From</th></tr></thead><tbody>{rows}</tbody></table></div>'
                     f'<div class="fs-row"><button class="fs-btn" data-size="field">{ico("refresh", "")}Refresh</button><button class="fs-btn" data-variant="secondary" data-size="field">{ico("print", "")}Print for the pad</button></div>')
             + titleblock([("Title", "Window · Example field"), ("Designation", "FS · SW · TOOL 003"), ("Rev", "2.1.0"), ("Date", "2026-10-04 14:10"), ("Units", "mph, ft, °C"),
                           ("Data", "Surface: station obs. Aloft: model forecast"), ("Status", "RELEASED")]))
@@ -810,7 +860,7 @@ def ex_window():
 
 # ================================================================ 6. documents (source/product/*.md -> product/*.md)
 REV = "A"
-SILK = {"text_mm": 1.2, "line_mm": 0.15, "ratio": 8}       # board labels: 1.2 mm text, 0.15 mm stroke
+SILK = {"text_mm": 1.2, "line_mm": 0.15, "label_mm": 2.3}   # dense silkscreen text and stroke; labels read while handling
 def _md_hex(h): return f"`{h}`"
 def table_signals():
     return "\n".join(f"| **{n}** | {SIGNALS[k][1]} | {_md_hex(SIGNALS[k][2]) if SIGNALS[k][2] else 'none: data only'} | "
@@ -912,7 +962,7 @@ def mdbook_css():
 {vars_("dark")}
 }}
 html {{ font-family: {FONTS['text']}; }}
-body {{ border-top: 4px solid transparent; border-image: {build.css_gradient()} 1; }}
+body::before {{ content: ""; position: fixed; top: 0; left: 0; right: 0; height: 4px; background: {build.css_gradient()}; z-index: 1000; }}
 code, pre, kbd, .hljs {{ font-family: {FONTS['mono']} !important; font-variant-numeric: tabular-nums slashed-zero; }}
 h1, h2, h3, .menu-title {{ font-family: {FONTS['display']}; font-weight: 600; letter-spacing: 0; }}
 h2 {{ border-top: 2px solid var(--fg); padding-top: 0.6em; }}
@@ -1028,32 +1078,33 @@ def cli_python():
 def cli_sample():
     """Example `hpr sim` output in the FusionSpace style: (plain text, ANSI text). The flight is the made-up example."""
     pred, meas = example_flight(); ev = pred["events"]
-    ap = float(pred["alt"].max()); vmax = float(pred["vel"].max())
-    H, OKs, W, B, D, R = "\x1b[1m", "\x1b[32m", "\x1b[1;33m", "\x1b[1;34m", "\x1b[2m", "\x1b[0m"
+    ap_m = float(pred["alt"].max()) / 3.28084; v_ms = float(pred["vel"].max()) / 3.28084
+    ft = lambda m: m * 3.28084
+    H, W, B, D, R = "\x1b[1m", "\x1b[1;33m", "\x1b[1;34m", "\x1b[2m", "\x1b[0m"
     rows = [
         f"{B}${R} hpr sim vega.ork --motor J350W-L",
         f"{H}vega.ork: FS-VEGA-001 rev B, configuration \"J350W-L, dual deploy\"{R}",
         "flown with hpr 0.9.2: 6-DOF, standard atmosphere, wind 4 m/s from 270°",
         "",
-        f"apogee            {ap / 3.28084:.0f} m ({ap:.0f} ft) AGL at {ev['apogee']:.1f} s",
-        f"max speed         {vmax / 3.28084:.0f} m/s ({vmax:.0f} ft/s), Mach 0.58 at {ev['burnout']:.1f} s",
+        f"apogee            {ap_m:.0f} m ({ft(ap_m):.0f} ft) AGL at {ev['apogee']:.1f} s",
+        f"max speed         {v_ms:.0f} m/s ({ft(v_ms):.0f} ft/s), Mach {v_ms / 340.3:.2f} at {ev['burnout']:.1f} s",
         "rail exit         24.1 m/s (79 ft/s), above the 15 m/s guideline",
         "stability         1.9 cal at rail exit, 2.4 cal at burnout",
-        f"landing           {ev['landing']:.1f} s, 8.0 m/s (26 ft/s) under the main, 412 m (1352 ft) downwind",
+        f"landing           {ev['landing']:.1f} s, {abs(float(pred['vel'][-60])) / 3.28084:.1f} m/s ({abs(float(pred['vel'][-60])):.0f} ft/s) under the main, 412 m (1352 ft) downwind",
         "",
-        f"{H}channel           fires at                        state{R}",
-        f"1 DROGUE          apogee + 0.4 s                  {OKs}CONT{R}",
-        f"2 MAIN            213 m (700 ft) descending       {OKs}CONT{R}",
-        "3 -               not used                        NOT USED",
+        f"{H}channel           set to                          fires (simulated){R}",
+        f"1 DROGUE          apogee + 0.4 s                  {ev['drogue']:.1f} s at {ap_m:.0f} m",
+        f"2 MAIN            213 m (700 ft) descending       {ev['main']:.1f} s at 213 m",
+        "3 -               not used",
         "",
-        f"{W}warning:{R} rail exit assumes a 1.5 m (60 in) rail; pass --rail to set yours",
+        f"{W}warning:{R} rail exit assumes a 1.5 m (59 in) rail; pass --rail to set yours",
         f"{H}how far to trust it:{R} within 3 % of OpenRocket on this design; on 12 real flights hpr's apogee was within 8 %",
         f"{D}(an example: these numbers are made up to show the layout){R}",
     ]
     plain = [re.sub(r"\x1b\[[0-9;]*m", "", a) for a in rows]
     return plain, rows
 
-def ansi_svg(lines, theme, cw=8.4, lh=20, pad=20):
+def ansi_svg(lines, theme, cw=14 * 1200 / 2048, lh=20, pad=20):     # cw: Cascadia Mono advance (1200 of 2048 units) at 14 px
     """Draw ANSI-coloured lines as the FusionSpace terminal theme shows them (16-colour SGR codes only)."""
     pal = {"30": theme["black"], "31": theme["red"], "32": theme["green"], "33": theme["yellow"], "34": theme["blue"],
            "35": theme["magenta"], "36": theme["cyan"], "37": theme["white"]}
@@ -1144,7 +1195,8 @@ def _fonts():
     return {k: BDF(os.path.join(d, f"spleen-{k}.bdf")) for k in ("5x8", "6x12", "8x16", "16x32")}
 
 def oled_screens():
-    """128 x 64 monochrome screens for a flight computer: SAFE on the pad, ARMED with a fault, in flight, after landing."""
+    """128 x 64 monochrome screens for a flight computer: SAFE on the pad, ARMED with a fault, in flight, after landing, and
+    after landing with a charge that didn't fire."""
     F = _fonts(); s5, s6, s8, s16 = F["5x8"], F["6x12"], F["8x16"], F["16x32"]
     def status_row(sc, state, inverted):
         w = s6.width(state) + 6
@@ -1159,31 +1211,38 @@ def oled_screens():
     def channel(sc, y, n, name, state, fault=False):
         sc.text(2, y, f"{n} {name}", s6)
         w = s6.width(state) + 4
-        if fault:
-            sc.rect(125 - w, y - 1, w + 2, 12, fill=True); sc.text(127 - w, y, state, s6, on=False)
+        if fault:                                # a fault is an outline box with "!": the inverted box means ARMED only
+            state = "!" + state; w = s6.width(state) + 4
+            sc.rect(125 - w, y - 1, w + 2, 12); sc.text(127 - w, y, state, s6)
         else: sc.text(125, y, state, s6, anchor="right")
     out_ = {}
     sc = Screen(128, 64); status_row(sc, "SAFE", False)
     channel(sc, 18, 1, "DROGUE", "CONT"); channel(sc, 30, 2, "MAIN", "CONT"); channel(sc, 42, 3, "-", "NOT USED")
-    bottom(sc, "MODE  BEEP", "SHT 1/4"); out_["safe"] = sc
+    bottom(sc, "MODE  BEEP", "1/4"); out_["safe"] = sc
     sc = Screen(128, 64); status_row(sc, "ARMED", True)
     channel(sc, 18, 1, "DROGUE", "CONT"); channel(sc, 30, 2, "MAIN", "NO CONT", fault=True); channel(sc, 42, 3, "-", "NOT USED")
-    bottom(sc, "SAFE: SWITCH OFF", "SHT 1/4"); out_["armed-fault"] = sc
+    bottom(sc, "SAFE: SWITCH OFF", "1/4"); out_["armed-fault"] = sc
     sc = Screen(128, 64); status_row(sc, "COAST", True)
     sc.text(2, 18, "T+6.2s", s6); sc.text(125, 18, "ALT ft AGL", s5, anchor="right")
     sc.text(125, 22, "3412", s16, anchor="right")
-    bottom(sc, "V +412 ft/s", "SHT 2/4"); out_["flight"] = sc
+    bottom(sc, "V +412 ft/s", "2/4"); out_["flight"] = sc
     sc = Screen(128, 64); status_row(sc, "LANDED", False)
     sc.text(2, 18, "APOGEE", s6); sc.text(125, 18, "ft AGL", s5, anchor="right")
     sc.text(125, 22, "5104", s16, anchor="right")
-    # the beep readout, drawn: 5 short, 1 short, zero = one long, 4 short, end = long low (open box)
+    # the beep readout, drawn: 5 short, 1 short, zero = one long, 4 short, then two long to end the number
     x = 2; y = 58
     for digit in "5104":
         if digit == "0": sc.rect(x, y, 7, 3, fill=True); x += 10
         else:
             for _ in range(int(digit)): sc.rect(x, y, 2, 3, fill=True); x += 4
             x += 4
-    sc.rect(x, y, 9, 3); out_["landed"] = sc
+    sc.rect(x, y, 7, 3, fill=True); sc.rect(x + 10, y, 7, 3, fill=True)      # end of the number: two long tones
+    sc.text(125, 56, "1+2 FIRED", s5, anchor="right"); out_["landed"] = sc
+    # after landing with a charge that didn't fire: that comes first, before the altitude
+    sc = Screen(128, 64); status_row(sc, "LANDED", False)
+    sc.rect(0, 17, 128, 15, fill=True); sc.text(64, 19, "UNFIRED 2 MAIN", s6, on=False, anchor="middle")
+    sc.text(2, 36, "APOGEE", s6); sc.text(125, 34, "5104", s8, anchor="right")
+    sc.hline(0, 128, 54, dotted=True); sc.text(2, 56, "DISARM BEFORE HANDLING", s5); out_["landed-unfired"] = sc
     return out_
 
 def tft_screen_svg():
@@ -1205,14 +1264,14 @@ def tft_screen_svg():
     o.append(f'<rect x="{tip[0] - 4:.1f}" y="{tip[1] - 4:.1f}" width="8" height="8" transform="rotate(45 {tip[0]:.1f} {tip[1]:.1f})" fill="{c("ink")}"/>')
     o.append(f'<rect x="{cx - 3}" y="{cy - 3}" width="6" height="6" fill="{c("ink")}"/>')
     o.append(f'<text x="136" y="50" {mono} font-size="9" fill="{c("ink-muted")}" letter-spacing="0.5">DISTANCE</text>')
-    o.append(f'<text x="136" y="80" {mono} font-size="28" fill="{c("ink")}">412</text><text x="198" y="80" {mono} font-size="11" fill="{c("ink-muted")}">m</text>')
+    o.append(f'<text x="136" y="80" {mono} font-size="28" fill="{c("ink")}">1352</text><text x="210" y="80" {mono} font-size="11" fill="{c("ink-muted")}">ft</text>')
     o.append(f'<text x="136" y="104" {mono} font-size="9" fill="{c("ink-muted")}" letter-spacing="0.5">BEARING</text>')
-    o.append(f'<text x="136" y="128" {mono} font-size="20" fill="{c("ink")}">062°</text>')
+    o.append(f'<text x="136" y="128" {mono} font-size="20" fill="{c("ink")}">062° T</text>')
     o.append(f'<text x="136" y="150" {mono} font-size="9" fill="{c("ink-muted")}">landed 18 s ago</text>')
     o.append(f'<line x1="0" y1="172.5" x2="240" y2="172.5" stroke="{c("rule")}"/>')
     o.append(f'<text x="8" y="190" {mono} font-size="10" fill="{c("ink-muted")}">40.86512, -119.06274</text>')
-    o.append(f'<rect x="8" y="198" width="72" height="16" fill="{SIGNALS["ok"][2]}"/><text x="14" y="210" {mono} font-size="10" font-weight="600" fill="{WHITE}">GPS LOCK</text>')
-    o.append(f'<text x="232" y="232" {mono} font-size="9" fill="{c("ink-muted")}" text-anchor="end">SHT 3/4</text>')
+    o.append(f'<rect x="8" y="198" width="84" height="16" fill="{SIGNALS["ok"][2]}"/><text x="14" y="210" {mono} font-size="10" font-weight="600" fill="{WHITE}">GPS LOCKED</text>')
+    o.append(f'<text x="232" y="232" {mono} font-size="9" fill="{c("ink-muted")}" text-anchor="end">3/4</text>')
     o.append('</svg>')
     return "\n".join(o)
 
@@ -1314,23 +1373,24 @@ def build_embedded():
     subprocess.run(["rsvg-convert", "-z", "2", "-o", out("embedded/tft-240x240-recovery@2x.png"), p_], check=True)
     wr("embedded/fs_lvgl_styles.c", LV_STYLES); wr("embedded/fs_lvgl_styles.h", LV_H)
     shutil.copy(os.path.join(SRC, "embedded", "fonts", "LICENSE-Spleen.txt"), out("embedded/LICENSE-Spleen.txt"))
-    # preview: the four OLED screens at 3x in a 2 x 2 grid, labelled, and the TFT screen at 2x
+    # preview: the OLED screens at 4x in three columns, then the TFT screen at 2x
     pad, lab = 24, 22
-    tiles = [(k, Image.open(out(f"embedded/oled-128x64-{k}@4x.png"))) for k in ("safe", "armed-fault", "flight", "landed")]
+    keys = ("safe", "armed-fault", "flight", "landed", "landed-unfired")
+    tiles = [(k, Image.open(out(f"embedded/oled-128x64-{k}@4x.png"))) for k in keys]
     tw, th = tiles[0][1].size
     tft = Image.open(out("embedded/tft-240x240-recovery@2x.png")).convert("RGB")
-    W = pad * 4 + tw * 2 + tft.width; H = pad * 3 + (th + lab) * 2
-    H = max(H, pad * 2 + lab + tft.height)
+    cols = 3; rows = 2
+    W = pad * (cols + 2) + tw * cols + tft.width; H = max(pad * (rows + 1) + (th + lab) * rows, pad * 2 + lab + tft.height)
     from PIL import ImageDraw, ImageFont
     im = Image.new("RGB", (W, H), tuple(_hex_rgb(PAPER))); d = ImageDraw.Draw(im)
     try: font = ImageFont.truetype(os.path.join(build.ROOT, "type", "fonts", "CascadiaMono-Regular.ttf"), 14)
     except OSError: font = ImageFont.load_default()
-    names = {"safe": "128 x 64 OLED · SAFE on the pad", "armed-fault": "ARMED · channel 2 fault", "flight": "In flight · coast",
-             "landed": "Landed · apogee and its beep code"}
+    names = {"safe": "128 x 64 OLED · SAFE on the pad", "armed-fault": "ARMED (inverted) · channel 2 fault (outline)", "flight": "In flight · coast",
+             "landed": "Landed · apogee and its beep code", "landed-unfired": "Landed · a charge that didn't fire"}
     for i, (k, t) in enumerate(tiles):
-        x = pad + (i % 2) * (tw + pad); y = pad + (i // 2) * (th + lab + pad)
+        x = pad + (i % cols) * (tw + pad); y = pad + (i // cols) * (th + lab + pad)
         d.text((x, y), names[k], fill=tuple(_hex_rgb("#566079")), font=font); im.paste(t, (x, y + lab))
-    x = pad * 3 + tw * 2; d.text((x, pad), "240 x 240 TFT · ground station, recovery", fill=tuple(_hex_rgb("#566079")), font=font)
+    x = pad * (cols + 1) + tw * cols; d.text((x, pad), "240 x 240 TFT · ground station, recovery", fill=tuple(_hex_rgb("#566079")), font=font)
     im.paste(tft, (x, pad + lab))
     im.save(out("embedded/preview.png"))
 
@@ -1380,7 +1440,7 @@ def titleblock_preview():
     a, b = T(sep, y0 + TB_H / 2), T(x0 + TB_W, y0 + TB_H / 2); o.append(f'<line x1="{a[0]:.1f}" y1="{a[1]:.1f}" x2="{b[0]:.1f}" y2="{b[1]:.1f}" stroke="{silk}" stroke-width="{0.15 * k:.1f}"/>')
     for poly in polys:
         o.append('<polygon points="' + " ".join(f"{T(x + ox, y + oy)[0]:.1f},{T(x + ox, y + oy)[1]:.1f}" for x, y in poly) + f'" fill="{silk}"/>')
-    for txt, yy in (("FS-VEGA · ELEC · 004", y0 + TB_H / 4), ("REV B  2026-10", y0 + 3 * TB_H / 4)):
+    for txt, yy in (("FS-VEGA-004", y0 + TB_H / 4), ("REV B  2026-10", y0 + 3 * TB_H / 4)):
         p_ = T(sep + 1.0, yy)
         o.append(f'<text x="{p_[0]:.1f}" y="{p_[1] + 0.42 * SILK["text_mm"] * k:.1f}" font-family="Cascadia Mono" font-size="{SILK["text_mm"] * k * 1.05:.1f}" fill="{silk}">{html.escape(txt)}</text>')
     o.append("</svg>")
@@ -1402,7 +1462,7 @@ File → Board Setup → Title Block (or Page Settings):
 
 | Field | Example | Shows |
 |---|---|---|
-| Title | `FS-VEGA · ELEC · 004` | the board's designation |
+| Title | `FS-VEGA-004` | the board's part number |
 | Revision | `B` | `REV B` |
 | Issue date | `2026-10` | the date beside the revision |
 
@@ -1530,10 +1590,10 @@ def guide_sheet(n, total):
         ("README.md", "Start here: the reading order, the idea in one paragraph, how a project points here."),
         ("principles.md · foundations.md", "The eight principles; colour roles, signals, themes, type, space, lines, motion, icons."),
         ("data.md · writing.md", "Numbers, units, readouts, charts, maps, telemetry; voice, errors, signal words."),
-        ("web.md · cli.md · mobile.md", "Sites, tools and PWAs; command-line tools; iOS and Android."),
+        ("web.md · cli.md · mobile.md · desktop.md", "Sites, tools and PWAs; command-line tools; iOS and Android; macOS, Windows and Linux."),
         ("embedded.md · hardware.md · rockets.md", "Flight computers and devices; boards, enclosures and labels; airframes and livery."),
         ("review.md", "The FusionSpace test, template smells, release checklists, sources."),
-        ("tokens/ · web/ · icons/ · cli/ · embedded/ · hardware/ · rockets/", "Tokens for every platform and the reference parts.")))
+        ("tokens/ · web/ · icons/ · cli/ · embedded/ · hardware/ · rockets/ · desktop/", "Tokens for every platform and the reference parts.")))
     shots = "".join(f'<figure><img class="fsp-shot" src="../product/{p}" alt="{a}" loading="lazy"><figcaption>{a}</figcaption></figure>' for p, a in (
         ("web/previews/charge-light.png", "Charge, a tool page"), ("web/previews/debrief-dark.png", "Debrief, dark theme"),
         ("embedded/preview.png", "Device screens"), ("rockets/preview.png", "Livery wrap, 57 mm")))
@@ -1553,6 +1613,93 @@ def guide_sheet(n, total):
   </section>
 '''
 
+# ================================================================ 13. desktop packaging (product/desktop/)
+APP_ID = "co.fusionspace.Loft"        # example: reverse DNS of fusionspace.co plus the app's name
+def build_desktop():
+    from PIL import Image
+    ico_svg = os.path.join(build.OUT, "logo/favicon/icon.svg"); fav_svg = os.path.join(build.OUT, "logo/favicon/favicon.svg")
+    app_svg = os.path.join(build.OUT, "logo/favicon/app-icon.svg")
+    tmp = os.path.join(build.TMP, "desktop"); os.makedirs(tmp, exist_ok=True)
+    def png(src, n, dest):
+        os.makedirs(os.path.dirname(dest), exist_ok=True); build.rast(src, dest, n, n); return dest
+    # Windows: ICO (16 hinted, 24-48 from the small-size favicon art, 256 from the icon) and MSIX tiles
+    imgs = [build.hinted_favicon().convert("RGBA")]
+    for n in (24, 32, 48): imgs.append(Image.open(png(fav_svg, n, os.path.join(tmp, f"f{n}.png"))).convert("RGBA"))
+    imgs.append(Image.open(png(ico_svg, 256, os.path.join(tmp, "i256.png"))).convert("RGBA"))
+    os.makedirs(out("desktop/windows/msix"), exist_ok=True)
+    imgs[-1].save(out("desktop/windows/app.ico"), format="ICO", sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (256, 256)], append_images=imgs[:-1])
+    for n in (16, 24, 32, 48, 256):
+        src = fav_svg if n <= 48 else ico_svg
+        for suffix in ("", "_altform-unplated", "_altform-lightunplated"):
+            png(src, n, out(f"desktop/windows/msix/Square44x44Logo.targetsize-{n}{suffix}.png"))
+    for sc in (100, 200, 400):
+        png(ico_svg, round(44 * sc / 100), out(f"desktop/windows/msix/Square44x44Logo.scale-{sc}.png"))
+        png(app_svg, round(150 * sc / 100), out(f"desktop/windows/msix/Square150x150Logo.scale-{sc}.png"))
+    png(ico_svg, 50, out("desktop/windows/msix/StoreLogo.scale-100.png"))
+    # Linux: hicolor scalable and 256 px, a symbolic icon (one colour; the desktop recolours it)
+    os.makedirs(out("desktop/linux/hicolor/scalable/apps"), exist_ok=True)
+    shutil.copy(ico_svg, out(f"desktop/linux/hicolor/scalable/apps/{APP_ID}.svg"))
+    png(ico_svg, 256, out(f"desktop/linux/hicolor/256x256/apps/{APP_ID}.png"))
+    import kit
+    a = kit.art_mark(100.0); defs, body = a.render("void", "sym"); k = 14 / max(a.w, a.h)
+    sym = (f'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><g transform="translate({(16 - a.w * k) / 2:.3f},{(16 - a.h * k) / 2:.3f}) scale({k:.5f})">'
+           + body.replace(VOID, "#2e3436") + "</g></svg>\n")
+    os.makedirs(out("desktop/linux/hicolor/symbolic/apps"), exist_ok=True)
+    with open(out(f"desktop/linux/hicolor/symbolic/apps/{APP_ID}-symbolic.svg"), "w") as fh: fh.write(sym)
+    wr(f"desktop/linux/{APP_ID}.desktop", f"""[Desktop Entry]
+# FusionSpace desktop entry template. Rename the file and every {APP_ID} to your app's id.
+Type=Application
+Name=Loft
+GenericName=Rocket flight simulator
+Comment=High-power rocketry flight simulator
+Exec=loft %F
+Icon={APP_ID}
+Terminal=false
+Categories=Science;Engineering;Education;
+Keywords=rocket;rocketry;simulator;flight;
+StartupWMClass=loft
+""")
+    wr(f"desktop/linux/{APP_ID}.metainfo.xml", f"""<?xml version="1.0" encoding="UTF-8"?>
+<!-- FusionSpace AppStream template. Brand colours: Flathub asks for colourful ones, so O blue (light) and M orange (dark). -->
+<component type="desktop-application">
+  <id>{APP_ID}</id>
+  <name>Loft</name>
+  <summary>High-power rocketry flight simulator</summary>
+  <developer id="co.fusionspace"><name>FusionSpace</name></developer>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>Apache-2.0</project_license>
+  <url type="homepage">https://fusionspace.co</url>
+  <launchable type="desktop-id">{APP_ID}.desktop</launchable>
+  <description>
+    <p>Simulates hobby and high-power rocket flights, shows how far to trust each result, and works offline.</p>
+  </description>
+  <branding>
+    <color type="primary" scheme_preference="light">{O_BLUE}</color>
+    <color type="primary" scheme_preference="dark">{M_ORANGE}</color>
+  </branding>
+  <content_rating type="oars-1.1"/>
+</component>
+""")
+    wr("desktop/linux/99-fusionspace.rules", """# FusionSpace devices: let the logged-in user open their serial ports without joining dialout or uucp.
+# Install to /etc/udev/rules.d/ (packages: /usr/lib/udev/rules.d/), then: sudo udevadm control --reload && sudo udevadm trigger
+# Set the vendor and product ids to your device's. Open-source hardware can get a free product id under pid.codes (vendor 1209).
+SUBSYSTEM=="tty", ATTRS{idVendor}=="1209", ATTRS{idProduct}=="0001", MODE="0660", TAG+="uaccess"
+""")
+    wr("desktop/README.md", f"""# Desktop packaging
+
+Icons and templates for FusionSpace apps on Windows and Linux; macOS icons are in `kit/apps/macos/` (build the `.icon` in Icon
+Composer). The example app id is `{APP_ID}`: rename it for each app. Rules in `product/desktop.md`.
+
+| Path | What |
+|---|---|
+| `windows/app.ico` | 16 (pixel-hinted), 24, 32, 48 and 256 px |
+| `windows/msix/` | MSIX assets: Square44x44 scales and target sizes (with the light and dark unplated variants Windows needs), Square150x150, StoreLogo |
+| `linux/hicolor/` | `scalable/apps/{APP_ID}.svg`, `256x256/apps/{APP_ID}.png`, `symbolic/apps/{APP_ID}-symbolic.svg` |
+| `linux/{APP_ID}.desktop` | Desktop entry template |
+| `linux/{APP_ID}.metainfo.xml` | AppStream metadata template, with the brand colours Flathub asks for |
+| `linux/99-fusionspace.rules` | udev rule so users can open the device's serial port |
+""")
+
 # ================================================================ build
 def shoot(rel_html, dest, width=1280, scheme="light", full=True, height=900):
     """PNG preview of a built page (Playwright). Returns False if Playwright isn't installed."""
@@ -1568,6 +1715,7 @@ def shoot(rel_html, dest, width=1280, scheme="light", full=True, height=900):
 
 def build_icons():
     for n in kit_icons.ICONS: wr(f"icons/{n}.svg", kit_icons.svg(n) + "\n")
+    for n in kit_icons.ICONS: wr(f"icons/android/fs_{n.replace('-', '_')}.xml", kit_icons.vector_drawable(n))
     wr("icons/sprite.svg", '<svg xmlns="http://www.w3.org/2000/svg" style="display:none">\n' + "\n".join(kit_icons.symbol(n) for n in kit_icons.ICONS) + "\n</svg>\n")
     # contact sheet for the README: every icon at 48 px and at 24 px
     cols, cw, chh = 10, 132, 108
@@ -1608,7 +1756,7 @@ FOLDER_READMES = {
                         "| `primitives.tokens.json` + `light`, `dark`, `field.tokens.json` | Design Tokens Community Group format 2025.10 (Style Dictionary 5 and others) |\n"
                         "| `fusionspace-ui.css` | Web custom properties; the full stylesheet is `../web/fusionspace.css` |\n"
                         "| `FusionSpaceColors.swift` | SwiftUI |\n| `FusionSpaceColors.kt` | Jetpack Compose |\n| `fusionspace_ui.h` | Firmware (RGB888, RGB565, flash timings) |\n",
-    "icons/README.md": "# Icons\n\nOne SVG per icon (24 x 24, `currentColor`, 1.5 px strokes) and `sprite.svg` with every icon as a `<symbol id=\"fs-name\">`. "
+    "icons/README.md": "# Icons\n\nOne SVG per icon (24 x 24, `currentColor`, 1.5 px strokes), `sprite.svg` with every icon as a `<symbol id=\"fs-name\">`, and `android/` with each as a VectorDrawable (`fs_name.xml`, tinted by the theme). "
                        "Rules in `product/foundations.md#icons`.\n\n![Icons](preview.png)\n",
     "web/README.md": "# Web\n\n| File | What |\n|---|---|\n| `fusionspace.css` | Tokens and every component |\n| `tailwind-theme.css` | Tailwind v4 theme with the defaults removed |\n"
                      "| `fonts.css`, `fonts/` | WOFF2 subsets of Archivo and Cascadia Mono (SIL OFL) |\n| `index.html` | The specimen |\n"
@@ -1622,7 +1770,7 @@ FOLDER_READMES = {
 
 def build_product():
     rows, cvd = build_tokens()
-    build_icons(); build_web(); build_cli(); build_embedded(); build_hardware(); build_rockets(); build_docs()
+    build_icons(); build_web(); build_cli(); build_embedded(); build_hardware(); build_rockets(); build_desktop(); build_docs()
     for k, v in FOLDER_READMES.items(): wr(k, v)
     return {"contrast": rows, "cvd": cvd}
 

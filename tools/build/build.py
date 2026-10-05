@@ -910,7 +910,7 @@ def build_readme():
              ("| `tools/star-name-picker` | `index.html` picker and the cleaned `iau-star-names.csv` | browser |",
               "| `tools/star-name-picker` | `index.html` picker and the cleaned `iau-star-names.csv` | browser |\n"
               "| `tools/mark-tuner` | `index.html`: tune the mark and both lockups in the browser and export SVGs | browser |\n"
-              "| `product` | The product system: how FusionSpace sites, tools, PWAs, CLIs, iOS and Android apps, flight computers, boards and rockets are designed. Rules (start with `product/README.md`), tokens for every platform, a web stylesheet with a specimen and example screens, icons, device-screen mock-ups, a KiCad board title block, livery sheets | anything |\n"
+              "| `product` | The product system: how FusionSpace sites, tools, PWAs, CLIs, iOS, Android, macOS, Windows and Linux apps, flight computers, boards and rockets are designed. Rules (start with `product/README.md`), tokens for every platform, a web stylesheet with a specimen and example screens, icons, device-screen mock-ups, a KiCad board title block, livery sheets, desktop packaging | anything |\n"
               "| `tools/build` | The scripts that build every file here (`python3 tools/build/build.py`); see `tools/build/README.md` | terminal |")]
     for a, b in reps:
         if a not in s: print("README WARN:", a[:60]); continue

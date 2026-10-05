@@ -20,12 +20,12 @@
 <rect x="101.3" y="85.2" width="8" height="8" transform="rotate(45 105.3 89.2)" fill="#F3F4F7"/>
 <rect x="67" y="105" width="6" height="6" fill="#F3F4F7"/>
 <text x="136" y="50" font-family="Cascadia Mono" font-size="9" fill="#98A1B8" letter-spacing="0.5">DISTANCE</text>
-<text x="136" y="80" font-family="Cascadia Mono" font-size="28" fill="#F3F4F7">412</text><text x="198" y="80" font-family="Cascadia Mono" font-size="11" fill="#98A1B8">m</text>
+<text x="136" y="80" font-family="Cascadia Mono" font-size="28" fill="#F3F4F7">1352</text><text x="210" y="80" font-family="Cascadia Mono" font-size="11" fill="#98A1B8">ft</text>
 <text x="136" y="104" font-family="Cascadia Mono" font-size="9" fill="#98A1B8" letter-spacing="0.5">BEARING</text>
-<text x="136" y="128" font-family="Cascadia Mono" font-size="20" fill="#F3F4F7">062°</text>
+<text x="136" y="128" font-family="Cascadia Mono" font-size="20" fill="#F3F4F7">062° T</text>
 <text x="136" y="150" font-family="Cascadia Mono" font-size="9" fill="#98A1B8">landed 18 s ago</text>
 <line x1="0" y1="172.5" x2="240" y2="172.5" stroke="#2A3248"/>
 <text x="8" y="190" font-family="Cascadia Mono" font-size="10" fill="#98A1B8">40.86512, -119.06274</text>
-<rect x="8" y="198" width="72" height="16" fill="#0A6355"/><text x="14" y="210" font-family="Cascadia Mono" font-size="10" font-weight="600" fill="#FFFFFF">GPS LOCK</text>
-<text x="232" y="232" font-family="Cascadia Mono" font-size="9" fill="#98A1B8" text-anchor="end">SHT 3/4</text>
+<rect x="8" y="198" width="84" height="16" fill="#0A6355"/><text x="14" y="210" font-family="Cascadia Mono" font-size="10" font-weight="600" fill="#FFFFFF">GPS LOCKED</text>
+<text x="232" y="232" font-family="Cascadia Mono" font-size="9" fill="#98A1B8" text-anchor="end">3/4</text>
 </svg>

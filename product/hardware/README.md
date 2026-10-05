@@ -9,7 +9,7 @@ File → Board Setup → Title Block (or Page Settings):
 
 | Field | Example | Shows |
 |---|---|---|
-| Title | `FS-VEGA · ELEC · 004` | the board's designation |
+| Title | `FS-VEGA-004` | the board's part number |
 | Revision | `B` | `REV B` |
 | Issue date | `2026-10` | the date beside the revision |
 

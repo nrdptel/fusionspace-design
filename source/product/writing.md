@@ -37,11 +37,21 @@ Never a go/no-go verdict. The motor's printed data, the manufacturer's manual an
 - **Help text is one sentence** under the field, about the thing people get wrong: "Inside the tube, not the outside."
 - **Empty states** say what goes here and how to get it: "No flight loaded. Drop a log file here, or pick one."
 - **Status words** are short and fixed. Use exactly these, in capitals on chips and devices:
-  - States: `ARMED`, `SAFE`, `CONT` / `NO CONT` (continuity), `FIRED`, `NOT USED`, `STALE`, `NO FIX`, `LOCKED` (GPS).
-  - Notes: `NOTE`, `CAUTION`, `WARNING`, `DANGER` (ANSI Z535 signal words, never others like "Heads up" or "Important").
-    `DANGER` is only for energetics and hazards that can injure; `WARNING` for anything that can cost a flight or a rocket;
-    `CAUTION` for anything off-nominal; `NOTE` for the rest.
+  - Devices and channels: `ARMED`, `SAFE`, `CONT`, `NO CONT`, `FIRED`, `UNFIRED`, `NOT USED`.
+  - Data: `MEASURED`, `SIMULATED`, `FORECAST`, `STALE`, `NEAR LIMIT`, `OVER LIMIT`, `ADVISORY`, `NO FIX`, `GPS LOCKED`.
+  - Ground tests: `SEPARATED`, `PARTIAL`, `NO SEPARATION`.
   - Document status: `IN PREPARATION`, `RELEASED`, `WITHDRAWN`.
+- **Signal words** on notes, labels and in manuals are ANSI Z535's, with its meanings, and no others ("Heads up" and
+  "Important" are not signal words):
+  - `DANGER`: a hazard that **will** cause death or serious injury if not avoided.
+  - `WARNING`: a hazard that **could** cause death or serious injury. Live ejection charges and armed electronics are WARNING.
+  - `CAUTION`: a hazard that could cause minor or moderate injury.
+  - `NOTICE`: no injury, but damage or loss: a lost rocket, an overwritten log, a cooked battery. No safety-alert symbol.
+  - `NOTE`: information, no hazard.
+
+  DANGER, WARNING and CAUTION carry the safety-alert triangle. On screens, DANGER and WARNING use the Flare panel and CAUTION
+  the Sodium panel (two alert colours, as on a flight deck); on physical labels follow Z535's own colours (DANGER red,
+  WARNING orange, CAUTION yellow, NOTICE blue).
 - **Dates:** `4 October 2026` in prose; `2026-10-04` in tables, file names, title blocks and data. Times in 24-hour with the
   zone.
 
@@ -54,7 +64,7 @@ Can't read vega-flight-03.csv: line 1 has no time column.
 Debrief looks for a column named time, t or Time (s). Rename the column, or pick it under Columns.
 ```
 
-- No blame ("You entered an invalid value"), no apology theatre, no codes without words.
+- No blame ("You entered an invalid value"), no long apologies, no codes without words.
 - In a form, the error goes under the field it's about, in danger ink with the danger icon, and the field gets a 2 px danger
   border. Check on leaving the field, not on every keystroke.
 - In a CLI, follow [`cli.md`](cli.md#errors).
@@ -71,9 +81,14 @@ layout), with the hazard, the consequence and the avoidance:
 
 - **FusionSpace**, one word, always. Products keep their short names (Charge, Window, Debrief, Loft, Muster) and their
   designations (`FS · SW · TOOL 002`).
-- Projects are named after IAU-approved stars and take the star's code: `FS-VEGA`, drawings `FS-VEGA-001`.
+- Projects are named after IAU-approved stars and take the star's code: `FS-VEGA`.
+- **Designations** follow one grammar: `<code> · [<tag> ·] <kind> <number>`. The code is `FS` for things that belong to
+  FusionSpace as a whole and `FS-<STAR>` for a project's; the optional tag is a discipline (SW, EMB, ELEC, MECH, MFG, AERO,
+  GAME); the kind is a plain noun (TOOL, BOARD, FLIGHT, REPORT, SPEC, SITE); numbers are three digits. Examples:
+  `FS · SW · TOOL 002`, `FS-VEGA · ELEC · BOARD 004`, `FS · SPEC 001`. Drawing and part numbers are shorter:
+  `FS-VEGA-001`, with the revision after it (`rev B`).
 - Rocketry terms as the community uses them: e-match, ejection charge, shear pins, drogue, main, av-bay, motor (not engine),
-  RSO, LCO, waiver, AGL.
+  waiver, AGL. Spell out the role names once per page: range safety officer (RSO), launch control officer (LCO).
 
 ## Mechanics
 
