@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="431.2mm" height="278.0mm" viewBox="0 0 431.19 278.00">
+<rect width="431.19" height="278.00" fill="#FFFFFF"/>
+<defs><pattern id="lap" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><line x1="0" y1="0" x2="0" y2="3" stroke="#98A1B8" stroke-width="0.3"/></pattern></defs>
+<defs><pattern id="hz" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><rect width="4" height="8" fill="#F5AF20"/><rect x="4" width="4" height="8" fill="#0B0F1C"/></pattern></defs>
+<rect x="12.00" y="12.00" width="319.19" height="220.00" fill="#0B0F1C"/>
+<rect x="12.00" y="30.00" width="319.19" height="16.26" fill="#0B0F1C" stroke="#FFFFFF" stroke-width="0.4"/>
+<text x="91.80" y="41.05" font-family="Cascadia Mono" font-size="8.13" font-weight="600" fill="#FFFFFF" text-anchor="middle">FS-VEGA-001 REV B</text>
+<text x="251.39" y="41.05" font-family="Cascadia Mono" font-size="8.13" font-weight="600" fill="#FFFFFF" text-anchor="middle">FS-VEGA-001 REV B</text>
+<rect x="12.00" y="144.00" width="79.80" height="88.00" fill="#FFFFFF"/>
+<rect x="91.80" y="144.00" width="79.80" height="88.00" fill="#FF5A1F"/>
+<rect x="171.59" y="144.00" width="79.80" height="88.00" fill="#FFFFFF"/>
+<rect x="251.39" y="144.00" width="79.80" height="88.00" fill="#FF5A1F"/>
+<line x1="12.00" y1="8.00" x2="12.00" y2="12.00" stroke="#0B0F1C" stroke-width="0.3"/><text x="13.00" y="10.50" font-family="Cascadia Mono" font-size="2.50" font-weight="400" fill="#0B0F1C" text-anchor="start">0°</text>
+<line x1="91.80" y1="8.00" x2="91.80" y2="12.00" stroke="#0B0F1C" stroke-width="0.3"/><text x="92.80" y="10.50" font-family="Cascadia Mono" font-size="2.50" font-weight="400" fill="#0B0F1C" text-anchor="start">90°</text>
+<line x1="171.59" y1="8.00" x2="171.59" y2="12.00" stroke="#0B0F1C" stroke-width="0.3"/><text x="172.59" y="10.50" font-family="Cascadia Mono" font-size="2.50" font-weight="400" fill="#0B0F1C" text-anchor="start">180°</text>
+<line x1="251.39" y1="8.00" x2="251.39" y2="12.00" stroke="#0B0F1C" stroke-width="0.3"/><text x="252.39" y="10.50" font-family="Cascadia Mono" font-size="2.50" font-weight="400" fill="#0B0F1C" text-anchor="start">270°</text>
+<defs></defs><g transform="translate(119.23,82.63) scale(0.2500)"><path fill="#DA7C30" d="M42.957,56.754 A79.924,79.924 0 0 1 24.434,92.191 L24.008,91.765 A12.064,12.064 0 0 0 7.946,75.703 L7.52,75.277 A79.924,79.924 0 0 1 42.957,56.754 Z"/><path fill="#DA7C30" d="M25.075,23.89 L11.144,48.965 L10.803,48.624 A9.651,9.651 0 0 0 0.341,38.162 L0,37.821 L25.075,23.89 Z"/><path fill="#768DF5" d="M72.216,78.654 A7.238,25.334 45 0 1 61.062,100 L60.806,99.744 A7.238,7.238 0 0 0 51.126,90.064 L50.87,89.808 A7.238,25.334 45 0 1 72.216,78.654 Z"/><path fill="#768DF5" d="M99.59,0.121 C99.649,0.179 99.693,0.479 99.705,0.713 C99.746,1.514 99.574,2.619 99.394,3.507 C98.878,6.058 97.942,8.89 96.873,11.734 C94.684,17.556 91.728,23.877 88.219,30.549 C80.192,45.813 70.299,60.553 63.099,69.73 L62.246,68.877 A24.128,24.128 0 0 0 30.834,37.465 L29.98,36.612 C39.158,29.412 53.898,19.519 69.162,11.492 C75.834,7.983 82.155,5.027 87.977,2.838 C90.821,1.769 93.653,0.833 96.204,0.317 C97.092,0.137 98.197,-0.035 98.998,0.006 C99.231,0.018 99.531,0.062 99.59,0.121 Z"/></g>
+<rect x="331.19" y="12.00" width="6.00" height="220.00" fill="url(#lap)" stroke="#98A1B8" stroke-width="0.2"/>
+<g transform="rotate(-90 335.09 122.00)"><text x="335.09" y="122.00" font-family="Cascadia Mono" font-size="2.40" font-weight="400" fill="#566079" text-anchor="middle">OVERLAP</text></g>
+<line x1="12.00" y1="237.00" x2="331.19" y2="237.00" stroke="#0B0F1C" stroke-width="0.25"/><line x1="12.00" y1="235.00" x2="12.00" y2="239.00" stroke="#0B0F1C" stroke-width="0.25"/><line x1="331.19" y1="235.00" x2="331.19" y2="239.00" stroke="#0B0F1C" stroke-width="0.25"/>
+<text x="171.59" y="235.80" font-family="Cascadia Mono" font-size="2.80" font-weight="400" fill="#0B0F1C" text-anchor="middle">π × 101.6 = 319.2 mm (+ 6 mm overlap)</text>
+<text x="349.19" y="15.00" font-family="Cascadia Mono" font-size="3.00" font-weight="400" fill="#566079" text-anchor="start">DECALS</text>
+<circle cx="357.19" cy="26.00" r="6" fill="#FFFFFF" stroke="#0B0F1C" stroke-width="0.6"/><path d="M357.19 26.00 L357.19 20.00 A6 6 0 0 1 363.19 26.00 Z" fill="#0B0F1C"/><path d="M357.19 26.00 L357.19 32.00 A6 6 0 0 1 351.19 26.00 Z" fill="#0B0F1C"/><text x="366.19" y="27.50" font-family="Cascadia Mono" font-size="4.00" font-weight="600" fill="#0B0F1C" text-anchor="start">CG</text>
+<circle cx="389.19" cy="26.00" r="6" fill="#FFFFFF" stroke="#0B0F1C" stroke-width="0.6"/><circle cx="389.19" cy="26.00" r="1.80" fill="#0B0F1C"/><text x="398.19" y="27.50" font-family="Cascadia Mono" font-size="4.00" font-weight="600" fill="#0B0F1C" text-anchor="start">CP</text>
+<rect x="349.19" y="40.00" width="70.00" height="30" fill="#FFFFFF" stroke="#0B0F1C" stroke-width="0.4"/>
+<rect x="349.19" y="40.00" width="70.00" height="6" fill="#0B0F1C"/><text x="351.19" y="44.40" font-family="Cascadia Mono" font-size="3.20" font-weight="600" fill="#FFFFFF" text-anchor="start">IF FOUND · REWARD</text>
+<text x="351.19" y="51.00" font-family="Cascadia Mono" font-size="2.80" font-weight="400" fill="#0B0F1C" text-anchor="start">NAME ______________________</text>
+<text x="351.19" y="56.20" font-family="Cascadia Mono" font-size="2.80" font-weight="400" fill="#0B0F1C" text-anchor="start">PHONE _____________________</text>
+<text x="351.19" y="61.40" font-family="Cascadia Mono" font-size="2.80" font-weight="400" fill="#0B0F1C" text-anchor="start">EMAIL _____________________</text>
+<text x="351.19" y="66.60" font-family="Cascadia Mono" font-size="2.80" font-weight="400" fill="#0B0F1C" text-anchor="start">FS-VEGA-001 REV B</text>
+<rect x="349.19" y="76.00" width="70.00" height="22" fill="url(hz)" />
+<rect x="351.69" y="78.50" width="65.00" height="17" fill="#FFFFFF"/>
+<rect x="351.69" y="78.50" width="65.00" height="5.5" fill="#AC001E"/><text x="353.69" y="82.60" font-family="Cascadia Mono" font-size="3.20" font-weight="600" fill="#FFFFFF" text-anchor="start">WARNING</text>
+<text x="353.69" y="88.30" font-family="Cascadia Mono" font-size="2.90" font-weight="400" fill="#0B0F1C" text-anchor="start">LIVE PYRO WHEN ARMED</text><text x="353.69" y="92.80" font-family="Cascadia Mono" font-size="2.60" font-weight="400" fill="#566079" text-anchor="start">Switch off before opening</text>
+<rect x="299.19" y="244.00" width="120" height="22" fill="#FFFFFF" stroke="#0B0F1C" stroke-width="0.5"/>
+<rect x="299.19" y="244.00" width="70" height="11" fill="none" stroke="#0B0F1C" stroke-width="0.2"/>
+<text x="300.69" y="247.30" font-family="Cascadia Mono" font-size="2.00" font-weight="400" fill="#566079" text-anchor="start">TITLE</text><text x="300.69" y="252.40" font-family="Cascadia Mono" font-size="3.00" font-weight="400" fill="#0B0F1C" text-anchor="start">Livery wrap, 101.6 mm OD</text>
+<rect x="369.19" y="244.00" width="50" height="11" fill="none" stroke="#0B0F1C" stroke-width="0.2"/>
+<text x="370.69" y="247.30" font-family="Cascadia Mono" font-size="2.00" font-weight="400" fill="#566079" text-anchor="start">DESIGNATION</text><text x="370.69" y="252.40" font-family="Cascadia Mono" font-size="3.00" font-weight="400" fill="#0B0F1C" text-anchor="start">FS-VEGA-001</text>
+<rect x="299.19" y="255.00" width="25" height="11" fill="none" stroke="#0B0F1C" stroke-width="0.2"/>
+<text x="300.69" y="258.30" font-family="Cascadia Mono" font-size="2.00" font-weight="400" fill="#566079" text-anchor="start">SCALE</text><text x="300.69" y="263.40" font-family="Cascadia Mono" font-size="3.00" font-weight="400" fill="#0B0F1C" text-anchor="start">1 : 1</text>
+<rect x="324.19" y="255.00" width="20" height="11" fill="none" stroke="#0B0F1C" stroke-width="0.2"/>
+<text x="325.69" y="258.30" font-family="Cascadia Mono" font-size="2.00" font-weight="400" fill="#566079" text-anchor="start">UNITS</text><text x="325.69" y="263.40" font-family="Cascadia Mono" font-size="3.00" font-weight="400" fill="#0B0F1C" text-anchor="start">mm</text>
+<rect x="344.19" y="255.00" width="75" height="11" fill="none" stroke="#0B0F1C" stroke-width="0.2"/>
+<text x="345.69" y="258.30" font-family="Cascadia Mono" font-size="2.00" font-weight="400" fill="#566079" text-anchor="start">COLOURS</text><text x="345.69" y="263.40" font-family="Cascadia Mono" font-size="3.00" font-weight="400" fill="#0B0F1C" text-anchor="start">Void · white · fluo orange</text>
+<text x="12.00" y="264.00" font-family="Cascadia Mono" font-size="2.80" font-weight="400" fill="#566079" text-anchor="start">Print at 100 %. Measure the tube: wrap width = π × OD + overlap.</text>
+</svg>

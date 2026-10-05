@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240"><rect width="240" height="240" fill="#0B0F1C"/>
+<rect x="0" y="0" width="240" height="22" fill="#141A2B"/><text x="8" y="15" font-family="Cascadia Mono" font-size="11" font-weight="600" fill="#F3F4F7">RECOVERY</text>
+<text x="232" y="15" font-family="Cascadia Mono" font-size="10" fill="#98A1B8" text-anchor="end">3.9 V  SAT 11  LINK 0.4 s</text>
+<line x1="0" y1="22.5" x2="240" y2="22.5" stroke="#2A3248"/>
+<circle cx="70" cy="108" r="50" fill="none" stroke="#6D7790"/>
+<line x1="70.0" y1="64.0" x2="70.0" y2="58.0" stroke="#98A1B8"/>
+<line x1="93.5" y1="67.3" x2="95.0" y2="64.7" stroke="#98A1B8"/>
+<line x1="110.7" y1="84.5" x2="113.3" y2="83.0" stroke="#98A1B8"/>
+<line x1="114.0" y1="108.0" x2="120.0" y2="108.0" stroke="#98A1B8"/>
+<line x1="110.7" y1="131.5" x2="113.3" y2="133.0" stroke="#98A1B8"/>
+<line x1="93.5" y1="148.7" x2="95.0" y2="151.3" stroke="#98A1B8"/>
+<line x1="70.0" y1="152.0" x2="70.0" y2="158.0" stroke="#98A1B8"/>
+<line x1="46.5" y1="148.7" x2="45.0" y2="151.3" stroke="#98A1B8"/>
+<line x1="29.3" y1="131.5" x2="26.7" y2="133.0" stroke="#98A1B8"/>
+<line x1="26.0" y1="108.0" x2="20.0" y2="108.0" stroke="#98A1B8"/>
+<line x1="29.3" y1="84.5" x2="26.7" y2="83.0" stroke="#98A1B8"/>
+<line x1="46.5" y1="67.3" x2="45.0" y2="64.7" stroke="#98A1B8"/>
+<text x="70" y="54" font-family="Cascadia Mono" font-size="9" fill="#98A1B8" text-anchor="middle">N</text>
+<line x1="70" y1="108" x2="105.3" y2="89.2" stroke="#F3F4F7" stroke-width="2"/>
+<rect x="101.3" y="85.2" width="8" height="8" transform="rotate(45 105.3 89.2)" fill="#F3F4F7"/>
+<rect x="67" y="105" width="6" height="6" fill="#F3F4F7"/>
+<text x="136" y="50" font-family="Cascadia Mono" font-size="9" fill="#98A1B8" letter-spacing="0.5">DISTANCE</text>
+<text x="136" y="80" font-family="Cascadia Mono" font-size="28" fill="#F3F4F7">412</text><text x="198" y="80" font-family="Cascadia Mono" font-size="11" fill="#98A1B8">m</text>
+<text x="136" y="104" font-family="Cascadia Mono" font-size="9" fill="#98A1B8" letter-spacing="0.5">BEARING</text>
+<text x="136" y="128" font-family="Cascadia Mono" font-size="20" fill="#F3F4F7">062°</text>
+<text x="136" y="150" font-family="Cascadia Mono" font-size="9" fill="#98A1B8">landed 18 s ago</text>
+<line x1="0" y1="172.5" x2="240" y2="172.5" stroke="#2A3248"/>
+<text x="8" y="190" font-family="Cascadia Mono" font-size="10" fill="#98A1B8">40.86512, -119.06274</text>
+<rect x="8" y="198" width="72" height="16" fill="#0A6355"/><text x="14" y="210" font-family="Cascadia Mono" font-size="10" font-weight="600" fill="#FFFFFF">GPS LOCK</text>
+<text x="232" y="232" font-family="Cascadia Mono" font-size="9" fill="#98A1B8" text-anchor="end">SHT 3/4</text>
+</svg>

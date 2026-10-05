@@ -24,7 +24,7 @@ PLACEHOLDER = re.compile(r"example\.com|your-name|LOGO_URL|Lorem ipsum|TODO|FIXM
 SIZE_SUFFIX = re.compile(r"(-preview(@\dx)?|@\dx|-cmyk|-lvgl|-1200dpi|-\d+w|-(16|32|48|64|96|128|150|152|167|180|192|256|310|384|400|500|512|800|1000|1024|2000|2048|4000))$")
 DIMS = re.compile(r"(?<![\d.])(\d{2,5})x(\d{2,5})(?!\d|in|mm)")
 ANSI = re.compile(r"\x1b\[([0-9;]*)m")
-SECTION_ORDER = ["guide", "logo", "graphics", "templates", "color", "kit/logo", "kit/web", "kit/apps", "kit/github", "kit/social", "kit/documents",
+SECTION_ORDER = ["guide", "product", "logo", "graphics", "templates", "color", "kit/logo", "kit/web", "kit/apps", "kit/github", "kit/social", "kit/documents",
                  "kit/projects", "kit/embedded", "kit/pcb", "kit/software", "kit/games", "kit/video", "kit/wallpapers", "kit/merch",
                  "kit/production", "kit/3d-print", "kit", "(root)"]
 
@@ -36,6 +36,8 @@ DIR_DESC = [("logo/mark/", "Master mark files (gradient, one colour, two-tone) a
             ("logo/png/", "Master PNG exports of the logo"), ("logo/favicon/", "Master favicon and app icon artwork"),
             ("logo/", "Master logo files"), ("graphics/", "Construction drawing of the mark (used in the guide and on posters)"),
             ("templates/freecad/", "FreeCAD drawing title-block template"), ("templates/", "Project social card template"),
+            ("product/tokens/", "Product tokens for every platform (generated from the same values as product/foundations.md)"),
+            ("product/", "The product system: rules for sites, tools, CLIs, apps, devices, boards and rockets, with reference parts"),
             ("color/", "Design tokens: colours, geometry values, type"), ("guide/", "The brand guide (open in a browser)"),
             ("README.md", "Repository README"), ("verify.png", "Build check image from verify.py")]
 
@@ -307,6 +309,7 @@ COVER = [
     (r"^kit/web/site/public/brand/fusion-space-wordmark$", "A copy of the horizontal lockup for the website (settled artwork)."),
     (r"^color/", "Colour data (tokens, CSS, GIMP palette), written from the same values as the guide's colour sheet."),
     (r"^kit/index\.html$", "The kit's own browsing page (a tool, not brand output)."),
+    (r"^product/tokens/", "Token files for each platform, written from the same values as product/foundations.md; the build measures every colour pair and stops if one falls short."),
 ]
 REPS = [   # (representative, [items it covers], why it stands for them)
     ("guide/index.html", [r"^graphics/(mark-construction|fusion-gradient-strip)$"], "shown in the guide"),
@@ -377,12 +380,26 @@ REPS = [   # (representative, [items it covers], why it stands for them)
     ("kit/3d-print/fusion-space-cookie-80mm", [r"^kit/3d-print/fusion-space-cookie-80mm-"], "the cutter and stamp STLs"),
     ("kit/3d-print/sketch/fusion-space-mark-50mm", [r"^kit/3d-print/sketch/"], "the other sketches (mark, lockups and name at every size)"),
     ("kit/3d-print/parametric/FusionSpace_Badge.FCMacro", [r"^kit/3d-print/parametric/"], "the Fusion script"),
+    # product system (4 October 2026): one focus item per reference part; the rule documents are focus text
+    ("product/web/previews/specimen-light", [r"^product/web/(index\.html|previews/specimen-dark|fusionspace\.css|tailwind-theme\.css|fonts|mdbook/|README)"],
+     "the specimen page itself (dark theme too), the stylesheet, fonts, Tailwind and mdBook themes"),
+    ("product/web/previews/home-light", [r"^product/web/(examples/home\.html|previews/home-dark)"], "the page itself and its dark theme"),
+    ("product/web/previews/charge-light", [r"^product/web/(examples/charge\.html|previews/charge-phone)"], "the page itself and its phone layout"),
+    ("product/web/previews/debrief-dark", [r"^product/web/(examples/debrief\.html|previews/(debrief-light|chart-))"], "the page itself, its light theme and the chart previews"),
+    ("product/web/previews/window-field", [r"^product/web/(examples/window\.html|previews/window-phone)"], "the page itself and its phone layout"),
+    ("product/icons/preview", [r"^product/icons/"], "every icon as its own SVG and the sprite"),
+    ("product/embedded/preview", [r"^product/embedded/"], "each screen at 1:1 and 4x, the TFT screen and the LVGL styles"),
+    ("product/hardware/preview", [r"^product/hardware/"], "the KiCad footprints (front and back) and their README"),
+    ("product/rockets/preview", [r"^product/rockets/"], "the wraps for every airframe size (SVG, PDF) and their README"),
+    ("product/cli/preview", [r"^product/cli/"], "the Rust and Python styles and the sample output"),
 ]
-CORE = (r"^(guide/|logo/|kit/web/|kit/apps/|kit/github/|kit/social/|kit/documents/|README\.md$|kit/projects/(hpr-motor-finder|charge|window|muster|debrief|loft)/|kit/production/stickers/sticker-mark-50mm-dark$)")
+CORE = (r"^(guide/|product/|logo/|kit/web/|kit/apps/|kit/github/|kit/social/|kit/documents/|README\.md$|kit/projects/(hpr-motor-finder|charge|window|muster|debrief|loft)/|kit/production/stickers/sticker-mark-50mm-dark$)")
            # focus items people will see from you first (identity, web, GitHub, social, documents) and the open options;
            # the rest of focus is the discipline kits (screens, PCB, software, games, video, wallpapers, merch, production)
 FOCUS_TEXT = {"README.md", "kit/github/profile-README.md", "kit/documents/email-signature/signature.html", "kit/web/site/metadata.ts",
-              "kit/3d-print/README.md", "kit/3d-print/parametric/FusionSpace_Badge.FCMacro"}   # text people read: always in focus
+              "kit/3d-print/README.md", "kit/3d-print/parametric/FusionSpace_Badge.FCMacro",
+              *(f"product/{d}.md" for d in ("README", "principles", "foundations", "data", "writing", "web", "cli", "mobile", "embedded",
+                                             "hardware", "rockets", "review"))}   # text people read: always in focus
 KNOWN_FLAGS = ()                    # expected audit flags; others pull an item into focus
 
 def review_scope(items):

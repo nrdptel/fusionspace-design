@@ -815,12 +815,12 @@ def build_guide(info):
     s, n = re.subn(r'<tr><td><span[^>]*></span>Gradient M end</td>.*?(?=</tbody>)', lambda _: rows, s, count=1, flags=re.S)
     assert n == 1, "contrast table"
     # Sheet 8: the asset kit (kit.py)
-    import kit
-    n = 8
+    import kit, kit_product
+    n = 9                                                   # sheet 8: Kit, sheet 9: Products (kit_product.py)
     for i in range(1, 8): s = s.replace(f"SHEET {i} / 7", f"SHEET {i} / {n}")
-    s = s.replace('<a href="#files">Files</a>', '<a href="#files">Files</a><a href="#kit">Kit</a>', 1)
-    s = s.replace("</style>", kit.GUIDE_CSS + "</style>", 1)
-    s = s.replace("  <footer>", kit.guide_sheet(n) + "\n  <footer>", 1)
+    s = s.replace('<a href="#files">Files</a>', '<a href="#files">Files</a><a href="#kit">Kit</a><a href="#products">Products</a>', 1)
+    s = s.replace("</style>", kit.GUIDE_CSS + kit_product.GUIDE_CSS + "</style>", 1)
+    s = s.replace("  <footer>", kit.guide_sheet(8).replace("SHEET 8 / 8", f"SHEET 8 / {n}") + kit_product.guide_sheet(9, n) + "\n  <footer>", 1)
     tags = "".join(f'<div><span class="label">Tag</span><b>{t}</b><p>{d}.<br><code style="white-space:nowrap">FS-VEGA · {t}</code></p></div>' for t, d in kit.DISCIPLINES)
     s = s.replace('      <div><a class="cta" href="../tools/star-name-picker/index.html">',
                   '      <p>Projects of any kind use the same scheme. An optional discipline tag after the code says what kind of project it is:</p>\n'
@@ -834,6 +834,7 @@ def build_guide(info):
         assert a_ in s, a_[:40]
         s = s.replace(a_, b_)
     s = s.replace("<tr><td>templates/</td>", "<tr><td>kit/</td><td>The asset kit: logos in every colour mode and size, web and app icons, social and GitHub images, documents, slides and production files. See the Kit sheet and <code>kit/README.md</code>.</td></tr>\n        <tr><td>templates/</td>", 1)
+    s = s.replace("<tr><td>templates/</td>", "<tr><td>product/</td><td>The product system: rules for sites, tools, CLIs, apps, devices, boards and rockets, with tokens and reference parts. See the Products sheet and <code>product/README.md</code>.</td></tr>\n        <tr><td>templates/</td>", 1)
     s = guide_review_fixes(s)
     wr("guide/index.html", s)
     return s
@@ -909,6 +910,7 @@ def build_readme():
              ("| `tools/star-name-picker` | `index.html` picker and the cleaned `iau-star-names.csv` | browser |",
               "| `tools/star-name-picker` | `index.html` picker and the cleaned `iau-star-names.csv` | browser |\n"
               "| `tools/mark-tuner` | `index.html`: tune the mark and both lockups in the browser and export SVGs | browser |\n"
+              "| `product` | The product system: how FusionSpace sites, tools, PWAs, CLIs, iOS and Android apps, flight computers, boards and rockets are designed. Rules (start with `product/README.md`), tokens for every platform, a web stylesheet with a specimen and example screens, icons, device-screen mock-ups, a KiCad board title block, livery sheets | anything |\n"
               "| `tools/build` | The scripts that build every file here (`python3 tools/build/build.py`); see `tools/build/README.md` | terminal |")]
     for a, b in reps:
         if a not in s: print("README WARN:", a[:60]); continue
@@ -933,6 +935,7 @@ def build_all():
     build_marks(); info = build_lockups(); build_favicons(); build_pngs(); dxf = build_dxf()
     build_wordmarks(); build_construction(); build_tokens(); build_graphics(); build_social(); build_freecad()
     import kit; kit_info = kit.build_kit()
+    import kit_product; kit_product.build_product()   # product/: the product system (needs the logos above)
     build_guide(info); build_readme()
     import kit_picker; kit_picker.build_picker()      # tools/star-name-picker/
     import kit_review; review = kit_review.build_review()   # review.html: every output, for sign-off

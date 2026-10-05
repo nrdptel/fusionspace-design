@@ -1,0 +1,125 @@
+{
+  "$description": "FusionSpace semantic colours, field theme (DTCG 2025.10; aliases resolve against primitives.tokens.json).",
+  "color": {
+    "canvas": {
+      "$type": "color",
+      "$value": "{core.white}",
+      "$description": "Page and screen background"
+    },
+    "surface": {
+      "$type": "color",
+      "$value": "{core.white}",
+      "$description": "Raised panels, inputs, tables, dialogs (separated by rules, never shadows)"
+    },
+    "rule": {
+      "$type": "color",
+      "$value": "{core.haze}",
+      "$description": "Hairlines between rows, sections and cells (decoration: no contrast minimum)"
+    },
+    "rule-strong": {
+      "$type": "color",
+      "$value": "{core.void}",
+      "$description": "Control borders and chart axes (3:1 against canvas and surface)"
+    },
+    "ink": {
+      "$type": "color",
+      "$value": "{core.void}",
+      "$description": "Text, primary lines, measured data"
+    },
+    "ink-muted": {
+      "$type": "color",
+      "$value": "{core.graphite}",
+      "$description": "Secondary text: labels, units, captions, sources"
+    },
+    "ink-faint": {
+      "$type": "color",
+      "$value": "{core.slate}",
+      "$description": "Disabled text, placeholders, hatching (not for anything that must be read)"
+    },
+    "action": {
+      "$type": "color",
+      "$value": "{brand.ion}",
+      "$description": "Links, selection, focus, the one interactive accent"
+    },
+    "on-action": {
+      "$type": "color",
+      "$value": "{core.white}",
+      "$description": "Text on an action fill"
+    },
+    "focus": {
+      "$type": "color",
+      "$value": "{brand.ion}",
+      "$description": "Focus ring (2 px outline, 2 px offset)"
+    },
+    "danger": {
+      "$type": "color",
+      "$value": "{signal.flare.fill}",
+      "$description": "Danger ink: text, icons and lines"
+    },
+    "caution": {
+      "$type": "color",
+      "$value": "{brand.ember}",
+      "$description": "Caution ink: text, icons and lines"
+    },
+    "ok": {
+      "$type": "color",
+      "$value": "{signal.aurora.fill}",
+      "$description": "Normal ink: text, icons and lines"
+    },
+    "predicted": {
+      "$type": "color",
+      "$value": "{signal.nebula.ink-light}",
+      "$description": "Predicted, simulated or forecast data (always dashed or hatched too)"
+    },
+    "danger-fill": {
+      "$type": "color",
+      "$value": "{signal.flare.fill}"
+    },
+    "on-danger-fill": {
+      "$type": "color",
+      "$value": "{core.white}"
+    },
+    "caution-fill": {
+      "$type": "color",
+      "$value": "{signal.sodium.fill}"
+    },
+    "on-caution-fill": {
+      "$type": "color",
+      "$value": "{core.void}"
+    },
+    "ok-fill": {
+      "$type": "color",
+      "$value": "{signal.aurora.fill}"
+    },
+    "on-ok-fill": {
+      "$type": "color",
+      "$value": "{core.white}"
+    },
+    "info-fill": {
+      "$type": "color",
+      "$value": "{brand.ion}"
+    },
+    "on-info-fill": {
+      "$type": "color",
+      "$value": "{core.white}"
+    },
+    "series": {
+      "1": {
+        "$type": "color",
+        "$value": "{core.void}"
+      },
+      "2": {
+        "$type": "color",
+        "$value": "{brand.ion}"
+      },
+      "3": {
+        "$type": "color",
+        "$value": "{brand.ember}"
+      },
+      "4": {
+        "$type": "color",
+        "$value": "{core.slate}"
+      }
+    }
+  }
+}

@@ -1,0 +1,868 @@
+{
+  "$description": "FusionSpace primitives (DTCG 2025.10). Brand colours from color/fusion-space-tokens.json plus the product signal colours. Themes alias these in light/dark/field.tokens.json.",
+  "core": {
+    "void": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0431,
+          0.0588,
+          0.1098
+        ],
+        "hex": "#0B0F1C"
+      }
+    },
+    "abyss": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0784,
+          0.102,
+          0.1686
+        ],
+        "hex": "#141A2B"
+      }
+    },
+    "graphite": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1647,
+          0.1961,
+          0.2824
+        ],
+        "hex": "#2A3248"
+      }
+    },
+    "slate": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.3373,
+          0.3765,
+          0.4745
+        ],
+        "hex": "#566079"
+      }
+    },
+    "haze": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.5961,
+          0.6314,
+          0.7216
+        ],
+        "hex": "#98A1B8"
+      }
+    },
+    "mist": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8392,
+          0.8549,
+          0.8941
+        ],
+        "hex": "#D6DAE4"
+      }
+    },
+    "paper": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9529,
+          0.9569,
+          0.9686
+        ],
+        "hex": "#F3F4F7"
+      }
+    },
+    "white": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "hex": "#FFFFFF"
+      }
+    },
+    "steel": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.4275,
+          0.4667,
+          0.5647
+        ],
+        "hex": "#6D7790"
+      },
+      "$description": "Control borders on dark"
+    }
+  },
+  "brand": {
+    "ion": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.2,
+          0.3137,
+          0.8392
+        ],
+        "hex": "#3350D6"
+      }
+    },
+    "ember": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.702,
+          0.3098,
+          0.0471
+        ],
+        "hex": "#B34F0C"
+      }
+    },
+    "m-orange": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8549,
+          0.4863,
+          0.1882
+        ],
+        "hex": "#DA7C30"
+      }
+    },
+    "o-blue": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.4627,
+          0.5529,
+          0.9608
+        ],
+        "hex": "#768DF5"
+      }
+    },
+    "gradient": {
+      "$type": "gradient",
+      "$value": [
+        {
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.8549,
+              0.4863,
+              0.1882
+            ],
+            "hex": "#DA7C30"
+          },
+          "position": 0.0
+        },
+        {
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.8157,
+              0.4902,
+              0.4784
+            ],
+            "hex": "#D07D7A"
+          },
+          "position": 0.35
+        },
+        {
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.6314,
+              0.5333,
+              0.7961
+            ],
+            "hex": "#A188CB"
+          },
+          "position": 0.65
+        },
+        {
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4627,
+              0.5529,
+              0.9608
+            ],
+            "hex": "#768DF5"
+          },
+          "position": 1.0
+        }
+      ],
+      "$description": "Identity only, always left to right. Never a status, never a data scale."
+    }
+  },
+  "signal": {
+    "flare": {
+      "$description": "Flare: Danger, failure, live energetics (ARMED)",
+      "fill": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.6745,
+            0.0,
+            0.1176
+          ],
+          "hex": "#AC001E"
+        }
+      },
+      "on-fill": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "hex": "#FFFFFF"
+        }
+      },
+      "ink-light": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.6745,
+            0.0,
+            0.1176
+          ],
+          "hex": "#AC001E"
+        }
+      },
+      "ink-dark": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9843,
+            0.502,
+            0.5137
+          ],
+          "hex": "#FB8083"
+        }
+      }
+    },
+    "sodium": {
+      "$description": "Sodium: Caution, off-nominal, needs attention",
+      "fill": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9608,
+            0.6863,
+            0.1255
+          ],
+          "hex": "#F5AF20"
+        }
+      },
+      "on-fill": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0431,
+            0.0588,
+            0.1098
+          ],
+          "hex": "#0B0F1C"
+        }
+      },
+      "ink-light": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.702,
+            0.3098,
+            0.0471
+          ],
+          "hex": "#B34F0C"
+        }
+      },
+      "ink-dark": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9608,
+            0.6863,
+            0.1255
+          ],
+          "hex": "#F5AF20"
+        }
+      }
+    },
+    "aurora": {
+      "$description": "Aurora: Normal, safe, within limits",
+      "fill": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0392,
+            0.3882,
+            0.3333
+          ],
+          "hex": "#0A6355"
+        }
+      },
+      "on-fill": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "hex": "#FFFFFF"
+        }
+      },
+      "ink-light": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0392,
+            0.3882,
+            0.3333
+          ],
+          "hex": "#0A6355"
+        }
+      },
+      "ink-dark": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4157,
+            0.8353,
+            0.7137
+          ],
+          "hex": "#6AD5B6"
+        }
+      }
+    },
+    "nebula": {
+      "$description": "Nebula: Predicted, simulated, forecast, target",
+      "ink-light": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.6353,
+            0.1412,
+            0.5333
+          ],
+          "hex": "#A22488"
+        }
+      },
+      "ink-dark": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9294,
+            0.5373,
+            0.8235
+          ],
+          "hex": "#ED89D2"
+        }
+      }
+    }
+  },
+  "spectral": {
+    "o": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.4627,
+          0.5529,
+          0.9608
+        ],
+        "hex": "#768DF5"
+      }
+    },
+    "b": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.6667,
+          0.749,
+          1.0
+        ],
+        "hex": "#AABFFF"
+      }
+    },
+    "a": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.7922,
+          0.8431,
+          1.0
+        ],
+        "hex": "#CAD7FF"
+      }
+    },
+    "f": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9725,
+          0.9686,
+          1.0
+        ],
+        "hex": "#F8F7FF"
+      }
+    },
+    "g": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          1.0,
+          0.9569,
+          0.9176
+        ],
+        "hex": "#FFF4EA"
+      }
+    },
+    "k": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          1.0,
+          0.8235,
+          0.6314
+        ],
+        "hex": "#FFD2A1"
+      }
+    },
+    "m": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8549,
+          0.4863,
+          0.1882
+        ],
+        "hex": "#DA7C30"
+      }
+    }
+  },
+  "font": {
+    "display": {
+      "$type": "fontFamily",
+      "$value": [
+        "Cascadia Mono",
+        "ui-monospace",
+        "Menlo",
+        "monospace"
+      ]
+    },
+    "text": {
+      "$type": "fontFamily",
+      "$value": [
+        "Archivo",
+        "system-ui",
+        "-apple-system",
+        "Segoe UI",
+        "sans-serif"
+      ]
+    },
+    "mono": {
+      "$type": "fontFamily",
+      "$value": [
+        "Cascadia Mono",
+        "ui-monospace",
+        "SF Mono",
+        "Menlo",
+        "Consolas",
+        "monospace"
+      ]
+    }
+  },
+  "space": {
+    "0": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0,
+        "unit": "px"
+      }
+    },
+    "2": {
+      "$type": "dimension",
+      "$value": {
+        "value": 2,
+        "unit": "px"
+      }
+    },
+    "4": {
+      "$type": "dimension",
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      }
+    },
+    "8": {
+      "$type": "dimension",
+      "$value": {
+        "value": 8,
+        "unit": "px"
+      }
+    },
+    "12": {
+      "$type": "dimension",
+      "$value": {
+        "value": 12,
+        "unit": "px"
+      }
+    },
+    "16": {
+      "$type": "dimension",
+      "$value": {
+        "value": 16,
+        "unit": "px"
+      }
+    },
+    "24": {
+      "$type": "dimension",
+      "$value": {
+        "value": 24,
+        "unit": "px"
+      }
+    },
+    "32": {
+      "$type": "dimension",
+      "$value": {
+        "value": 32,
+        "unit": "px"
+      }
+    },
+    "48": {
+      "$type": "dimension",
+      "$value": {
+        "value": 48,
+        "unit": "px"
+      }
+    },
+    "64": {
+      "$type": "dimension",
+      "$value": {
+        "value": 64,
+        "unit": "px"
+      }
+    },
+    "96": {
+      "$type": "dimension",
+      "$value": {
+        "value": 96,
+        "unit": "px"
+      }
+    }
+  },
+  "line": {
+    "thin": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1,
+        "unit": "px"
+      }
+    },
+    "thick": {
+      "$type": "dimension",
+      "$value": {
+        "value": 2,
+        "unit": "px"
+      }
+    },
+    "heavy": {
+      "$type": "dimension",
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      }
+    }
+  },
+  "chamfer": {
+    "s": {
+      "$type": "dimension",
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      }
+    },
+    "m": {
+      "$type": "dimension",
+      "$value": {
+        "value": 8,
+        "unit": "px"
+      }
+    }
+  },
+  "duration": {
+    "quick": {
+      "$type": "duration",
+      "$value": {
+        "value": 100,
+        "unit": "ms"
+      }
+    },
+    "base": {
+      "$type": "duration",
+      "$value": {
+        "value": 160,
+        "unit": "ms"
+      }
+    },
+    "slow": {
+      "$type": "duration",
+      "$value": {
+        "value": 240,
+        "unit": "ms"
+      }
+    }
+  },
+  "easing": {
+    "standard": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.2,
+        0,
+        0,
+        1
+      ]
+    },
+    "exit": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.3,
+        0,
+        1,
+        1
+      ]
+    }
+  },
+  "type": {
+    "label": {
+      "$type": "typography",
+      "$description": "Field labels, column heads, title-block cells, sheet numbers",
+      "$value": {
+        "fontFamily": "{font.mono}",
+        "fontSize": {
+          "value": 12,
+          "unit": "px"
+        },
+        "lineHeight": 1.3333,
+        "fontWeight": 400,
+        "letterSpacing": {
+          "value": 0.72,
+          "unit": "px"
+        }
+      }
+    },
+    "small": {
+      "$type": "typography",
+      "$description": "Captions, helper text, sources, footnotes",
+      "$value": {
+        "fontFamily": "{font.text}",
+        "fontSize": {
+          "value": 14,
+          "unit": "px"
+        },
+        "lineHeight": 1.4286,
+        "fontWeight": 400,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    "body": {
+      "$type": "typography",
+      "$description": "Running text and controls",
+      "$value": {
+        "fontFamily": "{font.text}",
+        "fontSize": {
+          "value": 16,
+          "unit": "px"
+        },
+        "lineHeight": 1.5,
+        "fontWeight": 400,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    "lead": {
+      "$type": "typography",
+      "$description": "The one-sentence summary under a page title",
+      "$value": {
+        "fontFamily": "{font.text}",
+        "fontSize": {
+          "value": 20,
+          "unit": "px"
+        },
+        "lineHeight": 1.4,
+        "fontWeight": 400,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    "heading": {
+      "$type": "typography",
+      "$description": "Section heads inside a sheet",
+      "$value": {
+        "fontFamily": "{font.display}",
+        "fontSize": {
+          "value": 14,
+          "unit": "px"
+        },
+        "lineHeight": 1.4286,
+        "fontWeight": 600,
+        "letterSpacing": {
+          "value": 0.56,
+          "unit": "px"
+        }
+      }
+    },
+    "title": {
+      "$type": "typography",
+      "$description": "Page and screen titles",
+      "$value": {
+        "fontFamily": "{font.display}",
+        "fontSize": {
+          "value": 28,
+          "unit": "px"
+        },
+        "lineHeight": 1.1429,
+        "fontWeight": 600,
+        "letterSpacing": {
+          "value": -0.14,
+          "unit": "px"
+        }
+      }
+    },
+    "display": {
+      "$type": "typography",
+      "$description": "The one big title on a landing page",
+      "$value": {
+        "fontFamily": "{font.display}",
+        "fontSize": {
+          "value": 40,
+          "unit": "px"
+        },
+        "lineHeight": 1.1,
+        "fontWeight": 600,
+        "letterSpacing": {
+          "value": -0.4,
+          "unit": "px"
+        }
+      }
+    },
+    "hero": {
+      "$type": "typography",
+      "$description": "Print covers and splash only",
+      "$value": {
+        "fontFamily": "{font.display}",
+        "fontSize": {
+          "value": 56,
+          "unit": "px"
+        },
+        "lineHeight": 1.0714,
+        "fontWeight": 600,
+        "letterSpacing": {
+          "value": -0.56,
+          "unit": "px"
+        }
+      }
+    },
+    "readout": {
+      "$type": "typography",
+      "$description": "A single headline value (apogee, charge mass)",
+      "$value": {
+        "fontFamily": "{font.mono}",
+        "fontSize": {
+          "value": 28,
+          "unit": "px"
+        },
+        "lineHeight": 1.1429,
+        "fontWeight": 400,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    "readout-l": {
+      "$type": "typography",
+      "$description": "The value a screen exists to show",
+      "$value": {
+        "fontFamily": "{font.mono}",
+        "fontSize": {
+          "value": 40,
+          "unit": "px"
+        },
+        "lineHeight": 1.1,
+        "fontWeight": 400,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    "code": {
+      "$type": "typography",
+      "$description": "Code, commands, file names, part numbers",
+      "$value": {
+        "fontFamily": "{font.mono}",
+        "fontSize": {
+          "value": 14,
+          "unit": "px"
+        },
+        "lineHeight": 1.4286,
+        "fontWeight": 400,
+        "letterSpacing": {
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    }
+  }
+}
