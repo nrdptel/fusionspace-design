@@ -48,7 +48,7 @@ circumference.
 
 ## Flight card
 
-Every flight has a card, printed from the tool that planned it (Charge, Loft), A6 or half-letter, in the title-block layout:
+Every flight has a card, printed from the tools that planned it (Charge, hpr-sim), A6 or half-letter, in the title-block layout:
 designation and flight number, motor (`J350W-L`, with its delay set), mass, CG and CP stations and the stability margin in
 calibres, charges in grams for each channel, altimeter settings, expected apogee with its spread, the waiver, the flyer's
 name and certification level, and boxes to tick for the pad checklist. It is designed to be read and signed by the range safety officer (RSO).

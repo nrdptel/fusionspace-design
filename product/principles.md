@@ -2,7 +2,7 @@
 
 Eight rules that decide everything else in `product/`. When a specific rule is missing or unclear, these settle it.
 
-FusionSpace makes engineering tools, mostly for high-power rocketry: calculators, simulators, log analysers, flight computers,
+FusionSpace makes engineering tools, mostly for high-power rocketry: calculators, simulators, flight reports, flight computers,
 boards and rockets. The people using them are measuring, building and flying real hardware, often outdoors, sometimes next to
 live energetics. The design follows from that: the products look like what they are, careful engineering documents, and they
 behave like good instruments.

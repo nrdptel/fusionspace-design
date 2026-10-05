@@ -63,7 +63,7 @@ A readout is a single value a screen exists to show: apogee, charge mass, wind s
 ```
 APOGEE · PREDICTED            label: what, and which kind (measured, predicted, forecast, copied)
 5 486 ft AGL                  value in Cascadia Mono, unit beside it, muted
-± 227 ft (1σ) · Loft 0.9      qualifier: spread, source, time
+± 227 ft (1σ) · hpr-sim 0.9   qualifier: spread, source, time
 ```
 
 - **The label says the kind.** Measured, predicted, forecast, or from another source. A predicted readout is underlined with a

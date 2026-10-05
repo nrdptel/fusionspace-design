@@ -276,8 +276,6 @@ Browse every image in `index.html`. New project? `python3 tools/build/project.py
 | `projects/charge/` | Charge: project kit (social preview, README banners, OG, YouTube thumbnail, title slides, report covers, starter README); FS · SW · TOOL 002 |  | the tool's repo, its page on fusionspace.co, talks and reports |
 | `projects/window/` | Window: project kit (social preview, README banners, OG, YouTube thumbnail, title slides, report covers, starter README); FS · SW · TOOL 003 |  | the tool's repo, its page on fusionspace.co, talks and reports |
 | `projects/muster/` | Muster: project kit (social preview, README banners, OG, YouTube thumbnail, title slides, report covers, starter README); FS · SW · TOOL 004 |  | the tool's repo, its page on fusionspace.co, talks and reports |
-| `projects/debrief/` | Debrief: project kit (social preview, README banners, OG, YouTube thumbnail, title slides, report covers, starter README); FS · SW · TOOL 005 |  | the tool's repo, its page on fusionspace.co, talks and reports |
-| `projects/loft/` | Loft: project kit (social preview, README banners, OG, YouTube thumbnail, title slides, report covers, starter README); FS · SW · TOOL 006 |  | the tool's repo, its page on fusionspace.co, talks and reports |
 
 ## Notes
 

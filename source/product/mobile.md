@@ -1,7 +1,7 @@
 # iOS and Android
 
-FusionSpace apps (a flight simulator, a launch-weather board, flight-computer setup over Bluetooth, a log viewer, a recovery
-tracker) are used at the bench and at the field. The rule is principle 8: **the platform owns behaviour, FusionSpace owns
+FusionSpace apps (a launch-weather board, an ejection-charge calculator, flight-computer setup over Bluetooth, flight reports
+from a flight computer's log, a recovery tracker) are used at the bench and at the field. The rule is principle 8: **the platform owns behaviour, FusionSpace owns
 content.** An iPhone app should feel like an iPhone app, and still be unmistakably a FusionSpace instrument once you look at
 what it shows.
 

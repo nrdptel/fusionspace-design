@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- FusionSpace AppStream template. Brand colours: Flathub asks for colourful ones, so O blue (light) and M orange (dark). -->
 <component type="desktop-application">
-  <id>co.fusionspace.Loft</id>
-  <name>Loft</name>
+  <id>co.fusionspace.HprSim</id>
+  <name>hpr-sim</name>
   <summary>High-power rocketry flight simulator</summary>
   <developer id="co.fusionspace"><name>FusionSpace</name></developer>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>Apache-2.0</project_license>
   <url type="homepage">https://fusionspace.co</url>
-  <launchable type="desktop-id">co.fusionspace.Loft.desktop</launchable>
+  <launchable type="desktop-id">co.fusionspace.HprSim.desktop</launchable>
   <description>
     <p>Simulates hobby and high-power rocket flights, shows how far to trust each result, and works offline.</p>
   </description>

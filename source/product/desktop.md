@@ -1,7 +1,7 @@
 # macOS, Windows and Linux
 
-Desktop apps: the flight simulator with its design tree, 3D replay and Monte Carlo runs; the flight-log analyser; a
-ground-station console talking to radios over USB; firmware and configuration tools for flight computers. These are long
+Desktop apps: hpr-sim's simulator with its design tree, 3D replay and Monte Carlo runs; flight reports from flight-computer
+logs; a ground-station console talking to radios over USB; firmware and configuration tools for flight computers. These are long
 sessions with dense data, real files and real hardware, on three platforms with three sets of rules.
 
 The rule is the same as on phones (principle 8): **the platform owns behaviour and chrome, FusionSpace owns content.** A
@@ -106,7 +106,7 @@ One master: the mark on its Void tile (`logo/favicon/app-icon.svg`), no baked sh
 |---|---|---|
 | macOS | `kit/apps/macos/`; build the `.icon` in Icon Composer with all appearances (default, dark, clear, tinted) | A square, full-bleed source; the system applies the shape. An icon that sticks out of the shape gets a grey plate |
 | Windows | [`desktop/windows/app.ico`](desktop/windows/) (16, 24, 32, 48, 256) and the MSIX tiles, including the unplated targets | Without unplated targets Windows draws the icon smaller on a plate |
-| Linux | [`desktop/linux/`](desktop/linux/): hicolor `scalable/apps/<app-id>.svg`, a 256 px PNG, and `<app-id>-symbolic.svg` | App ids are reverse DNS of fusionspace.co: `co.fusionspace.Loft` |
+| Linux | [`desktop/linux/`](desktop/linux/): hicolor `scalable/apps/<app-id>.svg`, a 256 px PNG, and `<app-id>-symbolic.svg` | App ids are reverse DNS of fusionspace.co: `co.fusionspace.HprSim` |
 
 - Flathub asks for "colourful" brand colours in the metadata, not black or white: use O blue `{{O_BLUE}}` for light and
   M orange `{{M_ORANGE}}` for dark, as in the AppStream template.

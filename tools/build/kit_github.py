@@ -88,8 +88,6 @@ SITE_TOOLS = [
     ("Charge", "Black-powder ejection-charge calculator for high-power rocketry."),
     ("Window", "Launch-weather board for US high-power and model rocketry."),
     ("Muster", "Motor-hardware compatibility for high-power rocketry."),
-    ("Debrief", "Universal, in-browser altimeter flight-log analyzer."),
-    ("Loft", "High-power rocketry flight simulator that runs in your browser and on a phone."),
 ]
 
 def build_naming_option():

@@ -71,9 +71,10 @@ there (note the system's revision when you copy).
 
 ## Status
 
-Rev {{REV}} is new on {{DATE}}. The rules and tokens are complete enough to build with. Proposed and waiting for review:
-the four signal colours (Flare, Sodium, Aurora, Nebula) and Steel; the beep language in [`embedded.md`](embedded.md#beeps);
-the FusionSpace rocket scheme in [`rockets.md`](rockets.md#colour).
+Rev {{REV}}, {{DATE}}, approved in review on 5 October 2026: the four signal colours (Flare, Sodium, Aurora, Nebula) and Steel
+with their names, the beep language in [`embedded.md`](embedded.md#beeps), the rocket scheme in [`rockets.md`](rockets.md#colour),
+British spelling in prose and copy, and the licence below. Change any of these through `tools/build/kit_product.py` and
+`source/product/`, and raise the revision.
 
 ## Licence
 

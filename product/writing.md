@@ -61,7 +61,7 @@ An error says what happened, why if known, and what to do next, in that order. I
 
 ```
 Can't read vega-flight-03.csv: line 1 has no time column.
-Debrief looks for a column named time, t or Time (s). Rename the column, or pick it under Columns.
+The log reader looks for a column named time, t or Time (s). Rename the column, or pick it under Columns.
 ```
 
 - No blame ("You entered an invalid value"), no long apologies, no codes without words.
@@ -79,7 +79,7 @@ layout), with the hazard, the consequence and the avoidance:
 
 ## Names
 
-- **FusionSpace**, one word, always. Products keep their short names (Charge, Window, Debrief, Loft, Muster) and their
+- **FusionSpace**, one word, always. Products keep their short names (Charge, Window, Muster) and their
   designations (`FS · SW · TOOL 002`).
 - Projects are named after IAU-approved stars and take the star's code: `FS-VEGA`.
 - **Designations** follow one grammar: `<code> · [<tag> ·] <kind> <number>`. The code is `FS` for things that belong to

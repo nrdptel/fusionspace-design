@@ -1,12 +1,12 @@
 [Desktop Entry]
-# FusionSpace desktop entry template. Rename the file and every co.fusionspace.Loft to your app's id.
+# FusionSpace desktop entry template. Rename the file and every co.fusionspace.HprSim to your app's id.
 Type=Application
-Name=Loft
+Name=hpr-sim
 GenericName=Rocket flight simulator
 Comment=High-power rocketry flight simulator
-Exec=loft %F
-Icon=co.fusionspace.Loft
+Exec=hpr-sim %F
+Icon=co.fusionspace.HprSim
 Terminal=false
 Categories=Science;Engineering;Education;
 Keywords=rocket;rocketry;simulator;flight;
-StartupWMClass=loft
+StartupWMClass=hpr-sim

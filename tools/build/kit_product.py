@@ -27,7 +27,7 @@ def wr(rel, s):
 # Brand primitives (decided; see color/fusion-space-tokens.json). The core neutrals, Ion and Ember are reused as they are.
 CORE = {"Void": VOID, "Abyss": "#141A2B", "Graphite": "#2A3248", "Slate": "#566079", "Haze": "#98A1B8", "Mist": "#D6DAE4",
         "Paper": PAPER, "White": WHITE}
-# New for products (proposed 4 October 2026, waiting for Neer's review). Named after emission lines and things that glow, like
+# New for products (proposed 4 October 2026, approved in Neer's review of 5 October). Named after emission lines and things that glow, like
 # the spectral classes: a flare (red, danger), sodium light (amber, caution), the aurora's oxygen green (normal), a hydrogen
 # nebula (magenta, predicted). Each was chosen in OKLCH for contrast on Paper/white and Void/Abyss and for distance from its
 # neighbours under simulated protan, deutan and tritan vision; the measurements are in product/foundations.md.
@@ -593,7 +593,7 @@ def _units(body):
 
 def page(title, body, rel="", desc="", nav=None, theme_attr="", example=False):
     nav = nav or [("index.html", "Specimen"), ("examples/home.html", "Home"), ("examples/charge.html", "Charge"),
-                  ("examples/debrief.html", "Debrief"), ("examples/window.html", "Window")]
+                  ("examples/flight-report.html", "Flight report"), ("examples/window.html", "Window")]
     links = "".join(f'<a href="{rel}{h}"{" aria-current=\"page\"" if t == title.split(" · ")[0] else ""}>{t}</a>' for h, t in nav)
     return f"""<!doctype html>
 <html lang="en"{theme_attr}>
@@ -725,7 +725,7 @@ def specimen(contrast_rows):
     pred, meas = example_flight()
     ev = meas["events"]; ap = float(meas["alt"].max()); pap = float(pred["alt"].max())
     s5 = (f'<div class="fs-readouts">{readout("Apogee · measured", num(ap), "ft AGL", "Barometric, from the flight log")}'
-          f'{readout("Apogee · predicted", num(pap), "ft AGL", f"±{num(0.04 * pap + 8)} ft, Loft 0.9 · −{(1 - ap / pap) * 100:.1f} % vs measured", "predicted")}'
+          f'{readout("Apogee · predicted", num(pap), "ft AGL", f"±{num(0.04 * pap + 8)} ft, hpr-sim 0.9 · −{(1 - ap / pap) * 100:.1f} % vs measured", "predicted")}'
           f'{readout("Max speed", num(float(meas["vel"].max())), "ft/s", "Mach 0.58 at 1.8 s")}'
           f'{readout("Main at", num(700), "ft AGL", "Set 700 ft, fired at 71.3 s")}</div>'
           f'{chart_svg(pred, meas)}'
@@ -768,8 +768,6 @@ TOOLS = [  # the drawing register on the example home page: (designation, name, 
     ("FS · SW · TOOL 002", "Charge", "Black-powder ejection-charge sizing, with every constant shown and a ground-test log.", "RELEASED", "charge.fusionspace.co"),
     ("FS · SW · TOOL 003", "Window", "Launch-weather board for US high-power and model rocketry.", "RELEASED", "window.fusionspace.co"),
     ("FS · SW · TOOL 004", "Muster", "Motor-hardware compatibility: every reload a case flies, and what it needs.", "RELEASED", "muster.fusionspace.co"),
-    ("FS · SW · TOOL 005", "Debrief", "In-browser altimeter flight-log analyser.", "IN PREPARATION", "debrief.fusionspace.co"),
-    ("FS · SW · TOOL 006", "Loft", "High-power flight simulator that runs in a browser and on a phone.", "IN PREPARATION", "loft.fusionspace.co"),
 ]
 def ex_home():
     rows = "".join(f'<tr><td><span class="fs-tag">{d}</span></td><td><a href="#"><b>{n}</b></a><div class="fs-small fs-muted">{w}</div></td>'
@@ -819,7 +817,8 @@ def ex_charge():
                           ("Data", "Constants set 2026-09"), ("Status", "RELEASED")]))
     return page("Charge · example", body, rel="../", example=True, desc="Example: an ejection-charge calculator in the FusionSpace product system.")
 
-def ex_debrief():
+def ex_flight_report():
+    """A flight report for the example project's flight computer: readouts, the stacked chart, channels, the source."""
     pred, meas = example_flight(); ev = meas["events"]
     ap, pap = float(meas["alt"].max()), float(pred["alt"].max())
     chan = (f'<div class="fs-table-wrap"><table class="fs-table"><thead><tr><th>Channel</th><th>Set to</th><th>Continuity</th><th>Fired</th><th class="n">At · s</th><th class="n">At · ft AGL</th></tr></thead><tbody>'
@@ -827,18 +826,18 @@ def ex_debrief():
             f'<tr><td class="fs-mono">2 · MAIN</td><td>700 ft descending</td><td>{status("ok", "Cont", "continuity")}</td><td>{status("ok", "Fired", "check")}</td><td class="n">{ev["main"]:.2f}</td><td class="n">{num(700)}</td></tr>'
             f'<tr><td class="fs-mono">3 · —</td><td class="fs-muted">Not used</td><td>{status("off", "Not used")}</td><td>{status("off", "Not used")}</td><td class="n fs-muted">—</td><td class="n fs-muted">—</td></tr></tbody></table></div>'
             '<p class="fs-small fs-muted">An unused channel is grey and says so. Red is only for a real fault, so a fault is never lost among false alarms.</p>')
-    body = (f'<section style="padding:40px 0 24px;display:grid;gap:12px"><div class="fs-row"><span class="fs-tag">FS-VEGA-001 · FLIGHT 03</span>{status("info", "Debrief 0.6", "flight-log")}</div>'
+    body = (f'<section style="padding:40px 0 24px;display:grid;gap:12px"><div class="fs-row"><span class="fs-tag">FS-VEGA-001 · FLIGHT 03</span>{status("ok", "Released", "check")}</div>'
             f'<h1>Flight 03 · J350W-L</h1><p class="fs-lead">Dual deploy, nominal. Apogee {num(pap - ap)} ft ({(1 - ap / pap) * 100:.1f} %) under the prediction, outside its ±{num(0.04 * pap + 8)} ft spread: the rocket flew heavier than its design file says.</p></section>'
             + sheet(1, 3, "Flight", f'<div class="fs-readouts">{readout("Apogee", num(ap), "ft AGL", "Barometer, 20 Hz")}'
-                    f'{readout("Predicted", num(pap), "ft AGL", f"±{num(0.04 * pap + 8)} ft · Loft 0.9 with the flown mass", "predicted")}'
-                    f'{readout("Max speed", num(float(meas["vel"].max())), "ft/s", "Mach 0.58")}{readout("Descent · main", f"{abs(float(meas['vel'][-60])):.0f}", "ft/s", "Average over the last 30 s")}</div>'
-                    + chart_svg(pred, meas) + '<p class="fs-small fs-muted">Solid: measured. Dashed with a band: Loft\'s prediction and its spread. Dotted lines with balloons: events, in order: 1 liftoff, 2 burnout, 3 apogee, 4 drogue out, 5 main out, 6 landing.</p>')
+                    f'{readout("Predicted", num(pap), "ft AGL", f"±{num(0.04 * pap + 8)} ft · hpr-sim 0.9, from the design file", "predicted")}'
+                    f'{readout("Max speed", num(float(meas["vel"].max())), "ft/s", "Mach 0.58")}{readout("Descent · main", f"{abs(float(meas['vel'][-60])):.0f}", "ft/s", "Under the main, just before landing")}</div>'
+                    + chart_svg(pred, meas) + '<p class="fs-small fs-muted">Solid: measured. Dashed with a band: hpr-sim\'s prediction and its spread. Dotted lines with balloons: events, in order: 1 liftoff, 2 burnout, 3 apogee, 4 drogue out, 5 main out, 6 landing.</p>')
             + sheet(2, 3, "Channels", chan)
             + sheet(3, 3, "Source", '<dl class="fs-titleblock" style="margin-top:0">' + "".join(f'<div><dt>{k}</dt><dd>{v}</dd></div>' for k, v in (
                 ("File", "vega-flight-03.csv"), ("Logger", "Barometer 20 Hz, accelerometer 100 Hz"), ("Filter", "None; raw samples"), ("Pad elevation", "4 000 ft MSL"),
                 ("Imported", "2026-10-04 14:22"), ("Hash", "sha256 9f3c…b21e"))) + "</dl>")
-            + titleblock([("Title", "Flight 03 debrief"), ("Designation", "FS-VEGA-001 · FLIGHT 03"), ("Rev", "A"), ("Date", "2026-10-04"), ("Units", "ft, ft/s, g, s"), ("Status", "RELEASED")]))
-    return page("Debrief · example", body, rel="../", example=True, desc="Example: a flight-log debrief in the FusionSpace product system.")
+            + titleblock([("Title", "Flight 03 report"), ("Designation", "FS-VEGA · REPORT 003"), ("Rev", "A"), ("Date", "2026-10-04"), ("Units", "ft, ft/s, g, s"), ("Status", "RELEASED")]))
+    return page("Flight report · example", body, rel="../", example=True, desc="Example: a flight report from a flight computer's log, in the FusionSpace product system.")
 
 def ex_window():
     aloft = [(0, 12, 19, 270), (1000, 16, None, 275), (3000, 22, None, 280), (6000, 31, None, 285), (9000, 38, None, 290)]
@@ -1466,9 +1465,9 @@ File → Board Setup → Title Block (or Page Settings):
 | Revision | `B` | `REV B` |
 | Issue date | `2026-10` | the date beside the revision |
 
-If your KiCad version doesn't resolve these variables inside a footprint, place two text items on the board with the same
-text (`${{TITLE}}`, `REV ${{REVISION}}  ${{ISSUE_DATE}}`) over the empty frame. The footprints were written to KiCad 8's format
-and haven't been opened in KiCad yet; check the first board in the 3D viewer before ordering.
+Checked with KiCad 10.0.6 (5 October 2026): both footprints load, and on a test board with Title `FS-VEGA-004`, Revision `B` and
+Issue date `2026-10` the plotted silkscreen reads `FS-VEGA-004` and `REV B  2026-10`. If an older KiCad leaves the variables
+unresolved, place two text items with the same text over the empty frame.
 
 Rules for the rest of the board: `product/hardware.md`.
 """)
@@ -1595,7 +1594,7 @@ def guide_sheet(n, total):
         ("review.md", "The FusionSpace test, template smells, release checklists, sources."),
         ("tokens/ · web/ · icons/ · cli/ · embedded/ · hardware/ · rockets/ · desktop/", "Tokens for every platform and the reference parts.")))
     shots = "".join(f'<figure><img class="fsp-shot" src="../product/{p}" alt="{a}" loading="lazy"><figcaption>{a}</figcaption></figure>' for p, a in (
-        ("web/previews/charge-light.png", "Charge, a tool page"), ("web/previews/debrief-dark.png", "Debrief, dark theme"),
+        ("web/previews/charge-light.png", "Charge, a tool page"), ("web/previews/flight-report-dark.png", "A flight report, dark theme"),
         ("embedded/preview.png", "Device screens"), ("rockets/preview.png", "Livery wrap, 57 mm")))
     return f'''
   <section class="sheet" id="products">
@@ -1614,7 +1613,7 @@ def guide_sheet(n, total):
 '''
 
 # ================================================================ 13. desktop packaging (product/desktop/)
-APP_ID = "co.fusionspace.Loft"        # example: reverse DNS of fusionspace.co plus the app's name
+APP_ID = "co.fusionspace.HprSim"        # example: reverse DNS of fusionspace.co plus the app's name
 def build_desktop():
     from PIL import Image
     ico_svg = os.path.join(build.OUT, "logo/favicon/icon.svg"); fav_svg = os.path.join(build.OUT, "logo/favicon/favicon.svg")
@@ -1649,21 +1648,21 @@ def build_desktop():
     wr(f"desktop/linux/{APP_ID}.desktop", f"""[Desktop Entry]
 # FusionSpace desktop entry template. Rename the file and every {APP_ID} to your app's id.
 Type=Application
-Name=Loft
+Name=hpr-sim
 GenericName=Rocket flight simulator
 Comment=High-power rocketry flight simulator
-Exec=loft %F
+Exec=hpr-sim %F
 Icon={APP_ID}
 Terminal=false
 Categories=Science;Engineering;Education;
 Keywords=rocket;rocketry;simulator;flight;
-StartupWMClass=loft
+StartupWMClass=hpr-sim
 """)
     wr(f"desktop/linux/{APP_ID}.metainfo.xml", f"""<?xml version="1.0" encoding="UTF-8"?>
 <!-- FusionSpace AppStream template. Brand colours: Flathub asks for colourful ones, so O blue (light) and M orange (dark). -->
 <component type="desktop-application">
   <id>{APP_ID}</id>
-  <name>Loft</name>
+  <name>hpr-sim</name>
   <summary>High-power rocketry flight simulator</summary>
   <developer id="co.fusionspace"><name>FusionSpace</name></developer>
   <metadata_license>CC0-1.0</metadata_license>
@@ -1740,12 +1739,12 @@ def build_web():
         p_ = wr(f"web/previews/chart-{th}.svg", chart_svg(pred, meas, standalone_theme=th))
         subprocess.run(["rsvg-convert", "-w", "1320", "-o", out(f"web/previews/chart-{th}.png"), p_], check=True)
     wr("web/index.html", specimen(None))
-    for n, fn in (("home", ex_home), ("charge", ex_charge), ("debrief", ex_debrief), ("window", ex_window)):
+    for n, fn in (("home", ex_home), ("charge", ex_charge), ("flight-report", ex_flight_report), ("window", ex_window)):
         wr(f"web/examples/{n}.html", fn())
     shots = [("web/index.html", "web/previews/specimen-light.png", 1280, "light"), ("web/index.html", "web/previews/specimen-dark.png", 1280, "dark"),
              ("web/examples/home.html", "web/previews/home-light.png", 1280, "light"), ("web/examples/home.html", "web/previews/home-dark.png", 1280, "dark"),
              ("web/examples/charge.html", "web/previews/charge-light.png", 1280, "light"), ("web/examples/charge.html", "web/previews/charge-phone.png", 390, "light"),
-             ("web/examples/debrief.html", "web/previews/debrief-dark.png", 1280, "dark"), ("web/examples/debrief.html", "web/previews/debrief-light.png", 1280, "light"),
+             ("web/examples/flight-report.html", "web/previews/flight-report-dark.png", 1280, "dark"), ("web/examples/flight-report.html", "web/previews/flight-report-light.png", 1280, "light"),
              ("web/examples/window.html", "web/previews/window-field.png", 1280, "light"), ("web/examples/window.html", "web/previews/window-phone.png", 390, "light")]
     ok = all(shoot(a, b, w, sc) for a, b, w, sc in shots)
     if not ok: print("WARN product: no Playwright, web previews skipped")
@@ -1760,7 +1759,7 @@ FOLDER_READMES = {
                        "Rules in `product/foundations.md#icons`.\n\n![Icons](preview.png)\n",
     "web/README.md": "# Web\n\n| File | What |\n|---|---|\n| `fusionspace.css` | Tokens and every component |\n| `tailwind-theme.css` | Tailwind v4 theme with the defaults removed |\n"
                      "| `fonts.css`, `fonts/` | WOFF2 subsets of Archivo and Cascadia Mono (SIL OFL) |\n| `index.html` | The specimen |\n"
-                     "| `examples/` | Home (a drawing register), Charge, Debrief, Window |\n| `mdbook/` | mdBook theme |\n| `previews/` | Screenshots used in the docs |\n\nRules in `product/web.md`.\n",
+                     "| `examples/` | Home (a drawing register), Charge, a flight report, Window |\n| `mdbook/` | mdBook theme |\n| `previews/` | Screenshots used in the docs |\n\nRules in `product/web.md`.\n",
     "embedded/README.md": "# Device screens\n\n| File | What |\n|---|---|\n| `oled-128x64-*.png` | 1:1 frame buffers (and `@4x` previews): SAFE, ARMED with a fault, in flight, landed |\n"
                           "| `tft-240x240-recovery.*` | A colour ground-station screen in the dark roles |\n| `fs_lvgl_styles.c/.h` | LVGL styles (checked against LVGL 9.3) |\n\n"
                           "Text on the OLED screens is Spleen (BSD-2, `LICENSE-Spleen.txt`), which u8g2 includes. Rules in `product/embedded.md`.\n",

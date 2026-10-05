@@ -6,7 +6,7 @@ in [`web/examples/`](web/examples/). Open them in a browser and switch between L
 
 | | |
 |---|---|
-| ![Charge, light](web/previews/charge-light.png) | ![Debrief, dark](web/previews/debrief-dark.png) |
+| ![Charge, light](web/previews/charge-light.png) | ![A flight report, dark](web/previews/flight-report-dark.png) |
 | ![Home as a drawing register](web/previews/home-light.png) | ![Window in the field theme](web/previews/window-field.png) |
 
 ## Using it in a project
@@ -49,7 +49,7 @@ template look (indigo buttons, `rounded-xl`, `shadow-lg`) can't creep in.
 - **A tool page** (Charge, Window) puts inputs left and the result right, the result sticky as the inputs scroll; on a phone
   the result follows the inputs. The result panel has a 2 px ink border, the headline readout, a "Show the maths" disclosure,
   the "How far to trust it" note, and any caution.
-- **An analysis page** (Debrief) leads with readouts, then the stacked chart, then the event and channel tables, then a Source
+- **An analysis page** (a flight report) leads with readouts, then the stacked chart, then the event and channel tables, then a Source
   sheet with the file, its hash and every setting used.
 - **A board** (Window) is readouts plus a table, with every value's source and age, and a Print button.
 - **Docs** are sheets of prose with a left table of contents; code blocks in Cascadia Mono on the surface colour.

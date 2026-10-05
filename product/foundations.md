@@ -34,7 +34,7 @@ on amber, so they stay apart in greyscale too.
 **Fills are the same on every background**, like a safety sign: an ARMED chip looks identical on Paper, on Void and in print.
 Inks (text, icons and lines in a signal colour) change with the theme so they keep their contrast.
 
-> **Proposed, 4 October 2026.** Flare, Sodium, Aurora, Nebula and Steel are new. Ion and Ember keep the jobs they have in the
+> **Decided 5 October 2026.** Flare, Sodium, Aurora, Nebula and Steel are new with the product system. Ion and Ember keep the jobs they have in the
 > brand guide (Ion for links and UI on light, Ember for warnings on light, here the caution ink).
 
 ### Semantic roles

@@ -340,8 +340,6 @@ REPS = [   # (representative, [items it covers], why it stands for them)
     ("kit/projects/charge/social-preview-dark", [r"^kit/projects/charge/(?!.*\.(md|json)$)"], "the rest of this tool's project images"),
     ("kit/projects/window/social-preview-dark", [r"^kit/projects/window/(?!.*\.(md|json)$)"], "the rest of this tool's project images"),
     ("kit/projects/muster/social-preview-dark", [r"^kit/projects/muster/(?!.*\.(md|json)$)"], "the rest of this tool's project images"),
-    ("kit/projects/debrief/social-preview-dark", [r"^kit/projects/debrief/(?!.*\.(md|json)$)"], "the rest of this tool's project images"),
-    ("kit/projects/loft/social-preview-dark", [r"^kit/projects/loft/(?!.*\.(md|json)$)"], "the rest of this tool's project images"),
     ("kit/production/stickers/sticker-mark-50mm-dark", [r"^kit/production/stickers/sticker-mark-(50mm-light|75mm-|100mm-)"], "the other mark stickers (same outline)"),
     ("kit/embedded/tft-240x240", [r"^kit/embedded/tft-"], "the other colour screens"),
     ("kit/embedded/oled-128x64", [r"^kit/embedded/(oled|epaper)-"], "the other one-colour screens"),
@@ -385,16 +383,16 @@ REPS = [   # (representative, [items it covers], why it stands for them)
      "the specimen page itself (dark theme too), the stylesheet, fonts, Tailwind and mdBook themes"),
     ("product/web/previews/home-light", [r"^product/web/(examples/home\.html|previews/home-dark)"], "the page itself and its dark theme"),
     ("product/web/previews/charge-light", [r"^product/web/(examples/charge\.html|previews/charge-phone)"], "the page itself and its phone layout"),
-    ("product/web/previews/debrief-dark", [r"^product/web/(examples/debrief\.html|previews/(debrief-light|chart-))"], "the page itself, its light theme and the chart previews"),
+    ("product/web/previews/flight-report-dark", [r"^product/web/(examples/flight-report\.html|previews/(flight-report-light|chart-))"], "the page itself, its light theme and the chart previews"),
     ("product/web/previews/window-field", [r"^product/web/(examples/window\.html|previews/window-phone)"], "the page itself and its phone layout"),
     ("product/icons/preview", [r"^product/icons/"], "every icon as its own SVG and the sprite"),
     ("product/embedded/preview", [r"^product/embedded/"], "each screen at 1:1 and 4x, the TFT screen and the LVGL styles"),
     ("product/hardware/preview", [r"^product/hardware/"], "the KiCad footprints (front and back) and their README"),
     ("product/rockets/preview", [r"^product/rockets/"], "the wraps for every airframe size (SVG, PDF) and their README"),
     ("product/cli/preview", [r"^product/cli/"], "the Rust and Python styles and the sample output"),
-    ("product/desktop/linux/hicolor/256x256/apps/co.fusionspace.Loft", [r"^product/desktop/"], "the Windows ICO and MSIX tiles, the Linux icons and the templates"),
+    ("product/desktop/linux/hicolor/256x256/apps/co.fusionspace.HprSim", [r"^product/desktop/"], "the Windows ICO and MSIX tiles, the Linux icons and the templates"),
 ]
-CORE = (r"^(guide/|product/|logo/|kit/web/|kit/apps/|kit/github/|kit/social/|kit/documents/|README\.md$|kit/projects/(hpr-motor-finder|charge|window|muster|debrief|loft)/|kit/production/stickers/sticker-mark-50mm-dark$)")
+CORE = (r"^(guide/|product/|logo/|kit/web/|kit/apps/|kit/github/|kit/social/|kit/documents/|README\.md$|kit/projects/(hpr-motor-finder|charge|window|muster)/|kit/production/stickers/sticker-mark-50mm-dark$)")
            # focus items people will see from you first (identity, web, GitHub, social, documents) and the open options;
            # the rest of focus is the discipline kits (screens, PCB, software, games, video, wallpapers, merch, production)
 FOCUS_TEXT = {"README.md", "kit/github/profile-README.md", "kit/documents/email-signature/signature.html", "kit/web/site/metadata.ts",
