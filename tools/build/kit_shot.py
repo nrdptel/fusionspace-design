@@ -6,7 +6,7 @@ CHROMES = ["chromium", "chromium-browser", "google-chrome", "/opt/pw-browsers/ch
            "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "/Applications/Chromium.app/Contents/MacOS/Chromium"]
 
 def _office_png(html_path, dest):
-    """Last resort: LibreOffice renders the page to PDF, pdftoppm rasterises it, and the result is cropped to the content.
+    """Last resort: LibreOffice renders the page to PDF, pdftoppm rasterizes it, and the result is cropped to the content.
     Rougher than a browser (its own HTML layout), but shows what's there."""
     office = shutil.which("soffice") or shutil.which("libreoffice"); ppm = shutil.which("pdftoppm")
     if not (office and ppm): return False

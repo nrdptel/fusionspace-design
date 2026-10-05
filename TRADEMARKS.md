@@ -13,7 +13,7 @@ name and logo are not.
 ## Please don't
 
 - Use the name or the logo, or anything that looks like them, for your own project, product, company, account or domain.
-- Change the logo (colours, proportions, the cones or their arrangement), combine it with other marks, or use parts of it.
+- Change the logo (colors, proportions, the cones or their arrangement), combine it with other marks, or use parts of it.
 - Use it in a way that suggests I made, sponsor or endorse something I didn't.
 - Put it on anything you sell.
 

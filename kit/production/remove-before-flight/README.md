@@ -18,9 +18,9 @@ maker needs no font.
 - **Woven tag, double-sided** (the usual “remove before flight keychain”): best at this size, the letters stay sharp.
   Embroidered also works (capitals 11.7 mm, well above the usual 5 mm minimum for embroidered text).
 - Size 140 × 32 mm, corners as drawn (4 mm radius) or square with a merrowed (overlocked) edge, whichever the maker offers.
-- Colours: red **Pantone 186 C** (`#C8102E`), white. Two colours, no gradient. Give the vendor the PDFs (vector, text already
+- Colors: red **Pantone 186 C** (`#C8102E`), white. Two colors, no gradient. Give the vendor the PDFs (vector, text already
   outlined); the CMYK PDFs are for a printed (dye-sublimated) tag.
-- A **5 mm metal grommet** at the left end, centred, 9 mm from the edge (dashed circle in the files, layer “grommet-not-printed”;
+- A **5 mm metal grommet** at the left end, centered, 9 mm from the edge (dashed circle in the files, layer “grommet-not-printed”;
   it is not printed), and a 25 mm split ring.
 - Printed tags: ask whether they want bleed; the red is a plain rectangle, so it can be extended without touching the art.
 

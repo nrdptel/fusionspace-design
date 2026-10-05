@@ -1,5 +1,11 @@
 {
-  "$description": "FusionSpace primitives (DTCG 2025.10). Brand colours from color/fusion-space-tokens.json plus the product signal colours. Themes alias these in light/dark/field.tokens.json.",
+  "$description": "FusionSpace primitives (DTCG 2025.10). Brand colors from color/fusion-space-tokens.json plus the product signal colors. Themes alias these in light/dark/field.tokens.json.",
+  "$extensions": {
+    "co.fusionspace": {
+      "license": "Apache-2.0",
+      "copyright": "Copyright 2026 Neer Patel"
+    }
+  },
   "core": {
     "void": {
       "$type": "color",

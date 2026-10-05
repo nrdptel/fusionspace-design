@@ -1,16 +1,16 @@
-# FusionSpace 3D-print and CAD files (millimetres)
+# FusionSpace 3D-print and CAD files (millimeters)
 
 Every model comes as `.stl` (mesh, for slicers) and `.step` (solid, for CAD: Fusion, Onshape, FreeCAD, SolidWorks). In the STEP
 files the mark is exact: its lines, circular arcs, the elliptical wing's ellipse and the Von Kármán's Bézier curves, the same
 curves as the master SVG (no fitting); the name and the plates are smooth B-splines within 0.002 mm. Each STEP has named,
-coloured bodies (base, cones in M orange and O blue, name). Two-colour models also come as `.3mf` with one part per colour
-(see *Two colours* below). `sketch/` has outlines to import and extrude or cut; `parametric/` has a badge you can resize in
+colored bodies (base, cones in M orange and O blue, name). Two-color models also come as `.3mf` with one part per color
+(see *Two colors* below). `sketch/` has outlines to import and extrude or cut; `parametric/` has a badge you can resize in
 FreeCAD or Fusion.
 
 Everything is made for a normal FDM printer: **0.4 mm nozzle, 0.2 mm layers** (first layer 0.2 mm), and checked by the build:
 no raised stroke under 0.6 mm, no gap under 0.5 mm, cone feet trimmed to 0.6 mm, heights in whole layers,
 no supports needed anywhere. Every STL was sliced (PrusaSlicer 2.7, 0.4 mm nozzle, 0.2 mm layers, no supports) without an overhang
-or support warning; the two-colour 3MFs slice with their parts on two filaments. Use a slicer with variable-width walls (Arachne: PrusaSlicer 2.6+, OrcaSlicer, Bambu Studio; in
+or support warning; the two-color 3MFs slice with their parts on two filaments. Use a slicer with variable-width walls (Arachne: PrusaSlicer 2.6+, OrcaSlicer, Bambu Studio; in
 Cura turn on *Print Thin Walls*) so the 0.6 mm feet and the name's thinnest strokes print as one line.
 
 ## The models
@@ -42,30 +42,30 @@ Cura turn on *Print Thin Walls*) so the 0.6 mm feet and the name's thinnest stro
 
 Defaults for every part: 0.4 mm nozzle, 0.2 mm layers, 3 walls, 4 top and 4 bottom layers, 15 % gyroid infill, no supports,
 no brim unless the table says so, printed as exported (the files are already in print orientation, flat side on the bed).
-"Colour change at Z" means the first layer of the new colour (PrusaSlicer/Orca: add the colour change on the layer at that height;
+"Color change at Z" means the first layer of the new color (PrusaSlicer/Orca: add the color change on the layer at that height;
 Bambu: *Add pause/filament change* on that layer).
 
-| Model | Material | Orientation | Settings | Colour |
+| Model | Material | Orientation | Settings | Color |
 |---|---|---|---|---|
-| mark 40/80, extruded | PLA | flat | defaults; a 3 mm brim keeps the small wing cones down | one colour |
-| badge 50 | PLA | flat (base down) | defaults | colour change at 2.2 mm (Void base, cones in a light colour), or the 3MF |
-| keychain 40 | PETG (takes the pull of a key ring) | flat | 4 walls | colour change at 2.6 mm, or the 3MF |
-| horizontal 130, stacked 110, name 120 | PLA | flat | 2 walls, 100 % infill (the strokes are walls only); 3 mm brim (the i's dot and the wing cones are small) | one colour; glue onto a sign or a case |
-| sign 150 | PLA | flat | defaults | colour change at 3.2 mm, or the 3MF |
-| coaster 95 | PETG (PLA softens under a hot mug) | flat | 5 bottom layers | colour change at 4.2 mm, or the 3MF |
-| magnet 40 | PLA | flat, pocket on the bed | defaults (the pocket's 0.8 mm roof bridges 10 mm cleanly) | colour change at 4.2 mm, or the 3MF. Press a 10 × 3 mm disc magnet in with a drop of CA glue |
-| magnet 40 hidden | PLA | flat | **pause at 3.8 mm** (insert the pause before the 4.0 mm layer), drop the magnet in, resume. Use a brass nozzle: a steel one is pulled toward the magnet | colour change at 4.8 mm |
-| fin-can badges | PETG or ASA (sun and motor heat) | **standing on its flat bottom edge**, as exported | 5 mm brim, 4 walls (the 1.6 mm shell is solid walls), 0.2 mm layers; the cones stand 0.8 mm proud of the curve and print without support | one colour, or the 3MF on a multi-material printer; or paint the cones. Glue with epoxy; each fits its tube up to about 3 mm larger in diameter |
-| nose-cone badges | TPU 95A | flat | 20–30 mm/s, 100 % infill | one colour (or paint). Glue with contact cement or flexible CA |
-| desk stand plaque | PLA | flat | defaults | colour change at 3.2 mm, or the 3MF (the plaque's parts) |
-| desk stand foot | PLA | upright, as exported | 15 % infill; the slot is 3.4 mm for the 3.0 mm plaque (0.2 mm each side), 8.2 mm deep | one colour (Void) |
-| cable tag | PLA or PETG | flat | defaults | colour change at 2.2 mm, or the 3MF |
-| cable clips | PETG (PLA cracks when it snaps) | on its side, as exported (the clip's profile on the bed) | 4 walls, 100 % infill, 3 mm brim | one colour. Fits cables within about 0.5 mm of the size |
-| stencils | PLA or PETG | flat | 100 % infill (the 1.2 mm sheet is 6 solid layers) | one colour. Tape it down and spray light coats |
+| mark 40/80, extruded | PLA | flat | defaults; a 3 mm brim keeps the small wing cones down | one color |
+| badge 50 | PLA | flat (base down) | defaults | color change at 2.2 mm (Void base, cones in a light color), or the 3MF |
+| keychain 40 | PETG (takes the pull of a key ring) | flat | 4 walls | color change at 2.6 mm, or the 3MF |
+| horizontal 130, stacked 110, name 120 | PLA | flat | 2 walls, 100 % infill (the strokes are walls only); 3 mm brim (the i's dot and the wing cones are small) | one color; glue onto a sign or a case |
+| sign 150 | PLA | flat | defaults | color change at 3.2 mm, or the 3MF |
+| coaster 95 | PETG (PLA softens under a hot mug) | flat | 5 bottom layers | color change at 4.2 mm, or the 3MF |
+| magnet 40 | PLA | flat, pocket on the bed | defaults (the pocket's 0.8 mm roof bridges 10 mm cleanly) | color change at 4.2 mm, or the 3MF. Press a 10 × 3 mm disc magnet in with a drop of CA glue |
+| magnet 40 hidden | PLA | flat | **pause at 3.8 mm** (insert the pause before the 4.0 mm layer), drop the magnet in, resume. Use a brass nozzle: a steel one is pulled toward the magnet | color change at 4.8 mm |
+| fin-can badges | PETG or ASA (sun and motor heat) | **standing on its flat bottom edge**, as exported | 5 mm brim, 4 walls (the 1.6 mm shell is solid walls), 0.2 mm layers; the cones stand 0.8 mm proud of the curve and print without support | one color, or the 3MF on a multi-material printer; or paint the cones. Glue with epoxy; each fits its tube up to about 3 mm larger in diameter |
+| nose-cone badges | TPU 95A | flat | 20–30 mm/s, 100 % infill | one color (or paint). Glue with contact cement or flexible CA |
+| desk stand plaque | PLA | flat | defaults | color change at 3.2 mm, or the 3MF (the plaque's parts) |
+| desk stand foot | PLA | upright, as exported | 15 % infill; the slot is 3.4 mm for the 3.0 mm plaque (0.2 mm each side), 8.2 mm deep | one color (Void) |
+| cable tag | PLA or PETG | flat | defaults | color change at 2.2 mm, or the 3MF |
+| cable clips | PETG (PLA cracks when it snaps) | on its side, as exported (the clip's profile on the bed) | 4 walls, 100 % infill, 3 mm brim | one color. Fits cables within about 0.5 mm of the size |
+| stencils | PLA or PETG | flat | 100 % infill (the 1.2 mm sheet is 6 solid layers) | one color. Tape it down and spray light coats |
 | lithophane | white PLA | upright (rotate it so the 120 mm edge with the 10 mm frame is on the bed) with a 5 mm brim, or flat | 100 % infill, 0.12–0.2 mm layers, slow outer walls | white only. Light it from behind (a window, an LED strip) |
-| cookie cutter / stamp | a food-safe PLA or PETG | cutter flange down, stamp face up, as exported | defaults; the cutting wall is 0.8 mm (2 lines) | one colour. Wash by hand; prints are porous, so keep them for dry dough or line them with cling film |
-| remove-before-flight tag | red and white PLA or PETG | flat, front up (the back's engraving prints on the bed) | defaults; smooth (textured PEI shows in the engraving) | colour change at 2.2 mm (red tag, white text), or the 3MF |
-| remove-before-flight tag, two-part | red and white PLA or PETG | both halves flat, art up, as exported | defaults | colour change at 1.6 mm on both, or the 3MF (both halves, two colours). Push 1.4 mm lengths of 1.75 mm filament into the holes of one half, glue the halves (CA or epoxy), press together; the split ring goes through both |
+| cookie cutter / stamp | a food-safe PLA or PETG | cutter flange down, stamp face up, as exported | defaults; the cutting wall is 0.8 mm (2 lines) | one color. Wash by hand; prints are porous, so keep them for dry dough or line them with cling film |
+| remove-before-flight tag | red and white PLA or PETG | flat, front up (the back's engraving prints on the bed) | defaults; smooth (textured PEI shows in the engraving) | color change at 2.2 mm (red tag, white text), or the 3MF |
+| remove-before-flight tag, two-part | red and white PLA or PETG | both halves flat, art up, as exported | defaults | color change at 1.6 mm on both, or the 3MF (both halves, two colors). Push 1.4 mm lengths of 1.75 mm filament into the holes of one half, glue the halves (CA or epoxy), press together; the split ring goes through both |
 
 ## Fits and tolerances
 
@@ -79,13 +79,13 @@ Bambu: *Add pause/filament change* on that layer).
 If your printer runs tight or loose, scale only the part with the hole in the slicer (the foot, or the clip), or change the values
 in `parametric/`.
 
-## Two colours
+## Two colors
 
 Badge, keychain, sign, coaster, magnet, fin-can badges, desk stand and cable tag have a `.3mf` with one object whose parts are the
-colours: **base** (Void), **cones, M orange**, **cones, O blue** and **name** (white), as in the two-tone logo on dark. Each part
-already has its filament set for a two-colour print: base filament 1, everything raised filament 2. For three colours give
+colors: **base** (Void), **cones, M orange**, **cones, O blue** and **name** (white), as in the two-tone logo on dark. Each part
+already has its filament set for a two-color print: base filament 1, everything raised filament 2. For three colors give
 “cones, O blue” filament 3. PrusaSlicer, OrcaSlicer and Bambu Studio read the parts and filaments; other programs see one
-coloured mesh. On a one-nozzle printer without a changer, print the STL with a colour change at the height in the table.
+colored mesh. On a one-nozzle printer without a changer, print the STL with a color change at the height in the table.
 
 ## Sketches (`sketch/`)
 

@@ -8,7 +8,7 @@ Open `guide/index.html` in a browser for the full guide.
 
 - **Name.** Stars run on nuclear fusion, so the brand is *FusionSpace*.
 - **Mark.** Four stars in the original arrangement. Each star is the space left between four touching circles of radius *a*, so the tips are true points. The companion stars are 0.45, 0.40 and 0.32 the size of the main star (exact positions are in `color/fusion-space-tokens.json`).
-- **Colour.** One soft gradient sweeps left to right across the whole mark, from M-class orange `#FFB56C` through rose and lavender to O-class blue `#9BB0FF`. The end colours come from the Harvard stellar classification.
+- **Color.** One soft gradient sweeps left to right across the whole mark, from M-class orange `#FFB56C` through rose and lavender to O-class blue `#9BB0FF`. The end colors come from the Harvard stellar classification.
 - **Wordmark.** `FusionSpace`, one word, in Cascadia Mono SemiBold with the same gradient.
 - **Projects.** Each project is named after an IAU-approved star, which becomes its code: `FS-VEGA`, then drawings `FS-VEGA-001`, with revisions A, B, C…
 
@@ -16,7 +16,7 @@ Open `guide/index.html` in a browser for the full guide.
 
 | Folder | Contents | Opens in |
 |---|---|---|
-| `logo/mark` | The four-star mark: `fusion-space-mark` (gradient), `-void` and `-white` (one colour), plus `fusion-space-mark-50mm.dxf` with exact arcs for laser/CNC | Inkscape, FreeCAD, CAM |
+| `logo/mark` | The four-star mark: `fusion-space-mark` (gradient), `-void` and `-white` (one color), plus `fusion-space-mark-50mm.dxf` with exact arcs for laser/CNC | Inkscape, FreeCAD, CAM |
 | `logo/lockup` | Horizontal and stacked lockups, each as `color`, `void` and `white` | Inkscape |
 | `logo/wordmark` | Wordmark alone | Inkscape |
 | `logo/png` | Transparent PNG exports of all the above | anything |
@@ -53,7 +53,7 @@ Open `guide/index.html` in a browser for the full guide.
 ## Rules
 
 - Keep 0.25 H clear space around the logo, where H is the cluster height. The minimum cluster height is 24 px (8 mm). Below 48 px, use the main star on its own.
-- The gradient always runs left to right, M orange to O blue. Don't reverse it, recolour it, or add outlines, shadows or glows.
+- The gradient always runs left to right, M orange to O blue. Don't reverse it, recolor it, or add outlines, shadows or glows.
 - Don't stretch the cluster or move, add or drop stars.
-- The gradient logo is strongest on Void. For single-colour production (engraving, laser, vinyl, stamps), use the `void` or `white` files, or the DXF.
+- The gradient logo is strongest on Void. For single-color production (engraving, laser, vinyl, stamps), use the `void` or `white` files, or the DXF.
 - The star tips are true points. Most cutters handle that, but if a vendor needs a minimum feature size, ask them to apply their usual tip radius at production size.

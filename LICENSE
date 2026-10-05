@@ -1,19 +1,34 @@
 FusionSpace brand system
 Copyright (c) 2026 Neer Patel
 
-This repository holds two kinds of material under different terms.
+This repository holds several kinds of material under different terms.
 
 1. Code in tools/ is licensed under the Apache License, Version 2.0; see
-   tools/LICENSE. That licence covers the source code only. It grants no
+   tools/LICENSE. That license covers the source code only. It grants no
    rights to the FusionSpace name, logo or other trademarks (Apache-2.0,
    section 6), including the artwork the code produces.
 
-2. Everything else is copyright (c) 2026 Neer Patel. All rights reserved.
+2. The code-like files in product/ are licensed under the Apache License,
+   Version 2.0 as well (tools/LICENSE), so any project, open source or not,
+   can copy them in: product/tokens/, product/web/fusionspace.css,
+   product/web/tailwind-theme.css, product/web/mdbook/, product/cli/,
+   product/embedded/fs_lvgl_styles.c and .h, the templates in
+   product/desktop/linux/ (the desktop entry, the AppStream file and the
+   udev rule), and the stylesheet's source,
+   source/product/web/components.css. Each carries an
+   SPDX-License-Identifier line. As with tools/, the license grants no
+   rights to the FusionSpace name or logo.
+
+3. Everything else is copyright (c) 2026 Neer Patel. All rights reserved.
    This includes the FusionSpace name, the four-cone mark and both lockups,
    and every brand file in logo/, kit/, guide/, graphics/, color/,
-   templates/ and source/. These files are published to show the work, not
-   for reuse. No licence is granted to copy, modify or distribute them,
-   except as described in TRADEMARKS.md.
+   templates/, source/ and the rest of product/ (the rules, icons,
+   examples, mock-ups, footprints and livery sheets). These files are
+   published to show the work, not for reuse. No license is granted to
+   copy, modify or distribute them, except as described in TRADEMARKS.md.
 
-3. The fonts in type/fonts/ are third-party and are distributed under the
-   SIL Open Font License 1.1; see the licence file next to each font.
+4. The fonts in type/fonts/, and their WOFF2 subsets in product/web/fonts/,
+   are third-party and are distributed under the SIL Open Font License 1.1;
+   see the license file next to each font. The Spleen bitmap fonts in
+   source/product/embedded/fonts/ are under the BSD 2-Clause license
+   (LICENSE-Spleen.txt next to them).

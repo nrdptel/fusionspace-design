@@ -31,14 +31,14 @@ SECTION_ORDER = ["guide", "product", "logo", "graphics", "templates", "color", "
 NOTES_FILE = os.path.join(build.ROOT, "reviews", "session-notes.json")   # {item id: note from the last working session}
 PREV_DIR = "review-previews"
 PREFER_EXTRA = ("kit/production/cut/", "kit/3d-print/sketch/", "kit/software/banner/", "kit/pcb/FusionSpace.pretty/", "kit/documents/email-signature/signature")          # generated previews for files a browser can't show (Office, DXF)
-DIR_DESC = [("logo/mark/", "Master mark files (gradient, one colour, two-tone) and the 50 mm DXF"),
-            ("logo/lockup/", "Master lockups: horizontal and stacked in every colour mode"),
+DIR_DESC = [("logo/mark/", "Master mark files (gradient, one color, two-tone) and the 50 mm DXF"),
+            ("logo/lockup/", "Master lockups: horizontal and stacked in every color mode"),
             ("logo/png/", "Master PNG exports of the logo"), ("logo/favicon/", "Master favicon and app icon artwork"),
             ("logo/", "Master logo files"), ("graphics/", "Construction drawing of the mark (used in the guide and on posters)"),
             ("templates/freecad/", "FreeCAD drawing title-block template"), ("templates/", "Project social card template"),
             ("product/tokens/", "Product tokens for every platform (generated from the same values as product/foundations.md)"),
             ("product/", "The product system: rules for sites, tools, CLIs, apps, devices, boards and rockets, with reference parts"),
-            ("color/", "Design tokens: colours, geometry values, type"), ("guide/", "The brand guide (open in a browser)"),
+            ("color/", "Design tokens: colors, geometry values, type"), ("guide/", "The brand guide (open in a browser)"),
             ("README.md", "Repository README"), ("verify.png", "Build check image from verify.py")]
 
 def contact_sheet(pngs, dest, cols=4, width=1600):
@@ -181,10 +181,10 @@ def ansi_html(s):
     span(s[pos:])
     return "".join(out)
 
-SIG_TOL = 15          # max grey-level difference (0-255) between 32 x 32 signatures that still counts as "the same picture"
+SIG_TOL = 15          # max gray-level difference (0-255) between 32 x 32 signatures that still counts as "the same picture"
                       # (used only when the pictures were rendered by a different rsvg/machine than when you decided)
 def renderer_id():
-    """Which rasteriser made the pictures (rsvg-convert version + platform). Decisions remember it; a different one means a
+    """Which rasterizer made the pictures (rsvg-convert version + platform). Decisions remember it; a different one means a
     rebuild on another machine, where pixel hashes change without the art changing."""
     import platform
     try: v = subprocess.run(["rsvg-convert", "--version"], capture_output=True, text=True, timeout=10).stdout.strip().split()[-1]
@@ -192,7 +192,7 @@ def renderer_id():
     return f"rsvg {v} · {platform.system()} {platform.machine()}"
 
 def png_sig(p):
-    """Coarse picture signature: 32 x 32 grey levels over mid grey, as hex. Measured October 2026: two renders of the same art
+    """Coarse picture signature: 32 x 32 gray levels over mid gray, as hex. Measured October 2026: two renders of the same art
     on different machines (rsvg 2.52 vs 2.6x) differ by at most 11 levels in any cell; changing one word of small text
     (a tagline, a job title, an email) moves some cell by 19-31. SIG_TOL sits between the two."""
     with Image.open(p) as im:
@@ -294,22 +294,22 @@ def collect():
     return items
 
 # ---------------------------------------------------------------- review scope
-# Most of the 400-odd items are the same artwork in another colour mode, size, theme or format, settled decisions (the mark,
-# the colours, the lockups), or text and settings the build checks by itself. The page opens on the FOCUS set: one
+# Most of the 400-odd items are the same artwork in another color mode, size, theme or format, settled decisions (the mark,
+# the colors, the lockups), or text and settings the build checks by itself. The page opens on the FOCUS set: one
 # representative per real design, each showing the items it stands for as thumbnails. A decision on a representative
 # applies to the items it covers. Everything else is "covered" (hidden by default, with the reason; still decidable).
 # Rules are matched against item ids. An item no rule matches is in focus (so a new output is never skipped silently),
 # unless it is text or settings.
-DECIDED = ("Settled artwork: the Rev C mark, the gradient and two-tone colours (2 Oct), the horizontal lockup (3 Oct) and the "
-           "stacked lockup (kept as is, 3 Oct). These are the same artwork in each colour mode and file format.")
+DECIDED = ("Settled artwork: the Rev C mark, the gradient and two-tone colors (Oct 2), the horizontal lockup (Oct 3) and the "
+           "stacked lockup (kept as is, Oct 3). These are the same artwork in each color mode and file format.")
 TEXTY = "Text, code or settings. The build checks it parses and has no placeholders; open it only if you're curious."
 COVER = [
     (r"^(logo/(lockup|wordmark|mark)/|logo/fusion-space-|kit/logo/)", DECIDED),
-    (r"^kit/web/(safari-pinned-tab|icon-monochrome)$", "One-colour mark for a browser slot (settled artwork)."),
+    (r"^kit/web/(safari-pinned-tab|icon-monochrome)$", "One-color mark for a browser slot (settled artwork)."),
     (r"^kit/web/site/public/brand/fusion-space-wordmark$", "A copy of the horizontal lockup for the website (settled artwork)."),
-    (r"^color/", "Colour data (tokens, CSS, GIMP palette), written from the same values as the guide's colour sheet."),
+    (r"^color/", "Color data (tokens, CSS, GIMP palette), written from the same values as the guide's color sheet."),
     (r"^kit/index\.html$", "The kit's own browsing page (a tool, not brand output)."),
-    (r"^product/tokens/", "Token files for each platform, written from the same values as product/foundations.md; the build measures every colour pair and stops if one falls short."),
+    (r"^product/tokens/", "Token files for each platform, written from the same values as product/foundations.md; the build measures every color pair and stops if one falls short."),
 ]
 REPS = [   # (representative, [items it covers], why it stands for them)
     ("guide/index.html", [r"^graphics/(mark-construction|fusion-gradient-strip)$"], "shown in the guide"),
@@ -341,8 +341,8 @@ REPS = [   # (representative, [items it covers], why it stands for them)
     ("kit/projects/window/social-preview-dark", [r"^kit/projects/window/(?!.*\.(md|json)$)"], "the rest of this tool's project images"),
     ("kit/projects/muster/social-preview-dark", [r"^kit/projects/muster/(?!.*\.(md|json)$)"], "the rest of this tool's project images"),
     ("kit/production/stickers/sticker-mark-50mm-dark", [r"^kit/production/stickers/sticker-mark-(50mm-light|75mm-|100mm-)"], "the other mark stickers (same outline)"),
-    ("kit/embedded/tft-240x240", [r"^kit/embedded/tft-"], "the other colour screens"),
-    ("kit/embedded/oled-128x64", [r"^kit/embedded/(oled|epaper)-"], "the other one-colour screens"),
+    ("kit/embedded/tft-240x240", [r"^kit/embedded/tft-"], "the other color screens"),
+    ("kit/embedded/oled-128x64", [r"^kit/embedded/(oled|epaper)-"], "the other one-color screens"),
     ("kit/pcb/FusionSpace.pretty/FusionSpace_Mark_12mm_F.kicad_mod", [r"^kit/pcb/(?!README)"], "every PCB footprint and image (sizes, sides, copper)"),
     ("kit/software/terminal/preview", [r"^kit/software/terminal/"], "the terminal settings files it previews"),
     ("kit/software/banner/horizontal-72.ans", [r"^kit/software/banner/"], "the other banners and code versions"),
@@ -353,8 +353,8 @@ REPS = [   # (representative, [items it covers], why it stands for them)
     ("kit/wallpapers/desktop-2560x1440-dark", [r"^kit/wallpapers/(desktop|macbook|ultrawide)-"], "the other screen sizes, dark and light"),
     ("kit/wallpapers/phone-1320x2868-dark", [r"^kit/wallpapers/(phone|tablet)-"], "the other phone and tablet sizes"),
     ("kit/wallpapers/call-background-1920x1080-dark", [r"^kit/wallpapers/call-background-"], "light theme"),
-    ("kit/merch/tshirt-front-center-color-10in-300dpi", [r"^kit/merch/(tshirt-front-center|tshirt-back|hoodie-front)-"], "the other colour modes, the back and the hoodie"),
-    ("kit/merch/tshirt-front-chest-color-4in-300dpi", [r"^kit/merch/(tshirt-front-chest|cap-front)-"], "the other colour modes and the cap"),
+    ("kit/merch/tshirt-front-center-color-10in-300dpi", [r"^kit/merch/(tshirt-front-center|tshirt-back|hoodie-front)-"], "the other color modes, the back and the hoodie"),
+    ("kit/merch/tshirt-front-chest-color-4in-300dpi", [r"^kit/merch/(tshirt-front-chest|cap-front)-"], "the other color modes and the cap"),
     ("kit/merch/mug-11oz-wrap-dark-300dpi", [r"^kit/merch/mug-"], "white mug"),
     ("kit/merch/poster-mark-18x24in", [r"^kit/merch/poster-mark-"], "A2 and A3"),
     ("kit/merch/poster-construction-18x24in", [r"^kit/merch/poster-construction-"], "A2 and A3"),
@@ -378,7 +378,7 @@ REPS = [   # (representative, [items it covers], why it stands for them)
     ("kit/3d-print/fusion-space-cookie-80mm", [r"^kit/3d-print/fusion-space-cookie-80mm-"], "the cutter and stamp STLs"),
     ("kit/3d-print/sketch/fusion-space-mark-50mm", [r"^kit/3d-print/sketch/"], "the other sketches (mark, lockups and name at every size)"),
     ("kit/3d-print/parametric/FusionSpace_Badge.FCMacro", [r"^kit/3d-print/parametric/"], "the Fusion script"),
-    # product system (4 October 2026): one focus item per reference part; the rule documents are focus text
+    # product system (October 4, 2026): one focus item per reference part; the rule documents are focus text
     ("product/web/previews/specimen-light", [r"^product/web/(index\.html|previews/specimen-dark|fusionspace\.css|tailwind-theme\.css|fonts|mdbook/|README)"],
      "the specimen page itself (dark theme too), the stylesheet, fonts, Tailwind and mdBook themes"),
     ("product/web/previews/home-light", [r"^product/web/(examples/home\.html|previews/home-dark)"], "the page itself and its dark theme"),
@@ -476,12 +476,12 @@ def before_preview(id_, cur):
             return dest
     return ""
 
-APPROVED_NOTE = re.compile(r"^(CHANGED|REMOVED) \((colour change|lockup proportions|review round 1)|your new wording|your pick")
+APPROVED_NOTE = re.compile(r"^(CHANGED|REMOVED) \((color change|lockup proportions|review round 1)|your new wording|your pick")
 SHOW_BEFORE = re.compile(r"^CHANGED \(review round 1")       # changes you asked for: show Before/Now so you can check them
 def split_note(n):
     """With a round set (ROUND): (this round's notes, earlier notes). Otherwise:
     A session note is several notes joined with "Earlier:" / "Earlier today:". Returns (still to look at, already approved):
-    changes you decided or asked for (the colour change, the wording, the lockup proportions, review round 1) are approved;
+    changes you decided or asked for (the color change, the wording, the lockup proportions, review round 1) are approved;
     the rest (changes made without you, additions, fixes, options) still need your eyes."""
     segs = [x.strip() for x in re.split(r"\s*(?:Earlier today: |Earlier: )", n) if x.strip()]
     if ROUND:
@@ -506,7 +506,7 @@ def human(n):
 
 TODAY_BTN = ('<button data-f="today" title="Focus items with changes made since your last review; changes you already approved don\'t count (c jumps to the next one)">Changed without you<span class="n">%NTF%</span></button>',
              '<button data-f="today" title="Focus items changed this round from your review notes, including changes on the items they cover and items taken out (c jumps to the next one)">Changed this round<span class="n">%NTF%</span></button>')
-NOTES_INTRO = ('<p class="intro"><b>Session notes:</b> a blue box is a change made since your last review, worth a look; %NTF% focus items have one, and <b>Changed without you</b> shows just those. Changes you already decided or asked for (the colours, the wording, both lockups, review round 1) are folded away under “changes you already approved”. Orange is <b>an option for you to pick</b> (%NO%), and <b>Options</b> shows just those. Your note on an option can be as short as “A”. Changed items show <b>Before</b> and <b>Now</b> side by side. <b>Grid view</b> (<kbd>g</kbd>) shrinks everything to tiles for quick passes.</p>',
+NOTES_INTRO = ('<p class="intro"><b>Session notes:</b> a blue box is a change made since your last review, worth a look; %NTF% focus items have one, and <b>Changed without you</b> shows just those. Changes you already decided or asked for (the colors, the wording, both lockups, review round 1) are folded away under “changes you already approved”. Orange is <b>an option for you to pick</b> (%NO%), and <b>Options</b> shows just those. Your note on an option can be as short as “A”. Changed items show <b>Before</b> and <b>Now</b> side by side. <b>Grid view</b> (<kbd>g</kbd>) shrinks everything to tiles for quick passes.</p>',
                '<p class="intro"><b>This round (%ROUND%):</b> a blue box says what changed and which of your notes it answers; %NTF% focus items have one, '
                'and <b>Changed this round</b> shows just those (it also counts changes on the items a focus item covers, and items taken out). '
                'Where the artwork changed since your decision, the item also comes back under <b>To review</b> with a dashed edge. Notes from earlier '
@@ -694,11 +694,11 @@ body.grid .it.cur textarea{display:block}
 <button id="next" title="Next item to review (n)">Next to review</button> <button id="gridv" title="Toggle small tiles (g)">Grid view</button>
 <span style="flex:1"></span><button id="export">Export review</button><button id="copy">Copy</button><button id="import">Import</button><button id="help">Keys</button><input type="file" id="file" accept=".md,.json,.txt" class="hidden"></div></header>
 <main>
-<p class="intro"><b>Focus: %NFOCUS% items to look at.</b> The build makes %N% items (%NF% files), but most are the same artwork in another colour mode, size, theme or format, settled decisions (the mark, the colours, both lockups), or text and settings the build checks by itself. Each focus item is one real design and shows, under its note, the items it stands for: <b>a decision on it applies to those too</b>. The other %NCOV% are under <b>Covered</b>, each with the reason; you can still open and decide any of them.</p>
+<p class="intro"><b>Focus: %NFOCUS% items to look at.</b> The build makes %N% items (%NF% files), but most are the same artwork in another color mode, size, theme or format, settled decisions (the mark, the colors, both lockups), or text and settings the build checks by itself. Each focus item is one real design and shows, under its note, the items it stands for: <b>a decision on it applies to those too</b>. The other %NCOV% are under <b>Covered</b>, each with the reason; you can still open and decide any of them.</p>
 <p class="intro"><b>Core</b> (%NCORE%) is the part to do first: the brand identity, website and app icons, GitHub, social images, documents, and the open options. The other %NKIT% focus items are the discipline kits (screens, PCB, software, games, video, wallpapers, merch, production, 3D print), worth a pass before you use them.</p>
 <p class="intro">Built %STAMP%. Each item is one piece of artwork in all its formats. Pick <b>Keep</b>, <b>Change</b> or <b>Remove</b>, and write what you want in the box (a note on its own counts as Change). Progress saves in this browser as you go. When you're done, click <b>Export review</b> and keep the downloaded file with your notes. Items with a dashed edge changed since you reviewed them. Click a preview to open it full size.</p>
 %NOTESINTRO%
-<h2 style="margin-top:16px">Overall notes</h2><textarea id="overall" placeholder="Anything that applies to the whole kit (tone, colours, naming, things that are missing)…"></textarea>
+<h2 style="margin-top:16px">Overall notes</h2><textarea id="overall" placeholder="Anything that applies to the whole kit (tone, colors, naming, things that are missing)…"></textarea>
 %BODY%
 </main>
 <dialog id="keys"><h3>Keyboard</h3><p><kbd>j</kbd>/<kbd>k</kbd> next/previous item · <kbd>n</kbd> next item to review · <kbd>1</kbd> Keep · <kbd>2</kbd> Change (jumps to the note) · <kbd>3</kbd> Remove · <kbd>0</kbd> clear · <kbd>b</kbd> change preview background · <kbd>o</kbd> open preview · <kbd>c</kbd> next changed item · <kbd>g</kbd> grid view · <kbd>Esc</kbd> leave the note box</p><button onclick="this.closest('dialog').close()">Close</button></dialog>

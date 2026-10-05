@@ -3,7 +3,7 @@ import os, json
 import build, kit
 from kit import KIT, TAGLINE, SCOPE, DISCIPLINES, SITE, SITE_URL, GITHUB_URL, note, out
 
-LABELS = [  # GitHub issue labels in brand colours (hex without #)
+LABELS = [  # GitHub issue labels in brand colors (hex without #)
     ("bug", "B34F0C", "Something is broken"), ("feature", "3350D6", "New capability"), ("enhancement", "768DF5", "Improve something that works"),
     ("docs", "A188CB", "Documentation"), ("hardware", "DA7C30", "PCBs, wiring, mechanical, machining"), ("firmware", "D07D7A", "Embedded and flight software"),
     ("test", "566079", "Tests, verification, CI"), ("question", "98A1B8", "Needs an answer"), ("blocked", "0B0F1C", "Waiting on something else"),
@@ -49,15 +49,15 @@ HOWTO = """# GitHub setup with the FusionSpace kit
      `python3 tools/build/project.py --name <Star> --tag <TAG> --desc "..."` (example in `kit/projects/example-vega/`).
    - README header: copy the project's `readme-banner-dark.png` and `-light.png` into `.github/brand/` and start from its
      `README-starter.md` (or use the brand banners here with `README-snippet.md`).
-   - Labels: `./apply-labels.sh owner/repo` (needs the GitHub CLI, `gh`). Colours come from the palette; see `labels.json`.
+   - Labels: `./apply-labels.sh owner/repo` (needs the GitHub CLI, `gh`). Colors come from the palette; see `labels.json`.
    - Badges: `badges.md`.
    - Topics: add `fusionspace` plus the discipline (e.g. `embedded`, `pcb`, `cnc`, `game`) so projects are easy to filter.
-4. **GitHub Pages or a docs site**: use `kit/web/` for the icon set and `kit/software/docs-theme/` (MkDocs Material or Docusaurus) for the look; `color/fusion-space-tokens.css` has the raw colours.
+4. **GitHub Pages or a docs site**: use `kit/web/` for the icon set and `kit/software/docs-theme/` (MkDocs Material or Docusaurus) for the look; `color/fusion-space-tokens.css` has the raw colors.
 """
 
 def build_github_extras():
     Gd = f"{KIT}/github"; G = "Profiles & social"
-    build.wr(f"{Gd}/badges.md", "# FusionSpace README badges (shields.io, brand colours)\n\nCopy the lines you need.\n\n"
+    build.wr(f"{Gd}/badges.md", "# FusionSpace README badges (shields.io, brand colors)\n\nCopy the lines you need.\n\n"
              + "\n".join(f"{badge(*b)}\n```\n{badge(*b)}\n```\n" for b in BADGES))
     build.wr(f"{Gd}/labels.json", json.dumps([{"name": n, "color": c, "description": d} for n, c, d in LABELS], indent=2) + "\n")
     build.wr(f"{Gd}/apply-labels.sh", "#!/usr/bin/env bash\n# Create or update the FusionSpace issue labels in a repo: ./apply-labels.sh owner/repo   (needs the GitHub CLI, gh)\n"
@@ -69,8 +69,8 @@ def build_github_extras():
     build.wr(f"{Gd}/HOW-TO.md", HOWTO)
     for p, what, use in [("profile-README.md", "profile README template with light/dark banner and project table", "github.com/<you>/<you>"),
                          ("HOW-TO.md", "step-by-step GitHub setup with these files", "Start here for GitHub"),
-                         ("labels.json / apply-labels.sh", "issue labels in brand colours, applied with the GitHub CLI", "Any repo"),
-                         ("badges.md", "shields.io badges in brand colours (status, discipline)", "READMEs")]:
+                         ("labels.json / apply-labels.sh", "issue labels in brand colors, applied with the GitHub CLI", "Any repo"),
+                         ("badges.md", "shields.io badges in brand colors (status, discipline)", "READMEs")]:
         note(f"{Gd}/{p}", G, what, "", use)
 
 def build_example_project():
@@ -82,7 +82,7 @@ def build_example_project():
          "", "Run project.py for each new project; see HOW-TO-USE.md inside")
 
 # The site's tools keep their own names (code FS, tag SW, numbered in the site's order); descriptions as on fusionspace.co
-# (checked 3 October 2026).
+# (checked October 3, 2026).
 SITE_TOOLS = [
     ("HPR Motor Finder", "AeroTech, Cesaroni & Loki motor stock and pricing, aggregated across major U.S. vendors."),
     ("Charge", "Black-powder ejection-charge calculator for high-power rocketry."),

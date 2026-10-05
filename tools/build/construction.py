@@ -200,7 +200,7 @@ def body(prefix="cons"):
         out.append(T(30, 862 + 16 * i, line, 11, fill=SLATE))
     # ------------------------------------------------ table (right, under the cluster)
     ty = 850
-    out.append(T(470, ty, "CONE     PROFILE          RADIUS   BASE CENTRE (u, v)".replace(" ", "&#160;"), 12, fill=SLATE))
+    out.append(T(470, ty, "CONE     PROFILE          RADIUS   BASE CENTER (u, v)".replace(" ", "&#160;"), 12, fill=SLATE))
     for i, n in enumerate(geo.ORDER):
         c = up[n]; s_ = geo.SIZE[n]
         u, v = c[0] / r, (c[1] + B * s_ - B) / r

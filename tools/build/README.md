@@ -10,7 +10,7 @@ These scripts generate every Rev C brand file from a handful of numbers: logos, 
 | `build.py` | Builds every output file. `build_all()` wipes the output folder and rebuilds it from scratch. |
 | `construction.py` | Draws the construction drawing (`graphics/mark-construction.svg`): 1 cone, 2 spacing on the leaned grid, 3 cluster, 4 profiles, 5 feet (detail of the foot cut). The guide embeds the same drawing. |
 | `../mark-tuner/index.html` | Interactive tuner. A JavaScript port of `geo.py` and the lockup/icon geometry, for trying values before a rebuild. Keep it in step with `geo.py`. |
-| `kit.py` | The asset kit (`<OUT>/kit`): the logo colour-mode matrix (SVG, PDF, PNG sizes), web/app icons, GitHub and social images, documents, production files, `kit/README.md` and the guide's Kit sheet. `build_all()` runs it. |
+| `kit.py` | The asset kit (`<OUT>/kit`): the logo color-mode matrix (SVG, PDF, PNG sizes), web/app icons, GitHub and social images, documents, production files, `kit/README.md` and the guide's Kit sheet. `build_all()` runs it. |
 | `kit_github.py` | GitHub extras for the kit: profile README, labels, badges, how-to, and the example project. |
 | `kit_targets.py` | Discipline targets: embedded boot logos (C headers), KiCad footprints, 3D prints (`build_3d()`: every model in `kit/3d-print/`, its STL, STEP, 3MF, preview and print settings in the folder's README; sketches at `SKETCH_SIZES`; fin-can tube sizes in `FINCAN`; desk stand in `STAND`), terminal themes and CLI banners (`braille()`: the whole piece, name included, as braille text art; `term_art()` cuts the feet at one dot for it), game art, logo animation (needs ffmpeg), wallpapers, merch, posters. |
 | `kit_review.py` | A sign-off page, `_build/rev-c/review.html` (not committed; also runs on its own, `python3 tools/build/kit_review.py`, from the last build's manifest): every output grouped into items (one piece of artwork in all its formats) with Keep / Change / Remove, notes, export/import, audit flags (placeholders, PNG sizes vs file names, SVG/JSON parse) and a per-item content hash so changed items come back for a re-check. Office and DXF previews go in `_build/rev-c/review-previews/` (needs LibreOffice + pdftoppm; skipped otherwise). |
@@ -19,9 +19,9 @@ These scripts generate every Rev C brand file from a handful of numbers: logos, 
 | `kit_picker.py` | `tools/star-name-picker/` from `source/star-name-picker/`: puts the current horizontal lockup in the header and loads Cascadia Mono and Archivo from `type/fonts/`. |
 | `kit_apps.py` | `kit/apps/`: iOS (1024 and Icon Composer layers), macOS, Android adaptive icon layers, Google Play icon and feature graphic. |
 | `kit_docs.py` | `kit/software/docs-theme/`: MkDocs Material and Docusaurus themes, with a drawn preview. |
-| `kit_decals.py` | `kit/production/rocket-decals/`: A4 rocket decal sheets (print-and-cut dark/light, one-colour vinyl). Sizes in `DECALS`. |
-| `kit_cad.py` | Solids and files for `kit/3d-print/` (Open CASCADE via `pip install cadquery-ocp`): `Outline` (the cones as exact curves from `geo.cone_segments`: lines, circular arcs, the ellipse, cubic Béziers) and `mark_outlines()`; prisms, booleans, `mesh_of()` (BRepMesh, welded, watertight); STEP with named, coloured bodies (`write_step_bodies`, XCAF) where the mark is exact and other outlines are B-splines between corners within `STEP_TOL` 0.002 mm; two-colour 3MF (`write_3mf`: one object, one part per colour, extruders set for PrusaSlicer/Orca/Bambu); a small z-buffer renderer for previews; the FDM rules (`MIN_FEATURE` 0.6, `MIN_GAP` 0.5, `FOOT_MM` 0.6, `CLEAR` 0.2, `MAGNET` 10 × 3) and `check_print()`, which the build runs on every printed outline; the FreeCAD macro and Fusion script (`freecad_macro()`, `fusion_script()`); and `nonzero_region()`, the area an SVG path fills under the nonzero rule (the outlined wordmark is built from overlapping contours, so its subpaths can't be used one by one as faces or cut lines). The models themselves are in `kit_targets.build_3d()`. Without OCP the STEP and 3MF files and the OCP-built prints are skipped with a warning. |
-| `kit_product.py` | `product/`: the product system. Semantic colour roles for light, dark and field themes, the four signal colours, type, space, lines, motion (one place: the constants at the top); `check_contrast()` and `check_cvd()` stop the build if any pair the rules rely on falls short (WCAG contrast, and distance under simulated protan/deutan/tritan vision); token files (DTCG JSON, CSS, Swift, Kotlin, C); the web stylesheet (`source/product/web/components.css` plus the tokens), WOFF2 font subsets, Tailwind and mdBook themes, the specimen and four example screens with Playwright screenshots; a made-up example flight (`example_flight()`) and the chart drawing (`chart_svg()`); CLI styles for Rust and Python with a rendered sample; device-screen mock-ups drawn with Spleen bitmap fonts (`source/product/embedded/fonts`, BSD-2); a KiCad board title block; livery wrap sheets; the rule documents, rendered from `source/product/*.md` with every `{{…}}` filled in from these values; and the guide's Products sheet. Runs on its own too: `python3 tools/build/kit_product.py` (needs a built `_build/rev-c` for the logos). |
+| `kit_decals.py` | `kit/production/rocket-decals/`: A4 rocket decal sheets (print-and-cut dark/light, one-color vinyl). Sizes in `DECALS`. |
+| `kit_cad.py` | Solids and files for `kit/3d-print/` (Open CASCADE via `pip install cadquery-ocp`): `Outline` (the cones as exact curves from `geo.cone_segments`: lines, circular arcs, the ellipse, cubic Béziers) and `mark_outlines()`; prisms, booleans, `mesh_of()` (BRepMesh, welded, watertight); STEP with named, colored bodies (`write_step_bodies`, XCAF) where the mark is exact and other outlines are B-splines between corners within `STEP_TOL` 0.002 mm; two-color 3MF (`write_3mf`: one object, one part per color, extruders set for PrusaSlicer/Orca/Bambu); a small z-buffer renderer for previews; the FDM rules (`MIN_FEATURE` 0.6, `MIN_GAP` 0.5, `FOOT_MM` 0.6, `CLEAR` 0.2, `MAGNET` 10 × 3) and `check_print()`, which the build runs on every printed outline; the FreeCAD macro and Fusion script (`freecad_macro()`, `fusion_script()`); and `nonzero_region()`, the area an SVG path fills under the nonzero rule (the outlined wordmark is built from overlapping contours, so its subpaths can't be used one by one as faces or cut lines). The models themselves are in `kit_targets.build_3d()`. Without OCP the STEP and 3MF files and the OCP-built prints are skipped with a warning. |
+| `kit_product.py` | `product/`: the product system. Semantic color roles for light, dark and field themes, the four signal colors, type, space, lines, motion (one place: the constants at the top); `check_contrast()` and `check_cvd()` stop the build if any pair the rules rely on falls short (WCAG contrast, and distance under simulated protan/deutan/tritan vision); token files (DTCG JSON, CSS, Swift, Kotlin, C); the web stylesheet (`source/product/web/components.css` plus the tokens), WOFF2 font subsets, Tailwind and mdBook themes, the specimen and four example screens with Playwright screenshots; a made-up example flight (`example_flight()`) and the chart drawing (`chart_svg()`); CLI styles for Rust and Python with a rendered sample; device-screen mock-ups drawn with Spleen bitmap fonts (`source/product/embedded/fonts`, BSD-2); a KiCad board title block; livery wrap sheets; the rule documents, rendered from `source/product/*.md` with every `{{…}}` filled in from these values; and the guide's Products sheet. Runs on its own too: `python3 tools/build/kit_product.py` (needs a built `_build/rev-c` for the logos). |
 | `kit_icons.py` | The product icon set: 60 icons on a 24 px grid (1.5 px stroke, square caps, 0/45/90°), drawn in code; the nose cone uses the Von Kármán profile. `GROUPS` orders them. |
 | `kit_shot.py` | Screenshots an HTML file for a review preview (Playwright or headless Chrome; skipped if neither is installed). |
 | `project.py` | Per-project images (`--name`, `--tag`, `--desc`): social preview, README banners, OG image, YouTube thumbnail, title slides, report covers, starter README. Writes to `projects/<name>/` or `--out`. |
@@ -52,7 +52,7 @@ The mark tuner (`tools/mark-tuner/index.html`) is a JavaScript port of `geo.py` 
 - **Paths:** override the input and output folders with the `FS_SRC` and `FS_OUT` environment variables.
 - **Reproducible:** `build.py` sets `SOURCE_DATE_EPOCH` (PDF dates), runs with `PYTHONHASHSEED=0` (DXF object order), writes DXFs with
   fixed metadata, strips Ghostscript's IDs, gives Office and 3MF files fixed zip dates and STEP files a fixed date, and renumbers
-  the STEP colour entities, which Open CASCADE writes in hash order (`kit_cad._canonical_colours`). Two builds on the same machine are byte-identical
+  the STEP color entities, which Open CASCADE writes in hash order (`kit_cad._canonical_colors`). Two builds on the same machine are byte-identical
   apart from the build time in the sign-off page, so a commit only shows files whose content changed. (A different machine's rsvg,
   Ghostscript or LibreOffice can still produce different bytes.)
 
@@ -66,7 +66,7 @@ The mark tuner (`tools/mark-tuner/index.html`) is a JavaScript port of `geo.py` 
 | Profiles | main (north) Von Kármán (LD-Haack, C = 0), west conical, east elliptical, south (tail) tangent ogive | `geo.KINDS` |
 | Base radii (in r) | main 1.0, west 0.4, east 0.3, south 0.5 | `geo.SIZE` |
 | Cone length / base radius (all cones) | 3.50 (`H_K / W_K` = 1.40 / 0.40) | `geo.H_K`, `geo.W_K` |
-| Tip above cone centre (fraction of length) | 0.58 | `geo.TIP_K` |
+| Tip above cone center (fraction of length) | 0.58 | `geo.TIP_K` |
 | Notch depth / base radius | 1.00 (circular arc through both base corners, a half circle) | `geo.SAG_K` |
 | Foot width / base radius: each foot is cut flat, parallel to the base line, where the wall between flank and notch is this wide | 0.05 | `geo.FOOT_K` |
 | West wing gap: left Von Kármán foot corner to the conical's inner foot corner, horizontal (in r) | 0.19 | `geo.GAP_W_R` |
@@ -74,7 +74,7 @@ The mark tuner (`tools/mark-tuner/index.html`) is a JavaScript port of `geo.py` 
 | Wing centroid line (area centroids of the conical and elliptical) relative to the Von Kármán foot line (in r, + = below) | 0.47 | `geo.WING_R` |
 | Tail (ogive) tip relative to the Von Kármán foot line (in r, + = below, − = up into the notch) | 0.21 | `geo.TAIL_R` |
 | Stacked lockup: cluster height, gap, mark position | 125, 0.10 × cluster height (to the cap line when the mark is above, from the descenders when below), above | `build.STACK_H`, `build.STACK_GAP`, `build.STACK_POS` |
-| Horizontal lockup: mark height, gap, mark position | 115 units (1.92 × cap height), 0.35 × cap height (21 units, mark's bounding box to the F; `H_GAP_K` = 0.183 × mark height is derived from it), before. Until 3 October 2026: 100 units and 0.375 × mark height; see `reviews/horizontal-gap-mockups/DECISION.md` | `build.H_MARK`, `build.H_GAP_CAP`, `build.H_POS` |
+| Horizontal lockup: mark height, gap, mark position | 115 units (1.92 × cap height), 0.35 × cap height (21 units, mark's bounding box to the F; `H_GAP_K` = 0.183 × mark height is derived from it), before. Until October 3, 2026: 100 units and 0.375 × mark height; see `reviews/horizontal-gap-mockups/DECISION.md` | `build.H_MARK`, `build.H_GAP_CAP`, `build.H_POS` |
 
 ## Spacing rule
 
@@ -84,7 +84,7 @@ The mark tuner (`tools/mark-tuner/index.html`) is a JavaScript port of `geo.py` 
 4. The area centroids of the conical (west) and elliptical (east) wings sit on one line, `WING_R` × r from the Von Kármán foot line (`geo.centroid_y()`).
 5. The west wing's inner foot corner is `GAP_W_R` × r out from the left Von Kármán foot corner, and the east wing's is `GAP_E_R` × r out from the right one.
 
-`geo.layout()` implements the rule. It returns the rotated cone centres (`POS`) and the upright ones (`POS_UPRIGHT`).
+`geo.layout()` implements the rule. It returns the rotated cone centers (`POS`) and the upright ones (`POS_UPRIGHT`).
 
 ## Profile equations
 
@@ -105,8 +105,8 @@ Checked October 2026: LibreCAD 2.2 prints the file at 1:1 as 50.0 × 50.0 mm, an
 
 ## Favicons and app icon
 
-- `favicon.svg`: the cluster's bounding box fills `FAV_FILL` = 0.87 of the tile (corner radius `FAV_RX` = 96 of 512), and the cluster is moved from bbox-centred by `FAV_SHIFT` = (−10.72, +10.07) (of 512) so the gap to the tile edge is even: the main cone's tip (to the rounded corner), the west cone (left edge) and the east cone (bottom edge) are all 23.2 from it. `fav_balance()` finds the shift (it maximises the cluster's least distance to the edge, `cone_gaps()`); rerun it and update `FAV_SHIFT` after changing the geometry, `FAV_FILL` or `FAV_RX`. `build_favicons()` stops if the three gaps differ by more than `FAV_GAP_TOL` = 0.05 or any is under `FAV_INSET` = 8, and `verify.py` checks every built icon tile for marks outside it. The tuner's `geo.js` mirrors `FAV_SHIFT`. (Until 3 October 2026 the fill was 0.92 and the cluster bbox-centred, which put the main cone's tip outside the top-right corner.) The 16 px PNG and .ico image are pixel-hinted by `hinted_favicon()`: the main and south cones from their outlines, the wing cones (`FAV_ARROWS`) as 2 × 2 arrows pointing up and right (top left, top right, bottom right pixels) in the 2 × 2 box where plain hinting puts each, since their outlines are too small to hint at 16 px.
-- `favicon-16.png` (and the 16 px image in `favicon.ico`) is pixel-hinted by `hinted_favicon()`: each pixel is either cone (its average gradient colour) or tile, with no half-tone fringe. 32 and 48 px are plain renders.
+- `favicon.svg`: the cluster's bounding box fills `FAV_FILL` = 0.87 of the tile (corner radius `FAV_RX` = 96 of 512), and the cluster is moved from bbox-centered by `FAV_SHIFT` = (−10.72, +10.07) (of 512) so the gap to the tile edge is even: the main cone's tip (to the rounded corner), the west cone (left edge) and the east cone (bottom edge) are all 23.2 from it. `fav_balance()` finds the shift (it maximizes the cluster's least distance to the edge, `cone_gaps()`); rerun it and update `FAV_SHIFT` after changing the geometry, `FAV_FILL` or `FAV_RX`. `build_favicons()` stops if the three gaps differ by more than `FAV_GAP_TOL` = 0.05 or any is under `FAV_INSET` = 8, and `verify.py` checks every built icon tile for marks outside it. The tuner's `geo.js` mirrors `FAV_SHIFT`. (Until October 3, 2026 the fill was 0.92 and the cluster bbox-centered, which put the main cone's tip outside the top-right corner.) The 16 px PNG and .ico image are pixel-hinted by `hinted_favicon()`: the main and south cones from their outlines, the wing cones (`FAV_ARROWS`) as 2 × 2 arrows pointing up and right (top left, top right, bottom right pixels) in the 2 × 2 box where plain hinting puts each, since their outlines are too small to hint at 16 px.
+- `favicon-16.png` (and the 16 px image in `favicon.ico`) is pixel-hinted by `hinted_favicon()`: each pixel is either cone (its average gradient color) or tile, with no half-tone fringe. 32 and 48 px are plain renders.
 - `app-icon.svg` / `apple-touch-icon.png`: the cluster is scaled so its farthest point sits on a circle of radius `APP_SAFE_R` = 0.40 × the tile (the W3C maskable-icon safe zone), computed by `app_frac()`. It therefore also works as an Android/PWA maskable icon.
 - The tuner's `geo.js` mirrors these values (`FAV_FILL`, `FAV_RX`, `APP_SAFE_R`, `appFrac`), and `parity.py` checks them. The tuner also previews the hinted 16 px favicon (`drawHinted()` in `app.html`, a port of `hinted_favicon()`; browser and rsvg anti-aliasing differ slightly, so a few pixels can differ by a shade).
 
@@ -132,7 +132,7 @@ Checked October 2026: LibreCAD 2.2 prints the file at 1:1 as 50.0 × 50.0 mm, an
   `extrude()` without OCP, so their STLs stay byte-identical when OCP is missing; STEP and 3MF need OCP. Prints with pockets,
   slots, curved backs or engraving are `Model`s built with OCP booleans and meshed with `mesh_of()`. Without OCP those are
   skipped with a warning (and a copy of such a build over the repo would delete them: build where OCP loads).
-- **3MF**: one object per piece, one part per colour (base, cones M orange, cones O blue, name) with `displaycolor` from the
+- **3MF**: one object per piece, one part per color (base, cones M orange, cones O blue, name) with `displaycolor` from the
   two-tone-on-dark mode and `Metadata/Slic3r_PE_model.config` setting each part's extruder (base 1, raised 2). Checked by slicing
   with PrusaSlicer 2.7 on two extruders. Zip dates are fixed, so 3MFs are reproducible.
 - **Previews**: layered models keep `stl_preview()`; the others use `kit_cad.render_preview()` (orthographic, flat shaded, crease
@@ -143,24 +143,24 @@ Checked October 2026: LibreCAD 2.2 prints the file at 1:1 as 50.0 × 50.0 mm, an
 
 ## Asset kit (`kit.py`)
 
-`build_all()` ends with `kit.build_kit()`, which writes `<OUT>/kit`. Everything is generated from the master geometry and the five colour modes in `build.MODES`:
+`build_all()` ends with `kit.build_kit()`, which writes `<OUT>/kit`. Everything is generated from the master geometry and the five color modes in `build.MODES`:
 
 | Mode | Fills |
 |---|---|
 | `color` | Fusion gradient (mark and wordmark each get their own sweep); the same on dark and light |
 | `twotone-on-dark` | flat: warm cones M orange `#DA7C30`, cool cones O blue `#768DF5`, white wordmark |
 | `twotone-on-light` | flat: the same cones, Void wordmark |
-| `void`, `white` | one colour |
+| `void`, `white` | one color |
 
 Warm or cool comes from `build.twotone_side()`: each cone takes the gradient end nearest its area centroid along the sweep (now: west and south warm, main and east cool). Light composites use `kit.LIGHT_MODE` (`color`, the gradient, as approved; set `FS_LIGHT_MODE=twotone-on-light` to try the alternative).
 
-## Colours
+## Colors
 
-The palette lives in `build.py`: `GRADIENT` (stops, decided 2 October 2026), `M_ORANGE` /
+The palette lives in `build.py`: `GRADIENT` (stops, decided October 2, 2026), `M_ORANGE` /
 `O_BLUE` (the gradient ends: accents on dark, two-tone cones `WARM` / `COOL`, Spectral O and M), `ION` / `EMBER` (text and UI on light,
-not logo colours). The archived Rev B inputs carry the old pastel colours; `rd()` maps them through `OLD_COLOURS`. `build_tokens()`
-writes the JSON, then `build_colour_files()` writes `color/fusion-space-tokens.css` and `color/fusion-space.gpl` from it;
+not logo colors). The archived Rev B inputs carry the old pastel colors; `rd()` maps them through `OLD_COLORS`. `build_tokens()`
+writes the JSON, then `build_color_files()` writes `color/fusion-space-tokens.css` and `color/fusion-space.gpl` from it;
 `build_graphics()` writes the gradient strip and spectral bar; `build_wordmarks()` the standalone wordmarks. The guide's contrast table
-is computed by `contrast()`. `SMALL_RULE` / `SMALL_H_PX` hold the small-size rule (horizontal lockup under 32 px on light → Void; 28 px until 3 October 2026).
+is computed by `contrast()`. `SMALL_RULE` / `SMALL_H_PX` hold the small-size rule (horizontal lockup under 32 px on light → Void; 28 px until October 3, 2026).
 
 To add a target: write a function that returns an SVG string (use `Art.place()` for logos, `background()` for the grid and strip, `text()` for editable text), save it with `save_svg()`, export with `png()` / `pdf()` / `cmyk()`, and `note()` it so it appears in `kit/README.md`. Platform sizes live in `SOCIAL`, `AVATARS`, `PAGES`, `CARDS`, `CUT_MM` (kit.py) and `DISPLAYS`, `SILK_MM`, `STEAM`, `WALL` (kit_targets.py). Brand words live in `TAGLINE`, `SCOPE`, `ROLE` and `DISCIPLINES` (kit.py).

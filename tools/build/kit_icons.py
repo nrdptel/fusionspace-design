@@ -1,7 +1,7 @@
 """FusionSpace icons: product/icons/. Drawn on a 24 x 24 grid with a 1.5 stroke, square caps and mitred corners, lines at 0, 45
 and 90 degrees, arcs where the object is round. The domain icons (nose cone, chutes, pyro channels, CG and CP) are drawn
 from the real shapes: the nose cone is the Von Karman profile the mark uses, on its shoulder. Status icons differ in shape,
-not only colour: a circle for normal, a triangle for caution, an octagon for danger.
+not only color: a circle for normal, a triangle for caution, an octagon for danger.
 """
 import math
 

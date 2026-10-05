@@ -34,7 +34,7 @@ template look (indigo buttons, `rounded-xl`, `shadow-lg`) can't creep in.
 [ title block: owner · title · designation · rev · date · units · data · status ]
 ```
 
-- **Header.** The horizontal lockup at 24 px tall, in one colour: Void on light and field, Paper on dark. The gradient lives
+- **Header.** The horizontal lockup at 24 px tall, in one color: Void on light and field, Paper on dark. The gradient lives
   in the strip (principle 6), and the brand's rule for small lockups on light is met in every theme. Nav links in Cascadia Mono; the current page underlined 2 px. No hamburger above 720 px.
 - **Intro.** The designation tag (chamfered), a status chip, the title (Cascadia Mono 28) and one sentence in `lead`. No hero
   image, no background art, no gradient text.
@@ -47,14 +47,14 @@ template look (indigo buttons, `rounded-xl`, `shadow-lg`) can't creep in.
 - **The home page is a drawing register**, not a grid of cards: a table of every tool with its designation, title, one-line
   description, status and address. See [`examples/home.html`](web/examples/home.html).
 - **A tool page** (Charge, Window) puts inputs left and the result right, the result sticky as the inputs scroll; on a phone
-  the result follows the inputs. The result panel has a 2 px ink border, the headline readout, a "Show the maths" disclosure,
+  the result follows the inputs. The result panel has a 2 px ink border, the headline readout, a "Show the math" disclosure,
   the "How far to trust it" note, and any caution.
 - **An analysis page** (a flight report) leads with readouts, then the stacked chart, then the event and channel tables, then a Source
   sheet with the file, its hash and every setting used.
 - **A board** (Window) is readouts plus a table, with every value's source and age, and a Print button.
-- **Docs** are sheets of prose with a left table of contents; code blocks in Cascadia Mono on the surface colour.
+- **Docs** are sheets of prose with a left table of contents; code blocks in Cascadia Mono on the surface color.
 - **First run.** No splash screen, no tour, no sign-up. A tool opens ready to use, with a worked example filled in and
-  labelled as one ("Example: 4 in airframe, 12 in bay"), so the first thing anyone sees is a real result and how it was made.
+  labeled as one ("Example: 4 in airframe, 12 in bay"), so the first thing anyone sees is a real result and how it was made.
 - **Privacy.** No accounts, no ads, no third-party tracking or fonts. If a tool counts visits, it uses a cookieless,
   self-hosted counter and says so in the title block's notes. User data (logs, ground tests, designs) stays in the browser
   unless the user exports it.
@@ -72,7 +72,7 @@ All in `fusionspace.css`, shown in the specimen. The rules that matter:
   value as read shown back. Errors: 2 px danger border and a
   message under the field.
 - **Segmented control** for a choice among two to four (units, theme, separation method); **tabs** for views of the same thing.
-- **Status chips**: word + icon + colour, see [`foundations.md`](foundations.md#colour). **Notes**: NOTE, CAUTION, WARNING
+- **Status chips**: word + icon + color, see [`foundations.md`](foundations.md#color). **Notes**: NOTE, CAUTION, WARNING
   panels with the signal word in a header strip; "How far to trust it" uses the same shape.
 - **Hazard border** (45° Sodium and Void bands) around anything that arms or fires; SAFE sits right of or below ARM.
 - **Arming and firing** from a page take two separate actions: the button opens a confirmation, which is held for 2 s (or
@@ -104,7 +104,7 @@ WCAG 2.2 AA, with these as the ones that change the design:
 - A visible focus ring on everything: 2 px Ion outline, 2 px offset (meets the 2.4.13 AAA appearance rule too). Sticky headers
   set `scroll-padding-top` so focus is never hidden (2.4.11).
 - Works at 320 px wide without sideways scrolling, except data tables and charts in their own scrolling region (1.4.10).
-- Status never by colour alone; charts with a text summary and their data as a table.
+- Status never by color alone; charts with a text summary and their data as a table.
 - Live values: announce changes of state (`role="status"`, polite), never every new reading; only DANGER and WARNING states
   are announced assertively.
 - `lang` set, landmarks (`header`, `main`, `nav`, `footer`), one `h1`, headings in order.
@@ -153,19 +153,19 @@ Every tool page prints usefully: a charge card, a flight card, a weather sheet f
 ## Documentation sites
 
 `kit/software/docs-theme/` has MkDocs Material and Docusaurus themes, and `product/web/mdbook/` an mdBook theme (hpr-sim's docs
-use mdBook). They apply the colours and fonts; keep the writing rules from [`writing.md`](writing.md). Every docs page starts
+use mdBook). They apply the colors and fonts; keep the writing rules from [`writing.md`](writing.md). Every docs page starts
 with what works and how far to trust it, as hpr-sim's does.
 
 ## fusionspace.co
 
-The live site (checked 4 October 2026) uses the template look this system avoids: an indigo button, a glowing hero with a
+The live site (checked October 4, 2026) uses the template look this system avoids: an indigo button, a glowing hero with a
 starfield, rounded cards with pill tags, and a "Live" dot on every card. To bring it in line:
 
 1. Replace the hero with the intro pattern (designation tag, title, lead, two buttons: ink primary, outlined secondary).
 2. Replace the project cards with the drawing register table ([example](web/examples/home.html)), using each tool's
    designation from `kit/projects/<tool>/project.json` and RELEASED or IN PREPARATION as status.
 3. Drop the glow, the stars and the indigo; use `fusionspace.css` or `tailwind-theme.css` so the defaults are gone.
-4. Use the one-colour lockup in the header (Void on light, Paper on dark) and the gradient strip along the top.
+4. Use the one-color lockup in the header (Void on light, Paper on dark) and the gradient strip along the top.
 5. Close every page with a title block, and give each tool page the result-beside-inputs layout.
 6. Keep the copy's substance, which is already right ("careful about the data", "no go/no-go verdict"), and edit it to
    [`writing.md`](writing.md): no em dashes, no "genuinely".

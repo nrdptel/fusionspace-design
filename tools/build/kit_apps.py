@@ -1,9 +1,9 @@
 """FusionSpace kit: native app icons and store art (kit/apps/).
 
-Sizes and safe zones (checked 2 October 2026):
+Sizes and safe zones (checked October 2, 2026):
   iOS / iPadOS   one 1024 x 1024 icon, square, no transparency (the system applies the rounded mask). Xcode 26's Icon
                  Composer builds layered icons (background + foreground, with Dark and Tinted appearances) from separate layers.
-  macOS          1024 x 1024 canvas; the icon body is an 824 x 824 rounded square (radius about 185) centred, with room for a shadow.
+  macOS          1024 x 1024 canvas; the icon body is an 824 x 824 rounded square (radius about 185) centered, with room for a shadow.
   Android        adaptive icon: 108 dp square layers (432 px at xxxhdpi); the launcher mask shows the inner 72 dp and
                  anything important must sit inside the central 66 dp circle. Separate foreground, background and monochrome layers.
   Google Play    512 x 512 icon (32-bit PNG, full square: Play rounds the corners) and a 1024 x 500 feature graphic (no alpha).
@@ -14,7 +14,7 @@ import build, kit
 from kit import KIT, note, out, save_svg, png, svg_open, layer, text, background, theme, art_mark, art_horizontal, f, VOID, PAPER, WHITE, TAGLINE
 
 def cluster(S, r_frac, mode="color", prefix="a", cx=None, cy=None):
-    """Cluster centred on (cx, cy) with its farthest point r_frac x S from the centre."""
+    """Cluster centered on (cx, cy) with its farthest point r_frac x S from the center."""
     a = art_mark(200); k = build.app_frac() * (r_frac / build.APP_SAFE_R) * S / max(a.w, a.h)
     cx = S / 2 if cx is None else cx; cy = S / 2 if cy is None else cy
     return a.place(mode, prefix, cx - a.w * k / 2, cy - a.h * k / 2, k)
@@ -31,7 +31,7 @@ def build_apps():
     src = save_svg(f"{D}/ios/AppIcon-1024.svg", icon(1024, 0.40, title="FusionSpace iOS app icon"))
     png(src, f"{D}/ios/AppIcon-1024.png", 1024, 1024)
     Image.open(out(f"{D}/ios/AppIcon-1024.png")).convert("RGB").save(out(f"{D}/ios/AppIcon-1024.png"))   # no alpha channel
-    # Icon Composer layers (iOS 26 / macOS 26): background colour + foreground art on transparent. The tinted appearance
+    # Icon Composer layers (iOS 26 / macOS 26): background color + foreground art on transparent. The tinted appearance
     # is made by the system from the foreground's luminance, so a white foreground is supplied too.
     save_svg(f"{D}/ios/icon-composer/foreground.svg", icon(1024, 0.40, bg=None, title="FusionSpace icon foreground (Icon Composer)"))
     save_svg(f"{D}/ios/icon-composer/foreground-white.svg", icon(1024, 0.40, bg=None, mode="white", title="FusionSpace icon foreground, white (tinted/clear)"))
@@ -90,7 +90,7 @@ def build_apps():
     Image.open(out(f"{D}/google-play/feature-graphic-1024x500.png")).convert("RGB").save(out(f"{D}/google-play/feature-graphic-1024x500.png"))
     build.wr(f"{D}/README.md", """# FusionSpace app icons and store art
 
-Checked 2 October 2026 against Apple's and Google's current guidance.
+Checked October 2, 2026 against Apple's and Google's current guidance.
 
 | Folder | Files | Where |
 |---|---|---|

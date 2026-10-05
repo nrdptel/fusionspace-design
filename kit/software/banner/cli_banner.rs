@@ -1,6 +1,6 @@
 // FusionSpace CLI banner, 72 columns (UTF-8 braille; fits an 80-column terminal).
 //   print!("{}", FS_BANNER);         plain
-//   print!("{}", FS_BANNER_ANSI);    24-bit colour
+//   print!("{}", FS_BANNER_ANSI);    24-bit color
 pub const FS_BANNER: &str = concat!(
     "⠀⠀⠀⠀⠀⠀⠀⣀⣤⣶⣾⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n",
     "⠀⣀⠄⠀⣠⣴⣾⣿⣿⣿⠏⠀⠀⢠⣤⣤⣤⣤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢶⠆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣤⣤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n",

@@ -1,5 +1,11 @@
 {
-  "$description": "FusionSpace semantic colours, light theme (DTCG 2025.10; aliases resolve against primitives.tokens.json).",
+  "$description": "FusionSpace semantic colors, light theme (DTCG 2025.10; aliases resolve against primitives.tokens.json).",
+  "$extensions": {
+    "co.fusionspace": {
+      "license": "Apache-2.0",
+      "copyright": "Copyright 2026 Neer Patel"
+    }
+  },
   "color": {
     "canvas": {
       "$type": "color",

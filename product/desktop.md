@@ -4,7 +4,7 @@ Desktop apps: hpr-sim's simulator with its design tree, 3D replay and Monte Carl
 logs; a ground-station console talking to radios over USB; firmware and configuration tools for flight computers. These are long
 sessions with dense data, real files and real hardware, on three platforms with three sets of rules.
 
-The rule is the same as on phones (principle 8): **the platform owns behaviour and chrome, FusionSpace owns content.** A
+The rule is the same as on phones (principle 8): **the platform owns behavior and chrome, FusionSpace owns content.** A
 FusionSpace Mac app has a proper menu bar and a Settings window; a Windows app has access keys and follows contrast themes; a
 Linux app installs its icons where the desktop looks for them. Inside the window, the content is a FusionSpace drawing: sheets,
 readouts, charts, line types, title blocks.
@@ -43,7 +43,7 @@ is and screen readers reach the content through each platform's web accessibilit
   Variable, Adwaita Sans or the KDE font).
 - **Selection and accent in chrome** follow the user's system accent (macOS lets an app's own accent through only when the
   user picks "multicolor"; GNOME and KDE apps follow the system accent). Inside content, `action` (Ion) stays the link and
-  focus colour, and signal colours are never used for selection.
+  focus color, and signal colors are never used for selection.
 - **Settings** live in the platform's place: a Settings window on macOS (panes in a toolbar, the last pane restored), a
   Settings dialog on Windows, a preferences window on Linux. Don't repeat system settings (appearance, accessibility).
 - **Files and state** live where the platform keeps them: `~/Library/Application Support/<app>` on macOS, `%APPDATA%` and
@@ -54,14 +54,14 @@ is and screen readers reach the content through each platform's web accessibilit
 - **Content.** Sheets, readouts, tables, charts, line types, status chips, notes and title blocks, from
   [`foundations.md`](foundations.md) and [`data.md`](data.md), in Cascadia Mono and Archivo.
 - **The About window is a title block:** designation, version, build, the data versions inside (motor database, atmosphere
-  model), licences.
+  model), licenses.
 - **Domain icons** from [`icons/`](icons/) inside content; system icons (SF Symbols, Segoe Fluent Icons, Adwaita symbolic
   icons) in toolbars and menus where the platform has one for the action.
 
 ## Dense engineering views
 
 - **Text sizes.** macOS has no Dynamic Type: its body text is 13 pt and the minimum 10 pt, and apps offer zoom (⌘+ / ⌘−).
-  Windows' minimum is 12 px regular, 14 px semibold, and text scaling goes to 225 %, which custom-drawn text (plots, 3D labels)
+  Windows' minimum is 12 px regular, 14 px semibold, and text scaling goes to 225%, which custom-drawn text (plots, 3D labels)
   must follow by listening for the scale factor. In FusionSpace content: 12 px at least, 13 to 14 px for dense tables in
   Cascadia Mono with tabular figures, and ⌘/Ctrl +/− zoom everywhere.
 - **Layout.** A sidebar (design tree or file list), the content, and an inspector (properties of the selection), as split
@@ -100,15 +100,15 @@ Rocket designs, flight logs and sessions are documents:
 
 ## Icons and packaging
 
-One master: the mark on its Void tile (`logo/favicon/app-icon.svg`), no baked shadows or highlights, recognisable at 16 px.
+One master: the mark on its Void tile (`logo/favicon/app-icon.svg`), no baked shadows or highlights, recognizable at 16 px.
 
 | Platform | Files | Notes |
 |---|---|---|
-| macOS | `kit/apps/macos/`; build the `.icon` in Icon Composer with all appearances (default, dark, clear, tinted) | A square, full-bleed source; the system applies the shape. An icon that sticks out of the shape gets a grey plate |
+| macOS | `kit/apps/macos/`; build the `.icon` in Icon Composer with all appearances (default, dark, clear, tinted) | A square, full-bleed source; the system applies the shape. An icon that sticks out of the shape gets a gray plate |
 | Windows | [`desktop/windows/app.ico`](desktop/windows/) (16, 24, 32, 48, 256) and the MSIX tiles, including the unplated targets | Without unplated targets Windows draws the icon smaller on a plate |
 | Linux | [`desktop/linux/`](desktop/linux/): hicolor `scalable/apps/<app-id>.svg`, a 256 px PNG, and `<app-id>-symbolic.svg` | App ids are reverse DNS of fusionspace.co: `co.fusionspace.HprSim` |
 
-- Flathub asks for "colourful" brand colours in the metadata, not black or white: use O blue `#768DF5` for light and
+- Flathub asks for "colorful" brand colors in the metadata, not black or white: use O blue `#768DF5` for light and
   M orange `#DA7C30` for dark, as in the AppStream template.
 - Screenshots for stores are taken on each platform, in its default appearance.
 
@@ -128,10 +128,10 @@ One master: the mark on its Void tile (`logo/favicon/app-icon.svg`), no baked sh
   a Tauri app that means real HTML semantics and ARIA in the content.
 - Everything works from the keyboard: Full Keyboard Access on macOS, access keys on Windows, a logical Tab order everywhere,
   and a visible focus ring (2 px, 3 : 1).
-- **Windows contrast themes:** map every colour, plots and 3D included, to the system colour pairs (window and text,
-  highlight, button, grey text for disabled only, hotlight for links only); signal colours then show as their shapes and
-  words. Never hard-code colours there. The web content does this with `forced-colors`.
-- macOS Increase Contrast, GNOME high contrast (the portal's `contrast` key) and Windows text scaling are all honoured; the
+- **Windows contrast themes:** map every color, plots and 3D included, to the system color pairs (window and text,
+  highlight, button, gray text for disabled only, hotlight for links only); signal colors then show as their shapes and
+  words. Never hard-code colors there. The web content does this with `forced-colors`.
+- macOS Increase Contrast, GNOME high contrast (the portal's `contrast` key) and Windows text scaling are all honored; the
   field theme is available as an app setting.
 - Reduce Motion (and the portal's `reduced-motion`): no auto-orbiting replay cameras, no animated transitions; playback runs
   only when the user starts it.
@@ -145,5 +145,5 @@ One master: the mark on its Void tile (`logo/favicon/app-icon.svg`), no baked sh
 - [ ] Serial devices open without a driver install on Windows; the udev rule shipped and the permission panel written on Linux.
 - [ ] Icons for all three platforms, including Windows unplated targets and the Linux symbolic icon.
 - [ ] Signed and notarised; updates signed with a backed-up key; works offline.
-- [ ] Tested with VoiceOver, Narrator and Orca, keyboard only, a Windows contrast theme, 225 % text scaling and Reduce Motion.
+- [ ] Tested with VoiceOver, Narrator and Orca, keyboard only, a Windows contrast theme, 225% text scaling and Reduce Motion.
 - [ ] The About window is a title block.

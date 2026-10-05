@@ -1,8 +1,8 @@
-"""Star name picker: tools/star-name-picker/ (index.html and the cleaned IAU catalogue as CSV).
+"""Star name picker: tools/star-name-picker/ (index.html and the cleaned IAU catalog as CSV).
 
-The page and the catalogue are kept in source/star-name-picker/. The build puts the current horizontal lockup (the
+The page and the catalog are kept in source/star-name-picker/. The build puts the current horizontal lockup (the
 approved proportions, outlined wordmark) in the header, so the picker follows any change to the logo, and loads Cascadia
-Mono and Archivo from type/fonts/ instead of a web font service. Colours, the gradient strip and the rest of the page are
+Mono and Archivo from type/fonts/ instead of a web font service. Colors, the gradient strip and the rest of the page are
 as in the source."""
 import os, re, shutil
 import build

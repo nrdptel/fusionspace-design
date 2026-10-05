@@ -7,7 +7,7 @@ engineer explaining their own work to another engineer: plain, specific, honest 
 
 - **Plain.** Short sentences, common words, active voice. "The charge fired at 18.0 s", not "Successful deployment was
   achieved".
-- **Specific.** Numbers with units, names of things, sources. "Within 0.02 % of OpenRocket's landing speed on 33 of 37
+- **Specific.** Numbers with units, names of things, sources. "Within 0.02% of OpenRocket's landing speed on 33 of 37
   flights", not "highly accurate".
 - **Honest about limits.** Say what isn't done, isn't checked, or isn't known, in the same tone as what is. "Its online fetch
   is not tested automatically."
@@ -50,10 +50,11 @@ Never a go/no-go verdict. The motor's printed data, the manufacturer's manual an
   - `NOTE`: information, no hazard.
 
   DANGER, WARNING and CAUTION carry the safety-alert triangle. On screens, DANGER and WARNING use the Flare panel and CAUTION
-  the Sodium panel (two alert colours, as on a flight deck); on physical labels follow Z535's own colours (DANGER red,
+  the Sodium panel (two alert colors, as on a flight deck); on physical labels follow Z535's own colors (DANGER red,
   WARNING orange, CAUTION yellow, NOTICE blue).
-- **Dates:** `4 October 2026` in prose; `2026-10-04` in tables, file names, title blocks and data. Times in 24-hour with the
-  zone.
+- **Dates and times:** `October 4, 2026` in prose; `2026-10-04` in tables, file names, title blocks and data. Clock times on
+  screen follow the device's 12- or 24-hour setting (12-hour, `2:10 PM MDT`, is the US default) and always carry the zone;
+  logs and exports use ISO 8601.
 
 ## Errors
 
@@ -92,10 +93,10 @@ layout), with the hazard, the consequence and the avoidance:
 
 ## Mechanics
 
-- **Spelling:** British in prose (colour, centre, metre, licence, analyse), as in the brand and hpr-sim documents. Code
-  identifiers, file formats and platform APIs keep their own spelling (`color`, `center`). A product or command name keeps the
+- **Spelling:** US English everywhere: prose, screens, labels, manuals, code comments (color, center, meter, license,
+  analyze, gray, catalog). FusionSpace is a US brand making tools for US flyers first. A product or command name keeps the
   spelling it shipped with.
-- **Punctuation:** commas, colons and full stops; no em dashes. An en dash only in ranges (`5 100–5 500 ft`). A middle dot with
+- **Punctuation:** commas, colons and periods; no em dashes. An en dash only in ranges (`5,100–5,500 ft`). A middle dot with
   spaces (` · `) separates fields on one line: `FS · SW · TOOL 002`, `ALTITUDE · ft AGL`.
 - **Numbers and units** as in [`data.md`](data.md#numbers).
 - **Lists:** a list when there are three or more parallel items; otherwise a sentence.
@@ -109,7 +110,7 @@ A project README opens with the banner from `kit/projects/<name>/README-starter.
 2. What works today and what doesn't (and how far to trust what does).
 3. How to install it and get a first result.
 4. Where the details are.
-5. Licence, and the designation and version.
+5. License, and the designation and version.
 
 hpr-sim's README and its "Start here" page are the model: the status is at the top, the limits are stated, and every claim
 links to its evidence.

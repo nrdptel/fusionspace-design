@@ -1,8 +1,8 @@
-"""FusionSpace Rev C asset kit: every target × colour mode × background × size, generated from the master geometry.
+"""FusionSpace Rev C asset kit: every target × color mode × background × size, generated from the master geometry.
 
     python3 tools/build/build.py      # build_all() calls kit.build_kit() at the end
 
-Writes into <OUT>/kit (and the colour-mode matrix of the logos into <OUT>/kit/logo). Every file is listed in
+Writes into <OUT>/kit (and the color-mode matrix of the logos into <OUT>/kit/logo). Every file is listed in
 MANIFEST, which also becomes kit/README.md and the guide's Kit sheet. Office files (slides .pptx, letterhead
 .docx) come from kit_office.js and need node with the `pptxgenjs` and `docx` packages; without them they are
 skipped with a warning. CMYK PDFs need Ghostscript (`gs`); without it they are skipped with a warning."""
@@ -12,7 +12,7 @@ from build import f, VOID, PAPER, WHITE, STOPS, MODES, ION, EMBER, M_ORANGE, O_B
 
 ABYSS, GRAPHITE, SLATE, HAZE, MIST = "#141A2B", "#2A3248", "#566079", "#98A1B8", "#D6DAE4"
 KIT = "kit"
-# Logo colour mode used on light composites (banners, avatars, covers, cards, letterhead, slides). Since 2 October 2026
+# Logo color mode used on light composites (banners, avatars, covers, cards, letterhead, slides). Since October 2, 2026
 # the gradient is the same on dark and light (>= 3:1 on white); "twotone-on-light" (flat cones, Void wordmark) is the alternative.
 LIGHT_MODE = os.environ.get("FS_LIGHT_MODE", "color")
 MANIFEST = []            # (path, group, what, size, use)
@@ -121,11 +121,11 @@ PIECES = {"mark": art_mark, "horizontal": art_horizontal, "stacked": art_stacked
 LOGO_MODES = list(MODES)                               # color, twotone-on-dark, twotone-on-light, void, white
 MODE_BG = {"color": VOID, "twotone-on-dark": VOID, "twotone-on-light": PAPER, "void": PAPER, "white": VOID}
 MODE_USE = {
-    "color": "Full colour (Fusion gradient). Screen, colour print. The same gradient on Void, white and Paper",
-    "twotone-on-dark": "Flat two-tone on dark: M orange + O blue cones, white wordmark. Two spot colours, vinyl, embroidery, screen print",
-    "twotone-on-light": "Flat two-tone on light: the same M orange + O blue cones, Void wordmark. Two spot colours, vinyl, embroidery, screen print",
-    "void": "One colour, Void. Light backgrounds, fax/laser print, engraving, stamps",
-    "white": "One colour, white. Dark backgrounds, photos, reversed print",
+    "color": "Full color (Fusion gradient). Screen, color print. The same gradient on Void, white and Paper",
+    "twotone-on-dark": "Flat two-tone on dark: M orange + O blue cones, white wordmark. Two spot colors, vinyl, embroidery, screen print",
+    "twotone-on-light": "Flat two-tone on light: the same M orange + O blue cones, Void wordmark. Two spot colors, vinyl, embroidery, screen print",
+    "void": "One color, Void. Light backgrounds, fax/laser print, engraving, stamps",
+    "white": "One color, white. Dark backgrounds, photos, reversed print",
 }
 
 # ---------------------------------------------------------------- shared backgrounds
@@ -193,7 +193,7 @@ def build_logo_matrix():
 def tile_svg(kind, rx, frac=None, fill_mode="color", bg=VOID, S=512, title="FusionSpace icon"):
     """The cluster on a tile. frac: bbox fraction of the tile (default: the app-icon framing, build.app_frac)."""
     a = art_mark(200); k = (frac or build.app_frac()) * S / max(a.w, a.h)
-    x, y = (S - a.w * k) / 2, (S - a.h * k) / 2              # bbox centred, as build.icon_svg
+    x, y = (S - a.w * k) / 2, (S - a.h * k) / 2              # bbox centered, as build.icon_svg
     defs, g = a.place(fill_mode, "i", x, y, k)
     s = svg_open(S, S, title, page=PAPER)
     s += f'<defs id="defs">{defs}</defs>\n'
@@ -265,7 +265,7 @@ def build_web():
         ("icon-{64…1024}.png", "full cluster on rounded Void tile", "64, 96, 128, 192, 256, 384, 512, 1024", "App stores, docs, launchers, purpose any"),
         ("icon-maskable-192/512.png", "full-bleed, cluster inside the 0.40 safe circle", "192, 512", "Android/PWA purpose maskable"),
         ("icon-monochrome-512.png / .svg", "white silhouette, transparent", "512", "Android themed icons, purpose monochrome"),
-        ("safari-pinned-tab.svg", "one-colour cluster", "vector", "Safari pinned tabs (legacy)"),
+        ("safari-pinned-tab.svg", "one-color cluster", "vector", "Safari pinned tabs (legacy)"),
         ("mstile-150x150.png + browserconfig.xml", "Windows tile", "150", "Windows Start tiles (legacy)"),
         ("site.webmanifest", "PWA manifest", "", "Install as an app"),
         ("head.html", "copy-paste <head> snippet", "", "Wiring it all up")]:
@@ -287,7 +287,7 @@ def avatar_svg(S, dark):
     return s
 
 def banner_svg(w, h, dark, title, lockup_h, cx=None, cy=None, tagline=True, safe=None, piece="horizontal", strip="bottom", label=None):
-    """Grid background, gradient strip, lockup centred at (cx, cy); optional tagline under it; optional safe-area guide
+    """Grid background, gradient strip, lockup centered at (cx, cy); optional tagline under it; optional safe-area guide
     (hidden layer)."""
     t = theme(dark); cx = w / 2 if cx is None else cx; cy = h / 2 if cy is None else cy
     bdefs, bg = background(w, h, dark, "b", cell=h / 4 if w / h > 2.5 else w / 16, strip=strip)
@@ -312,7 +312,7 @@ def banner_svg(w, h, dark, title, lockup_h, cx=None, cy=None, tagline=True, safe
     return s + "</svg>\n"
 
 SOCIAL = [
-    # (folder, name, w, h, lockup_h, cx, cy, tagline, safe, use). Checked 2 Oct 2026: GitHub social preview 1280 × 640, Open Graph
+    # (folder, name, w, h, lockup_h, cx, cy, tagline, safe, use). Checked Oct 2, 2026: GitHub social preview 1280 × 640, Open Graph
     # 1200 × 630, X/Mastodon header 1500 × 500 (Bluesky 3:1, same file), LinkedIn banner 1584 × 396 and Page cover 4200 × 700,
     # YouTube 2560 × 1440 (safe 1546 × 423), Facebook cover 851 × 315 shown (mobile crops the sides to 16:9), Discord 960 × 540.
     ("github", "readme-banner", 1280, 320, 96, None, None, True, None, "README header (use the <picture> snippet for light/dark)"),
@@ -341,7 +341,7 @@ def build_social():
             png(src, f"{KIT}/{folder}/{name}-{tone}.png", w, h)
     for z in AVATARS:
         folder = "github" if z == 500 else "social"
-        note(f"{KIT}/{folder}/avatar-{{dark,light}}-{z}.png", "Profiles & social", "avatar, mark centred inside a circle-safe zone",
+        note(f"{KIT}/{folder}/avatar-{{dark,light}}-{z}.png", "Profiles & social", "avatar, mark centered inside a circle-safe zone",
              f"{z} × {z}", "GitHub (500), LinkedIn/X/Mastodon (400), YouTube (800), Bluesky/Instagram/Discord (1024; they downscale)")
     for folder, name, w, h, *_rest in SOCIAL:
         note(f"{KIT}/{folder}/{name}-{{dark,light}}.png/.svg", "Profiles & social", name.replace("-", " "), f"{w} × {h}", _rest[-1])
@@ -597,10 +597,10 @@ def build_production():
             W, H = a.w * k, a.h * k
             tr = f"translate({f(W)} 0) scale(-{k:.6f} {k:.6f})" if mirror else f"scale({k:.6f})"
             s = (f'<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="{f(W)}mm" height="{f(H)}mm" viewBox="0 0 {f(W)} {f(H)}">\n'
-                 f'<title>FusionSpace {piece}, one colour{", mirrored for stamps" if mirror else ""}</title>\n<g transform="{tr}">{body}</g>\n</svg>\n')
+                 f'<title>FusionSpace {piece}, one color{", mirrored for stamps" if mirror else ""}</title>\n<g transform="{tr}">{body}</g>\n</svg>\n')
             build.wr(f"{P}/engrave/fusion-space-{piece}{'-mirrored' if mirror else ''}.svg", s)
-    note(f"{P}/engrave/fusion-space-{{mark,horizontal,stacked}}.svg", G, "one-colour Void art in mm (scale freely)", "mark 40 mm, lockups 40/20 mm tall", "Laser engraving, etching, pad printing")
-    note(f"{P}/engrave/*-mirrored.svg", G, "mirrored one-colour art", "", "Rubber/polymer stamps if the maker doesn't mirror")
+    note(f"{P}/engrave/fusion-space-{{mark,horizontal,stacked}}.svg", G, "one-color Void art in mm (scale freely)", "mark 40 mm, lockups 40/20 mm tall", "Laser engraving, etching, pad printing")
+    note(f"{P}/engrave/*-mirrored.svg", G, "mirrored one-color art", "", "Rubber/polymer stamps if the maker doesn't mirror")
     # stickers
     STK = [("mark", "contour", (50, 75, 100)), ("stacked", "contour", (50, 75)), ("mark", "circle", (50, 75)),
            ("mark", "square", (50, 75)), ("horizontal", "rect", (100,))]
@@ -615,7 +615,7 @@ def build_production():
     note(f"{P}/stickers/sticker-{{mark,stacked}}-{{50,75,100}}mm-{{dark,light}}.svg/.pdf", G,
          "die-cut sticker, one smooth piece: art + backing (1.5 mm bleed) + CutContour line (magenta, own layer)", "art 50/75/100 mm tall",
          "Sticker printers (Sticker Mule, Stickerapp, local) and vinyl cutters")
-    note(f"{P}/stickers/sticker-mark-{{circle,square}}-{{50,75}}mm-{{dark,light}}.svg/.pdf", G, "circle and rounded-square stickers, mark centred",
+    note(f"{P}/stickers/sticker-mark-{{circle,square}}-{{50,75}}mm-{{dark,light}}.svg/.pdf", G, "circle and rounded-square stickers, mark centered",
          "50, 75 mm", "Laptop stickers, packaging seals; simplest to order")
     note(f"{P}/stickers/sticker-horizontal-rect-100mm-{{dark,light}}.svg/.pdf", G, "rounded-rectangle sticker with the horizontal lockup", "100 mm wide",
          "Equipment and case labels, bumper-style stickers")
@@ -628,22 +628,22 @@ def build_production():
             s = mm_svg_open(bb[2], bb[3]) + f'<title>FusionSpace mark for embroidery, {z} mm, {mode}</title>\n{body}\n</svg>\n'
             build.wr(f"{P}/embroidery/fusion-space-mark-{z}mm-{mode}.svg", s)
     note(f"{P}/embroidery/fusion-space-mark-{{50,75,100}}mm-{{twotone-on-dark,twotone-on-light}}.svg", G,
-         f"flat two-tone mark, feet ≥ 1 mm, no gradient, {MM_MARGIN:g} mm of empty page around it", "50, 75, 100 mm tall", "Embroidery digitizers, patches; two thread colours")
+         f"flat two-tone mark, feet ≥ 1 mm, no gradient, {MM_MARGIN:g} mm of empty page around it", "50, 75, 100 mm tall", "Embroidery digitizers, patches; two thread colors")
     build.wr(f"{P}/CAD.md", """# The mark in CAD
 
-Which kit file to use for logos on parts and drawings. All sizes are in millimetres.
+Which kit file to use for logos on parts and drawings. All sizes are in millimeters.
 
 | Job | Fusion | Onshape | FreeCAD | SolidWorks |
 |---|---|---|---|---|
 | **Emboss or engrave** the mark into a face | Insert → Insert DXF → `kit/production/cut/fusion-space-mark-<size>mm.dxf` onto a sketch plane, then Emboss / Extrude | Sketch → Import DXF (same file), then Extrude add/remove | Import the DXF (Draft), Part → Extrude | Sketch → Insert DXF (same file), Extruded Boss/Cut |
-| **Decal** (colour image on a face, for renders) | Insert → Decal → `kit/logo/png/fusion-space-mark-color-1024.png` (transparent) | Insert → Decal (same PNG) | Appearance texture, or skip | Appearances → Decals (same PNG) |
-| **Drawing title block** | use `templates/freecad/` as the pattern, or the one-colour SVG | Drawing template logo: `kit/logo/svg/fusion-space-horizontal-void.svg` | `templates/freecad/FusionSpace_*.svg` | Sheet format: insert `kit/logo/png/fusion-space-horizontal-void-1000w.png` |
+| **Decal** (color image on a face, for renders) | Insert → Decal → `kit/logo/png/fusion-space-mark-color-1024.png` (transparent) | Insert → Decal (same PNG) | Appearance texture, or skip | Appearances → Decals (same PNG) |
+| **Drawing title block** | use `templates/freecad/` as the pattern, or the one-color SVG | Drawing template logo: `kit/logo/svg/fusion-space-horizontal-void.svg` | `templates/freecad/FusionSpace_*.svg` | Sheet format: insert `kit/logo/png/fusion-space-horizontal-void-1000w.png` |
 
 - The DXF is lines and true arcs only (no splines), so every CAD package imports it cleanly. Its feet are trimmed to at least
   0.5 mm; for a smaller logo on a part, check the tool size first (a 0.5 mm foot needs a 0.4 mm or smaller cutter).
 - Pick the DXF closest to the size you need and scale in the sketch; the outlines are exact at any scale.
-- For two-colour prints, model the mark as a separate body (see `kit/3d-print/`).
-- `kit/3d-print/` also has STEP solids with the mark as exact curves (lines, arcs, the ellipse, Béziers) in named, coloured
+- For two-color prints, model the mark as a separate body (see `kit/3d-print/`).
+- `kit/3d-print/` also has STEP solids with the mark as exact curves (lines, arcs, the ellipse, Béziers) in named, colored
   bodies, sketches with exact ARC/ELLIPSE/SPLINE entities (`sketch/`), and a parametric badge for FreeCAD and Fusion (`parametric/`).
 """)
     note(f"{P}/CAD.md", G, "which file to use for emboss, decals and title blocks in Fusion, Onshape, FreeCAD and SolidWorks", "", "Mechanical CAD")
@@ -678,14 +678,14 @@ def build_readme():
          "Every file here is generated by `tools/build/build.py` (see `tools/build/kit.py`) from the master geometry, so a",
          "change to the mark regenerates the whole kit. Don't edit these files by hand; edit the build, or copy a file out and",
          "edit the copy. Files with a **Text (edit me)** layer are meant to be opened in Inkscape and filled in.", "",
-         "## Colour modes", "", "| Mode | Use |", "|---|---|"]
+         "## Color modes", "", "| Mode | Use |", "|---|---|"]
     L += [f"| `{m}` | {MODE_USE[m]} |" for m in LOGO_MODES]
     side = build.twotone_side()
     L += ["", f"Two-tone rule: each cone takes the gradient end nearest its own position in the sweep, so the "
           f"{' and '.join(n for n in geo.ORDER if side[n] == 'warm')} cones are warm and the "
           f"{' and '.join(n for n in geo.ORDER if side[n] == 'cool')} cones are cool. The cones are the same on every background, "
           f"M orange `{WARM}` and O blue `{COOL}`; only the wordmark changes: white on dark (`twotone-on-dark`), Void on light "
-          f"(`twotone-on-light`). Ion `{ION}` and Ember `{EMBER}` are text and UI colours on light, not logo colours.", "",
+          f"(`twotone-on-light`). Ion `{ION}` and Ember `{EMBER}` are text and UI colors on light, not logo colors.", "",
           "The gradient is the same on dark and light backgrounds. WCAG 2 contrast of every part of it: at least 3:1 on white,",
           "6:1 on Void; 2.8:1 on Paper (accepted).", "",
           "Light and dark: composites (avatars, banners, covers, slides) come in `-dark` (Void background) and `-light` (Paper",
@@ -694,7 +694,7 @@ def build_readme():
           "## Minimum sizes", "",
           "- Screen: cluster at least 24 px tall; smaller, use the favicons (the full cluster, hinted at 16 px: the wing cones become small arrows).",
           f"- {build.SMALL_RULE}",
-          "- Print: cluster at least 8 mm tall. Two-tone and one-colour versions hold up best when small.",
+          "- Print: cluster at least 8 mm tall. Two-tone and one-color versions hold up best when small.",
           f"- Cutting: use `production/cut/` (feet trimmed to ≥ {build.DXF_MIN_WALL_MM:g} mm). Many vendors need features about half the material thickness; cut larger for thick stock.",
           "- Embroidery: mark at least 25 mm tall; wordmark only when its cap height is at least 6 mm (horizontal lockup ≥ 10 mm tall).",
           "- PCB silkscreen: mark at least 6 mm tall (8 mm safest); features trimmed to ≥ 0.15 mm.",
@@ -726,7 +726,7 @@ def build_kit():
 
 # ---------------------------------------------------------------- 8. guide sheet
 GROUP_DIRS = [
-    ("kit/logo/", "Every logo piece (mark, horizontal, stacked, wordmark) in every colour mode, as SVG, vector PDF and transparent PNG (mark 64–2048 px tall, lockups 500–4000 px wide)."),
+    ("kit/logo/", "Every logo piece (mark, horizontal, stacked, wordmark) in every color mode, as SVG, vector PDF and transparent PNG (mark 64–2048 px tall, lockups 500–4000 px wide)."),
     ("kit/web/", "Drop-in site icons: favicon .ico/.svg/PNGs, Apple touch, Android/PWA any, maskable and monochrome icons, Safari and Windows icons, <code>site.webmanifest</code> and a <code>&lt;head&gt;</code> snippet; <code>site/</code> holds drop-in Rev C files for fusionspace.co."),
     ("kit/apps/", "Native app icons and store art: iOS (1024, Icon Composer layers), macOS, Android adaptive icon layers, Google Play icon and feature graphic."),
     ("kit/github/", "Avatar (500 px), README banners for light and dark with the <code>&lt;picture&gt;</code> snippet, and the repository social preview."),
@@ -736,12 +736,12 @@ GROUP_DIRS = [
     ("kit/projects/", "Per-project images from <code>tools/build/project.py</code> (example: Vega): social preview, README banners, OG image, YouTube thumbnail, title slides, report covers, starter README."),
     ("kit/embedded/", "Boot logos for OLED, e-paper and TFT displays as C headers (Adafruit GFX, U8g2/XBM, SSD1306 pages, RGB565) and LVGL v9 images, including a round GC9A01 display."),
     ("kit/pcb/", "KiCad footprint library (front and back silkscreen, copper) of the mark from 4 to 20 mm, plus SVG and 1200 dpi PNG for other EDA tools."),
-    ("kit/3d-print/", "Print-ready STL, STEP (exact mark) and two-colour 3MF for a 0.4 mm nozzle: extruded mark, lockups and name, badges, keychain, sign, coaster, fridge magnet, rocket fin-can and nose-cone badges, desk stand, cable tags, stencils, lithophane, cookie cutter, remove-before-flight tag; sketches (DXF/SVG) and a FreeCAD/Fusion parametric badge."),
-    ("kit/software/", "Terminal colour schemes (Windows Terminal, iTerm2, Alacritty, kitty, Ghostty, VS Code) and CLI banners (braille text art, 24-bit colour, Python/C/Rust); MkDocs Material and Docusaurus themes."),
+    ("kit/3d-print/", "Print-ready STL, STEP (exact mark) and two-color 3MF for a 0.4 mm nozzle: extruded mark, lockups and name, badges, keychain, sign, coaster, fridge magnet, rocket fin-can and nose-cone badges, desk stand, cable tags, stencils, lithophane, cookie cutter, remove-before-flight tag; sketches (DXF/SVG) and a FreeCAD/Fusion parametric badge."),
+    ("kit/software/", "Terminal color schemes (Windows Terminal, iTerm2, Alacritty, kitty, Ghostty, VS Code) and CLI banners (braille text art, 24-bit color, Python/C/Rust); MkDocs Material and Docusaurus themes."),
     ("kit/games/", "Studio splash screens; Steam store and library templates; itch.io cover."),
     ("kit/video/", "Logo animation (MP4, WebM, transparent WebM, GIF) and the YouTube watermark."),
     ("kit/wallpapers/", "Desktop, laptop, phone and tablet wallpapers, and video-call backgrounds, dark and light."),
-    ("kit/merch/", "T-shirt, hoodie, cap and mug print files at 300 dpi in every colour mode; posters (A3, A2, 18 × 24 in)."),
+    ("kit/merch/", "T-shirt, hoodie, cap and mug print files at 300 dpi in every color mode; posters (A3, A2, 18 × 24 in)."),
 ]
 def guide_sheet(n_sheets):
     tiles = []
@@ -760,11 +760,11 @@ def guide_sheet(n_sheets):
   <section class="sheet" id="kit">
     <div class="sheet-head"><span class="sheet-no">SHEET {n_sheets} / {n_sheets}</span><h2>Kit</h2><p class="muted" style="font-size:14px">Ready-made files for every place the brand shows up. All of them are generated from the mark, so they never drift.</p></div>
     <div class="sheet-body">
-      <p>Five colour modes cover every background and process. Use the gradient wherever colour reproduces well. Use flat two-tone where only spot colours work (screen print, vinyl, embroidery): each cone takes the nearer end of the gradient, so the {warm} cones are warm and the {cool} cones are cool. Use one colour for engraving, stamps and single-ink print.</p>
+      <p>Five color modes cover every background and process. Use the gradient wherever color reproduces well. Use flat two-tone where only spot colors work (screen print, vinyl, embroidery): each cone takes the nearer end of the gradient, so the {warm} cones are warm and the {cool} cones are cool. Use one color for engraving, stamps and single-ink print.</p>
       <div class="kitmodes">{"".join(tiles)}</div>
       <div class="rules">
         <div><h3>Light and dark</h3><p>Every banner, avatar, cover and slide comes in a dark (Void) and a light (Paper) version. On GitHub, the README snippet swaps them with the reader's theme.</p></div>
-        <div><h3>Two-tone colours</h3><p>The same cones on every background: M orange {WARM} and O blue {COOL}. Only the wordmark changes, white on dark and Void on light. Ion and Ember stay text and UI colours.</p></div>
+        <div><h3>Two-tone colors</h3><p>The same cones on every background: M orange {WARM} and O blue {COOL}. Only the wordmark changes, white on dark and Void on light. Ion and Ember stay text and UI colors.</p></div>
         <div><h3>Production</h3><p>Cut files trim each foot to at least {build.DXF_MIN_WALL_MM:g} mm. Embroidery art trims to 1 mm; keep the mark at least 25 mm tall there.</p></div>
       </div>
       <table class="files"><tbody>{rows}</tbody></table>

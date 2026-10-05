@@ -1,7 +1,7 @@
 // ---- FusionSpace Rev C geometry: a line-for-line port of tools/build/geo.py and the lockup/icon
 // ---- geometry in tools/build/build.py. Keep in step with those files.
 const VK_SEGS = [[[0.0,0.0],[0.003444702564086392,0.0],[0.013518973238600625,0.00214641965292764],[0.020711354457486033,0.004]],[[0.020711354457486033,0.004],[0.045388484892322195,0.01035965233267237],[0.07272118207941179,0.02105737016132732],[0.09349567164037693,0.03]],[[0.09349567164037693,0.03],[0.1531509894464188,0.055679351758909215],[0.20870406080102846,0.08722664836372555],[0.26071522170854233,0.12]],[[0.26071522170854233,0.12],[0.3671616201383083,0.1870741661074845],[0.4657951196538054,0.2647472802029792],[0.5584969403591541,0.35]],[[0.5584969403591541,0.35],[0.8416531867690914,0.6104030854009941],[1.0,0.8908407745374308],[1.0,1.0]]];
-// VK_SEGS is geo.VK_SEGS (the Nelder-Mead fit of the LD-Haack curve, max error 0.19%), normalised:
+// VK_SEGS is geo.VK_SEGS (the Nelder-Mead fit of the LD-Haack curve, max error 0.19%), normalized:
 // (radius / R, distance from tip / L). It does not depend on any tunable parameter.
 const ORDER = ["main", "west", "east", "south"];
 const DRAW_ORDER = ["south", "west", "east", "main"];   // back to front: the ogive tail sits behind the Von Kármán
@@ -73,7 +73,7 @@ function makeGeo(P) {
     return res;
   }
 
-  function centroidY(kind, s) {         // geo.centroid_y: area centroid height from the cone centre (y down)
+  function centroidY(kind, s) {         // geo.centroid_y: area centroid height from the cone center (y down)
     const pts = sample(coneSegments(null, 1, [0, 0], {tilt: 0, kind, size: s, pos: [0, 0]}), 200);
     let a2 = 0, cy = 0;
     for (let i = 0; i < pts.length; i++) {

@@ -91,7 +91,7 @@ async function slides() {
   s.addText([
     {text: "Use this layout for most content. Headings are Cascadia Mono SemiBold, body text is Archivo.", options: {bullet: true, breakLine: true}},
     {text: "Keep one idea per slide; put detail in the speaker notes.", options: {bullet: true, breakLine: true}},
-    {text: "Accent colours on light backgrounds: Ion #3350D6 for links and highlights, Ember #B34F0C for warnings.", options: {bullet: true}},
+    {text: "Accent colors on light backgrounds: Ion #3350D6 for links and highlights, Ember #B34F0C for warnings.", options: {bullet: true}},
   ], {placeholder: "body", fontSize: 20, paraSpaceAfter: 12});
   // 4 · two column
   s = pres.addSlide({masterName: "FS Two Column"});
@@ -130,7 +130,7 @@ async function slides() {
               valAxisLabelColor: C.slate, valGridLine: {color: C.mist, size: 1}, catAxisLineShow: false, valAxisLineShow: false,
               showLegend: true, legendPos: "t", legendFontFace: BODY, legendFontSize: 14, legendColor: C.void,
               showValAxisTitle: true, valAxisTitle: "Apogee (m)", valAxisTitleFontFace: BODY, valAxisTitleFontSize: 12, valAxisTitleColor: C.slate});
-  s.addNotes("Chart colours: Ion and M orange on light. Edit the data in PowerPoint (right-click → Edit Data).");
+  s.addNotes("Chart colors: Ion and M orange on light. Edit the data in PowerPoint (right-click → Edit Data).");
   // 5 · stat callouts on light
   s = pres.addSlide({masterName: "FS Content"});
   s.addText("Key numbers", {placeholder: "title", align: "left"});
@@ -198,7 +198,7 @@ async function fixZip(buf) {
 }
 async function fixDates(file) { fs.writeFileSync(file, await fixZip(fs.readFileSync(file))); }
 
-// Write the brand colours and fonts into the deck's theme (pptxgenjs can't): dk1 Void, lt1 White, dk2 Abyss, lt2 Paper,
+// Write the brand colors and fonts into the deck's theme (pptxgenjs can't): dk1 Void, lt1 White, dk2 Abyss, lt2 Paper,
 // accents Ion, Ember, O blue, M orange, Slate, Haze.
 async function setTheme(file) {
   const JSZip = require(require.resolve("jszip", {paths: [path.dirname(require.resolve("pptxgenjs"))]}));
@@ -242,7 +242,7 @@ async function letterhead(page) {
       children: [
         new d.Paragraph({children: [new d.TextRun(new Date().toLocaleDateString("en-GB", {day: "numeric", month: "long", year: "numeric"}))], spacing: {after: 240}}),
         new d.Paragraph({children: [new d.TextRun("Recipient name")]}),
-        new d.Paragraph({children: [new d.TextRun("Organisation")]}),
+        new d.Paragraph({children: [new d.TextRun("Organization")]}),
         new d.Paragraph({children: [new d.TextRun("Address")], spacing: {after: 360}}),
         new d.Paragraph({children: [new d.TextRun("Dear Recipient,")], spacing: {after: 200}}),
         new d.Paragraph({children: [new d.TextRun("Body text is Archivo 11 pt. Replace this paragraph with your letter. The header and footer repeat on every page; edit the reference line and contact details there once.")], spacing: {after: 200, line: 300}}),

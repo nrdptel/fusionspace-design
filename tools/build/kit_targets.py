@@ -4,7 +4,7 @@ embedded/   OLED, e-paper and TFT boot logos as C headers (Adafruit GFX, U8g2/XB
 pcb/        KiCad silkscreen footprints of the mark (several sizes, front and back) + SVG/PNG for other EDA tools
 3d-print/   STL, STEP and 3MF: extruded mark and lockups, badges, magnet, desk stand, cable tags, stencils, lithophane, cookie
             cutter; sketches and parametric templates (geometry and solids in kit_cad.py)
-software/   terminal colour schemes, braille/ASCII banners (plain and 24-bit ANSI), CLI banner snippets
+software/   terminal color schemes, braille/ASCII banners (plain and 24-bit ANSI), CLI banner snippets
 games/      studio splash screens, Steam and itch.io template art
 video/      logo animation (MP4, WebM, GIF, alpha WebM), YouTube watermark, thumbnail template
 wallpapers/ desktop and phone wallpapers, video-call backgrounds
@@ -112,9 +112,9 @@ const lv_image_dsc_t {ident} = {{
   .data = {ident}_map,
 }};
 """)
-        readme.append(f"| `{name}.h` | {w} × {h} | {'monochrome OLED / e-paper' if kind == 'mono' else 'colour TFT (RGB565' + (', round GC9A01' if name.endswith('-round') else '') + '; LVGL v9 image in `' + name + '-lvgl.c`)'} |")
-    readme += ["", "Previews: `*-preview@4x.png` (mono) and `*-preview@2x.png` (colour). Regenerate with the build to change sizes",
-               "(`DISPLAYS` in `tools/build/kit_targets.py`). Colour logos also come as LVGL v9 images (`*-lvgl.c`, `lv_image_dsc_t`, RGB565):",
+        readme.append(f"| `{name}.h` | {w} × {h} | {'monochrome OLED / e-paper' if kind == 'mono' else 'color TFT (RGB565' + (', round GC9A01' if name.endswith('-round') else '') + '; LVGL v9 image in `' + name + '-lvgl.c`)'} |")
+    readme += ["", "Previews: `*-preview@4x.png` (mono) and `*-preview@2x.png` (color). Regenerate with the build to change sizes",
+               "(`DISPLAYS` in `tools/build/kit_targets.py`). Color logos also come as LVGL v9 images (`*-lvgl.c`, `lv_image_dsc_t`, RGB565):",
                "add the file to your project, then `LV_IMAGE_DECLARE(fs_logo_tft_240x240); lv_image_set_src(img, &fs_logo_tft_240x240);`.",
                "The round 240 × 240 logo keeps the art inside the visible circle of a GC9A01 display."]
     build.wr(f"{D}/README.md", "\n".join(readme) + "\n")
@@ -283,15 +283,15 @@ def stl_preview(parts, dest, S=900, elev=50.0):
     Image.fromarray(raster(svg, S, S)).convert("RGB").save(dest)
 
 class Layer:
-    """One printed layer of a model: poly (shapely, mm, y up) from z0 to z1. role: "base" or "cone" (the preview colour of
+    """One printed layer of a model: poly (shapely, mm, y up) from z0 to z1. role: "base" or "cone" (the preview color of
     stl_preview), tone: the body it belongs to in STEP and 3MF (base / warm / cool / name / part), exact: the Outline when
     the piece is a cone (STEP uses its true curves)."""
     def __init__(self, poly, z0, z1, role="cone", tone="part", exact=None):
         self.poly, self.z0, self.z1, self.role, self.tone, self.exact = poly, z0, z1, role, tone, exact
     def __iter__(self): return iter((self.poly, self.z0, self.z1, self.role))      # old (poly, z0, z1, role) unpacking
 
-# bodies in STEP and 3MF: label, colour in the file (the two-tone mode on dark: Void base, M orange and O blue cones, white name),
-# extruder in the 3MF (1 base, 2 everything raised: a two-colour print; give "cones, O blue" filament 3 for three colours)
+# bodies in STEP and 3MF: label, color in the file (the two-tone mode on dark: Void base, M orange and O blue cones, white name),
+# extruder in the 3MF (1 base, 2 everything raised: a two-color print; give "cones, O blue" filament 3 for three colors)
 TONES = {"base": ("base", VOID, 1), "warm": ("cones, M orange", M_ORANGE, 2), "cool": ("cones, O blue", O_BLUE, 2),
          "name": ("name", WHITE, 2), "part": ("part", O_BLUE, 1), "context": ("", "#C9CDD8", 0)}
 PREVIEW = {"base": "#2A3248", "warm": M_ORANGE, "cool": O_BLUE, "name": "#F3F4F7", "part": O_BLUE, "context": "#C9CDD8"}
@@ -312,8 +312,8 @@ def _contour(polys, h, off, simp=0.0):
     C = U.buffer(R, resolution=32).buffer(-R, resolution=32).buffer(off, resolution=32)
     return C.simplify(simp) if simp else C
 
-def mark_layers(h, z0, z1, dx=0.0, dy=0.0, centre=True, mirror=False):
-    ols, (w, hh) = kit_cad.mark_outlines(h, kit_cad.FOOT_MM, centre=centre, mirror=mirror)
+def mark_layers(h, z0, z1, dx=0.0, dy=0.0, center=True, mirror=False):
+    ols, (w, hh) = kit_cad.mark_outlines(h, kit_cad.FOOT_MM, center=center, mirror=mirror)
     ols = [o.moved(dx, dy) for o in ols]
     return [Layer(o.poly(40), z0, z1, "cone", SIDE[o.name], o) for o in ols]
 
@@ -383,13 +383,13 @@ def _ocp_models_():
         M.append(Model(fn, ("fridge magnet, hidden magnet (pause at %.1f mm)" % (pz + hmag)) if hidden else "fridge magnet",
                        bodies=[("base", plate)] + tone_shapes(cones), mf=True))
         M[-1].check = [base] + [L.poly for L in cones]
-        M[-1].info = dict(base=zb, top=zb + 1.2, pocket=(dmag, hmag, pz), centre=(c.x, c.y))
+        M[-1].info = dict(base=zb, top=zb + 1.2, pocket=(dmag, hmag, pz), center=(c.x, c.y))
 
     # fin-can badges: a chamfered plaque curved to the body tube, the mark raised 0.8 mm; printed standing on its bottom edge
     for D, H in FINCAN:
         R = D / 2; t = 1.6; rel = 0.8; m = max(2.5, round(0.1 * H * 2) / 2); S = H + 2 * m; ch = round(0.22 * S, 1)
         octa = Polygon([(-S / 2 + ch, 0), (S / 2 - ch, 0), (S / 2, ch), (S / 2, S - ch), (S / 2 - ch, S), (-S / 2 + ch, S), (-S / 2, S - ch), (-S / 2, ch)])
-        ols, _ = P.mark_outlines(H, P.FOOT_MM, centre=True); ols = [o.moved(0, S / 2) for o in ols]
+        ols, _ = P.mark_outlines(H, P.FOOT_MM, center=True); ols = [o.moved(0, S / 2) for o in ols]
         far = R + t + rel + 2
         shell = P.cut(P.cylinder(R + t, -1, S + 1), P.cylinder(R, -2, S + 2))
         skin = P.cut(P.cylinder(R + t + rel, -1, S + 1), P.cylinder(R + t - 1e-3, -2, S + 2))
@@ -418,7 +418,7 @@ def _ocp_models_():
     foot = P.common(top, P.prism_along(prof, "x", -Lf / 2 - 1, Lf / 2 + 1))
     gap = s["t"] + 2 * P.CLEAR; ls = s["w"] + 2 * P.CLEAR
     yf, zf = 14.0, Hf - s["slot_depth"] * math.cos(math.radians(s["lean"]))
-    def place(shape):       # slot frame (x, t, s) -> world: lean back by s["lean"] about x, floor centre at (0, yf, zf)
+    def place(shape):       # slot frame (x, t, s) -> world: lean back by s["lean"] about x, floor center at (0, yf, zf)
         return P.transformed(shape, rot=((0, 0, 0), (1, 0, 0), -s["lean"]), move=(0, yf, zf))
     slot = place(P.box(-ls / 2, -gap / 2, 0, ls / 2, gap / 2, 40))
     foot = P.cut(foot, slot)
@@ -447,7 +447,7 @@ def _ocp_models_():
         prof = (Point(0, 0).buffer(ro, resolution=64).union(box(0, ro - 2.0, ro + 18, ro))
                 .difference(Point(0, 0).buffer(ri, resolution=64)).difference(box(-0.4 * d, -ro - 1, 0.4 * d, -0.3 * ri)))
         body = P.prism(prof, 0, wid)
-        ols, _ = P.mark_outlines(9, P.FOOT_MM, centre=True, mirror=True)       # mirrored: read from the flag's face (+y)
+        ols, _ = P.mark_outlines(9, P.FOOT_MM, center=True, mirror=True)       # mirrored: read from the flag's face (+y)
         ols = [o.moved(ro + 9.5, wid / 2) for o in ols]
         body = P.cut(body, P.prism_along(ols, "y", ro - 0.6, ro + 1))
         md = Model(f"fusion-space-cable-clip-{d}mm", f"snap-on cable clip for a {d} mm cable", bodies=[("part", body)], elev=35.0, azim=200.0)
@@ -456,7 +456,7 @@ def _ocp_models_():
     # stencils: the mark cut out of a 1.2 mm sheet (the cones have no islands, so no bridges are needed)
     for H, mg in ((50, 13.0), (100, 20.0)):
         S = H + 2 * mg
-        ols, _ = P.mark_outlines(H, P.FOOT_MM, centre=True)
+        ols, _ = P.mark_outlines(H, P.FOOT_MM, center=True)
         sheet = P.cut(P.prism(_rrect(-S / 2, -S / 2, S / 2, S / 2, 6.0), 0, 1.2), P.prism(ols, -1, 2.2))
         md = Model(f"fusion-space-stencil-mark-{H}mm", f"stencil, {H} mm mark", bodies=[("part", sheet)])
         md.check = [_rrect(-S / 2, -S / 2, S / 2, S / 2, 6.0).difference(unary_union([o.poly(40) for o in ols]))]
@@ -644,7 +644,7 @@ def build_3d():
         open(out(f"{D}/{fn}.stl"), "wb").write(tri_stl(tris))
         raised = [L.poly for L in layers if L.role == "cone"]
         problems += kit_cad.check_print(fn, unary_union(raised))
-    # STEP (every model; the cones exact), 3MF (the two-colour ones), and the prints that need OCP
+    # STEP (every model; the cones exact), 3MF (the two-color ones), and the prints that need OCP
     ocp = []
     if kit_cad.HAVE_OCC:
         for fn, layers in models.items():
@@ -707,8 +707,8 @@ def build_3d():
         "supportedOS": "windows|mac", "editEnabled": True}, indent=1) + "\n")
     build.wr(f"{D}/README.md", README_3D(ocp))
     note(f"{D}/*.stl", G, "STL: extruded mark (40, 80 mm), desk badge, keychain, lockups and name, sign, coaster, fridge magnet, fin-can and nose-cone badges, desk stand, cable tag and clips, stencils, lithophane, cookie cutter and stamp", "", "3D printing (0.4 mm nozzle, 0.2 mm layers; settings in the README)")
-    note(f"{D}/*.step", G, "STEP solids of every model (the mark's true lines, arcs, ellipse and Béziers; named, coloured bodies)", "", "Fusion, Onshape, FreeCAD, SolidWorks")
-    note(f"{D}/*.3mf", G, "3MF with one part per colour (base, M orange cones, O blue cones, name) for two-colour printers", "", "PrusaSlicer, OrcaSlicer, Bambu Studio")
+    note(f"{D}/*.step", G, "STEP solids of every model (the mark's true lines, arcs, ellipse and Béziers; named, colored bodies)", "", "Fusion, Onshape, FreeCAD, SolidWorks")
+    note(f"{D}/*.3mf", G, "3MF with one part per color (base, M orange cones, O blue cones, name) for two-color printers", "", "PrusaSlicer, OrcaSlicer, Bambu Studio")
     note(f"{D}/sketch/*.dxf/.svg", G, "outlines of the mark (exact curves), the lockups and the name to import and extrude or cut", "mark 20–100 mm, lockups and name 60–200 mm", "CAD sketches, slicer SVG import")
     note(f"{D}/parametric/", G, "parametric badge template: FreeCAD macro (spreadsheet-driven) and Fusion script (user parameters)", "", "resize, re-thicken, add a magnet pocket")
 
@@ -716,19 +716,19 @@ def README_3D(ocp):
     K = kit_cad
     pocket = f"{K.MAGNET[0] + 2 * K.MAGNET_CLEAR:.1f} × {K.MAGNET[1] + 0.2:.1f} mm"
     fc = ", ".join(f"{d}" for d, _ in FINCAN)
-    return f"""# FusionSpace 3D-print and CAD files (millimetres)
+    return f"""# FusionSpace 3D-print and CAD files (millimeters)
 
 Every model comes as `.stl` (mesh, for slicers) and `.step` (solid, for CAD: Fusion, Onshape, FreeCAD, SolidWorks). In the STEP
 files the mark is exact: its lines, circular arcs, the elliptical wing's ellipse and the Von Kármán's Bézier curves, the same
 curves as the master SVG (no fitting); the name and the plates are smooth B-splines within 0.002 mm. Each STEP has named,
-coloured bodies (base, cones in M orange and O blue, name). Two-colour models also come as `.3mf` with one part per colour
-(see *Two colours* below). `sketch/` has outlines to import and extrude or cut; `parametric/` has a badge you can resize in
+colored bodies (base, cones in M orange and O blue, name). Two-color models also come as `.3mf` with one part per color
+(see *Two colors* below). `sketch/` has outlines to import and extrude or cut; `parametric/` has a badge you can resize in
 FreeCAD or Fusion.
 
 Everything is made for a normal FDM printer: **0.4 mm nozzle, 0.2 mm layers** (first layer 0.2 mm), and checked by the build:
 no raised stroke under {K.MIN_FEATURE} mm, no gap under {K.MIN_GAP} mm, cone feet trimmed to {K.FOOT_MM} mm, heights in whole layers,
 no supports needed anywhere. Every STL was sliced (PrusaSlicer 2.7, 0.4 mm nozzle, 0.2 mm layers, no supports) without an overhang
-or support warning; the two-colour 3MFs slice with their parts on two filaments. Use a slicer with variable-width walls (Arachne: PrusaSlicer 2.6+, OrcaSlicer, Bambu Studio; in
+or support warning; the two-color 3MFs slice with their parts on two filaments. Use a slicer with variable-width walls (Arachne: PrusaSlicer 2.6+, OrcaSlicer, Bambu Studio; in
 Cura turn on *Print Thin Walls*) so the 0.6 mm feet and the name's thinnest strokes print as one line.
 
 ## The models
@@ -760,30 +760,30 @@ Cura turn on *Print Thin Walls*) so the 0.6 mm feet and the name's thinnest stro
 
 Defaults for every part: 0.4 mm nozzle, 0.2 mm layers, 3 walls, 4 top and 4 bottom layers, 15 % gyroid infill, no supports,
 no brim unless the table says so, printed as exported (the files are already in print orientation, flat side on the bed).
-"Colour change at Z" means the first layer of the new colour (PrusaSlicer/Orca: add the colour change on the layer at that height;
+"Color change at Z" means the first layer of the new color (PrusaSlicer/Orca: add the color change on the layer at that height;
 Bambu: *Add pause/filament change* on that layer).
 
-| Model | Material | Orientation | Settings | Colour |
+| Model | Material | Orientation | Settings | Color |
 |---|---|---|---|---|
-| mark 40/80, extruded | PLA | flat | defaults; a 3 mm brim keeps the small wing cones down | one colour |
-| badge 50 | PLA | flat (base down) | defaults | colour change at 2.2 mm (Void base, cones in a light colour), or the 3MF |
-| keychain 40 | PETG (takes the pull of a key ring) | flat | 4 walls | colour change at 2.6 mm, or the 3MF |
-| horizontal 130, stacked 110, name 120 | PLA | flat | 2 walls, 100 % infill (the strokes are walls only); 3 mm brim (the i's dot and the wing cones are small) | one colour; glue onto a sign or a case |
-| sign 150 | PLA | flat | defaults | colour change at 3.2 mm, or the 3MF |
-| coaster 95 | PETG (PLA softens under a hot mug) | flat | 5 bottom layers | colour change at 4.2 mm, or the 3MF |
-| magnet 40 | PLA | flat, pocket on the bed | defaults (the pocket's 0.8 mm roof bridges 10 mm cleanly) | colour change at 4.2 mm, or the 3MF. Press a 10 × 3 mm disc magnet in with a drop of CA glue |
-| magnet 40 hidden | PLA | flat | **pause at 3.8 mm** (insert the pause before the 4.0 mm layer), drop the magnet in, resume. Use a brass nozzle: a steel one is pulled toward the magnet | colour change at 4.8 mm |
-| fin-can badges | PETG or ASA (sun and motor heat) | **standing on its flat bottom edge**, as exported | 5 mm brim, 4 walls (the 1.6 mm shell is solid walls), 0.2 mm layers; the cones stand 0.8 mm proud of the curve and print without support | one colour, or the 3MF on a multi-material printer; or paint the cones. Glue with epoxy; each fits its tube up to about 3 mm larger in diameter |
-| nose-cone badges | TPU 95A | flat | 20–30 mm/s, 100 % infill | one colour (or paint). Glue with contact cement or flexible CA |
-| desk stand plaque | PLA | flat | defaults | colour change at 3.2 mm, or the 3MF (the plaque's parts) |
-| desk stand foot | PLA | upright, as exported | 15 % infill; the slot is {STAND['t'] + 2 * K.CLEAR:.1f} mm for the 3.0 mm plaque ({K.CLEAR} mm each side), 8.2 mm deep | one colour (Void) |
-| cable tag | PLA or PETG | flat | defaults | colour change at 2.2 mm, or the 3MF |
-| cable clips | PETG (PLA cracks when it snaps) | on its side, as exported (the clip's profile on the bed) | 4 walls, 100 % infill, 3 mm brim | one colour. Fits cables within about 0.5 mm of the size |
-| stencils | PLA or PETG | flat | 100 % infill (the 1.2 mm sheet is 6 solid layers) | one colour. Tape it down and spray light coats |
+| mark 40/80, extruded | PLA | flat | defaults; a 3 mm brim keeps the small wing cones down | one color |
+| badge 50 | PLA | flat (base down) | defaults | color change at 2.2 mm (Void base, cones in a light color), or the 3MF |
+| keychain 40 | PETG (takes the pull of a key ring) | flat | 4 walls | color change at 2.6 mm, or the 3MF |
+| horizontal 130, stacked 110, name 120 | PLA | flat | 2 walls, 100 % infill (the strokes are walls only); 3 mm brim (the i's dot and the wing cones are small) | one color; glue onto a sign or a case |
+| sign 150 | PLA | flat | defaults | color change at 3.2 mm, or the 3MF |
+| coaster 95 | PETG (PLA softens under a hot mug) | flat | 5 bottom layers | color change at 4.2 mm, or the 3MF |
+| magnet 40 | PLA | flat, pocket on the bed | defaults (the pocket's 0.8 mm roof bridges 10 mm cleanly) | color change at 4.2 mm, or the 3MF. Press a 10 × 3 mm disc magnet in with a drop of CA glue |
+| magnet 40 hidden | PLA | flat | **pause at 3.8 mm** (insert the pause before the 4.0 mm layer), drop the magnet in, resume. Use a brass nozzle: a steel one is pulled toward the magnet | color change at 4.8 mm |
+| fin-can badges | PETG or ASA (sun and motor heat) | **standing on its flat bottom edge**, as exported | 5 mm brim, 4 walls (the 1.6 mm shell is solid walls), 0.2 mm layers; the cones stand 0.8 mm proud of the curve and print without support | one color, or the 3MF on a multi-material printer; or paint the cones. Glue with epoxy; each fits its tube up to about 3 mm larger in diameter |
+| nose-cone badges | TPU 95A | flat | 20–30 mm/s, 100 % infill | one color (or paint). Glue with contact cement or flexible CA |
+| desk stand plaque | PLA | flat | defaults | color change at 3.2 mm, or the 3MF (the plaque's parts) |
+| desk stand foot | PLA | upright, as exported | 15 % infill; the slot is {STAND['t'] + 2 * K.CLEAR:.1f} mm for the 3.0 mm plaque ({K.CLEAR} mm each side), 8.2 mm deep | one color (Void) |
+| cable tag | PLA or PETG | flat | defaults | color change at 2.2 mm, or the 3MF |
+| cable clips | PETG (PLA cracks when it snaps) | on its side, as exported (the clip's profile on the bed) | 4 walls, 100 % infill, 3 mm brim | one color. Fits cables within about 0.5 mm of the size |
+| stencils | PLA or PETG | flat | 100 % infill (the 1.2 mm sheet is 6 solid layers) | one color. Tape it down and spray light coats |
 | lithophane | white PLA | upright (rotate it so the 120 mm edge with the 10 mm frame is on the bed) with a 5 mm brim, or flat | 100 % infill, 0.12–0.2 mm layers, slow outer walls | white only. Light it from behind (a window, an LED strip) |
-| cookie cutter / stamp | a food-safe PLA or PETG | cutter flange down, stamp face up, as exported | defaults; the cutting wall is 0.8 mm (2 lines) | one colour. Wash by hand; prints are porous, so keep them for dry dough or line them with cling film |
-| remove-before-flight tag | red and white PLA or PETG | flat, front up (the back's engraving prints on the bed) | defaults; smooth (textured PEI shows in the engraving) | colour change at 2.2 mm (red tag, white text), or the 3MF |
-| remove-before-flight tag, two-part | red and white PLA or PETG | both halves flat, art up, as exported | defaults | colour change at 1.6 mm on both, or the 3MF (both halves, two colours). Push 1.4 mm lengths of 1.75 mm filament into the holes of one half, glue the halves (CA or epoxy), press together; the split ring goes through both |
+| cookie cutter / stamp | a food-safe PLA or PETG | cutter flange down, stamp face up, as exported | defaults; the cutting wall is 0.8 mm (2 lines) | one color. Wash by hand; prints are porous, so keep them for dry dough or line them with cling film |
+| remove-before-flight tag | red and white PLA or PETG | flat, front up (the back's engraving prints on the bed) | defaults; smooth (textured PEI shows in the engraving) | color change at 2.2 mm (red tag, white text), or the 3MF |
+| remove-before-flight tag, two-part | red and white PLA or PETG | both halves flat, art up, as exported | defaults | color change at 1.6 mm on both, or the 3MF (both halves, two colors). Push 1.4 mm lengths of 1.75 mm filament into the holes of one half, glue the halves (CA or epoxy), press together; the split ring goes through both |
 
 ## Fits and tolerances
 
@@ -797,13 +797,13 @@ Bambu: *Add pause/filament change* on that layer).
 If your printer runs tight or loose, scale only the part with the hole in the slicer (the foot, or the clip), or change the values
 in `parametric/`.
 
-## Two colours
+## Two colors
 
 Badge, keychain, sign, coaster, magnet, fin-can badges, desk stand and cable tag have a `.3mf` with one object whose parts are the
-colours: **base** (Void), **cones, M orange**, **cones, O blue** and **name** (white), as in the two-tone logo on dark. Each part
-already has its filament set for a two-colour print: base filament 1, everything raised filament 2. For three colours give
+colors: **base** (Void), **cones, M orange**, **cones, O blue** and **name** (white), as in the two-tone logo on dark. Each part
+already has its filament set for a two-color print: base filament 1, everything raised filament 2. For three colors give
 “cones, O blue” filament 3. PrusaSlicer, OrcaSlicer and Bambu Studio read the parts and filaments; other programs see one
-coloured mesh. On a one-nozzle printer without a changer, print the STL with a colour change at the height in the table.
+colored mesh. On a one-nozzle printer without a changer, print the STL with a color change at the height in the table.
 
 ## Sketches (`sketch/`)
 
@@ -842,11 +842,12 @@ Smaller sizes are fine for engraving, laser or CNC. For cutting the mark from sh
 """
 
 # ================================================================ software: terminal themes, banners
-TERM = {  # terminal-only reds/greens/yellows chosen to sit with the palette; brand colours elsewhere
+TERM = {  # red, green, yellow and magenta are the product system's signal inks on dark (Flare, Aurora, Sodium, Nebula), so a
+          # CLI's error:, ok, warning: and predicted values match the screens; blue is O blue (product/cli.md). Decided 5 October 2026.
     "background": VOID, "foreground": "#E6E8EF", "cursor": O_BLUE, "selection": GRAPHITE,
-    "black": ABYSS, "red": "#F07A6A", "green": "#8FD1A8", "yellow": M_ORANGE, "blue": O_BLUE, "magenta": STOPS[2][1], "cyan": "#8FD3E8", "white": "#D6DAE4",
-    "brightBlack": SLATE, "brightRed": "#FF9C8C", "brightGreen": "#B2E5C5", "brightYellow": "#FFD2A1", "brightBlue": "#CAD7FF",
-    "brightMagenta": "#E2D6F5", "brightCyan": "#B9E8F5", "brightWhite": "#FFFFFF"}
+    "black": ABYSS, "red": "#FB8083", "green": "#6AD5B6", "yellow": "#F5AF20", "blue": O_BLUE, "magenta": "#ED89D2", "cyan": "#8FD3E8", "white": "#D6DAE4",
+    "brightBlack": SLATE, "brightRed": "#FFA9AB", "brightGreen": "#9BE8D0", "brightYellow": "#FFCB66", "brightBlue": "#CAD7FF",
+    "brightMagenta": "#F5B4E3", "brightCyan": "#B9E8F5", "brightWhite": "#FFFFFF"}
 
 def hex2rgb(h): return tuple(int(h[i:i + 2], 16) for i in (1, 3, 5))
 
@@ -873,7 +874,7 @@ def braille(piece, cols, mode="color", thr=0.5, foot_dots=1.0):
     Returns (plain lines, ANSI 24-bit lines), all the same width (padded with the empty braille cell U+2800, not spaces: a
     font without braille draws it with a fallback font whose cells can be wider than a space, which shifted whole rows).
     A dot is set where at least thr of it is covered; feet are cut at foot_dots dots wide (term_art). Each cell takes the
-    average colour of its dots."""
+    average color of its dots."""
     a = PIECES[piece](); W = cols * 2; H = int(round(W * a.h / a.w / 2)) * 2
     H = max(4, (H + 3) // 4 * 4); ss = 6
     k = min(W * ss / a.w, H * ss / a.h)
@@ -1005,8 +1006,8 @@ def build_software():
     from cli_banner import banner
     banner()            # the widest logo that fits the terminal ({", ".join(str(c) for c in wide)} columns), then the tagline
 
-Colour when stdout is a terminal: 24-bit where the terminal says it supports it (COLORTERM=truecolor or 24bit, Windows
-Terminal), otherwise the nearest 256-colour codes. NO_COLOR turns colour off, FORCE_COLOR turns it on. Under {min(wide)} columns
+Color when stdout is a terminal: 24-bit where the terminal says it supports it (COLORTERM=truecolor or 24bit, Windows
+Terminal), otherwise the nearest 256-color codes. NO_COLOR turns color off, FORCE_COLOR turns it on. Under {min(wide)} columns
 it prints the mark alone ({len(mk[0][0])} columns) and the name as text. Needs a font with braille (most have it, or the terminal borrows it).
 """
 import os, re, shutil, sys
@@ -1024,9 +1025,9 @@ def _to256(m):
     r, g, b = (int(v) for v in m.groups())
     q = lambda v: 0 if v < 48 else 1 if v < 115 else (v - 35) // 40
     lv = [0, 95, 135, 175, 215, 255]
-    cube = (lv[q(r)], lv[q(g)], lv[q(b)]); k = min(23, max(0, (r + g + b) // 3 - 3) // 10); grey = 8 + 10 * k
+    cube = (lv[q(r)], lv[q(g)], lv[q(b)]); k = min(23, max(0, (r + g + b) // 3 - 3) // 10); gray = 8 + 10 * k
     d = lambda c: sum((u - v) ** 2 for u, v in zip(c, (r, g, b)))
-    return f"\\x1b[38;5;{{232 + k if d((grey,) * 3) < d(cube) else 16 + 36 * q(r) + 6 * q(g) + q(b)}}m"
+    return f"\\x1b[38;5;{{232 + k if d((gray,) * 3) < d(cube) else 16 + 36 * q(r) + 6 * q(g) + q(b)}}m"
 
 def banner(tagline=TAGLINE, file=None):
     out = file or sys.stdout
@@ -1054,7 +1055,7 @@ if __name__ == "__main__":
     r_plain = "\n".join('    "' + ln + '\\n",' for ln in c_plain); r_ansi = "\n".join('    "' + resc(ln) + '\\n",' for ln in c_ansi)
     build.wr(f"{D}/banner/cli_banner.h", f'''// FusionSpace CLI banner, 72 columns (UTF-8 braille; fits an 80-column terminal or serial console).
 //   printf("%s", FS_BANNER);         plain
-//   printf("%s", FS_BANNER_ANSI);    24-bit colour
+//   printf("%s", FS_BANNER_ANSI);    24-bit color
 #pragma once
 static const char FS_BANNER[] =
 {h_plain};
@@ -1063,7 +1064,7 @@ static const char FS_BANNER_ANSI[] =
 ''')
     build.wr(f"{D}/banner/cli_banner.rs", f'''// FusionSpace CLI banner, 72 columns (UTF-8 braille; fits an 80-column terminal).
 //   print!("{{}}", FS_BANNER);         plain
-//   print!("{{}}", FS_BANNER_ANSI);    24-bit colour
+//   print!("{{}}", FS_BANNER_ANSI);    24-bit color
 pub const FS_BANNER: &str = concat!(
 {r_plain}
 );
@@ -1075,7 +1076,7 @@ pub const FS_BANNER_ANSI: &str = concat!(
     build.wr(f"{D}/banner/ascii.txt", "+-----------------+\n|   FusionSpace   |\n+-----------------+\n" + f"  {TAGLINE}\n".replace("·", "-"))
     build.wr(f"{D}/README.md", f"""# FusionSpace for software projects
 
-## Terminal colour scheme
+## Terminal color scheme
 `terminal/`: Windows Terminal (`windows-terminal.json`, paste into `schemes`), iTerm2 (`FusionSpace.itermcolors`, double-click),
 Alacritty (`alacritty.toml`, import it), kitty (`kitty.conf`, `include` it), Ghostty (`ghostty`), VS Code integrated terminal
 (`vscode-settings.json`). Background Void, blue O, yellow M orange; red, green and cyan are terminal-only additions picked to sit
@@ -1084,18 +1085,18 @@ with the palette. Preview: `terminal/preview.png`.
 ## CLI banners
 `banner/`: the logo as braille text art in the Fusion gradient: the mark alone (`mark-16`, `mark-24`: 16 and 24 columns wide),
 the horizontal lockup (`horizontal-48`, `horizontal-72`, `horizontal-96`: 48, 72 and 96 columns; 72 fits an 80-column terminal)
-and the stacked lockup (`stacked-40`), plain (`.txt`) and with 24-bit colour (`.ans`, `cat` it). The name is drawn too, at the
+and the stacked lockup (`stacked-40`), plain (`.txt`) and with 24-bit color (`.ans`, `cat` it). The name is drawn too, at the
 lockup's own proportions, so the banner is the logo, not the mark next to a line of text. The art pads with the empty braille
 cell (U+2800), so rows stay aligned even where the font has no braille and the terminal borrows it from another font.
 To print it from a program: `cli_banner.py` (`from cli_banner import banner; banner()`: picks the widest banner that fits,
-colour on a terminal with a 256-colour fallback, honours `NO_COLOR` and `FORCE_COLOR`), `cli_banner.h` (C/C++) and
-`cli_banner.rs` (Rust) with the 72-column banner plain and in colour (`FS_BANNER`, `FS_BANNER_ANSI`), `ascii.txt` (pure ASCII
+color on a terminal with a 256-color fallback, honors `NO_COLOR` and `FORCE_COLOR`), `cli_banner.h` (C/C++) and
+`cli_banner.rs` (Rust) with the 72-column banner plain and in color (`FS_BANNER`, `FS_BANNER_ANSI`), `ascii.txt` (pure ASCII
 fallback). Use them for `--version` output, firmware serial-console boot messages, or tool start-up.
 
 ## Docs sites
-Colours: `color/fusion-space-tokens.css`. Icons: `kit/web/`. Fonts: Cascadia Mono (code, headings), Archivo (body).
+Colors: `color/fusion-space-tokens.css`. Icons: `kit/web/`. Fonts: Cascadia Mono (code, headings), Archivo (body).
 """)
-    note(f"{D}/terminal/", G, "terminal colour schemes: Windows Terminal, iTerm2, Alacritty, kitty, Ghostty, VS Code terminal", "", "Your terminal, screenshots, demos")
+    note(f"{D}/terminal/", G, "terminal color schemes: Windows Terminal, iTerm2, Alacritty, kitty, Ghostty, VS Code terminal", "", "Your terminal, screenshots, demos")
     note(f"{D}/banner/", G, "CLI banners: the mark and both lockups as braille text art (plain and 24-bit ANSI) at 16–96 columns, Python/C/Rust snippets, ASCII fallback", "", "--version output, serial consoles, tool start-up")
 
 # ================================================================ games
@@ -1166,7 +1167,7 @@ def build_games():
   vertical 748×896, optional page background 1438×810; library capsule 600×900, library header 920×430, library hero 3840×1240,
   transparent library logo 1280×720). Each has a "Game title (edit me)" text layer. Steam allows only the game's title on capsules
   (no studio logo, taglines or quotes) and wants the title to nearly fill the small capsule, so the templates carry just the title
-  and a faint mark. Put key art on the Background layer. Keep anything important in the hero's centre (Steam crops it). `shortcut-icon-256.png` and `app-icon-184.jpg` are ready as-is.
+  and a faint mark. Put key art on the Background layer. Keep anything important in the hero's center (Steam crops it). `shortcut-icon-256.png` and `app-icon-184.jpg` are ready as-is.
 - `itch/`: itch.io cover template (630×500, and 2×).
 - Engines: use `kit/logo/png/` for in-game logos (transparent PNG at many sizes) and `kit/web/icon-*.png` for app icons.
 """)
@@ -1231,7 +1232,7 @@ def build_video():
     note(f"{D}/logo-intro-640.gif", G, "animated GIF", "640 wide", "READMEs, chat, slides")
 
 # ================================================================ wallpapers and call backgrounds
-# Checked 2 Oct 2026: iPhone 17 / 17 Pro 1206 x 2622, iPhone 17 Pro Max 1320 x 2868 (iOS scales a wallpaper to other models),
+# Checked Oct 2, 2026: iPhone 17 / 17 Pro 1206 x 2622, iPhone 17 Pro Max 1320 x 2868 (iOS scales a wallpaper to other models),
 # iPad Pro 13" (M4/M5) 2064 x 2752, MacBook Air 13" 2560 x 1664, MacBook Pro 14"/16" 3024 x 1964 / 3456 x 2234.
 WALL = [("desktop-2560x1440", 2560, 1440), ("desktop-3840x2160", 3840, 2160), ("desktop-5120x2880", 5120, 2880), ("ultrawide-3440x1440", 3440, 1440),
         ("macbook-air-2560x1664", 2560, 1664), ("macbook-3024x1964", 3024, 1964), ("macbook-3456x2234", 3456, 2234),
@@ -1283,7 +1284,7 @@ def build_merch():
             png(src, f"{D}/{name}-{mode}-{width_in:g}in-300dpi.png", wp + 2 * mg, hp + 2 * mg)
             Image.open(out(f"{D}/{name}-{mode}-{width_in:g}in-300dpi.png")).save(out(f"{D}/{name}-{mode}-{width_in:g}in-300dpi.png"), dpi=(DPI, DPI))
             os.remove(src)
-    note(f"{D}/{{tshirt,hoodie,cap}}-*-{{mode}}-*in-300dpi.png", G, "apparel print files, transparent, 300 dpi, every colour mode (white or twotone-on-dark for dark garments)",
+    note(f"{D}/{{tshirt,hoodie,cap}}-*-{{mode}}-*in-300dpi.png", G, "apparel print files, transparent, 300 dpi, every color mode (white or twotone-on-dark for dark garments)",
          f"art width: chest 4 in, front 10 in, back 12 in, hoodie 10 in, cap 2.5 in, plus {MERCH_MARGIN_IN:g} in of transparent margin on every side", "Print-on-demand (DTG, DTF, screen print)")
     # 11 oz mug wrap: 8.5 x 3.5 in, logo on both sides
     W, H = int(8.5 * DPI), int(3.5 * DPI)
@@ -1311,7 +1312,7 @@ def build_merch():
         s += "</svg>\n"
         src = save_svg(f"{D}/poster-mark-{pname}.svg", s); pdf(src, f"{D}/poster-mark-{pname}.pdf"); cmyk(f"{D}/poster-mark-{pname}.pdf", f"{D}/poster-mark-{pname}-cmyk.pdf")
         png(src, f"{D}/poster-mark-{pname}-preview.png", w=900)
-        # construction poster: the construction drawing centred on Paper
+        # construction poster: the construction drawing centered on Paper
         cons = open(out("graphics/mark-construction.svg"), encoding="utf-8").read()
         cw = float(re.search(r'width="([\d.]+)"', cons).group(1)); ch = float(re.search(r'height="([\d.]+)"', cons).group(1))
         inner = cons[cons.index(">", cons.index("<svg")) + 1:cons.rindex("</svg>")]
@@ -1363,7 +1364,7 @@ def _rbf_text_poly(s):
     return affinity.translate(affinity.scale(kit_cad.nonzero_region(d), k, -k, origin=(0, 0)), tx, s["h"] - ty)   # y up
 
 def _rbf_lockup(s, z0, z1):
-    """The horizontal lockup centred in the tag's text area, y up: layers (exact cones, the name)."""
+    """The horizontal lockup centered in the tag's text area, y up: layers (exact cones, the name)."""
     lx = s["text_x0"] + (s["text_x1"] - s["text_x0"] - s["lockup_w"]) / 2
     a = art_horizontal(); lh = a.h * s["lockup_w"] / a.w
     lay, _, _ = piece_layers("horizontal", z0, z1, width=s["lockup_w"], dx=lx, dy=(s["h"] - lh) / 2)
@@ -1418,9 +1419,9 @@ maker needs no font.
 - **Woven tag, double-sided** (the usual “remove before flight keychain”): best at this size, the letters stay sharp.
   Embroidered also works (capitals {capmm:.1f} mm, well above the usual 5 mm minimum for embroidered text).
 - Size 140 × 32 mm, corners as drawn (4 mm radius) or square with a merrowed (overlocked) edge, whichever the maker offers.
-- Colours: red **Pantone 186 C** (`{RBF_RED}`), white. Two colours, no gradient. Give the vendor the PDFs (vector, text already
+- Colors: red **Pantone 186 C** (`{RBF_RED}`), white. Two colors, no gradient. Give the vendor the PDFs (vector, text already
   outlined); the CMYK PDFs are for a printed (dye-sublimated) tag.
-- A **5 mm metal grommet** at the left end, centred, 9 mm from the edge (dashed circle in the files, layer “grommet-not-printed”;
+- A **5 mm metal grommet** at the left end, centered, 9 mm from the edge (dashed circle in the files, layer “grommet-not-printed”;
   it is not printed), and a 25 mm split ring.
 - Printed tags: ask whether they want bleed; the red is a plain rectangle, so it can be extended without touching the art.
 
@@ -1434,7 +1435,7 @@ back) and `fusion-space-remove-before-flight-160mm-2part` (two halves glued back
     flip = lambda sh, h: kit_cad.transformed(sh, rot=((0, h / 2, 0.0), (1, 0, 0), 180.0))     # turned over its long edge
     def tag_poly(s): return _rrect(0, 0, s["w"], s["h"], s["r"]).difference(Point(s["hole_x"], s["h"] / 2).buffer(s["hole_d"] / 2 + 0.25, resolution=48))
     def preview(rows, dest, hs):
-        """rows: [[(shape, colour)]] stacked top to bottom, each drawn on its own and cropped to its height."""
+        """rows: [[(shape, color)]] stacked top to bottom, each drawn on its own and cropped to its height."""
         with tempfile.TemporaryDirectory() as td:
             ims = []
             for i, row in enumerate(rows):

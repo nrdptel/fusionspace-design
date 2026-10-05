@@ -1,6 +1,6 @@
 # FusionSpace app icons and store art
 
-Checked 2 October 2026 against Apple's and Google's current guidance.
+Checked October 2, 2026 against Apple's and Google's current guidance.
 
 | Folder | Files | Where |
 |---|---|---|

@@ -10,18 +10,19 @@ CG, CP, contact and pyro-warning decals laid out to the tube's circumference. De
 
 ![Livery sheet for a 54 mm airframe](rockets/preview.png)
 
-## Colour
+## Color
 
 - **Hi-vis plus black.** Fluorescent orange or fluorescent pink with black is what flyers find easiest to track and recover; a
-  solid colour against sky (blue or overcast grey) and ground (brown, green, white lake bed) both. Chrome flashes when it
-  catches the sun but otherwise takes on the colours around it; use it only as a small accent.
+  solid color against sky (blue or overcast gray) and ground (brown, green, white lake bed) both. Chrome flashes when it
+  catches the sun but otherwise takes on the colors around it; use it only as a small accent.
 - **The FusionSpace scheme:** a black (Void) airframe with a fluorescent orange nose cone and fin can, white markings, and the
   roll pattern on the fins or the body above them. The brand shows in the two-tone mark (M orange and O blue cones) and the
-  designation band, not in the body colour. Where a fluorescent finish isn't possible, M orange `{{M_ORANGE}}` is the
-  nearest brand colour.
+  designation band, not in the body color. Where a fluorescent finish isn't possible, M orange `{{M_ORANGE}}` is the
+  nearest brand color.
 - **Heat.** Black absorbs sun: on a desert field a black airframe and av-bay get hot enough to stress batteries and motors.
-  Keep the rocket shaded until it goes to the pad, or fly a white or fluorescent airframe in summer.
-- **Parachutes and streamers:** fluorescent orange or pink, never sky blue, white or camouflage colours.
+  Keep the rocket shaded until it goes to the pad. For summer flights at hot sites, fly the alternative scheme: a
+  fluorescent orange (or white) airframe with black accents and the same markings.
+- **Parachutes and streamers:** fluorescent orange or pink, never sky blue, white or camouflage colors.
 
 ## Roll pattern
 
@@ -41,7 +42,7 @@ circumference.
 | **Pyro warning** | On the av-bay, next to the switch | `WARNING · LIVE PYRO WHEN ARMED` with the hazard border |
 
 - **CG** uses the standard symbol, a circle with alternate quadrants filled; **CP** a circle with a dot. Draw them in black or
-  white for contrast with the body. (OpenRocket colours CG blue and CP red; FusionSpace keeps red for danger, so on screen CG
+  white for contrast with the body. (OpenRocket colors CG blue and CP red; FusionSpace keeps red for danger, so on screen CG
   and CP are told apart by their shape.)
 - The contact label reads: `IF FOUND` · name · phone · email · `REWARD`, and the designation. Keep it on the wrap sheets'
   template so it's never forgotten.
@@ -50,7 +51,7 @@ circumference.
 
 Every flight has a card, printed from the tools that planned it (Charge, hpr-sim), A6 or half-letter, in the title-block layout:
 designation and flight number, motor (`J350W-L`, with its delay set), mass, CG and CP stations and the stability margin in
-calibres, charges in grams for each channel, altimeter settings, expected apogee with its spread, the waiver, the flyer's
+calibers, charges in grams for each channel, altimeter settings, expected apogee with its spread, the waiver, the flyer's
 name and certification level, and boxes to tick for the pad checklist. It is designed to be read and signed by the range safety officer (RSO).
 
 ## Pad checklist

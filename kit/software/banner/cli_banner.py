@@ -3,8 +3,8 @@
     from cli_banner import banner
     banner()            # the widest logo that fits the terminal (96, 72, 48 columns), then the tagline
 
-Colour when stdout is a terminal: 24-bit where the terminal says it supports it (COLORTERM=truecolor or 24bit, Windows
-Terminal), otherwise the nearest 256-colour codes. NO_COLOR turns colour off, FORCE_COLOR turns it on. Under 48 columns
+Color when stdout is a terminal: 24-bit where the terminal says it supports it (COLORTERM=truecolor or 24bit, Windows
+Terminal), otherwise the nearest 256-color codes. NO_COLOR turns color off, FORCE_COLOR turns it on. Under 48 columns
 it prints the mark alone (16 columns) and the name as text. Needs a font with braille (most have it, or the terminal borrows it).
 """
 import os, re, shutil, sys
@@ -27,9 +27,9 @@ def _to256(m):
     r, g, b = (int(v) for v in m.groups())
     q = lambda v: 0 if v < 48 else 1 if v < 115 else (v - 35) // 40
     lv = [0, 95, 135, 175, 215, 255]
-    cube = (lv[q(r)], lv[q(g)], lv[q(b)]); k = min(23, max(0, (r + g + b) // 3 - 3) // 10); grey = 8 + 10 * k
+    cube = (lv[q(r)], lv[q(g)], lv[q(b)]); k = min(23, max(0, (r + g + b) // 3 - 3) // 10); gray = 8 + 10 * k
     d = lambda c: sum((u - v) ** 2 for u, v in zip(c, (r, g, b)))
-    return f"\x1b[38;5;{232 + k if d((grey,) * 3) < d(cube) else 16 + 36 * q(r) + 6 * q(g) + q(b)}m"
+    return f"\x1b[38;5;{232 + k if d((gray,) * 3) < d(cube) else 16 + 36 * q(r) + 6 * q(g) + q(b)}m"
 
 def banner(tagline=TAGLINE, file=None):
     out = file or sys.stdout

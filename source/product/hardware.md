@@ -45,7 +45,7 @@ Every board, enclosure and harness has a designation and a revision, on the part
 - Sized to slide into the av-bay: inside diameters of about 25.5 mm for a 29 mm coupler (1.006 in), 35.0 mm for 38 mm
   (1.380 in) and 50.7 mm for 54 mm (1.997 in). For 3 in, 4 in (98 mm) and 6 in airframes, measure the coupler you have. A board
   on a sled is limited by the chord at the board's plane: width = 2 × √(r² − d²), with r the coupler's inside radius and d the
-  board's distance from the centre, less 1 mm each side for clearance.
+  board's distance from the center, less 1 mm each side for clearance.
 - Mounting by #4 or M3 screws on nylon standoffs, on a grid the project keeps across revisions.
 
 ### Mask and finish
@@ -56,13 +56,13 @@ Every board, enclosure and harness has a designation and a revision, on the part
 
 ## Enclosures
 
-- **Colour:** Void (black) or a dark grey body; one hi-vis accent where something must be found or noticed: Sodium for guards
-  and hazard controls, fluorescent orange for things that get lost in grass. No other colours.
+- **Color:** Void (black) or a dark gray body; one hi-vis accent where something must be found or noticed: Sodium for guards
+  and hazard controls, fluorescent orange for things that get lost in grass. No other colors.
 - **Material outdoors:** ASA or PETG over PLA (PLA softens in a hot car or in desert sun).
 - **Edges chamfered at 45°**, not filleted: it repeats the mark's angle, and a 45° chamfer on a bottom edge prints without
   support where a fillet doesn't. Chamfer 0.8 to 2 mm depending on size.
 - **Labels:** engraved, embossed or printed in Cascadia Mono capitals, at least 2.5 mm tall for controls (5 mm for anything
-  read from a metre); the mark debossed 0.4 mm on one face, at least 8 mm tall.
+  read from a meter); the mark debossed 0.4 mm on one face, at least 8 mm tall.
 - **Hazard edges:** a 45° Sodium and Void band around anything that arms or launches (NASA-STD-3001's black and yellow hazard
   border; ISO 3864 marking).
 - A **title-block label** on the underside: designation, revision, serial, date, contact. Use
@@ -72,8 +72,8 @@ Every board, enclosure and harness has a designation and a revision, on the part
 
 - **No two connectors on one device that can be swapped dangerously.** Pyro, power and sensor connectors differ in pitch,
   pin count or keying; a battery connector can't fit a pyro header.
-- **Wire colours:** red positive, black negative/ground. Pyro leads are labelled by channel with a tag (`kit/3d-print/` cable
-  tags) rather than relying on colour, because no rocketry colour standard for them exists.
+- **Wire colors:** red positive, black negative/ground. Pyro leads are labeled by channel with a tag (`kit/3d-print/` cable
+  tags) rather than relying on color, because no rocketry color standard for them exists.
 - Every harness has a tag with its designation and both ends' names: `FS-VEGA-004 J3 → CH2 MAIN`.
 
 ## Drawings

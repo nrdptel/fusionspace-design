@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 · Copyright 2026 Neer Patel
 # FusionSpace devices: let the logged-in user open their serial ports without joining dialout or uucp.
 # Install to /etc/udev/rules.d/ (packages: /usr/lib/udev/rules.d/), then: sudo udevadm control --reload && sudo udevadm trigger
 # Set the vendor and product ids to your device's. Open-source hardware can get a free product id under pid.codes (vendor 1209).

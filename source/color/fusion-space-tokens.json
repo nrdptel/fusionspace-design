@@ -24,7 +24,7 @@
   "core": {
     "Void": {
       "hex": "#0B0F1C",
-      "use": "Primary dark. Backgrounds, one-colour marks, text on light"
+      "use": "Primary dark. Backgrounds, one-color marks, text on light"
     },
     "Abyss": {
       "hex": "#141A2B",
@@ -135,6 +135,6 @@
         "size": 0.32
       }
     ],
-    "units": "A = main star centre-to-tip; dx, dy from main star centre, y down"
+    "units": "A = main star center-to-tip; dx, dy from main star center, y down"
   }
 }

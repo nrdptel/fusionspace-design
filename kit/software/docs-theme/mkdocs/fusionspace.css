@@ -36,7 +36,7 @@ body[data-md-color-scheme="slate"], body[data-md-color-scheme="slate"][data-md-c
 .md-typeset h1, .md-typeset h2, .md-typeset h3, .md-header__title { font-family: "Cascadia Mono", ui-monospace, monospace; font-weight: 600; letter-spacing: 0; }
 .md-typeset h1 { color: var(--md-default-fg-color); }
 .md-typeset .admonition, .md-typeset details { border-radius: 4px; }
-/* notes and tips in the accent colour, warnings in Ember (light) / M orange (dark) */
+/* notes and tips in the accent color, warnings in Ember (light) / M orange (dark) */
 .md-typeset .admonition.note, .md-typeset details.note, .md-typeset .admonition.tip, .md-typeset details.tip { border-color: var(--md-accent-fg-color); }
 .md-typeset .note > .admonition-title, .md-typeset .note > summary, .md-typeset .tip > .admonition-title, .md-typeset .tip > summary { background-color: color-mix(in srgb, var(--md-accent-fg-color) 12%, transparent); }
 .md-typeset .note > .admonition-title::before, .md-typeset .note > summary::before, .md-typeset .tip > .admonition-title::before, .md-typeset .tip > summary::before { background-color: var(--md-accent-fg-color); }

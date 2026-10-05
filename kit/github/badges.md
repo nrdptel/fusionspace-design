@@ -1,4 +1,4 @@
-# FusionSpace README badges (shields.io, brand colours)
+# FusionSpace README badges (shields.io, brand colors)
 
 Copy the lines you need.
 

@@ -1,7 +1,7 @@
 # Command line
 
 FusionSpace command-line tools (`hpr`, build scripts, firmware utilities) follow the Command Line Interface Guidelines
-(clig.dev) and look like a well-kept lab notebook: labelled columns, units on every value, and colour only where it carries
+(clig.dev) and look like a well-kept lab notebook: labeled columns, units on every value, and color only where it carries
 meaning. hpr-sim's `hpr` is the model; drop-in styles for Rust and Python are in [`cli/`](cli/).
 
 ![Example output in the FusionSpace terminal theme](cli/preview.png)
@@ -22,18 +22,18 @@ meaning. hpr-sim's `hpr` is the model; drop-in styles for Rust and Python are in
 - **The first line says what was read**: file, device, serial, flight. The last lines say what to trust: what was withheld
   and why, in words.
 - **Numbers** follow [`data.md`](data.md#numbers), except digit grouping: no separators in terminal output, so values copy and
-  parse cleanly (`1280 ft`, not `1 280 ft`). A real minus sign is fine in prose output; machine output uses ASCII `-`.
+  parse cleanly (`1280 ft`, not `1,280 ft`). A real minus sign is fine in prose output; machine output uses ASCII `-`.
 - **Tables** have a header row in bold, columns aligned (numbers right), no box-drawing borders unless the table has more than
   about six columns.
 - **Machine output.** `--json` prints one document with units in its keys or schema, published and versioned. `--plain` (or
-  CSV) for traces. Neither ever contains colour, a banner, progress or prose.
+  CSV) for traces. Neither ever contains color, a banner, progress or prose.
 - **Fast feedback.** Print something within 100 ms. Anything over a second gets progress on stderr (a bar with a count and an
   estimate), hidden automatically when stderr isn't a terminal.
 
-## Colour
+## Color
 
-Terminals remap the 16 ANSI colours to the user's own theme, and that is how it should be: brand RGB in a terminal ignores the
-user's theme and contrast. FusionSpace CLIs use **ANSI roles only**, matched to the product's colour roles:
+Terminals remap the 16 ANSI colors to the user's own theme, and that is how it should be: brand RGB in a terminal ignores the
+user's theme and contrast. FusionSpace CLIs use **ANSI roles only**, matched to the product's color roles:
 
 | Role | ANSI | Product role | Used for |
 |---|---|---|---|
@@ -46,11 +46,11 @@ user's theme and contrast. FusionSpace CLIs use **ANSI roles only**, matched to 
 | Predicted | magenta | predicted (Nebula) | Simulated or forecast values when shown beside measured ones |
 | Muted | dim | rule | Separators and decoration only, never text someone must read |
 
-- With the FusionSpace terminal theme (`kit/software/terminal/`), blue is O blue and the others sit with the palette; in any
-  other theme they follow that theme.
-- **Status is never colour alone.** Every coloured word is also a word: `error:`, `warning:`, `CONT`, `NO CONT`, `passed`.
+- With the FusionSpace terminal theme (`kit/software/terminal/`), the colors are the product's own: red is Flare, green
+  Aurora, yellow Sodium, magenta Nebula (their inks on dark) and blue O blue. In any other theme they follow that theme.
+- **Status is never color alone.** Every colored word is also a word: `error:`, `warning:`, `CONT`, `NO CONT`, `passed`.
 - Brand truecolor (the gradient, M orange, O blue) only for the banner, only when `COLORTERM` is `truecolor` or `24bit`.
-- **When to colour:** `--color auto|always|never`; auto colours only when the stream is a terminal, `TERM` isn't `dumb`, and
+- **When to color:** `--color auto|always|never`; auto colors only when the stream is a terminal, `TERM` isn't `dumb`, and
   `NO_COLOR` isn't set. Precedence: the flag, then `NO_COLOR`, then `FORCE_COLOR` / `CLICOLOR_FORCE`, then auto. stdout and
   stderr are decided separately.
 

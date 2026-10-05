@@ -13,7 +13,7 @@ File → Board Setup → Title Block (or Page Settings):
 | Revision | `B` | `REV B` |
 | Issue date | `2026-10` | the date beside the revision |
 
-Checked with KiCad 10.0.6 (5 October 2026): both footprints load, and on a test board with Title `FS-VEGA-004`, Revision `B` and
+Checked with KiCad 10.0.6 (October 5, 2026): both footprints load, and on a test board with Title `FS-VEGA-004`, Revision `B` and
 Issue date `2026-10` the plotted silkscreen reads `FS-VEGA-004` and `REV B  2026-10`. If an older KiCad leaves the variables
 unresolved, place two text items with the same text over the empty frame.
 

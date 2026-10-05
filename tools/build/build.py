@@ -13,23 +13,23 @@ REV = "C"
 DATE = "September 2026"
 # Reproducible output: rsvg-convert and Ghostscript stamp PDFs with this date instead of "now" (and kit.cmyk() drops the
 # random IDs), and DXFs are written with fixed metadata, so a rebuild only changes files whose content changed.
-os.environ.setdefault("SOURCE_DATE_EPOCH", "1790812800")   # 1 October 2026, 00:00 UTC
+os.environ.setdefault("SOURCE_DATE_EPOCH", "1790812800")   # October 1, 2026, 00:00 UTC
 TMP = tempfile.mkdtemp(prefix="fs-build-")               # scratch renders (a shared /tmp can hold other users' files)
 
 VOID, PAPER, WHITE = "#0B0F1C", "#F3F4F7", "#FFFFFF"
-# The Fusion gradient: one gradient for every background (decided 2 October 2026).
+# The Fusion gradient: one gradient for every background (decided October 2, 2026).
 # Every stop is >= 3:1 on white and >= 6:1 on Void; 2.76:1 on Paper is accepted. Same stops and direction as before.
 GRADIENT = [("0.0", "#DA7C30", "M orange"), ("0.35", "#D07D7A", "Rose"), ("0.65", "#A188CB", "Lavender"), ("1.0", "#768DF5", "O blue")]
 STOPS = [(o, c) for o, c, _ in GRADIENT]
-# The Rev B inputs (and Rev C until 2 October 2026) used the pastel gradient. rd() maps those colours to the current ones,
+# The Rev B inputs (and Rev C until October 2, 2026) used the pastel gradient. rd() maps those colors to the current ones,
 # so the Rev B templates, guide and README come out in today's palette. Spectral O and M are the gradient ends.
-OLD_COLOURS = {"#FFB56C": "#DA7C30", "#F2B3A0": "#D07D7A", "#C3B3E0": "#A188CB", "#9BB0FF": "#768DF5"}
+OLD_COLORS = {"#FFB56C": "#DA7C30", "#F2B3A0": "#D07D7A", "#C3B3E0": "#A188CB", "#9BB0FF": "#768DF5"}
 def css_gradient():
     return "linear-gradient(90deg," + ",".join(f"{c} {round(float(o) * 100):g}%" for o, c in STOPS) + ")"
-def recolour(s):
-    return re.sub("|".join(OLD_COLOURS), lambda m: OLD_COLOURS[m.group(0).upper()], s, flags=re.I)
+def recolor(s):
+    return re.sub("|".join(OLD_COLORS), lambda m: OLD_COLORS[m.group(0).upper()], s, flags=re.I)
 def contrast(a, b):
-    """WCAG 2 contrast ratio of two hex colours."""
+    """WCAG 2 contrast ratio of two hex colors."""
     def L(h):
         c = [int(h[i:i + 2], 16) / 255 for i in (1, 3, 5)]
         c = [x / 12.92 if x <= 0.04045 else ((x + 0.055) / 1.055) ** 2.4 for x in c]
@@ -38,7 +38,7 @@ def contrast(a, b):
     return (la + 0.05) / (lb + 0.05)
 f = geo.fnum
 
-def rd(p): return recolour(open(os.path.join(SRC, p), encoding="utf-8").read())
+def rd(p): return recolor(open(os.path.join(SRC, p), encoding="utf-8").read())
 def wr(p, s, mode="w"):
     fp = os.path.join(OUT, p); os.makedirs(os.path.dirname(fp), exist_ok=True)
     with open(fp, mode, encoding=None if "b" in mode else "utf-8") as fh: fh.write(s)
@@ -64,23 +64,23 @@ def header(w, h, title, desc="", page=VOID, units=""):
 <dc:creator><cc:Agent><dc:title>Neer Patel · FusionSpace</dc:title></cc:Agent></dc:creator></cc:Work></rdf:RDF></metadata>
 '''
 
-# Colour modes. fill: None = the Fusion gradient; a hex = one colour; ("twotone", warm, cool, wordmark) = flat
+# Color modes. fill: None = the Fusion gradient; a hex = one color; ("twotone", warm, cool, wordmark) = flat
 # two-tone, where each cone takes the gradient end nearest its own position in the sweep (see twotone_side()).
-# M orange and O blue are the gradient ends; they are also the accent colours on dark and Spectral O and M. Ion and Ember are
-# text and UI colours on light (links, warnings); since 2 October 2026 they are no longer logo colours.
+# M orange and O blue are the gradient ends; they are also the accent colors on dark and Spectral O and M. Ion and Ember are
+# text and UI colors on light (links, warnings); since October 2, 2026 they are no longer logo colors.
 ION, EMBER, M_ORANGE, O_BLUE = "#3350D6", "#B34F0C", GRADIENT[0][1], GRADIENT[-1][1]
 WARM, COOL = M_ORANGE, O_BLUE              # two-tone cones: one pair on every background; only the wordmark flips
 MODES = {
-    "color": (None, "Full colour. The same gradient on Void, white and Paper", VOID),
-    "twotone-on-dark": (("twotone", WARM, COOL, WHITE), "Flat two-tone on dark backgrounds: M orange and O blue cones, white wordmark. Two spot colours; screen print, vinyl, embroidery", VOID),
-    "twotone-on-light": (("twotone", WARM, COOL, VOID), "Flat two-tone on light backgrounds: the same M orange and O blue cones, Void wordmark. Two spot colours; screen print, vinyl, embroidery", PAPER),
-    "void": (VOID, "One colour, Void. Light backgrounds, engraving, stamps, laser cutting", PAPER),
-    "white": (WHITE, "One colour, white. Dark backgrounds and photos", VOID),
+    "color": (None, "Full color. The same gradient on Void, white and Paper", VOID),
+    "twotone-on-dark": (("twotone", WARM, COOL, WHITE), "Flat two-tone on dark backgrounds: M orange and O blue cones, white wordmark. Two spot colors; screen print, vinyl, embroidery", VOID),
+    "twotone-on-light": (("twotone", WARM, COOL, VOID), "Flat two-tone on light backgrounds: the same M orange and O blue cones, Void wordmark. Two spot colors; screen print, vinyl, embroidery", PAPER),
+    "void": (VOID, "One color, Void. Light backgrounds, engraving, stamps, laser cutting", PAPER),
+    "white": (WHITE, "One color, white. Dark backgrounds and photos", VOID),
 }
 
 _SIDE = {}
 def twotone_side():
-    """'warm' or 'cool' per cone: the gradient end nearest the cone's centre of area along the sweep (left to right
+    """'warm' or 'cool' per cone: the gradient end nearest the cone's center of area along the sweep (left to right
     across the leaned cluster). With the current geometry: west and south warm, main and east cool."""
     key = (geo.TILT, tuple(sorted(geo.POS.items())))
     if key not in _SIDE:
@@ -96,7 +96,7 @@ def twotone_side():
     return _SIDE[key]
 
 def mode_fills(mode, mark_ref="url(#fusion-gradient)", wm_ref="url(#wordmark-gradient)"):
-    """(mark fill: str or {cone: hex}, wordmark fill, uses gradients?) for a colour mode."""
+    """(mark fill: str or {cone: hex}, wordmark fill, uses gradients?) for a color mode."""
     fill = MODES[mode][0]
     if fill is None: return mark_ref, wm_ref, True
     if isinstance(fill, tuple):
@@ -172,15 +172,15 @@ def build_marks():
 STACK_H = 125.0            # stacked cluster height
 STACK_GAP = 0.10 * STACK_H # stacked gap: cluster bottom to cap top (mark above), or descender bottom to cluster top (mark below)
 STACK_POS = "above"        # stacked lockup: mark "above" or "below" the wordmark
-H_MARK = 115.0             # horizontal mark height (cap height is 60): 1.92 x cap. Was 100 (1.67 x cap) until 3 October 2026;
+H_MARK = 115.0             # horizontal mark height (cap height is 60): 1.92 x cap. Was 100 (1.67 x cap) until October 3, 2026;
                            # raised because the open, four-cone mark read light next to the semibold wordmark
                            # (measured against 13 other horizontal lockups)
 H_GAP_CAP = 0.35           # horizontal gap, mark's bounding box to the F, in cap heights (21 units). Was 0.625 (37.5 units)
 H_GAP_K = H_GAP_CAP * 60.0 / H_MARK   # the same gap as a fraction of the mark height (0.183), used by the geometry and the tuner
 H_POS = "before"           # horizontal lockup: mark "before" (left of) or "after" (right of) the wordmark
-SMALL_H_PX = 32            # small-size rule (decided 2 October 2026): on light, a horizontal lockup under this height goes one-colour
-                           # (28 px until 3 October 2026; 32 keeps the same wordmark size with the larger mark)
-SMALL_RULE = (f"On light backgrounds, a horizontal lockup under {SMALL_H_PX} px tall uses the one-colour Void lockup "
+SMALL_H_PX = 32            # small-size rule (decided October 2, 2026): on light, a horizontal lockup under this height goes one-color
+                           # (28 px until October 3, 2026; 32 keeps the same wordmark size with the larger mark)
+SMALL_RULE = (f"On light backgrounds, a horizontal lockup under {SMALL_H_PX} px tall uses the one-color Void lockup "
               "(`fusion-space-horizontal-void`): at that size the thin gradient details are too faint on light.")
 def live_text(x, y, size, fill):
     return (f'<g inkscape:groupmode="layer" id="layer-wordmark-live-text-needs-cascadia-mono-semibold" '
@@ -258,11 +258,11 @@ FAV_FILL = 0.87           # favicon: the cluster's bounding box as a fraction of
                           # cone's tip 9.5 (of 512) outside the rounded corner; 0.87 keeps every point FAV_INSET inside
 FAV_RX = 96               # favicon tile corner radius (of 512)
 FAV_INSET = 8             # favicon: least distance (of 512) from any point of the cluster to the rounded tile's edge
-FAV_SHIFT = (-10.72, 10.07)   # favicon: cluster offset (of 512) from bbox-centred. Moves it down and left so the main cone's
+FAV_SHIFT = (-10.72, 10.07)   # favicon: cluster offset (of 512) from bbox-centered. Moves it down and left so the main cone's
                           # tip (to the rounded top-right corner), the west cone (to the left edge) and the east cone (to the
                           # bottom edge) are all the same distance from the tile's edge (FAV_GAP). Found by fav_balance().
 FAV_GAP_TOL = 0.05        # the build stops if those three gaps differ by more than this (of 512)
-APP_SAFE_R = 0.40         # app icon: farthest point of the cluster from the centre, as a fraction of the tile
+APP_SAFE_R = 0.40         # app icon: farthest point of the cluster from the center, as a fraction of the tile
                           # (the W3C maskable-icon safe zone is a circle of radius 0.40)
 
 def app_frac(S=512):
@@ -274,7 +274,7 @@ def app_frac(S=512):
     return APP_SAFE_R * max(w, h) / rmax
 
 def tile_inset(frac, rx, S=512):
-    """Least distance (in px of an S tile) from any point of the cluster (bbox centred, frac of the tile) to the edge of a
+    """Least distance (in px of an S tile) from any point of the cluster (bbox centered, frac of the tile) to the edge of a
     rounded tile with corner radius rx; negative when the cluster pokes outside the tile."""
     b = geo.bbox(geo.cluster()); w, h = b[2] - b[0], b[3] - b[1]
     cx, cy = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2; A = frac * S / max(w, h); worst = float("inf")
@@ -286,7 +286,7 @@ def tile_inset(frac, rx, S=512):
 
 def cone_gaps(frac, rx, shift=(0, 0), S=512):
     """Per cone, the least distance (in px of an S tile) from its outline to the edge of a rounded tile with corner radius
-    rx, for a cluster that fills frac of the tile (bbox centred, then moved by shift)."""
+    rx, for a cluster that fills frac of the tile (bbox centered, then moved by shift)."""
     b = geo.bbox(geo.cluster()); w, h = b[2] - b[0], b[3] - b[1]
     cx, cy = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2; A = frac * S / max(w, h); out = {}
     for n in geo.ORDER:
@@ -309,7 +309,7 @@ def fav_balance(frac=None, rx=None):
     return tuple(round(float(x), 2) for x in r.x), -r.fun
 
 def favicon_geometry(S=512):
-    """The favicon's cluster: FAV_FILL of the tile, bbox centred and moved by FAV_SHIFT. Returns (cluster, bbox)."""
+    """The favicon's cluster: FAV_FILL of the tile, bbox centered and moved by FAV_SHIFT. Returns (cluster, bbox)."""
     b = geo.bbox(geo.cluster()); A = FAV_FILL * S / max(b[2] - b[0], b[3] - b[1])
     k = S / 512
     cl = geo.cluster(A, (S / 2 - A * (b[0] + b[2]) / 2 + FAV_SHIFT[0] * k, S / 2 - A * (b[1] + b[3]) / 2 + FAV_SHIFT[1] * k))
@@ -323,7 +323,7 @@ def icon_svg(kind):
     b = geo.bbox(geo.cluster()); w, h = b[2] - b[0], b[3] - b[1]
     A = frac * S / max(w, h)
     sh = FAV_SHIFT if kind == "favicon" else (0, 0)
-    org = (S / 2 - A * (b[0] + b[2]) / 2 + sh[0], S / 2 - A * (b[1] + b[3]) / 2 + sh[1])   # bbox centred (favicon: then shifted)
+    org = (S / 2 - A * (b[0] + b[2]) / 2 + sh[0], S / 2 - A * (b[1] + b[3]) / 2 + sh[1])   # bbox centered (favicon: then shifted)
     cl = geo.cluster(A, org); bb = geo.bbox(cl)
     if kind == "favicon":
         s = header(S, S, "FusionSpace favicon", "Full cluster on a Void tile, for 16-48 px (the 16 px PNG is pixel-hinted by the build)", PAPER)
@@ -341,15 +341,15 @@ def rast(svg_path, out_path, w=None, h=None):
     subprocess.run(args, check=True)
 
 FAV_ARROWS = ("west", "east")   # 16 px favicon: each wing cone is drawn as a 2 x 2 arrow pointing up and right (top left, top
-                                # right and bottom right pixels) in the 2 x 2 box where plain hinting puts it, in its own colour; the main
+                                # right and bottom right pixels) in the 2 x 2 box where plain hinting puts it, in its own color; the main
                                 # and south cones are hinted from their outlines
 
 def hinted_favicon(n=16, ss=32, thr=0.5, arrows=FAV_ARROWS):
     """Pixel-hinted 16 px favicon. The tile and each cone are rendered apart at n x ss; a pixel is a cone's (its mean
-    gradient colour, opaque) when that cone covers at least thr of it, otherwise plain tile. Only the tile's rounded corners
+    gradient color, opaque) when that cone covers at least thr of it, otherwise plain tile. Only the tile's rounded corners
     keep their anti-aliasing. Cones in `arrows` are too small to hint from their outline (they come out as sideways wedges),
     so each is drawn as a 45-degree arrow (the box's top left, top right and bottom right pixels) in the 2 x 2 box with the
-    most outline-hinted pixels (where the plain hinting put the cone), in the cone's mean colour."""
+    most outline-hinted pixels (where the plain hinting put the cone), in the cone's mean color."""
     import numpy as np
     S = 512; cl, bb = favicon_geometry(S)
     stops = "".join(f'<stop offset="{o}" stop-color="{c}"/>' for o, c in STOPS)
@@ -503,21 +503,21 @@ def build_construction():
     bg = Image.new("RGBA", im.size, PAPER); bg.paste(im, (0, 0), im)
     bg.save(os.path.join(OUT, "graphics/mark-construction.png"))
 
-SPECTRAL_NOTE = ("O and M are the Fusion gradient ends: the O- and M-class star colours, deepened on 2 October 2026 so the whole "
-                 "gradient holds at least 3:1 on white. B to K are the star colours sampled from the Harvard classification.")
-def colour_tokens(tok):
-    """Colour sections of the tokens (the Rev B values, recoloured by rd(), plus today's notes)."""
+SPECTRAL_NOTE = ("O and M are the Fusion gradient ends: the O- and M-class star colors, deepened on October 2, 2026 so the whole "
+                 "gradient holds at least 3:1 on white. B to K are the star colors sampled from the Harvard classification.")
+def color_tokens(tok):
+    """Color sections of the tokens (the Rev B values, recolored by rd(), plus today's notes)."""
     tok["gradient"] = [{"offset": float(o), "hex": c, "name": n} for o, c, n in GRADIENT]
     tok["gradient_note"] = ("One gradient for every background, always left to right. WCAG 2 contrast of every stop: about 3.0:1 on "
                             "white, 6.3:1 on Void, 2.8:1 on Paper (accepted; the target was white).")
-    tok["signal"]["Ion"]["use"] = "O-class accent for links, UI and text on light (5.9:1 on Paper). Not a logo colour"
-    tok["signal"]["Ember"]["use"] = "M-class accent for warnings and highlights on light (4.7:1 on Paper). Not a logo colour"
+    tok["signal"]["Ion"]["use"] = "O-class accent for links, UI and text on light (5.9:1 on Paper). Not a logo color"
+    tok["signal"]["Ember"]["use"] = "M-class accent for warnings and highlights on light (4.7:1 on Paper). Not a logo color"
     tok["accent_on_dark"] = {"M orange": {"hex": M_ORANGE, "use": "Warm accent on dark: labels, warnings (6.3:1 on Void)"},
                              "O blue": {"hex": O_BLUE, "use": "Cool accent on dark: labels, links, taglines (6.3:1 on Void)"}}
     tok["spectral_note"] = SPECTRAL_NOTE
     return tok
 
-def build_colour_files(tok):
+def build_color_files(tok):
     """color/fusion-space-tokens.css and color/fusion-space.gpl, written from the token dict."""
     g = ", ".join(f"{c['hex']} {round(c['offset'] * 100):g}%" for c in tok["gradient"])
     L = ["/* FusionSpace design tokens */", ":root {",
@@ -573,12 +573,12 @@ def build_wordmarks():
         rast(p, os.path.join(OUT, f"logo/png/fusion-space-wordmark-{m}-2000.png"), w=2000, h=round(2000 * h / w))
 
 def build_tokens():
-    tok = colour_tokens(json.loads(rd("color/fusion-space-tokens.json")))
+    tok = color_tokens(json.loads(rd("color/fusion-space-tokens.json")))
     b = geo.bbox(geo.cluster())
     tok["mark"] = {
         "cones": [{"name": n.capitalize(), "profile": geo.PROFILE_NAMES[geo.KINDS[n]],
                    "base_radius_r": geo.SIZE[n],
-                   "base_centre_uv_r": [round(geo.POS_UPRIGHT[n][0] / geo.W_K, 4), round((geo.POS_UPRIGHT[n][1] + (1 - geo.TIP_K) * geo.H_K * (geo.SIZE[n] - 1)) / geo.W_K, 4)]}
+                   "base_center_uv_r": [round(geo.POS_UPRIGHT[n][0] / geo.W_K, 4), round((geo.POS_UPRIGHT[n][1] + (1 - geo.TIP_K) * geo.H_K * (geo.SIZE[n] - 1)) / geo.W_K, 4)]}
                   for n in geo.ORDER],
         "cone": {"length_over_base_radius": round(geo.H_K / geo.W_K, 3), "notch_depth_over_base_radius": geo.SAG_K,
                  "notch_radius_over_base_radius": round((1 + geo.SAG_K ** 2) / (2 * geo.SAG_K), 4),
@@ -596,10 +596,10 @@ def build_tokens():
         "small_size": SMALL_RULE,
         "production": {"dxf_height_mm": DXF_H_MM, "dxf_min_foot_wall_mm": DXF_MIN_WALL_MM,
                        "note": "The DXF trims each foot so the wall is at least dxf_min_foot_wall_mm wide and scales the trimmed outline to dxf_height_mm tall; otherwise it matches the master outline. Tips are true points."},
-        "units": "r = Von Karman base radius. u, v are on the leaned grid, from the Von Karman base centre, v down (toward the bases).",
+        "units": "r = Von Karman base radius. u, v are on the leaned grid, from the Von Karman base center, v down (toward the bases).",
     }
     wr("color/fusion-space-tokens.json", json.dumps(tok, indent=2, ensure_ascii=False) + "\n")
-    build_colour_files(tok)
+    build_color_files(tok)
 
 # ---------------------------------------------------------------- 6. templates
 def lockup_parts(wm_bb, mark_x, mark_h=None, fill="url(#g)", prefix="m"):
@@ -653,14 +653,14 @@ def build_freecad():
         s = s.replace(d, translate_d(d, dx, 0))
         s = replace_cluster(s, gid, cl, "#0B0F1C")
         # transparent: the title-block boxes were filled white, which showed as white boxes on a dark or tinted page
-        # (design review, October 2026). Nothing in the template fills an area now, so FreeCAD's page colour shows through.
+        # (design review, October 2026). Nothing in the template fills an area now, so FreeCAD's page color shows through.
         s = s.replace('fill="#FFFFFF" stroke="#0B0F1C"', 'fill="none" stroke="#0B0F1C"')
         assert 'fill="#FFFFFF"' not in s, fn
         wr(f"templates/freecad/{fn}", s)
-        # dark-mode copy: the same template with light lines and text, for TechDraw with a dark page colour
+        # dark-mode copy: the same template with light lines and text, for TechDraw with a dark page color
         # (Preferences → TechDraw → Colors → Page). Print or export PDFs from the light one.
         dk = s.replace("#0B0F1C", WHITE).replace("#566079", FREECAD_DARK_LABEL)
-        dk = dk.replace("TechDraw template,", "TechDraw template (dark page),").replace("landscape. Editable", "landscape, for a dark page colour. Editable")
+        dk = dk.replace("TechDraw template,", "TechDraw template (dark page),").replace("landscape. Editable", "landscape, for a dark page color. Editable")
         wr(f"templates/freecad/{fn.replace('.svg', '-dark.svg')}", dk)
         out[fn] = (mark_x, bb, dx)
     for suf, page in (("", WHITE), ("-dark", FREECAD_DARK_PAGE)):
@@ -670,7 +670,7 @@ def build_freecad():
     return out
 
 FREECAD_DARK_LABEL = "#98A1B8"   # Haze: field labels and zone letters on the dark template (Slate is too dim on dark)
-FREECAD_DARK_PAGE = "#0B0F1C"    # the dark template's preview is drawn on Void; any dark page colour works
+FREECAD_DARK_PAGE = "#0B0F1C"    # the dark template's preview is drawn on Void; any dark page color works
 
 # ---------------------------------------------------------------- 7. guide
 def inline(svg_text, prefix, style="", extra=' aria-hidden="true"', viewbox=None):
@@ -778,32 +778,32 @@ def build_guide(info):
          f"Horizontal: cap height {cap_h:.3f} H (the mark is {H_MARK / 60:.2f}× the caps), gap {H_GAP_CAP:.2f} × the cap height ({H_GAP_K:.3f} H). Stacked: cap height {59 / STACK_H:.3f} H, gap {STACK_GAP / STACK_H:.2f} H. Only these two arrangements are approved: mark {H_POS} the wordmark, and mark {STACK_POS} it."),
         ("Move, add or drop stars.", "Move, add or drop cones."),
         ("Each star is its own named path. There's also a 50 mm DXF of the mark with exact arcs, for cutting.",
-         "Each cone is its own named path, labelled with its profile. There's also a 50 mm DXF of the mark, drawn only with lines and arcs, for cutting."),
+         "Each cone is its own named path, labeled with its profile. There's also a 50 mm DXF of the mark, drawn only with lines and arcs, for cutting."),
         ("The original Illustrator and SolidWorks files, plus the Rev A single-star set.",
          "The original Illustrator and SolidWorks files, the Rev A single-star set and the Rev B star cluster."),
-        ("passing through rose and lavender so the middle stays soft instead of turning grey.",
-         "passing through rose and lavender so the middle doesn't turn grey. It is the same gradient on dark and light backgrounds: every part of it holds at least 3:1 against white and 6:1 against Void."),
+        ("passing through rose and lavender so the middle stays soft instead of turning gray.",
+         "passing through rose and lavender so the middle doesn't turn gray. It is the same gradient on dark and light backgrounds: every part of it holds at least 3:1 against white and 6:1 against Void."),
         ("The source palette, sampled from the Harvard classification's Vega-relative chromaticity.",
-         "The source palette, sampled from the Harvard classification's Vega-relative chromaticity. O and M are the gradient ends; B to K are the sampled star colours."),
+         "The source palette, sampled from the Harvard classification's Vega-relative chromaticity. O and M are the gradient ends; B to K are the sampled star colors."),
         ("It's still strongest on Void, so prefer dark backgrounds where you can.",
-         f"As a graphic it meets the 3:1 non-text contrast on white ({min(contrast(c, WHITE) for c in (WARM, COOL)):.1f} : 1 and up) and on Void; on Paper it is {min(contrast(c, PAPER) for _, c in STOPS):.2f} : 1, which is accepted. On light, a horizontal lockup under {SMALL_H_PX} px tall uses the one-colour Void lockup."),
+         f"As a graphic it meets the 3:1 non-text contrast on white ({min(contrast(c, WHITE) for c in (WARM, COOL)):.1f} : 1 and up) and on Void; on Paper it is {min(contrast(c, PAPER) for _, c in STOPS):.2f} : 1, which is accepted. On light, a horizontal lockup under {SMALL_H_PX} px tall uses the one-color Void lockup."),
         ("a soft gradient runs across them", "a gradient runs across them"),
         ("On dark backgrounds, use the gradient ends instead.",
-         "On dark backgrounds, use the gradient ends instead. They are text and UI colours, not logo colours: the logo uses the gradient, or the flat two-tone cones, on every background."),
+         "On dark backgrounds, use the gradient ends instead. They are text and UI colors, not logo colors: the logo uses the gradient, or the flat two-tone cones, on every background."),
         ("<span>stacked-color</span><span>the original arrangement</span>", "<span>stacked-color</span><span>on Paper</span>"),
         ("The title-block fields show up under the page's Editable Texts.",
-         "The title-block fields show up under the page's Editable Texts. The sheets are transparent, so the page colour shows through; if "
-         "your TechDraw page colour is dark, use the <code>-dark</code> sheets (light lines), and print or export PDFs from the light ones."),
+         "The title-block fields show up under the page's Editable Texts. The sheets are transparent, so the page color shows through; if "
+         "your TechDraw page color is dark, use the <code>-dark</code> sheets (light lines), and print or export PDFs from the light ones."),
         ("Rev B · supersedes the 2023 Illustrator/SolidWorks set", f"Rev {REV} · replaces the Rev B star cluster"),
         ("Cluster: 24 px or 8 mm tall. Below 48 px, as in favicons, use the main cone on its own.",
-         f"Cluster: 24 px or 8 mm tall. Below 24 px, as in favicons, use the favicon files: they are the full cluster, hinted for 16 px (the two wing cones become small arrows). For cutting, use the DXF: its feet are at least {DXF_MIN_WALL_MM:g} mm wide at {DXF_H_MM:g} mm. For stock thicker than about 1 mm, cut the mark larger or ask the vendor. On light backgrounds, a horizontal lockup under {SMALL_H_PX} px tall uses the one-colour Void lockup."),
+         f"Cluster: 24 px or 8 mm tall. Below 24 px, as in favicons, use the favicon files: they are the full cluster, hinted for 16 px (the two wing cones become small arrows). For cutting, use the DXF: its feet are at least {DXF_MIN_WALL_MM:g} mm wide at {DXF_H_MM:g} mm. For stock thicker than about 1 mm, cut the mark larger or ask the vendor. On light backgrounds, a horizontal lockup under {SMALL_H_PX} px tall uses the one-color Void lockup."),
     ]
     for a, b in reps:
         if a not in s:
             # tolerate markup differences in the DXF sentence
             print("WARN not found:", a[:70]); continue
         s = s.replace(a, b)
-    # contrast table: gradient rows measured from today's colours
+    # contrast table: gradient rows measured from today's colors
     chip = lambda c: f'<span style="display:inline-block;width:10px;height:10px;background:{c};border:1px solid var(--rule);margin-right:8px"></span>'
     def row(name, c, bgname, bg):
         r = contrast(c, bg)
@@ -826,23 +826,23 @@ def build_guide(info):
                   '      <p>Projects of any kind use the same scheme. An optional discipline tag after the code says what kind of project it is:</p>\n'
                   f'      <div class="codes" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">{tags}</div>\n'
                   '      <div><a class="cta" href="../tools/star-name-picker/index.html">', 1)
-    for a_, b_ in (("<tr><td>tools/star-name-picker/</td><td>Picker page and the cleaned IAU catalogue as CSV.</td></tr>",
-                    "<tr><td>tools/star-name-picker/</td><td>Picker page and the cleaned IAU catalogue as CSV.</td></tr>\n"
+    for a_, b_ in (("<tr><td>tools/star-name-picker/</td><td>Picker page and the cleaned IAU catalog as CSV.</td></tr>",
+                    "<tr><td>tools/star-name-picker/</td><td>Picker page and the cleaned IAU catalog as CSV.</td></tr>\n"
                     "        <tr><td>tools/</td><td>The build scripts that make every file here, and the mark tuner. Apache-2.0 (<code>tools/LICENSE</code>).</td></tr>"),
                    ("<tr><td>_archive/</td><td>The original Illustrator and SolidWorks files, the Rev A single-star set and the Rev B star cluster.</td></tr>",
                     "<tr><td>source/</td><td>The Rev B files the build starts from: the outlined wordmark, the templates, the guide and the README text.</td></tr>")):
         assert a_ in s, a_[:40]
         s = s.replace(a_, b_)
-    s = s.replace("<tr><td>templates/</td>", "<tr><td>kit/</td><td>The asset kit: logos in every colour mode and size, web and app icons, social and GitHub images, documents, slides and production files. See the Kit sheet and <code>kit/README.md</code>.</td></tr>\n        <tr><td>templates/</td>", 1)
+    s = s.replace("<tr><td>templates/</td>", "<tr><td>kit/</td><td>The asset kit: logos in every color mode and size, web and app icons, social and GitHub images, documents, slides and production files. See the Kit sheet and <code>kit/README.md</code>.</td></tr>\n        <tr><td>templates/</td>", 1)
     s = s.replace("<tr><td>templates/</td>", "<tr><td>product/</td><td>The product system: rules for sites, tools, CLIs, apps, devices, boards and rockets, with tokens and reference parts. See the Products sheet and <code>product/README.md</code>.</td></tr>\n        <tr><td>templates/</td>", 1)
     s = guide_review_fixes(s)
     wr("guide/index.html", s)
     return s
 
 def guide_review_fixes(s):
-    """Guide fixes from Neer's review of 3 October 2026."""
-    # Sheet 1: the inline construction drawing keeps its print colours (Void and Slate ink, Ion construction lines, Paper
-    # markers), which vanish on the dark panel. Map them to the theme's colours; in the light theme they map to the same values.
+    """Guide fixes from Neer's review of October 3, 2026."""
+    # Sheet 1: the inline construction drawing keeps its print colors (Void and Slate ink, Ion construction lines, Paper
+    # markers), which vanish on the dark panel. Map them to the theme's colors; in the light theme they map to the same values.
     css = ".panel.draw svg [fill=\"#0B0F1C\"]{fill:var(--ink)}.panel.draw svg [stroke=\"#0B0F1C\"]{stroke:var(--ink)}" \
           ".panel.draw svg [fill=\"#566079\"]{fill:var(--muted)}.panel.draw svg [stroke=\"#566079\"]{stroke:var(--muted)}" \
           ".panel.draw svg [fill=\"#3350D6\"]{fill:var(--accent)}.panel.draw svg [stroke=\"#3350D6\"]{stroke:var(--accent)}" \
@@ -855,13 +855,13 @@ def guide_review_fixes(s):
     s = s.replace("</style>", css + "</style>", 1)
     s, n = re.subn(r'<span class="t">([^<]*?) K<br>', r'<span class="t"><span class="rng">\1&#160;K</span><br>', s)
     assert n == 7, n
-    # Sheet 3: Ion and Ember are presented as text-on-light colours, not as deeper versions of O and M.
+    # Sheet 3: Ion and Ember are presented as text-on-light colors, not as deeper versions of O and M.
     old = re.search(r'<h3 style="margin-bottom:6px">Signal</h3>\s*<p class="muted" style="font-size:14px;margin-bottom:14px">.*?</p>', s, re.S)
     assert old, "Signal section"
     s = s.replace(old.group(0), '<h3 style="margin-bottom:6px">Text on light</h3>\n        <p class="muted" style="font-size:14px;margin-bottom:14px">'
         f"For links, labels and warnings on Paper or white. The gradient ends hold {min(contrast(c, WHITE) for c in (M_ORANGE, O_BLUE)):.1f} : 1 on white: "
-        "enough for graphics and large text, not for body text, so coloured text on light uses Ion and Ember, which pass WCAG AA. "
-        "On dark backgrounds, use the gradient ends. They are not logo colours: the logo uses the gradient, or the flat two-tone cones, "
+        "enough for graphics and large text, not for body text, so colored text on light uses Ion and Ember, which pass WCAG AA. "
+        "On dark backgrounds, use the gradient ends. They are not logo colors: the logo uses the gradient, or the flat two-tone cones, "
         "on every background. In the tokens they are the Signal group.</p>")
     for a, b in (('<span class="r">O-class accent for links, UI and text on light', '<span class="r">Links, UI and text on light'),
                  ('<span class="r">M-class accent for warnings and highlights on light', '<span class="r">Warnings and highlights on light')):
@@ -882,29 +882,29 @@ def build_readme():
          "It keeps the original 2023 idea, a loose cluster of four shapes with the soft orange-to-blue gradient and Cascadia Mono, but Rev C turns the four stars into four nose cones and redraws everything with exact geometry."),
         ("- **Mark.** Four stars in the original arrangement. Each star is the space left between four touching circles of radius *a*, so the tips are true points. The companion stars are 0.45, 0.40 and 0.32 the size of the main star (exact positions are in `color/fusion-space-tokens.json`).",
          f"- **Mark.** Four nose cones in a diamond, each a real rocketry profile: Von Kármán (main, north), conical (west), elliptical (east) and a tangent ogive tail (south). Profiles follow the standard nose-cone equations, each {geo.H_K / geo.W_K:.2f}× as long as its base radius, with a notch {geo.SAG_K:.2f} of the base radius deep and feet cut flat where the wall is {geo.FOOT_K:.2f} of the base radius wide. With *r* as the Von Kármán base radius, the others are {geo.SIZE['west']:.1f} *r* (conical), {geo.SIZE['east']:.1f} *r* (elliptical) and {geo.SIZE['south']:.1f} *r* (ogive). Spacing is measured on a grid leaned {geo.TILT:g}°: the ogive sits on the Von Kármán axis with its tip {abs(geo.TAIL_R):.1f} *r* {'above' if geo.TAIL_R < 0 else 'below'} the Von Kármán foot line, and the wings' centroids share a line {abs(geo.WING_R):.2f} *r* {'below' if geo.WING_R >= 0 else 'above'} it, with the conical {geo.GAP_W_R:.2f} *r* and the elliptical {geo.GAP_E_R:.2f} *r* out from the Von Kármán feet (exact values are in `color/fusion-space-tokens.json`)."),
-        ("| `logo/mark` | The four-star mark: `fusion-space-mark` (gradient), `-void` and `-white` (one colour), plus `fusion-space-mark-50mm.dxf` with exact arcs for laser/CNC | Inkscape, FreeCAD, CAM |",
-         "| `logo/mark` | The four-cone mark: `fusion-space-mark` (gradient), `-void` and `-white` (one colour), `-twotone-on-dark` and `-twotone-on-light` (flat two-tone), plus `fusion-space-mark-50mm.dxf` (lines and arcs only) for laser/CNC | Inkscape, FreeCAD, CAM |"),
+        ("| `logo/mark` | The four-star mark: `fusion-space-mark` (gradient), `-void` and `-white` (one color), plus `fusion-space-mark-50mm.dxf` with exact arcs for laser/CNC | Inkscape, FreeCAD, CAM |",
+         "| `logo/mark` | The four-cone mark: `fusion-space-mark` (gradient), `-void` and `-white` (one color), `-twotone-on-dark` and `-twotone-on-light` (flat two-tone), plus `fusion-space-mark-50mm.dxf` (lines and arcs only) for laser/CNC | Inkscape, FreeCAD, CAM |"),
         ("`favicon.svg` (main star, for small sizes)", "`favicon.svg` (full cluster, framed for 16–48 px)"),
-        ("| `guide` | Brand guide | browser |", "| `guide` | Brand guide | browser |\n| `kit` | Asset kit, ready for any project: every logo in every colour mode and size; web/app icons; GitHub and social images (dark and light); letterhead, covers, business cards, email signature, slides; boot logos for OLED/TFT displays; KiCad PCB logos; 3D-print files (STL, STEP, two-colour 3MF, sketches, a parametric badge); terminal themes and CLI banners; game splash and store art; logo animation; wallpapers; merch and posters; cut files, stickers, engraving and embroidery. Open `kit/index.html` to browse, `kit/README.md` for the list | everything |\n| `tools/build/project.py` | Per-project images: `python3 tools/build/project.py --name Vega --tag EMB --desc \"...\"` makes a project's social preview, README banners, OG image, YouTube thumbnail, title slides, report covers and starter README | terminal |"),
+        ("| `guide` | Brand guide | browser |", "| `guide` | Brand guide | browser |\n| `kit` | Asset kit, ready for any project: every logo in every color mode and size; web/app icons; GitHub and social images (dark and light); letterhead, covers, business cards, email signature, slides; boot logos for OLED/TFT displays; KiCad PCB logos; 3D-print files (STL, STEP, two-color 3MF, sketches, a parametric badge); terminal themes and CLI banners; game splash and store art; logo animation; wallpapers; merch and posters; cut files, stickers, engraving and embroidery. Open `kit/index.html` to browse, `kit/README.md` for the list | everything |\n| `tools/build/project.py` | Per-project images: `python3 tools/build/project.py --name Vega --tag EMB --desc \"...\"` makes a project's social preview, README banners, OG image, YouTube thumbnail, title slides, report covers and starter README | terminal |"),
         ("- Keep 0.25 H clear space around the logo, where H is the cluster height. The minimum cluster height is 24 px (8 mm). Below 48 px, use the main star on its own.",
          f"- Keep 0.25 H clear space around the logo, where H is the cluster height. The minimum cluster height is 24 px (8 mm). Below 24 px, as in favicons, use the favicon files: they are the full cluster, hinted for 16 px (the two wing cones become small arrows).\n- In the horizontal lockup the mark is {H_MARK / 60:.2f}× the cap height of the wordmark, {H_POS} it, with a gap of {H_GAP_CAP:.2f} × the cap height ({H_GAP_K:.3f} × the mark height). In the stacked lockup the mark sits {STACK_POS} the wordmark with a gap of {STACK_GAP / STACK_H:.2f} H ({'to the cap line' if STACK_POS == 'above' else 'below the descenders'}). These are the only approved arrangements; don't put the mark {'after' if H_POS == 'before' else 'before'} or {'below' if STACK_POS == 'above' else 'above'} the wordmark."),
-        ("- The gradient always runs left to right, M orange to O blue. Don't reverse it, recolour it, or add outlines, shadows or glows.",
-         "- The gradient always runs left to right, M orange to O blue. It is the same on dark and light backgrounds. Don't reverse it, recolour it, or add outlines, shadows or glows.\n"
-         f"- Where gradients can't be reproduced (spot-colour print, vinyl, embroidery), use the flat two-tone versions. The cones are the same on every background, M orange `{WARM}` (warm) and O blue `{COOL}` (cool); only the wordmark changes, white on dark and Void on light (`twotone-on-dark`, `twotone-on-light`). Each cone takes the nearer end of the gradient.\n"
-         f"- {SMALL_RULE}\n- Ion `{ION}` and Ember `{EMBER}` are text and UI colours on light (links, warnings), not logo colours."),
+        ("- The gradient always runs left to right, M orange to O blue. Don't reverse it, recolor it, or add outlines, shadows or glows.",
+         "- The gradient always runs left to right, M orange to O blue. It is the same on dark and light backgrounds. Don't reverse it, recolor it, or add outlines, shadows or glows.\n"
+         f"- Where gradients can't be reproduced (spot-color print, vinyl, embroidery), use the flat two-tone versions. The cones are the same on every background, M orange `{WARM}` (warm) and O blue `{COOL}` (cool); only the wordmark changes, white on dark and Void on light (`twotone-on-dark`, `twotone-on-light`). Each cone takes the nearer end of the gradient.\n"
+         f"- {SMALL_RULE}\n- Ion `{ION}` and Ember `{EMBER}` are text and UI colors on light (links, warnings), not logo colors."),
         ("- Don't stretch the cluster or move, add or drop stars.", f"- Don't stretch the cluster, change the {geo.TILT:g}° lean, or move, add or drop cones."),
         ("- The star tips are true points. Most cutters handle that, but if a vendor needs a minimum feature size, ask them to apply their usual tip radius at production size.",
          f"- **Minimum feature size.** In the master artwork the feet are cut where the wall is {geo.FOOT_K:.2f} of each cone's base radius wide, which is only {thinnest_foot_mm():.2f} mm on the elliptical cone at {DXF_H_MM:g} mm. The DXF trims the feet so every foot is at least {DXF_MIN_WALL_MM:g} mm wide, then scales the trimmed outline to exactly {DXF_H_MM:g} mm tall; nothing else changes. Laser vendors typically need features of about half the material thickness, so for stock thicker than about 1 mm, scale the DXF up or ask the vendor. The cone tips are true points: ask the vendor to apply their usual tip radius."),
     ]
     reps += [
         ("One soft gradient sweeps", "One gradient sweeps"),
-        ("The end colours come from the Harvard stellar classification.",
-         "The end colours start from the M- and O-class star colours of the Harvard stellar classification, deepened so the whole gradient holds at least 3:1 on white and 6:1 on Void. It is the same gradient on dark and light backgrounds."),
+        ("The end colors come from the Harvard stellar classification.",
+         "The end colors start from the M- and O-class star colors of the Harvard stellar classification, deepened so the whole gradient holds at least 3:1 on white and 6:1 on Void. It is the same gradient on dark and light backgrounds."),
         ("| `logo/lockup` | Horizontal and stacked lockups, each as `color`, `void` and `white` | Inkscape |",
          "| `logo/lockup` | Horizontal and stacked lockups, each as `color`, `twotone-on-dark`, `twotone-on-light`, `void` and `white` | Inkscape |"),
         ("- The gradient logo is strongest on Void.", "- The gradient logo works on Void, white and Paper."),
         ("some fill themselves in (author, date, scale, sheet).",
-         "some fill themselves in (author, date, scale, sheet). The sheets are transparent; with a dark TechDraw page colour use the `-dark` ones, and print from the light ones."),
+         "some fill themselves in (author, date, scale, sheet). The sheets are transparent; with a dark TechDraw page color use the `-dark` ones, and print from the light ones."),
     ]
     reps += [(" The old Illustrator and SolidWorks files are kept in `_archive/`.", ""),
              ("| `tools/star-name-picker` | `index.html` picker and the cleaned `iau-star-names.csv` | browser |",
@@ -915,17 +915,20 @@ def build_readme():
     for a, b in reps:
         if a not in s: print("README WARN:", a[:60]); continue
         s = s.replace(a, b)
-    s = s.rstrip("\n") + "\n\n" + README_LICENCE
+    s = s.rstrip("\n") + "\n\n" + README_LICENSE
     wr("README.md", s)
 
-README_LICENCE = """## Licence and trademarks
+README_LICENSE = """## License and trademarks
 
 - **Code.** The build scripts and the mark tuner in `tools/` are licensed under the Apache License 2.0 (`tools/LICENSE`). The
-  licence covers the code, not the FusionSpace name or logo, including the artwork the code draws.
+  license covers the code, not the FusionSpace name or logo, including the artwork the code draws.
+- **Product code.** The code-like files in `product/` are Apache-2.0 too, so any project can copy them in: the tokens
+  (`product/tokens/`), `fusionspace.css`, the Tailwind and mdBook themes, the CLI styles, the LVGL styles and the Linux
+  desktop templates. Each file says so in an SPDX line.
 - **Brand.** The FusionSpace name, the four-cone mark, both lockups and every brand file here (`logo/`, `kit/`, `guide/`,
-  `graphics/`, `color/`, `templates/`, `source/`) are © 2026 Neer Patel, all rights reserved. They're published to show the work.
+  `graphics/`, `color/`, `templates/`, `source/`, and the rest of `product/`) are © 2026 Neer Patel, all rights reserved. They're published to show the work.
   `TRADEMARKS.md` says what's fine, such as linking to my projects and showing the logo unchanged when you mention them.
-- **Fonts.** Archivo and Cascadia Mono in `type/fonts/` are under the SIL Open Font License, with the licence files next to them.
+- **Fonts.** Archivo and Cascadia Mono in `type/fonts/` are under the SIL Open Font License, with the license files next to them.
 
 See `LICENSE` for the full terms.
 """

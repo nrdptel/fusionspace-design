@@ -14,5 +14,5 @@ channel           set to                          fires (simulated)
 3 -               not used
 
 warning: rail exit assumes a 1.5 m (59 in) rail; pass --rail to set yours
-how far to trust it: within 3 % of OpenRocket on this design; on 12 real flights hpr's apogee was within 8 %
+how far to trust it: within 3% of OpenRocket on this design; on 12 real flights hpr's apogee was within 8%
 (an example: these numbers are made up to show the layout)

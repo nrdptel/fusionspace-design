@@ -24,7 +24,7 @@
   "core": {
     "Void": {
       "hex": "#0B0F1C",
-      "use": "Primary dark. Backgrounds, one-colour marks, text on light"
+      "use": "Primary dark. Backgrounds, one-color marks, text on light"
     },
     "Abyss": {
       "hex": "#141A2B",
@@ -58,11 +58,11 @@
   "signal": {
     "Ion": {
       "hex": "#3350D6",
-      "use": "O-class accent for links, UI and text on light (5.9:1 on Paper). Not a logo colour"
+      "use": "O-class accent for links, UI and text on light (5.9:1 on Paper). Not a logo color"
     },
     "Ember": {
       "hex": "#B34F0C",
-      "use": "M-class accent for warnings and highlights on light (4.7:1 on Paper). Not a logo colour"
+      "use": "M-class accent for warnings and highlights on light (4.7:1 on Paper). Not a logo color"
     }
   },
   "spectral": {
@@ -114,7 +114,7 @@
         "name": "Main",
         "profile": "Von Kármán",
         "base_radius_r": 1.0,
-        "base_centre_uv_r": [
+        "base_center_uv_r": [
           0.0,
           0.0
         ]
@@ -123,7 +123,7 @@
         "name": "West",
         "profile": "conical",
         "base_radius_r": 0.4,
-        "base_centre_uv_r": [
+        "base_center_uv_r": [
           -1.4872,
           0.7804
         ]
@@ -132,7 +132,7 @@
         "name": "East",
         "profile": "elliptical",
         "base_radius_r": 0.3,
-        "base_centre_uv_r": [
+        "base_center_uv_r": [
           1.4993,
           0.6538
         ]
@@ -141,7 +141,7 @@
         "name": "South",
         "profile": "tangent ogive",
         "base_radius_r": 0.5,
-        "base_centre_uv_r": [
+        "base_center_uv_r": [
           0.0,
           1.5695
         ]
@@ -188,13 +188,13 @@
         "wordmark": "#0B0F1C"
       }
     },
-    "small_size": "On light backgrounds, a horizontal lockup under 32 px tall uses the one-colour Void lockup (`fusion-space-horizontal-void`): at that size the thin gradient details are too faint on light.",
+    "small_size": "On light backgrounds, a horizontal lockup under 32 px tall uses the one-color Void lockup (`fusion-space-horizontal-void`): at that size the thin gradient details are too faint on light.",
     "production": {
       "dxf_height_mm": 50.0,
       "dxf_min_foot_wall_mm": 0.5,
       "note": "The DXF trims each foot so the wall is at least dxf_min_foot_wall_mm wide and scales the trimmed outline to dxf_height_mm tall; otherwise it matches the master outline. Tips are true points."
     },
-    "units": "r = Von Karman base radius. u, v are on the leaned grid, from the Von Karman base centre, v down (toward the bases)."
+    "units": "r = Von Karman base radius. u, v are on the leaned grid, from the Von Karman base center, v down (toward the bases)."
   },
   "gradient_note": "One gradient for every background, always left to right. WCAG 2 contrast of every stop: about 3.0:1 on white, 6.3:1 on Void, 2.8:1 on Paper (accepted; the target was white).",
   "accent_on_dark": {
@@ -207,5 +207,5 @@
       "use": "Cool accent on dark: labels, links, taglines (6.3:1 on Void)"
     }
   },
-  "spectral_note": "O and M are the Fusion gradient ends: the O- and M-class star colours, deepened on 2 October 2026 so the whole gradient holds at least 3:1 on white. B to K are the star colours sampled from the Harvard classification."
+  "spectral_note": "O and M are the Fusion gradient ends: the O- and M-class star colors, deepened on October 2, 2026 so the whole gradient holds at least 3:1 on white. B to K are the star colors sampled from the Harvard classification."
 }

@@ -2,9 +2,9 @@
 
 A4 sheets of decals sized for model and high-power rockets: horizontal lockups for body tubes, marks for fins and nose
 cones. Three versions:
-  print-and-cut-{dark,light}  colour art on a Void or white backing, each piece with a CutContour line (Silhouette, Cricut,
+  print-and-cut-{dark,light}  color art on a Void or white backing, each piece with a CutContour line (Silhouette, Cricut,
                               Roland print-and-cut; or any sticker printer that takes a CutContour layer)
-  vinyl-cut                   one colour: the art's own outline is the cut line (plotter-cut vinyl, then weed), with a
+  vinyl-cut                   one color: the art's own outline is the cut line (plotter-cut vinyl, then weed), with a
                               weeding box around each piece. Feet are floored at VINYL_MIN_WALL so they don't tear.
 Sizes are in DECALS; the lockup height is the mark height (the cap height is 0.6 of it).
 """
@@ -78,7 +78,7 @@ def sheet(kind):
             items.append((bx[2] - bx[0], bx[3] - bx[1], (piece, h, what, parts, U, cut, a, k, bx, i)))
     placed = _pack(items)
     W, H = PAGE
-    title = {"print-dark": "print-and-cut, Void backing", "print-light": "print-and-cut, white backing", "vinyl": "one-colour vinyl cut"}[kind]
+    title = {"print-dark": "print-and-cut, Void backing", "print-light": "print-and-cut, white backing", "vinyl": "one-color vinyl cut"}[kind]
     s = kit.svg_open(W, H, f"FusionSpace rocket decals, A4, {title}", units="mm", page=WHITE)
     defs, back, art, cutl, labels = "", "", "", "", ""
     for j, (x, y, (piece, h, what, parts, U, cut, a, k, bx, i)) in enumerate(placed):
@@ -128,9 +128,9 @@ def build_decals():
 
 | File | For |
 |---|---|
-| `decal-sheet-a4-print-and-cut-dark.svg/.pdf` (+ `-cmyk.pdf`) | printable vinyl or sticker paper: colour art on a Void backing, magenta CutContour around each piece |
+| `decal-sheet-a4-print-and-cut-dark.svg/.pdf` (+ `-cmyk.pdf`) | printable vinyl or sticker paper: color art on a Void backing, magenta CutContour around each piece |
 | `decal-sheet-a4-print-and-cut-light.svg/.pdf` (+ `-cmyk.pdf`) | the same on a white backing |
-| `decal-sheet-a4-vinyl-cut.svg/.pdf` | plotter-cut one-colour vinyl: the art's outline is the cut, with a weeding box around each piece |
+| `decal-sheet-a4-vinyl-cut.svg/.pdf` | plotter-cut one-color vinyl: the art's outline is the cut, with a weeding box around each piece |
 
 Pieces: {sizes}. Horizontal lockups go along the body tube; marks go on fins (one per fin, both sides if you like) and nose cones.
 Rough guide for the lockup: about a third of the airframe diameter tall reads well from the pad.
@@ -142,4 +142,4 @@ Rough guide for the lockup: about a third of the airframe diameter tall reads we
 - `*-preview.png` shows the sheet with size labels (the labels are not in the print or cut files).
 """)
     note(f"{D}/decal-sheet-a4-print-and-cut-{{dark,light}}.svg/.pdf", G, "rocket decal sheet: lockups for body tubes, marks for fins, with CutContour", "A4", "Model and high-power rockets; print-and-cut vinyl")
-    note(f"{D}/decal-sheet-a4-vinyl-cut.svg/.pdf", G, "rocket decal sheet for one-colour plotter-cut vinyl, with weeding boxes", "A4", "Model and high-power rockets")
+    note(f"{D}/decal-sheet-a4-vinyl-cut.svg/.pdf", G, "rocket decal sheet for one-color plotter-cut vinyl, with weeding boxes", "A4", "Model and high-power rockets")

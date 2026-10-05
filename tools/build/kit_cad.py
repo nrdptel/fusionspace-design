@@ -1,6 +1,6 @@
 """FusionSpace kit: solids for CAD and 3D printing (kit/3d-print/).
 
-Outlines come in as shapely polygons (with holes) in millimetres, or, for the mark, as exact Outlines: the cones' own lines,
+Outlines come in as shapely polygons (with holes) in millimeters, or, for the mark, as exact Outlines: the cones' own lines,
 circular arcs, elliptical arc and cubic Béziers from geo.cone_segments(), placed by a similarity transform. In STEP the mark
 is therefore exact (lines, circles, an ellipse and Bézier curves, no fitting); other outlines (the wordmark, plates built with
 shapely) become smooth B-spline edges between their corners, fitted within STEP_TOL.
@@ -248,7 +248,7 @@ class Outline:
         return [self.T(p) for p in geo.sample(self.segs, n)]
     def poly(self, n=40): return Polygon(self.points(n)).buffer(0)
     def curves(self):
-        """[("line", p0, p1) | ("circle", p0, pm, p1, centre, r) | ("ellipse", p0, pm, p1, centre, major_dir, a, b) |
+        """[("line", p0, p1) | ("circle", p0, pm, p1, center, r) | ("ellipse", p0, pm, p1, center, major_dir, a, b) |
         ("bezier", [p0, c1, c2, p1])] in placed coordinates, in path order."""
         import geo
         out_, cur = [], None
@@ -288,9 +288,9 @@ class Outline:
         return d
 
 _DXF_GEO = {}
-def mark_outlines(height_mm, min_wall=FOOT_MM, centre=False, mirror=False):
+def mark_outlines(height_mm, min_wall=FOOT_MM, center=False, mirror=False):
     """The four cones as exact Outlines in mm, y up, for a mark height_mm tall (feet trimmed to min_wall, then scaled to
-    exactly that height, as for the DXF). Bottom left of the bbox at (0, 0), or the bbox centre at (0, 0) with centre=True.
+    exactly that height, as for the DXF). Bottom left of the bbox at (0, 0), or the bbox center at (0, 0) with center=True.
     Returns ([Outline] in geo.ORDER, (w, h))."""
     import geo, build
     key = (round(float(height_mm), 9), float(min_wall))
@@ -298,8 +298,8 @@ def mark_outlines(height_mm, min_wall=FOOT_MM, centre=False, mirror=False):
     cl, A, bb = _DXF_GEO[key]
     ols = [Outline(cl[n], ((1, 0), (0, -1)), (0, bb[3]), n) for n in geo.ORDER]      # y down -> y up, as cone_polys()
     w, h = bb[2], bb[3]
-    if centre: ols = [o.moved(-w / 2, -h / 2) for o in ols]
-    if mirror: ols = [o.mirrored_x(0.0 if centre else w / 2) for o in ols]
+    if center: ols = [o.moved(-w / 2, -h / 2) for o in ols]
+    if mirror: ols = [o.mirrored_x(0.0 if center else w / 2) for o in ols]
     return ols, (w, h)
 
 def _exact_wire(ol, z):
@@ -487,16 +487,16 @@ def shells(V, F):
     n, lab = connected_components(g, directed=False)
     return [(V, F[lab[F[:, 0]] == k]) for k in range(n) if (lab[F[:, 0]] == k).any()]
 
-# ---------------------------------------------------------------- STEP with names and colours, 3MF with parts
+# ---------------------------------------------------------------- STEP with names and colors, 3MF with parts
 def _hex(c): return tuple(int(c[i:i + 2], 16) / 255 for i in (1, 3, 5))
 
 _STYLE_TYPES = ("MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION", "STYLED_ITEM", "PRESENTATION_STYLE_ASSIGNMENT",
                 "SURFACE_STYLE_USAGE", "SURFACE_SIDE_STYLE", "SURFACE_STYLE_FILL_AREA", "FILL_AREA_STYLE", "FILL_AREA_STYLE_COLOUR",
                 "COLOUR_RGB", "DRAUGHTING_PRE_DEFINED_COLOUR", "OVER_RIDING_STYLED_ITEM")
 
-def _canonical_colours(t):
-    """OCCT writes the colour entities (at the end of the file) in hash order, so the same model gives different bytes on
-    each run. Renumber that block in a fixed order (by the solids it colours) so builds are reproducible."""
+def _canonical_colors(t):
+    """OCCT writes the color entities (at the end of the file) in hash order, so the same model gives different bytes on
+    each run. Renumber that block in a fixed order (by the solids it colors) so builds are reproducible."""
     ents = [(int(m.group(1)), m.group(2), m.start(), m.end()) for m in re.finditer(r"(?ms)^#(\d+) = (.*?);$", t)]
     if not ents: return t
     kind = lambda body: re.match(r"\s*([A-Z_]+)", body).group(1) if re.match(r"\s*([A-Z_]+)", body) else ""
@@ -507,7 +507,7 @@ def _canonical_colours(t):
     if len(tail) != len(blk): return t                                   # not one block at the end: leave it alone
     body = {e[0]: e[1] for e in tail}
     refs = lambda b: [int(x) for x in re.findall(r"#(\d+)", b)]
-    def target(i):                                                       # what a presentation colours: its styled items' targets
+    def target(i):                                                       # what a presentation colors: its styled items' targets
         out_ = []
         for r in refs(body[i]):
             if r in body and kind(body[r]) == "STYLED_ITEM": out_ += [x for x in refs(body[r]) if x not in body]
@@ -527,15 +527,15 @@ def _canonical_colours(t):
 
 def _fix_step_header(path, name):
     t = open(path, encoding="utf-8", errors="replace").read()
-    t = _canonical_colours(t)
+    t = _canonical_colors(t)
     when = datetime.datetime.fromtimestamp(int(os.environ.get("SOURCE_DATE_EPOCH", "1790812800")), datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
     t = re.sub(r"FILE_NAME\('[^']*','[^']*'", f"FILE_NAME('{os.path.basename(path)}','{when}'", t, count=1)
     t = re.sub(r"FILE_DESCRIPTION\(\('[^']*'\)", f"FILE_DESCRIPTION(('FusionSpace {name}')", t, count=1)
     with open(path, "w", encoding="utf-8", newline="\n") as fh: fh.write(t)
 
 def write_step_bodies(bodies, path, name):
-    """bodies: [(label, shape, "#RRGGBB" or None)]. One named, coloured shape per body (Fusion, FreeCAD and Onshape show
-    the names and colours), millimetres, AP214."""
+    """bodies: [(label, shape, "#RRGGBB" or None)]. One named, colored shape per body (Fusion, FreeCAD and Onshape show
+    the names and colors), millimeters, AP214."""
     from OCP.TDocStd import TDocStd_Document
     from OCP.TCollection import TCollection_ExtendedString
     from OCP.XCAFDoc import XCAFDoc_DocumentTool, XCAFDoc_ColorType
@@ -570,7 +570,7 @@ def read_step(path):
 def write_3mf(parts, path, name, objects=None):
     """A 3MF for multi-material printers. parts: [(label, (V, F), "#RRGGBB", extruder)] make one object whose parts are
     the bodies (PrusaSlicer, OrcaSlicer and Bambu Studio load it as one object with named parts and set each part's
-    filament from the extruder number; other programs see one coloured mesh). objects: optional list of such part lists,
+    filament from the extruder number; other programs see one colored mesh). objects: optional list of such part lists,
     one object each, laid out one above the other (for prints that come as several pieces)."""
     import zipfile
     from xml.sax.saxutils import escape
@@ -587,7 +587,7 @@ def write_3mf(parts, path, name, objects=None):
          '<resources>', '<basematerials id="1">' + "".join(f'<base name="{escape(c)}" displaycolor="{c}FF"/>' for c in cols) + '</basematerials>']
     cfg = ['<?xml version="1.0" encoding="UTF-8"?>', '<config>']
     build_items = []; y_off = 0.0; boxes = []
-    for ps in objs:                                   # objects in a column, the group centred on (110, 110): fits a 220 mm bed
+    for ps in objs:                                   # objects in a column, the group centered on (110, 110): fits a 220 mm bed
         V = np.concatenate([m[0] for _, m, _, _ in ps]); boxes.append((V.min(0), V.max(0)))
     tot_h = sum(hi[1] - lo[1] for lo, hi in boxes) + 10.0 * (len(boxes) - 1)
     y_off = 110.0 - tot_h / 2
@@ -701,10 +701,10 @@ def render_preview(meshes, dest, S=900, elev=50.0, azim=0.0, bg="#F3F4F7", ss=2)
     im.save(dest)
 
 # ---------------------------------------------------------------- parametric templates (FreeCAD macro, Fusion script)
-REF_MM = 50.0     # the templates carry the mark at this height, centred on the origin, y up; they scale it from there
+REF_MM = 50.0     # the templates carry the mark at this height, centered on the origin, y up; they scale it from there
 
 def _mark_curves_ref():
-    ols, _ = mark_outlines(REF_MM, FOOT_MM, centre=True)
+    ols, _ = mark_outlines(REF_MM, FOOT_MM, center=True)
     r = lambda p: [round(float(v), 10) for v in p]       # 10 places: endpoints meet within FreeCAD's 1e-7 mm
     cones = []
     for o in ols:
@@ -718,18 +718,18 @@ def _mark_curves_ref():
     return cones
 
 def _pocket_xy():
-    """Where the magnet pocket goes, as a fraction of the mark height from the mark's centre (the badge base's thickest
+    """Where the magnet pocket goes, as a fraction of the mark height from the mark's center (the badge base's thickest
     point, as for the magnet print)."""
     from shapely.ops import polylabel
-    ols, _ = mark_outlines(REF_MM, FOOT_MM, centre=True)
+    ols, _ = mark_outlines(REF_MM, FOOT_MM, center=True)
     U = unary_union([o.poly(40) for o in ols]); R = 1.0 * REF_MM
     c = polylabel(U.buffer(R, resolution=32).buffer(-R, resolution=32), 0.01)
     return round(c.x / REF_MM, 5), round(c.y / REF_MM, 5)
 
 def _reach():
-    """Farthest point of the mark from its bbox centre, as a fraction of the mark height (the main cone's tip): a round plate
+    """Farthest point of the mark from its bbox center, as a fraction of the mark height (the main cone's tip): a round plate
     needs a radius of at least this × the mark height, plus a margin."""
-    ols, _ = mark_outlines(REF_MM, FOOT_MM, centre=True)
+    ols, _ = mark_outlines(REF_MM, FOOT_MM, center=True)
     return round(max(math.hypot(x, y) for o in ols for x, y in o.points(80)) / REF_MM, 5)
 
 def freecad_macro():
@@ -745,8 +745,8 @@ import Part
 
 MARK = {json.dumps(_mark_curves_ref())}
 REF = {REF_MM!r}          # mm: the height MARK is drawn at
-POCKET = ({px}, {py})     # magnet pocket centre, x and y as a fraction of the mark height (the base's thickest point)
-REACH = {_reach()}          # the mark's farthest point from its centre, as a fraction of its height
+POCKET = ({px}, {py})     # magnet pocket center, x and y as a fraction of the mark height (the base's thickest point)
+REACH = {_reach()}          # the mark's farthest point from its center, as a fraction of its height
 PARAMS = [  # alias, value (mm), note
     ("MarkHeight", 40, "mark height, mm (the name is not in this template)"),
     ("Margin", 3, "clear plate around the mark's farthest point (the main cone's tip), mm"),
@@ -765,7 +765,7 @@ def edge(c):
     if k == "arc": return Part.Arc(V(c[1]), V(c[2]), V(c[3])).toShape()
     if k == "bezier":
         b = Part.BezierCurve(); b.setPoles([V(p) for p in c[1:]]); return b.toShape()
-    _, p0, pm, p1, cen, d, a, b = c          # ellipse arc: centre, major-axis direction, semi-axes
+    _, p0, pm, p1, cen, d, a, b = c          # ellipse arc: center, major-axis direction, semi-axes
     import math
     el = Part.Ellipse(V((cen[0] + d[0] * a, cen[1] + d[1] * a)), V((cen[0] - d[1] * b, cen[1] + d[0] * b)), V(cen))
     def par(p):
@@ -842,7 +842,7 @@ import adsk.core, adsk.fusion, traceback, math
 MARK = {json.dumps(_mark_curves_ref())}
 REF = {REF_MM!r}
 POCKET = ({px}, {py})
-REACH = {_reach()}     # the mark's farthest point from its centre, as a fraction of its height
+REACH = {_reach()}     # the mark's farthest point from its center, as a fraction of its height
 PARAMS = [("MarkHeight", "40 mm"), ("Margin", "3 mm"), ("PlateDiameter", "2 * MarkHeight * %g + 2 * Margin" % REACH), ("PlateThickness", "4 mm"), ("Relief", "1.2 mm"),
           ("MagnetDiameter", "10.3 mm"), ("MagnetDepth", "3.2 mm")]
 

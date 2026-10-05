@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- FusionSpace AppStream template. Brand colours: Flathub asks for colourful ones, so O blue (light) and M orange (dark). -->
+<!-- SPDX-License-Identifier: Apache-2.0 · Copyright 2026 Neer Patel -->
+<!-- FusionSpace AppStream template. Brand colors: Flathub asks for colorful ones, so O blue (light) and M orange (dark). -->
 <component type="desktop-application">
   <id>co.fusionspace.HprSim</id>
   <name>hpr-sim</name>

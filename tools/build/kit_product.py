@@ -6,7 +6,7 @@ semantic tokens in every format a project needs (CSS, DTCG JSON, Swift, Kotlin, 
 stylesheet with a specimen page and example screens, the icon set, small-screen mock-ups, a KiCad board title block, rocket
 livery sheets, CLI styles).
 
-Every colour pair the rules rely on is measured here and the build stops if one falls below its target, so the documents
+Every color pair the rules rely on is measured here and the build stops if one falls below its target, so the documents
 can't drift from the tokens.
 """
 import os, re, json, math, shutil, subprocess, html
@@ -14,7 +14,9 @@ import build, kit
 from build import VOID, PAPER, WHITE, ION, EMBER, M_ORANGE, O_BLUE, contrast
 
 P = "product"
-DATE = "4 October 2026"
+SPDX = "SPDX-License-Identifier: Apache-2.0"
+COPY = "Copyright 2026 Neer Patel"
+DATE = "October 4, 2026"
 SRC = os.path.join(build.SRC, "product")
 
 def out(p): return os.path.join(build.OUT, P, p)
@@ -23,11 +25,11 @@ def wr(rel, s):
     with open(path, "w", encoding="utf-8") as fh: fh.write(s)
     return path
 
-# ================================================================ 1. colour
+# ================================================================ 1. color
 # Brand primitives (decided; see color/fusion-space-tokens.json). The core neutrals, Ion and Ember are reused as they are.
 CORE = {"Void": VOID, "Abyss": "#141A2B", "Graphite": "#2A3248", "Slate": "#566079", "Haze": "#98A1B8", "Mist": "#D6DAE4",
         "Paper": PAPER, "White": WHITE}
-# New for products (proposed 4 October 2026, approved in Neer's review of 5 October). Named after emission lines and things that glow, like
+# New for products (proposed October 4, 2026, approved in Neer's review of October 5). Named after emission lines and things that glow, like
 # the spectral classes: a flare (red, danger), sodium light (amber, caution), the aurora's oxygen green (normal), a hydrogen
 # nebula (magenta, predicted). Each was chosen in OKLCH for contrast on Paper/white and Void/Abyss and for distance from its
 # neighbours under simulated protan, deutan and tritan vision; the measurements are in product/foundations.md.
@@ -69,7 +71,7 @@ def role(name, theme):
         if r[0] == name: return r[1 + THEMES.index(theme)]
     raise KeyError(name)
 
-# Data colours. Measured data is ink. A second series is Ion / O blue (the gradient's cool end as an ink), a third is
+# Data colors. Measured data is ink. A second series is Ion / O blue (the gradient's cool end as an ink), a third is
 # Slate / Haze. No warm series: Ember is the caution ink, and no data line may look like a status. More: small multiples.
 SERIES = {"light": [VOID, ION, "#566079"], "dark": [PAPER, O_BLUE, "#98A1B8"]}   # ink, O, Slate/Haze: no warm series, Ember is the caution ink
 SERIES["field"] = SERIES["light"]
@@ -107,11 +109,11 @@ def check_contrast():
             for bg in ("canvas", "surface"):
                 r = contrast(c, role(bg, t))
                 if r < 3.0: bad.append(f"series {c} on {t} {bg} = {r:.2f} < 3 (chart lines need 3:1)")
-    if bad: raise SystemExit("product colour contrast:\n  " + "\n  ".join(bad))
+    if bad: raise SystemExit("product color contrast:\n  " + "\n  ".join(bad))
     return rows
 
-# Colour-vision check (Machado et al. 2009, severity 1): the signal inks must stay apart for protan, deutan and tritan
-# viewers. Distances are OKLab x 100. Status never relies on colour alone, so this is a second line of defence.
+# Color-vision check (Machado et al. 2009, severity 1): the signal inks must stay apart for protan, deutan and tritan
+# viewers. Distances are OKLab x 100. Status never relies on color alone, so this is a second line of defense.
 _CVD = {"protan": ((0.152286, 1.052583, -0.204868), (0.114503, 0.786281, 0.099216), (-0.003882, -0.048116, 1.051998)),
         "deutan": ((0.367322, 0.860646, -0.227968), (0.280085, 0.672501, 0.047413), (-0.011820, 0.042940, 0.968881)),
         "tritan": ((1.255528, -0.076749, -0.178779), (-0.078411, 0.930809, 0.147602), (0.004733, 0.691367, 0.303900))}
@@ -130,7 +132,7 @@ def _sim(h, kind):
     M = _CVD[kind]; c = _rgb(h)
     return _oklab([min(1.0, max(0.0, sum(M[i][j] * c[j] for j in range(3)))) for i in range(3)])
 def cvd_distance(a, b):
-    """Smallest OKLab distance (x 100) between two colours under normal, protan, deutan and tritan vision."""
+    """Smallest OKLab distance (x 100) between two colors under normal, protan, deutan and tritan vision."""
     d = [math.dist(_oklab(_rgb(a)), _oklab(_rgb(b)))] + [math.dist(_sim(a, k), _sim(b, k)) for k in _CVD]
     return 100 * min(d)
 CVD_MIN = 4.0
@@ -141,7 +143,7 @@ def check_cvd():
         for i, a in enumerate(keys):
             for b in keys[i + 1:]:
                 d = cvd_distance(role(a, t), role(b, t)); rows.append((t, a, b, d))
-                if d < CVD_MIN: raise SystemExit(f"product colours: {t} {a}/{b} only {d:.1f} apart under colour-vision simulation")
+                if d < CVD_MIN: raise SystemExit(f"product colors: {t} {a}/{b} only {d:.1f} apart under color-vision simulation")
     return rows
 
 # ================================================================ 2. the rest of the foundations
@@ -181,26 +183,27 @@ def rgb565(h):
     r, g, b = _hex_rgb(h); return ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3)
 
 # ================================================================ 3. token files
-def dtcg_colour(h):
+def dtcg_color(h):
     r, g, b = _hex_rgb(h)
     return {"colorSpace": "srgb", "components": [round(r / 255, 4), round(g / 255, 4), round(b / 255, 4)], "hex": h}
 
 def tokens_primitives():
-    t = {"$description": "FusionSpace primitives (DTCG 2025.10). Brand colours from color/fusion-space-tokens.json plus the "
-                         "product signal colours. Themes alias these in light/dark/field.tokens.json."}
-    t["core"] = {k.lower(): {"$type": "color", "$value": dtcg_colour(v)} for k, v in CORE.items()}
-    t["core"]["steel"] = {"$type": "color", "$value": dtcg_colour(STEEL), "$description": "Control borders on dark"}
-    t["brand"] = {"ion": {"$type": "color", "$value": dtcg_colour(ION)}, "ember": {"$type": "color", "$value": dtcg_colour(EMBER)},
-                  "m-orange": {"$type": "color", "$value": dtcg_colour(M_ORANGE)}, "o-blue": {"$type": "color", "$value": dtcg_colour(O_BLUE)},
-                  "gradient": {"$type": "gradient", "$value": [{"color": dtcg_colour(c), "position": float(o)} for o, c in build.STOPS],
+    t = {"$description": "FusionSpace primitives (DTCG 2025.10). Brand colors from color/fusion-space-tokens.json plus the "
+                         "product signal colors. Themes alias these in light/dark/field.tokens.json."}
+    t["$extensions"] = {"co.fusionspace": {"license": "Apache-2.0", "copyright": COPY}}
+    t["core"] = {k.lower(): {"$type": "color", "$value": dtcg_color(v)} for k, v in CORE.items()}
+    t["core"]["steel"] = {"$type": "color", "$value": dtcg_color(STEEL), "$description": "Control borders on dark"}
+    t["brand"] = {"ion": {"$type": "color", "$value": dtcg_color(ION)}, "ember": {"$type": "color", "$value": dtcg_color(EMBER)},
+                  "m-orange": {"$type": "color", "$value": dtcg_color(M_ORANGE)}, "o-blue": {"$type": "color", "$value": dtcg_color(O_BLUE)},
+                  "gradient": {"$type": "gradient", "$value": [{"color": dtcg_color(c), "position": float(o)} for o, c in build.STOPS],
                                "$description": "Identity only, always left to right. Never a status, never a data scale."}}
     t["signal"] = {}
     for k, (name, use, fill, on, light, dark) in SIGNALS.items():
         d = {"$description": f"{name}: {use}"}
-        if fill: d["fill"] = {"$type": "color", "$value": dtcg_colour(fill)}; d["on-fill"] = {"$type": "color", "$value": dtcg_colour(on)}
-        d["ink-light"] = {"$type": "color", "$value": dtcg_colour(light)}; d["ink-dark"] = {"$type": "color", "$value": dtcg_colour(dark)}
+        if fill: d["fill"] = {"$type": "color", "$value": dtcg_color(fill)}; d["on-fill"] = {"$type": "color", "$value": dtcg_color(on)}
+        d["ink-light"] = {"$type": "color", "$value": dtcg_color(light)}; d["ink-dark"] = {"$type": "color", "$value": dtcg_color(dark)}
         t["signal"][name.lower()] = d
-    t["spectral"] = {k.lower(): {"$type": "color", "$value": dtcg_colour(v)} for k, v in SPECTRAL.items()}
+    t["spectral"] = {k.lower(): {"$type": "color", "$value": dtcg_color(v)} for k, v in SPECTRAL.items()}
     t["font"] = {k: {"$type": "fontFamily", "$value": [x.strip().strip("'") for x in v.split(",")]} for k, v in FONTS.items()}
     t["space"] = {str(v): {"$type": "dimension", "$value": {"value": v, "unit": "px"}} for v in SPACE}
     t["line"] = {k: {"$type": "dimension", "$value": {"value": v, "unit": "px"}} for k, v in LINES.items()}
@@ -227,15 +230,16 @@ def _ref(h):
     return None
 
 def tokens_theme(theme):
-    t = {"$description": f"FusionSpace semantic colours, {theme} theme (DTCG 2025.10; aliases resolve against primitives.tokens.json)."}
+    t = {"$description": f"FusionSpace semantic colors, {theme} theme (DTCG 2025.10; aliases resolve against primitives.tokens.json)."}
+    t["$extensions"] = {"co.fusionspace": {"license": "Apache-2.0", "copyright": COPY}}
     t["color"] = {}
     for name, l, d, fld, use in ROLES:
         h = {"light": l, "dark": d, "field": fld}[theme]
-        t["color"][name] = {"$type": "color", "$value": _ref(h) or dtcg_colour(h), "$description": use}
+        t["color"][name] = {"$type": "color", "$value": _ref(h) or dtcg_color(h), "$description": use}
     for name, fill, on in FILLS:
-        t["color"][name] = {"$type": "color", "$value": _ref(fill) or dtcg_colour(fill)}
-        t["color"]["on-" + name] = {"$type": "color", "$value": _ref(on) or dtcg_colour(on)}
-    t["color"]["series"] = {str(i + 1): {"$type": "color", "$value": _ref(c) or dtcg_colour(c)} for i, c in enumerate(SERIES[theme])}
+        t["color"][name] = {"$type": "color", "$value": _ref(fill) or dtcg_color(fill)}
+        t["color"]["on-" + name] = {"$type": "color", "$value": _ref(on) or dtcg_color(on)}
+    t["color"]["series"] = {str(i + 1): {"$type": "color", "$value": _ref(c) or dtcg_color(c)} for i, c in enumerate(SERIES[theme])}
     return t
 
 def css_tokens():
@@ -245,7 +249,7 @@ def css_tokens():
         L += [f"  --fs-{n}: {fill};\n  --fs-on-{n}: {on};" for n, fill, on in FILLS]
         L += [f"  --fs-series-{i + 1}: {c};" for i, c in enumerate(SERIES[theme])]
         return "\n".join(L)
-    head = [f"/* FusionSpace product tokens. Generated by tools/build/kit_product.py; edit there, not here. */",
+    head = [f"/* {SPDX} · {COPY} */", f"/* FusionSpace product tokens. Generated by tools/build/kit_product.py; edit there, not here. */",
             "/* Themes: light (default), dark (follows the system unless data-theme is set), field (outdoor, high contrast). */",
             "/* Use: <html data-theme=\"light|dark|field\"> to force one; no attribute follows prefers-color-scheme. */", ""]
     static = [":root {", "  color-scheme: light dark;"]
@@ -271,7 +275,7 @@ def css_tokens():
 def swift_tokens():
     ident = lambda n: re.sub(r"-(\w)", lambda m: m.group(1).upper(), n)
     names = [r[0] for r in ROLES]
-    L = ["// FusionSpace product colours for SwiftUI. Generated by tools/build/kit_product.py; edit there, not here.",
+    L = [f"// {SPDX} · {COPY}", "// FusionSpace product colors for SwiftUI. Generated by tools/build/kit_product.py; edit there, not here.",
          "// FS.<role> follows the system: light, dark, and the field theme when Increase Contrast is on in light appearance.",
          "// For a screen that must be in the field theme (countdown, arming, recovery), read FS.palette(for: .field, ...) or set",
          "// .environment(\\.fsTheme, .field) and use the palette from the environment (see FSPaletteReader below).",
@@ -283,7 +287,7 @@ def swift_tokens():
     for t in THEMES:
         args = ", ".join(f"{ident(n)}: Color(hex: 0x{role(n, t)[1:]})" for n in names)
         L.append(f"    public static let {t}Palette = FSPalette({args})")
-    L += ["", "    /// The palette for a theme; .system resolves from the colour scheme and contrast.",
+    L += ["", "    /// The palette for a theme; .system resolves from the color scheme and contrast.",
           "    public static func palette(for theme: FSTheme, scheme: ColorScheme, contrast: ColorSchemeContrast) -> FSPalette {",
           "        switch theme {",
           "        case .light: return lightPalette",
@@ -332,7 +336,7 @@ def swift_tokens():
           "        set { self[FSThemeKey.self] = newValue }",
           "    }",
           "}", "",
-          "/// Hands its content the palette for the current theme, colour scheme and contrast.",
+          "/// Hands its content the palette for the current theme, color scheme and contrast.",
           "public struct FSPaletteReader<Content: View>: View {",
           "    @Environment(\\.fsTheme) private var theme",
           "    @Environment(\\.colorScheme) private var scheme",
@@ -353,8 +357,8 @@ def swift_tokens():
 
 def kotlin_tokens():
     ident = lambda n: re.sub(r"-(\w)", lambda m: m.group(1).upper(), n)
-    L = ["// FusionSpace product colours for Jetpack Compose. Generated by tools/build/kit_product.py; edit there, not here.",
-         "// A static brand scheme: no dynamic colour for anything that carries meaning (Material allows a static scheme).",
+    L = [f"// {SPDX} · {COPY}", "// FusionSpace product colors for Jetpack Compose. Generated by tools/build/kit_product.py; edit there, not here.",
+         "// A static brand scheme: no dynamic color for anything that carries meaning (Material allows a static scheme).",
          "package co.fusionspace.design", "",
          "import androidx.compose.material3.darkColorScheme",
          "import androidx.compose.material3.lightColorScheme",
@@ -384,7 +388,7 @@ def kotlin_tokens():
     return "\n".join(L)
 
 def c_tokens():
-    L = ["/* FusionSpace product colours for firmware (TFT, LVGL). Generated by tools/build/kit_product.py; edit there. */",
+    L = [f"/* {SPDX} · {COPY} */", "/* FusionSpace product colors for firmware (TFT, LVGL). Generated by tools/build/kit_product.py; edit there. */",
          "#ifndef FUSIONSPACE_UI_H", "#define FUSIONSPACE_UI_H", "",
          "/* Screens on a device use the dark roles: emissive panels at the pad read best as light marks on Void,",
          "   and Void pixels draw no power on OLED. RGB888 for LVGL (lv_color_hex), RGB565 for TFT_eSPI and friends. */", ""]
@@ -454,7 +458,7 @@ def example_flight(seed=7):
 def chart_svg(pred, meas, width=880, standalone_theme=None, title="Altitude, speed and acceleration against time"):
     """Stacked panels with one time axis (product/data.md): altitude (measured solid ink, predicted dashed Nebula with a
     hatched +/- band), vertical speed, acceleration. Events are dotted lines with numbered balloons. With standalone_theme,
-    colours are written in (for PNG previews); otherwise the classes in fusionspace.css colour it."""
+    colors are written in (for PNG previews); otherwise the classes in fusionspace.css color it."""
     import numpy as np
     left, right, top = 56, 16, 64
     ph, gap = [190, 120, 120], 40
@@ -496,7 +500,7 @@ def chart_svg(pred, meas, width=880, standalone_theme=None, title="Altitude, spe
         v = lo
         while v <= hi + 1e-9:
             o.append(f'<line class="grid" x1="{left}" x2="{width - right}" y1="{Y(v):.1f}" y2="{Y(v):.1f}"/>')
-            lab = f"{v:,.0f}".replace(",", "\u202f") if abs(v) >= 1 or v == 0 else f"{v:.1f}"
+            lab = f"{v:,.0f}" if abs(v) >= 1 or v == 0 else f"{v:.1f}"
             o.append(f'<text x="{left - 8}" y="{Y(v) + 4:.1f}" text-anchor="end">{lab.replace("-", "−")}</text>')
             v += step
         if lo < 0 < hi: o.append(f'<line class="reference" x1="{left}" x2="{width - right}" y1="{Y(0):.1f}" y2="{Y(0):.1f}"/>')
@@ -526,7 +530,7 @@ import kit_icons
 FONT_FILES = [("Archivo", 400, "normal", "Archivo-Regular"), ("Archivo", 600, "normal", "Archivo-SemiBold"),
               ("Archivo", 400, "italic", "Archivo-Italic"), ("Cascadia Mono", 400, "normal", "CascadiaMono-Regular"),
               ("Cascadia Mono", 600, "normal", "CascadiaMono-SemiBold")]
-# Latin, Latin-1, general punctuation, super/subscripts, letterlike, arrows, maths operators, box drawing, geometric shapes
+# Latin, Latin-1, general punctuation, super/subscripts, letterlike, arrows, math operators, box drawing, geometric shapes
 SUBSET = "U+0000-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2070-209F,U+20AC,U+2100-214F,U+2190-21FF,U+2200-22FF,U+2500-257F,U+25A0-25FF"
 
 def build_fonts():
@@ -538,7 +542,7 @@ def build_fonts():
     except ImportError:
         print("WARN product: fontTools/brotli missing, no WOFF2 fonts"); return False
     os.makedirs(out("web/fonts"), exist_ok=True)
-    css = ["/* FusionSpace web fonts: WOFF2 subsets of the OFL fonts in type/fonts (licences next to them there).",
+    css = ["/* FusionSpace web fonts: WOFF2 subsets of the OFL fonts in type/fonts (licenses next to them there).",
            "   Generated by tools/build/kit_product.py. Preload at most the two you use above the fold. */"]
     for fam, w, style, stem in FONT_FILES:
         src = os.path.join(build.ROOT, "type", "fonts", stem + ".ttf")
@@ -560,12 +564,13 @@ def build_fonts():
 
 def build_stylesheet():
     comp = open(os.path.join(SRC, "web", "components.css"), encoding="utf-8").read()
+    if comp.startswith("/* SPDX"): comp = comp.split("\n", 1)[1]          # the tokens part already carries the SPDX line
     s = css_tokens() + "\n" + comp
     wr("web/fusionspace.css", s)
     return s
 
 def _logo(prefix):
-    """The header lockup in one colour (currentColor): Void on light, Paper on dark. The strip carries the gradient."""
+    """The header lockup in one color (currentColor): Void on light, Paper on dark. The strip carries the gradient."""
     L = open(os.path.join(build.OUT, "logo/lockup/fusion-space-horizontal-void.svg"), encoding="utf-8").read()
     return build.inline(L, prefix, "height:24px;width:auto").replace("#0B0F1C", "currentColor")
 
@@ -650,13 +655,13 @@ def readout(label, value, unit, qual="", kind="", size=""):
             f'<span class="fs-label">{label}</span><span class="fs-value"><span>{value}</span><span class="u">{unit}</span></span>'
             + (f'<span class="fs-qual">{qual}</span>' if qual else "") + "</div>")
 def num(v, dp=0):
-    """SI-style number: thin space between groups of three, a real minus sign."""
-    s = f"{abs(v):,.{dp}f}".replace(",", "\u202f")
+    """US-style number for the screen: commas between groups of three, a real minus sign."""
+    s = f"{abs(v):,.{dp}f}"
     return ("−" if v < 0 else "") + s
 
 def specimen(contrast_rows):
     T = 8
-    # 1 colour
+    # 1 color
     def sw(h, label=""):
         return f'<span style="display:inline-block;width:28px;height:20px;background:{h};border:1px solid var(--fs-rule);vertical-align:middle"></span> <code>{h}</code>{label}'
     rows = ""
@@ -674,17 +679,17 @@ def specimen(contrast_rows):
                   f'<td>{sw(SIGNALS[k][4])}</td><td>{sw(SIGNALS[k][5])}</td></tr>' for k, n in SIGNAL_NAMES.items())
     ramps = "".join(f'<div class="fs-stack" style="gap:6px"><span class="fs-label">{k} · {" → ".join(v)}</span><div style="display:flex;height:20px;border:1px solid var(--fs-rule)">'
                     + "".join(f'<span style="flex:1;background:{SPECTRAL[c]}"></span>' for c in v) + "</div></div>" for k, v in RAMPS.items())
-    s1 = (f'<p>Two kinds of colour that never mix. <b>Brand</b> (the gradient, the spectral classes, the two-tone cones) says who made it. '
-          f'<b>Signal</b> (four reserved colours) says what state something is in, and appears only when there is something to say. '
+    s1 = (f'<p>Two kinds of color that never mix. <b>Brand</b> (the gradient, the spectral classes, the two-tone cones) says who made it. '
+          f'<b>Signal</b> (four reserved colors) says what state something is in, and appears only when there is something to say. '
           f'The gradient is never a status, a button or a data scale.</p>{roles}'
-          f'<h3>Signal colours</h3><div class="fs-table-wrap"><table class="fs-table"><thead><tr><th>Name</th><th>Means</th><th>Fill (every theme)</th><th>Ink on light</th><th>Ink on dark</th></tr></thead><tbody>{sig}</tbody></table></div>'
-          f'<div class="fs-row">{chips}</div><p class="fs-small fs-muted">Every chip has a word and a shape as well as a colour. Danger is light text on deep red and caution is dark text on amber: '
-          f'the polarity differs, so they stay apart for every kind of colour vision and in greyscale.</p>'
+          f'<h3>Signal colors</h3><div class="fs-table-wrap"><table class="fs-table"><thead><tr><th>Name</th><th>Means</th><th>Fill (every theme)</th><th>Ink on light</th><th>Ink on dark</th></tr></thead><tbody>{sig}</tbody></table></div>'
+          f'<div class="fs-row">{chips}</div><p class="fs-small fs-muted">Every chip has a word and a shape as well as a color. Danger is light text on deep red and caution is dark text on amber: '
+          f'the polarity differs, so they stay apart for every kind of color vision and in grayscale.</p>'
           f'<h3>Data ramps</h3><div class="fs-grid">{ramps}</div><p class="fs-small fs-muted">From the spectral classes. Cool and warm are sequential; O to M through F is diverging. '
           f'The gradient isn\'t a ramp: its four stops have the same lightness, so it carries no order.</p>')
     # 2 type
     trs = "".join(f'<tr><td><code>{n}</code></td><td class="n">{sz}/{lh}</td><td style="font:var(--fs-type-{n});{"text-transform:uppercase;letter-spacing:" + str(tr) + "em;" if case == "upper" else ""}">'
-                  f'{"5 104 ft AGL" if n.startswith("readout") else "Apogee 5 104 ft" if n in ("title", "display", "hero") else "Ejection charge" if n in ("label", "heading") else "FS-VEGA-001 rev B" if n == "code" else "Size the charge, then ground-test it."}</td>'
+                  f'{"5,104 ft AGL" if n.startswith("readout") else "Apogee 5,104 ft" if n in ("title", "display", "hero") else "Ejection charge" if n in ("label", "heading") else "FS-VEGA-001 rev B" if n == "code" else "Size the charge, then ground-test it."}</td>'
                   f'<td class="fs-small fs-muted">{use}</td></tr>' for n, sz, lh, fam, w, case, tr, use in TYPE)
     s2 = (f'<p>Cascadia Mono for anything you read as data or as a drawing: titles, labels, numbers, codes. Archivo for anything you read as prose. '
           f'Headings and readouts step by √2, like drawing lettering (ISO 3098). Capitals only where a drawing would use them: labels, title-block cells, sheet numbers, state words.</p>'
@@ -697,7 +702,7 @@ def specimen(contrast_rows):
              + ln(16, "measured", "THICK 2 px · measured data, outlines, the sheet edge")
              + ln(46, "axis", "THIN 1 px · axes, control borders", 'style="stroke:var(--fs-ink)"')
              + ln(76, "predicted", "DASHED 8 4 · predicted, simulated, forecast")
-             + ln(106, "reference", "CHAIN 24 3 1 3 · references: ground, rail, limits, centre lines")
+             + ln(106, "reference", "CHAIN 24 3 1 3 · references: ground, rail, limits, center lines")
              + ln(136, "event", "DOTTED 1 3 · events, with a numbered balloon")
              + '<rect x="0" y="160" width="300" height="40" class="hatch-fill" style="stroke:var(--fs-rule-strong)"/><text x="316" y="184">HATCH 45° · unavailable, out of range, uncertain</text>'
              + '<g class="balloon"><circle cx="12" cy="236" r="9"/><text x="12" y="239.5">3</text></g><line x1="21" y1="236" x2="60" y2="236" class="axis" style="stroke:var(--fs-ink)"/>'
@@ -706,10 +711,10 @@ def specimen(contrast_rows):
              + '<line x1="0" y1="284" x2="300" y2="284" class="axis" style="stroke:var(--fs-ink)"/><line x1="0" y1="276" x2="0" y2="292" class="axis" style="stroke:var(--fs-ink)"/><line x1="300" y1="276" x2="300" y2="292" class="axis" style="stroke:var(--fs-ink)"/>'
              + '<text x="150" y="278" text-anchor="middle" class="t-ink">300 px</text><text x="316" y="288">DIMENSION · extension lines, value above the line</text></svg>')
     s3 = (f'<p>Lines carry meaning the way they do on a drawing (ISO 128): two widths in a 1 : 2 ratio, and a line type for each kind of information. '
-          f'A predicted value is always dashed as well as coloured, so it survives printing in black.</p>{lines}')
+          f'A predicted value is always dashed as well as colored, so it survives printing in black.</p>{lines}')
     # 4 controls
     s4 = (f'<div class="fs-row"><button class="fs-btn">Run simulation</button><button class="fs-btn" data-variant="secondary">Export CSV</button>'
-          f'<button class="fs-btn" data-variant="quiet">Show the maths</button><button class="fs-btn" disabled>No log loaded</button></div>'
+          f'<button class="fs-btn" data-variant="quiet">Show the math</button><button class="fs-btn" disabled>No log loaded</button></div>'
           f'<div class="fs-grid">'
           f'<div class="fs-field"><label for="d">Airframe inner diameter</label><div class="fs-input-group"><input class="fs-input" id="d" inputmode="decimal" value="3.90" autocomplete="off"><span class="fs-unit">in</span></div><span class="fs-help">Inside the tube, not the outside.</span></div>'
           f'<div class="fs-field"><label for="m">Motor</label><select class="fs-select" id="m"><option>J350W-L</option><option>J420R-L</option><option>K535W-L</option></select></div>'
@@ -718,14 +723,14 @@ def specimen(contrast_rows):
           f'<div class="fs-row"><div class="fs-seg" role="group" aria-label="Units"><button type="button" aria-pressed="true">ft</button><button type="button" aria-pressed="false">m</button></div>'
           f'<label class="fs-check"><input type="checkbox" checked> Dual deploy</label><span class="fs-tag">FS · SW · TOOL 002</span><span class="fs-tag" data-tone="action">REV 1.4.0</span></div>'
           f'<div class="fs-tabs" role="tablist"><button role="tab" aria-selected="true">Flight</button><button role="tab" aria-selected="false">Channels</button><button role="tab" aria-selected="false">Raw log</button></div>'
-          f'<p class="fs-small fs-muted">Square corners, 1 px borders, no shadows. The primary button is ink, not a colour: colour is saved for links, focus and signals. '
+          f'<p class="fs-small fs-muted">Square corners, 1 px borders, no shadows. The primary button is ink, not a color: color is saved for links, focus and signals. '
           f'Numbers are typed into text fields with <code>inputmode="decimal"</code>, with the unit fixed beside the value. Controls used at the pad are {TARGET["field"]} px tall on touch screens and {TARGET["field-pointer"]} px with a mouse.</p>'
           f'<div><button class="fs-btn" data-size="field">{ico("download", "")}Save flight card</button></div>')
     # 5 data
     pred, meas = example_flight()
     ev = meas["events"]; ap = float(meas["alt"].max()); pap = float(pred["alt"].max())
     s5 = (f'<div class="fs-readouts">{readout("Apogee · measured", num(ap), "ft AGL", "Barometric, from the flight log")}'
-          f'{readout("Apogee · predicted", num(pap), "ft AGL", f"±{num(0.04 * pap + 8)} ft, hpr-sim 0.9 · −{(1 - ap / pap) * 100:.1f} % vs measured", "predicted")}'
+          f'{readout("Apogee · predicted", num(pap), "ft AGL", f"±{num(0.04 * pap + 8)} ft, hpr-sim 0.9 · −{(1 - ap / pap) * 100:.1f}% vs measured", "predicted")}'
           f'{readout("Max speed", num(float(meas["vel"].max())), "ft/s", "Mach 0.58 at 1.8 s")}'
           f'{readout("Main at", num(700), "ft AGL", "Set 700 ft, fired at 71.3 s")}</div>'
           f'{chart_svg(pred, meas)}'
@@ -739,12 +744,12 @@ def specimen(contrast_rows):
           f'{note("caution", "Caution", "<p>Ground-test this charge before you fly it. The estimate assumes a sealed bay.</p>")}'
           f'{note("warning", "Warning", "<p>Channel 2 is armed. Its ejection charge can fire and cause serious injury. Keep clear of the airframe ends.</p>")}'
           f'{note("notice", "Notice", "<p>Importing a new log replaces the unsaved notes on this flight.</p>", "info")}'
-          f'{note("trust", "How far to trust it", "<p>An estimate from a model, not a measurement, and never a go/no-go verdict. Checked against 37 flown charges: within 12 % on 33.</p>")}</div>'
+          f'{note("trust", "How far to trust it", "<p>An estimate from a model, not a measurement, and never a go/no-go verdict. Checked against 37 flown charges: within 12% on 33.</p>")}</div>'
           f'<div class="fs-hazard" style="max-width:420px"><div class="fs-stack" style="padding:16px"><span class="fs-label">Channel 2 · main</span>'
           f'<div class="fs-row"><button class="fs-btn" data-variant="danger" data-size="field">Arm channel 2…</button><button class="fs-btn" data-variant="secondary" data-size="field">Safe</button></div>'
           f'<span class="fs-small fs-muted">Arming is two actions: this opens a confirmation that is held for 2 s. The physical switch must already be on. '
           f'Commanded: SAFE · Confirmed: SAFE (2 s ago)</span></div></div>'
-          f'<div class="fs-stack" style="max-width:420px"><span class="fs-label">Uploading log · 62 %</span><div class="fs-progress"><span style="--value:62%"></span></div>'
+          f'<div class="fs-stack" style="max-width:420px"><span class="fs-label">Uploading log · 62%</span><div class="fs-progress"><span style="--value:62%"></span></div>'
           f'<span class="fs-label">Waiting for GPS fix</span><div class="fs-progress" data-indeterminate><span></span></div></div>'
           f'<div class="fs-empty"><span class="fs-label">No flight loaded</span><span>Drop a log file here, or pick one.</span><button class="fs-btn" data-variant="secondary">Choose file</button></div>')
     # 7 icons
@@ -759,9 +764,9 @@ def specimen(contrast_rows):
     body = (f'<section style="padding:48px 0 32px;display:grid;gap:16px"><span class="fs-tag">FS · SPEC 001</span><h1 style="font:var(--fs-type-display)">Product system</h1>'
             f'<p class="fs-lead">How FusionSpace tools, apps and boards look and behave. The rules are in <code>product/</code>; this page shows each part working, '
             f'in light, dark and the outdoor field theme.</p></section>'
-            + sheet(1, T, "Colour", s1) + sheet(2, T, "Type", s2) + sheet(3, T, "Lines", s3) + sheet(4, T, "Controls", s4)
+            + sheet(1, T, "Color", s1) + sheet(2, T, "Type", s2) + sheet(3, T, "Lines", s3) + sheet(4, T, "Controls", s4)
             + sheet(5, T, "Data", s5) + sheet(6, T, "Status and notes", s6) + sheet(7, T, "Icons", s7) + sheet(8, T, "Title block", s8))
-    return page("Specimen · FusionSpace product system", body, example=True, desc="The FusionSpace product system: colour, type, lines, controls, data, status, icons.")
+    return page("Specimen · FusionSpace product system", body, example=True, desc="The FusionSpace product system: color, type, lines, controls, data, status, icons.")
 
 TOOLS = [  # the drawing register on the example home page: (designation, name, what it is, status, where)
     ("FS · SW · TOOL 001", "HPR Motor Finder", "AeroTech, Cesaroni and Loki motor stock and pricing across major U.S. vendors.", "RELEASED", "motor.fusionspace.co"),
@@ -781,7 +786,7 @@ def ex_home():
             + sheet(2, 2, "Principles", '<dl class="fs-stack" style="max-width:var(--fs-measure)">'
                     + "".join(f'<div style="border-top:1px solid var(--fs-rule);padding-top:12px;display:grid;gap:4px"><dt><h3>{h}</h3></dt><dd style="margin:0">{t}</dd></div>' for h, t in (
                         ("Shows its working", "Every formula, constant and source is one click away. No black boxes."),
-                        ("Says how far to trust it", "Estimates are labelled as estimates, with their spread. Never a go/no-go verdict."),
+                        ("Says how far to trust it", "Estimates are labeled as estimates, with their spread. Never a go/no-go verdict."),
                         ("Works at the field", "Offline once loaded, readable in sun, big targets for cold hands."),
                         ("No accounts, no tracking", "Your logs stay in your browser unless you export them."))) + "</dl>")
             + titleblock([("Title", "FusionSpace tools"), ("Designation", "FS · SITE 001"), ("Rev", "C"), ("Date", "2026-10-04"), ("Contact", "NeerDPatel@FusionSpace.co"), ("Status", "RELEASED")]))
@@ -797,11 +802,11 @@ def ex_charge():
             f'<div class="fs-field"><label for="psi">Target pressure</label><div class="fs-input-group"><input class="fs-input" id="psi" inputmode="decimal" value="{P:.0f}"><span class="fs-unit">psi</span></div><span class="fs-help">15 psi is a common start for 3 × 2-56 nylon pins.</span></div>'
             f'<div class="fs-field"><label for="bp">Powder</label><select class="fs-select" id="bp"><option>FFFFg black powder</option><option>FFFg black powder</option><option>Pyrodex P</option></select></div></div>'
             f'<div class="fs-row"><div class="fs-seg" role="group" aria-label="Separation by"><button type="button" aria-pressed="true">Pressure</button><button type="button" aria-pressed="false">Shear pins + friction</button></div>'
-            f'<label class="fs-check"><input type="checkbox" checked> Add a backup charge (+25 %)</label></div></form>')
+            f'<label class="fs-check"><input type="checkbox" checked> Add a backup charge (+25%)</label></div></form>')
     result = (f'<div class="fs-stack fs-sticky"><div class="fs-panel fs-stack" style="border:2px solid var(--fs-ink)">'
               f'{readout("Primary charge", f"{g:.2f}", "g", "FFFFg black powder, rounded up to 0.05 g on the scale: <b>" + f"{math.ceil(g / 0.05) * 0.05:.2f}" + " g</b>")}'
-              f'{readout("Backup", f"{g * 1.25:.2f}", "g", "Primary + 25 %", size="m")}'
-              f'<details><summary class="fs-btn" data-variant="quiet" style="display:inline-flex">Show the maths</summary><pre>V     = π/4 × D² × L = π/4 × ({D:.2f} in)² × {L:.1f} in = {V:.1f} in³\ngrams = 0.00052 × P × V\n      = 0.00052 × {P:.0f} psi × {V:.1f} in³\n      = {g:.3f} g</pre>'
+              f'{readout("Backup", f"{g * 1.25:.2f}", "g", "Primary + 25%", size="m")}'
+              f'<details><summary class="fs-btn" data-variant="quiet" style="display:inline-flex">Show the math</summary><pre>V     = π/4 × D² × L = π/4 × ({D:.2f} in)² × {L:.1f} in = {V:.1f} in³\ngrams = 0.00052 × P × V\n      = 0.00052 × {P:.0f} psi × {V:.1f} in³\n      = {g:.3f} g</pre>'
               f'<p class="fs-small fs-muted">0.00052 g per psi per in³ is the ideal-gas yield of black powder at 3307 °R (R = 22.16 ft·lbf/(lbm·°R)), with no losses: the same as the common rule of 0.006 g × D² × L at 15 psi.</p></details></div>'
               f'{note("trust", "How far to trust it", "<p>An ideal-gas estimate. Real bays leak and real powder varies, so the charge that separates on the ground is the one to fly. In this example log, ground tests needed 0.9 to 1.3 times the estimate.</p>")}'
               f'{note("caution", "Caution", "<p>Ground-test before every first flight, and after any change to the bay, pins or powder.</p>")}</div>')
@@ -825,16 +830,16 @@ def ex_flight_report():
             f'<tr><td class="fs-mono">1 · DROGUE</td><td>Apogee + 0.4 s</td><td>{status("ok", "Cont", "continuity")}</td><td>{status("ok", "Fired", "check")}</td><td class="n">{ev["drogue"]:.2f}</td><td class="n">{num(ap)}</td></tr>'
             f'<tr><td class="fs-mono">2 · MAIN</td><td>700 ft descending</td><td>{status("ok", "Cont", "continuity")}</td><td>{status("ok", "Fired", "check")}</td><td class="n">{ev["main"]:.2f}</td><td class="n">{num(700)}</td></tr>'
             f'<tr><td class="fs-mono">3 · —</td><td class="fs-muted">Not used</td><td>{status("off", "Not used")}</td><td>{status("off", "Not used")}</td><td class="n fs-muted">—</td><td class="n fs-muted">—</td></tr></tbody></table></div>'
-            '<p class="fs-small fs-muted">An unused channel is grey and says so. Red is only for a real fault, so a fault is never lost among false alarms.</p>')
+            '<p class="fs-small fs-muted">An unused channel is gray and says so. Red is only for a real fault, so a fault is never lost among false alarms.</p>')
     body = (f'<section style="padding:40px 0 24px;display:grid;gap:12px"><div class="fs-row"><span class="fs-tag">FS-VEGA-001 · FLIGHT 03</span>{status("ok", "Released", "check")}</div>'
-            f'<h1>Flight 03 · J350W-L</h1><p class="fs-lead">Dual deploy, nominal. Apogee {num(pap - ap)} ft ({(1 - ap / pap) * 100:.1f} %) under the prediction, outside its ±{num(0.04 * pap + 8)} ft spread: the rocket flew heavier than its design file says.</p></section>'
+            f'<h1>Flight 03 · J350W-L</h1><p class="fs-lead">Dual deploy, nominal. Apogee {num(pap - ap)} ft ({(1 - ap / pap) * 100:.1f}%) under the prediction, outside its ±{num(0.04 * pap + 8)} ft spread: the rocket flew heavier than its design file says.</p></section>'
             + sheet(1, 3, "Flight", f'<div class="fs-readouts">{readout("Apogee", num(ap), "ft AGL", "Barometer, 20 Hz")}'
                     f'{readout("Predicted", num(pap), "ft AGL", f"±{num(0.04 * pap + 8)} ft · hpr-sim 0.9, from the design file", "predicted")}'
                     f'{readout("Max speed", num(float(meas["vel"].max())), "ft/s", "Mach 0.58")}{readout("Descent · main", f"{abs(float(meas['vel'][-60])):.0f}", "ft/s", "Under the main, just before landing")}</div>'
                     + chart_svg(pred, meas) + '<p class="fs-small fs-muted">Solid: measured. Dashed with a band: hpr-sim\'s prediction and its spread. Dotted lines with balloons: events, in order: 1 liftoff, 2 burnout, 3 apogee, 4 drogue out, 5 main out, 6 landing.</p>')
             + sheet(2, 3, "Channels", chan)
             + sheet(3, 3, "Source", '<dl class="fs-titleblock" style="margin-top:0">' + "".join(f'<div><dt>{k}</dt><dd>{v}</dd></div>' for k, v in (
-                ("File", "vega-flight-03.csv"), ("Logger", "Barometer 20 Hz, accelerometer 100 Hz"), ("Filter", "None; raw samples"), ("Pad elevation", "4 000 ft MSL"),
+                ("File", "vega-flight-03.csv"), ("Logger", "Barometer 20 Hz, accelerometer 100 Hz"), ("Filter", "None; raw samples"), ("Pad elevation", "4,000 ft MSL"),
                 ("Imported", "2026-10-04 14:22"), ("Hash", "sha256 9f3c…b21e"))) + "</dl>")
             + titleblock([("Title", "Flight 03 report"), ("Designation", "FS-VEGA · REPORT 003"), ("Rev", "A"), ("Date", "2026-10-04"), ("Units", "ft, ft/s, g, s"), ("Status", "RELEASED")]))
     return page("Flight report · example", body, rel="../", example=True, desc="Example: a flight report from a flight computer's log, in the FusionSpace product system.")
@@ -845,14 +850,14 @@ def ex_window():
                    f'<td class="n">{g if g else "—"}</td><td class="n">{d}°</td></tr>' for h, w, g, d in aloft)
     body = (f'<section style="padding:40px 0 24px;display:grid;gap:12px"><div class="fs-row"><span class="fs-tag">FS · SW · TOOL 003</span>{status("stale", 'Stale · upper air <span class="u">4 h</span>')}</div>'
             f'<h1>Window · Example field</h1><p class="fs-lead">Surface wind under the 20 mph limit, gusting close to it. Ceiling under the waiver. No verdict: your RSO decides.</p></section>'
-            + sheet(1, 2, "Now", f'<div class="fs-readouts">{readout("Surface wind", "12", "mph", "Gusts 19 mph · from 270° · measured 14:10")}'
-                    f'{readout("Ceiling", num(6500), "ft AGL", "Under the waiver: 8 000 ft AGL")}{readout("Temperature", "21.5", "°C", "Density altitude 5 620 ft")}'
-                    f'{readout("Upper winds", "31", "mph", "At 6 000 ft · issued 10:00, 4 h old", "stale")}</div>'
+            + sheet(1, 2, "Now", f'<div class="fs-readouts">{readout("Surface wind", "12", "mph", "Gusts 19 mph · from 270° · measured 2:10 PM")}'
+                    f'{readout("Ceiling", num(6500), "ft AGL", "Under the waiver: 8,000 ft AGL")}{readout("Temperature", "71", "°F", "Density altitude 5,620 ft")}'
+                    f'{readout("Upper winds", "31", "mph", "At 6,000 ft · issued 10:00 AM, 4 h old", "stale")}</div>'
                     f'{note("caution", "Caution", "<p>Gusts of 19 mph are within 1 mph of the NAR and Tripoli 20 mph limit.</p>")}')
             + sheet(2, 2, "Aloft", f'<div class="fs-table-wrap"><table class="fs-table"><caption>Winds by height. Forecast rows are model output, dashed in charts and tagged here.</caption>'
                     f'<thead><tr><th>Kind</th><th class="n">Height · ft AGL</th><th class="n">Wind · mph</th><th class="n">Gust · mph</th><th class="n">From</th></tr></thead><tbody>{rows}</tbody></table></div>'
                     f'<div class="fs-row"><button class="fs-btn" data-size="field">{ico("refresh", "")}Refresh</button><button class="fs-btn" data-variant="secondary" data-size="field">{ico("print", "")}Print for the pad</button></div>')
-            + titleblock([("Title", "Window · Example field"), ("Designation", "FS · SW · TOOL 003"), ("Rev", "2.1.0"), ("Date", "2026-10-04 14:10"), ("Units", "mph, ft, °C"),
+            + titleblock([("Title", "Window · Example field"), ("Designation", "FS · SW · TOOL 003"), ("Rev", "2.1.0"), ("Date", "2026-10-04 14:10"), ("Units", "mph, ft, °F"),
                           ("Data", "Surface: station obs. Aloft: model forecast"), ("Status", "RELEASED")]))
     return page("Window · example", body, rel="../", example=True, desc="Example: a launch-weather board in the field theme.", theme_attr=' data-theme="field" data-theme-default="field"')
 
@@ -905,7 +910,7 @@ def build_docs():
 # ================================================================ 7. framework themes: Tailwind v4, mdBook
 def tailwind_theme():
     names = [r[0] for r in ROLES] + [f[0] for f in FILLS] + ["on-" + f[0] for f in FILLS]
-    L = ["/* FusionSpace theme for Tailwind CSS v4. Generated by tools/build/kit_product.py; edit there, not here.",
+    L = [f"/* {SPDX} · {COPY} */", "/* FusionSpace theme for Tailwind CSS v4. Generated by tools/build/kit_product.py; edit there, not here.",
          "   Use instead of Tailwind's default theme:",
          "     @import \"tailwindcss/preflight\" layer(base);",
          "     @import \"tailwindcss/utilities\" layer(utilities);",
@@ -947,7 +952,8 @@ def mdbook_css():
                 f"  --searchbar-shadow-color: transparent; --searchresults-header-fg: {r('ink-muted')}; --searchresults-border-color: {r('rule')};\n"
                 f"  --searchresults-li-bg: {r('surface')}; --search-mark-bg: {SIGNALS['caution'][2]};\n"
                 f"  --code-bg: {r('surface')};")
-    return f"""/* FusionSpace theme for mdBook. Generated by tools/build/kit_product.py.
+    return f"""/* {SPDX} · {COPY} */
+/* FusionSpace theme for mdBook. Generated by tools/build/kit_product.py.
    book.toml:
      [output.html]
      additional-css = ["theme/fusionspace-mdbook.css", "theme/fonts.css"]
@@ -986,9 +992,9 @@ CLI_ROLES = [  # (name, SGR, anstyle expression, use)
     ("MUTED", "2", "Style::new().dimmed()", "separators and decoration only"),
 ]
 def cli_rust():
-    L = ["//! FusionSpace terminal styles for Rust command-line tools (clap 4, anstyle, anstream).",
+    L = [f"// {SPDX} · {COPY}", "//! FusionSpace terminal styles for Rust command-line tools (clap 4, anstyle, anstream).",
          "//! Generated by tools/build/kit_product.py in the fusionspace-design repository; edit there, not here.",
-         "//! ANSI roles only: the user's terminal theme decides the actual colours. See product/cli.md.",
+         "//! ANSI roles only: the user's terminal theme decides the actual colors. See product/cli.md.",
          "//!",
          "//! Cargo.toml: clap = { version = \"4\", features = [\"derive\"] }, anstyle = \"1\", anstream = \"0.6\"",
          "//!",
@@ -1013,7 +1019,7 @@ def cli_rust():
           "/// The `--color` flag.",
           "#[derive(Clone, Copy, Debug, PartialEq, Eq, clap::ValueEnum)]",
           "pub enum ColorWhen {", "    Auto,", "    Always,", "    Never,", "}", "",
-          "/// Resolve colour: the flag, then NO_COLOR, then FORCE_COLOR / CLICOLOR_FORCE, then auto (anstream checks the",
+          "/// Resolve color: the flag, then NO_COLOR, then FORCE_COLOR / CLICOLOR_FORCE, then auto (anstream checks the",
           "/// stream is a terminal and TERM isn't dumb). anstream doesn't read FORCE_COLOR itself, so it is read here.",
           "pub fn color_choice(flag: ColorWhen) -> anstream::ColorChoice {",
           "    match flag {",
@@ -1030,13 +1036,14 @@ def cli_rust():
           "    }",
           "    anstream::ColorChoice::Auto",
           "}", "",
-          "/// True when the brand banner may use 24-bit colour.",
+          "/// True when the brand banner may use 24-bit color.",
           "pub fn truecolor() -> bool {",
           "    std::env::var(\"COLORTERM\").is_ok_and(|v| v == \"truecolor\" || v == \"24bit\")",
           "}", ""]
     return "\n".join(L)
 
-PY_STYLE = '''"""FusionSpace terminal styles for Python command-line tools. No dependencies.
+PY_STYLE = '''# SPDX-License-Identifier: Apache-2.0 · Copyright 2026 Neer Patel
+"""FusionSpace terminal styles for Python command-line tools. No dependencies.
 Generated by tools/build/kit_product.py in the fusionspace-design repository; edit there, not here. See product/cli.md.
 
     from fs_style import S, paint, use_color
@@ -1046,7 +1053,7 @@ Generated by tools/build/kit_product.py in the fusionspace-design repository; ed
 import os, sys
 
 class S:
-    """ANSI roles: the user's terminal theme decides the actual colours."""
+    """ANSI roles: the user's terminal theme decides the actual colors."""
 %ROLES%
     ERROR = DANGER
     HELP = LITERAL
@@ -1067,7 +1074,7 @@ def paint(text, style, color=True):
     return f"{style}{text}{S.RESET}" if color else text
 
 def truecolor():
-    """True when the brand banner may use 24-bit colour."""
+    """True when the brand banner may use 24-bit color."""
     return os.environ.get("COLORTERM") in ("truecolor", "24bit")
 '''
 def cli_python():
@@ -1097,14 +1104,14 @@ def cli_sample():
         "3 -               not used",
         "",
         f"{W}warning:{R} rail exit assumes a 1.5 m (59 in) rail; pass --rail to set yours",
-        f"{H}how far to trust it:{R} within 3 % of OpenRocket on this design; on 12 real flights hpr's apogee was within 8 %",
+        f"{H}how far to trust it:{R} within 3% of OpenRocket on this design; on 12 real flights hpr's apogee was within 8%",
         f"{D}(an example: these numbers are made up to show the layout){R}",
     ]
     plain = [re.sub(r"\x1b\[[0-9;]*m", "", a) for a in rows]
     return plain, rows
 
 def ansi_svg(lines, theme, cw=14 * 1200 / 2048, lh=20, pad=20):     # cw: Cascadia Mono advance (1200 of 2048 units) at 14 px
-    """Draw ANSI-coloured lines as the FusionSpace terminal theme shows them (16-colour SGR codes only)."""
+    """Draw ANSI-colored lines as the FusionSpace terminal theme shows them (16-color SGR codes only)."""
     pal = {"30": theme["black"], "31": theme["red"], "32": theme["green"], "33": theme["yellow"], "34": theme["blue"],
            "35": theme["magenta"], "36": theme["cyan"], "37": theme["white"]}
     width = int(pad * 2 + cw * max(len(re.sub(r"\x1b\[[0-9;]*m", "", l)) for l in lines)); height = pad * 2 + lh * len(lines)
@@ -1245,7 +1252,7 @@ def oled_screens():
     return out_
 
 def tft_screen_svg():
-    """240 x 240 colour ground-station screen (dark roles): recovery, with the rocket's bearing and distance."""
+    """240 x 240 color ground-station screen (dark roles): recovery, with the rocket's bearing and distance."""
     c = lambda r: role(r, "dark")
     mono = "font-family=\"Cascadia Mono\""
     o = [f'<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240"><rect width="240" height="240" fill="{c("canvas")}"/>']
@@ -1274,7 +1281,8 @@ def tft_screen_svg():
     o.append('</svg>')
     return "\n".join(o)
 
-LV_STYLES = """/* FusionSpace styles for LVGL 9 (also LVGL 8: the lv_style_set_* calls are the same). Generated by
+LV_STYLES = """/* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 Neer Patel */
+/* FusionSpace styles for LVGL 9 (also LVGL 8: the lv_style_set_* calls are the same). Generated by
    tools/build/kit_product.py. Square corners, 1 px borders, no shadows, the dark roles from fusionspace_ui.h.
 
    Use: fs_lvgl_styles_init(); then lv_obj_add_style(obj, &fs_style_panel, 0); and so on, or apply them in a theme's
@@ -1314,7 +1322,7 @@ void fs_lvgl_styles_init(void)
     lv_style_set_pad_hor(&fs_style_button, 16);
     lv_style_set_pad_ver(&fs_style_button, 8);
 
-    base(&fs_style_button_pressed);              /* pressed: the action colour */
+    base(&fs_style_button_pressed);              /* pressed: the action color */
     lv_style_set_bg_color(&fs_style_button_pressed, lv_color_hex(FS_ACTION_RGB888));
     lv_style_set_text_color(&fs_style_button_pressed, lv_color_hex(FS_ON_ACTION_RGB888));
 
@@ -1351,7 +1359,8 @@ void fs_lvgl_styles_init(void)
     lv_style_set_pad_hor(&fs_style_chip_danger, 4);
 }
 """
-LV_H = """/* FusionSpace styles for LVGL. Generated by tools/build/kit_product.py. */
+LV_H = """/* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 Neer Patel */
+/* FusionSpace styles for LVGL. Generated by tools/build/kit_product.py. */
 #ifndef FS_LVGL_STYLES_H
 #define FS_LVGL_STYLES_H
 #include "lvgl.h"
@@ -1465,7 +1474,7 @@ File → Board Setup → Title Block (or Page Settings):
 | Revision | `B` | `REV B` |
 | Issue date | `2026-10` | the date beside the revision |
 
-Checked with KiCad 10.0.6 (5 October 2026): both footprints load, and on a test board with Title `FS-VEGA-004`, Revision `B` and
+Checked with KiCad 10.0.6 (October 5, 2026): both footprints load, and on a test board with Title `FS-VEGA-004`, Revision `B` and
 Issue date `2026-10` the plotted silkscreen reads `FS-VEGA-004` and `REV B  2026-10`. If an older KiCad leaves the variables
 unresolved, place two text items with the same text over the empty frame.
 
@@ -1543,7 +1552,7 @@ def livery_svg(od_in, length=220.0):
     ty = Hh - m - 22; tx = W - m - 120
     o.append(f'<rect x="{tx:.2f}" y="{ty:.2f}" width="120" height="22" fill="#FFFFFF" stroke="{VOID}" stroke-width="0.5"/>')
     cells = [("TITLE", f"Livery wrap, {od:.1f} mm OD", 0, 0, 70), ("DESIGNATION", "FS-VEGA-001", 70, 0, 50),
-             ("SCALE", "1 : 1", 0, 11, 25), ("UNITS", "mm", 25, 11, 20), ("COLOURS", "Void · white · fluo orange", 45, 11, 75)]
+             ("SCALE", "1 : 1", 0, 11, 25), ("UNITS", "mm", 25, 11, 20), ("COLORS", "Void · white · fluo orange", 45, 11, 75)]
     for k_, v, cx_, cy_, w_ in cells:
         o.append(f'<rect x="{tx + cx_:.2f}" y="{ty + cy_:.2f}" width="{w_}" height="11" fill="none" stroke="{VOID}" stroke-width="0.2"/>')
         o.append(T(k_, tx + cx_ + 1.5, ty + cy_ + 3.3, 2.0, "#566079") + T(v, tx + cx_ + 1.5, ty + cy_ + 8.4, 3.0))
@@ -1559,7 +1568,7 @@ def build_rockets():
         p_ = wr(f"rockets/{name}.svg", s_)
         subprocess.run(["rsvg-convert", "-f", "pdf", "-o", out(f"rockets/{name}.pdf"), p_], check=True)
     subprocess.run(["rsvg-convert", "-w", "1600", "-o", out("rockets/preview.png"), out(f"rockets/livery-{2.26 * 25.4:.0f}mm.svg")], check=True)
-    wr("rockets/README.md", "# Livery wrap sheets\n\nUnrolled wraps for common airframe outside diameters, drawn 1:1 in millimetres (SVG and PDF): "
+    wr("rockets/README.md", "# Livery wrap sheets\n\nUnrolled wraps for common airframe outside diameters, drawn 1:1 in millimeters (SVG and PDF): "
        + ", ".join(f"{d:g} in ({d * 25.4:.0f} mm)" for d in LIVERY_OD_IN) + ".\n\n"
        "Each has the designation band (twice around, so it reads from any side), a four-quadrant roll pattern above the fin "
        "can, the two-tone mark once, an overlap strip, and a column of separate decals: CG and CP symbols to place at your "
@@ -1573,10 +1582,10 @@ PRINCIPLES = [("Drawn, not decorated", "Every screen is a sheet from a drawing s
               ("Show the working", "Formula, constants, inputs, sources and dates one step from every result."),
               ("Say how far to trust it", "Measured, predicted or copied, with its spread. Never a go/no-go verdict."),
               ("Built for the field", "Offline, readable in sun, usable with gloves, printable in black."),
-              ("Quiet until it matters", "Four reserved signal colours, always with a word and a shape. Unused is grey, never red."),
+              ("Quiet until it matters", "Four reserved signal colors, always with a word and a shape. Unused is gray, never red."),
               ("One sweep", "The gradient once per view, as identity: never a button, a status or a data scale."),
               ("Numbered like parts", "Every product has a designation and a revision, on screen and on the part."),
-              ("Native where it counts", "The platform owns behaviour; FusionSpace owns content.")]
+              ("Native where it counts", "The platform owns behavior; FusionSpace owns content.")]
 GUIDE_CSS = (".fsp-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;font-family:var(--mono);font-size:11px;font-weight:600;"
              "letter-spacing:.06em;text-transform:uppercase}.fsp-row{display:flex;flex-wrap:wrap;gap:8px}.fsp-shot{display:block;border:1px solid var(--rule);width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;object-position:top}"
              ".fsp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}@media (max-width:640px){.fsp-grid{grid-template-columns:1fr}}"
@@ -1587,7 +1596,7 @@ def guide_sheet(n, total):
     rules = "".join(f'<div><h3>{i + 1} · {h}</h3><p>{t}</p></div>' for i, (h, t) in enumerate(PRINCIPLES))
     rows = "".join(f"<tr><td>product/{p}</td><td>{d}</td></tr>" for p, d in (
         ("README.md", "Start here: the reading order, the idea in one paragraph, how a project points here."),
-        ("principles.md · foundations.md", "The eight principles; colour roles, signals, themes, type, space, lines, motion, icons."),
+        ("principles.md · foundations.md", "The eight principles; color roles, signals, themes, type, space, lines, motion, icons."),
         ("data.md · writing.md", "Numbers, units, readouts, charts, maps, telemetry; voice, errors, signal words."),
         ("web.md · cli.md · mobile.md · desktop.md", "Sites, tools and PWAs; command-line tools; iOS and Android; macOS, Windows and Linux."),
         ("embedded.md · hardware.md · rockets.md", "Flight computers and devices; boards, enclosures and labels; airframes and livery."),
@@ -1602,8 +1611,8 @@ def guide_sheet(n, total):
     <div class="sheet-body">
       <p>The brand says who made it; the product system says how the thing behaves. FusionSpace products are drawn, not decorated: every screen is a sheet from a drawing set, with line types that mean what they mean on a drawing, a title block, and a designation like a part. They show their working, say how far to trust each number, and are built for a launch field.</p>
       <div class="rules" style="grid-template-columns:repeat(2,minmax(0,1fr))">{rules}</div>
-      <h3 style="margin-top:8px">Signal colours</h3>
-      <p>Four colours that mean a state, kept apart from the brand colours and used with a word and a shape: Flare for danger, Sodium for caution, Aurora for normal, Nebula for predicted. They follow the flight-deck and spacecraft standards (14 CFR 25.1322, FAA AC 25-11B, NASA-STD-3001).</p>
+      <h3 style="margin-top:8px">Signal colors</h3>
+      <p>Four colors that mean a state, kept apart from the brand colors and used with a word and a shape: Flare for danger, Sodium for caution, Aurora for normal, Nebula for predicted. They follow the flight-deck and spacecraft standards (14 CFR 25.1322, FAA AC 25-11B, NASA-STD-3001).</p>
       <div class="fsp-row">{chips}</div>
       <div class="fsp-grid">{shots}</div>
       <table class="files"><tbody>{rows}</tbody></table>
@@ -1635,7 +1644,7 @@ def build_desktop():
         png(ico_svg, round(44 * sc / 100), out(f"desktop/windows/msix/Square44x44Logo.scale-{sc}.png"))
         png(app_svg, round(150 * sc / 100), out(f"desktop/windows/msix/Square150x150Logo.scale-{sc}.png"))
     png(ico_svg, 50, out("desktop/windows/msix/StoreLogo.scale-100.png"))
-    # Linux: hicolor scalable and 256 px, a symbolic icon (one colour; the desktop recolours it)
+    # Linux: hicolor scalable and 256 px, a symbolic icon (one color; the desktop recolors it)
     os.makedirs(out("desktop/linux/hicolor/scalable/apps"), exist_ok=True)
     shutil.copy(ico_svg, out(f"desktop/linux/hicolor/scalable/apps/{APP_ID}.svg"))
     png(ico_svg, 256, out(f"desktop/linux/hicolor/256x256/apps/{APP_ID}.png"))
@@ -1646,6 +1655,7 @@ def build_desktop():
     os.makedirs(out("desktop/linux/hicolor/symbolic/apps"), exist_ok=True)
     with open(out(f"desktop/linux/hicolor/symbolic/apps/{APP_ID}-symbolic.svg"), "w") as fh: fh.write(sym)
     wr(f"desktop/linux/{APP_ID}.desktop", f"""[Desktop Entry]
+# SPDX-License-Identifier: Apache-2.0 · Copyright 2026 Neer Patel
 # FusionSpace desktop entry template. Rename the file and every {APP_ID} to your app's id.
 Type=Application
 Name=hpr-sim
@@ -1659,7 +1669,8 @@ Keywords=rocket;rocketry;simulator;flight;
 StartupWMClass=hpr-sim
 """)
     wr(f"desktop/linux/{APP_ID}.metainfo.xml", f"""<?xml version="1.0" encoding="UTF-8"?>
-<!-- FusionSpace AppStream template. Brand colours: Flathub asks for colourful ones, so O blue (light) and M orange (dark). -->
+<!-- SPDX-License-Identifier: Apache-2.0 · Copyright 2026 Neer Patel -->
+<!-- FusionSpace AppStream template. Brand colors: Flathub asks for colorful ones, so O blue (light) and M orange (dark). -->
 <component type="desktop-application">
   <id>{APP_ID}</id>
   <name>hpr-sim</name>
@@ -1679,7 +1690,8 @@ StartupWMClass=hpr-sim
   <content_rating type="oars-1.1"/>
 </component>
 """)
-    wr("desktop/linux/99-fusionspace.rules", """# FusionSpace devices: let the logged-in user open their serial ports without joining dialout or uucp.
+    wr("desktop/linux/99-fusionspace.rules", """# SPDX-License-Identifier: Apache-2.0 · Copyright 2026 Neer Patel
+# FusionSpace devices: let the logged-in user open their serial ports without joining dialout or uucp.
 # Install to /etc/udev/rules.d/ (packages: /usr/lib/udev/rules.d/), then: sudo udevadm control --reload && sudo udevadm trigger
 # Set the vendor and product ids to your device's. Open-source hardware can get a free product id under pid.codes (vendor 1209).
 SUBSYSTEM=="tty", ATTRS{idVendor}=="1209", ATTRS{idProduct}=="0001", MODE="0660", TAG+="uaccess"
@@ -1695,7 +1707,7 @@ Composer). The example app id is `{APP_ID}`: rename it for each app. Rules in `p
 | `windows/msix/` | MSIX assets: Square44x44 scales and target sizes (with the light and dark unplated variants Windows needs), Square150x150, StoreLogo |
 | `linux/hicolor/` | `scalable/apps/{APP_ID}.svg`, `256x256/apps/{APP_ID}.png`, `symbolic/apps/{APP_ID}-symbolic.svg` |
 | `linux/{APP_ID}.desktop` | Desktop entry template |
-| `linux/{APP_ID}.metainfo.xml` | AppStream metadata template, with the brand colours Flathub asks for |
+| `linux/{APP_ID}.metainfo.xml` | AppStream metadata template, with the brand colors Flathub asks for |
 | `linux/99-fusionspace.rules` | udev rule so users can open the device's serial port |
 """)
 
@@ -1761,7 +1773,7 @@ FOLDER_READMES = {
                      "| `fonts.css`, `fonts/` | WOFF2 subsets of Archivo and Cascadia Mono (SIL OFL) |\n| `index.html` | The specimen |\n"
                      "| `examples/` | Home (a drawing register), Charge, a flight report, Window |\n| `mdbook/` | mdBook theme |\n| `previews/` | Screenshots used in the docs |\n\nRules in `product/web.md`.\n",
     "embedded/README.md": "# Device screens\n\n| File | What |\n|---|---|\n| `oled-128x64-*.png` | 1:1 frame buffers (and `@4x` previews): SAFE, ARMED with a fault, in flight, landed |\n"
-                          "| `tft-240x240-recovery.*` | A colour ground-station screen in the dark roles |\n| `fs_lvgl_styles.c/.h` | LVGL styles (checked against LVGL 9.3) |\n\n"
+                          "| `tft-240x240-recovery.*` | A color ground-station screen in the dark roles |\n| `fs_lvgl_styles.c/.h` | LVGL styles (checked against LVGL 9.3) |\n\n"
                           "Text on the OLED screens is Spleen (BSD-2, `LICENSE-Spleen.txt`), which u8g2 includes. Rules in `product/embedded.md`.\n",
     "cli/README.md": "# Command line\n\n`fs_style.rs` (Rust: clap, anstyle, anstream) and `fs_style.py` (Python, no dependencies) put the ANSI roles from "
                      "`product/cli.md` into code. `sample-output.txt` is the example in `preview.png`.\n",

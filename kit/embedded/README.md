@@ -18,16 +18,16 @@ logo), drawn pixel-hinted so small sizes stay crisp. `PROGMEM` is defined away o
 | `oled-72x40-mark.h` | 72 × 40 | monochrome OLED / e-paper |
 | `epaper-296x128.h` | 296 × 128 | monochrome OLED / e-paper |
 | `epaper-250x122.h` | 250 × 122 | monochrome OLED / e-paper |
-| `tft-240x240.h` | 240 × 240 | colour TFT (RGB565; LVGL v9 image in `tft-240x240-lvgl.c`) |
-| `tft-320x240.h` | 320 × 240 | colour TFT (RGB565; LVGL v9 image in `tft-320x240-lvgl.c`) |
-| `tft-160x128.h` | 160 × 128 | colour TFT (RGB565; LVGL v9 image in `tft-160x128-lvgl.c`) |
-| `tft-135x240.h` | 135 × 240 | colour TFT (RGB565; LVGL v9 image in `tft-135x240-lvgl.c`) |
-| `tft-480x320.h` | 480 × 320 | colour TFT (RGB565; LVGL v9 image in `tft-480x320-lvgl.c`) |
-| `tft-240x240-round.h` | 240 × 240 | colour TFT (RGB565, round GC9A01; LVGL v9 image in `tft-240x240-round-lvgl.c`) |
+| `tft-240x240.h` | 240 × 240 | color TFT (RGB565; LVGL v9 image in `tft-240x240-lvgl.c`) |
+| `tft-320x240.h` | 320 × 240 | color TFT (RGB565; LVGL v9 image in `tft-320x240-lvgl.c`) |
+| `tft-160x128.h` | 160 × 128 | color TFT (RGB565; LVGL v9 image in `tft-160x128-lvgl.c`) |
+| `tft-135x240.h` | 135 × 240 | color TFT (RGB565; LVGL v9 image in `tft-135x240-lvgl.c`) |
+| `tft-480x320.h` | 480 × 320 | color TFT (RGB565; LVGL v9 image in `tft-480x320-lvgl.c`) |
+| `tft-240x240-round.h` | 240 × 240 | color TFT (RGB565, round GC9A01; LVGL v9 image in `tft-240x240-round-lvgl.c`) |
 | `epaper-200x200.h` | 200 × 200 | monochrome OLED / e-paper |
 | `epaper-400x300.h` | 400 × 300 | monochrome OLED / e-paper |
 
-Previews: `*-preview@4x.png` (mono) and `*-preview@2x.png` (colour). Regenerate with the build to change sizes
-(`DISPLAYS` in `tools/build/kit_targets.py`). Colour logos also come as LVGL v9 images (`*-lvgl.c`, `lv_image_dsc_t`, RGB565):
+Previews: `*-preview@4x.png` (mono) and `*-preview@2x.png` (color). Regenerate with the build to change sizes
+(`DISPLAYS` in `tools/build/kit_targets.py`). Color logos also come as LVGL v9 images (`*-lvgl.c`, `lv_image_dsc_t`, RGB565):
 add the file to your project, then `LV_IMAGE_DECLARE(fs_logo_tft_240x240); lv_image_set_src(img, &fs_logo_tft_240x240);`.
 The round 240 × 240 logo keeps the art inside the visible circle of a GC9A01 display.

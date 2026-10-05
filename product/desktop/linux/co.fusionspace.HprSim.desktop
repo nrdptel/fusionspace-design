@@ -1,4 +1,5 @@
 [Desktop Entry]
+# SPDX-License-Identifier: Apache-2.0 · Copyright 2026 Neer Patel
 # FusionSpace desktop entry template. Rename the file and every co.fusionspace.HprSim to your app's id.
 Type=Application
 Name=hpr-sim

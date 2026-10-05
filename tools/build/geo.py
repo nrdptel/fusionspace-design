@@ -13,14 +13,14 @@ FOOT_K = 0.05                     # foot width / base radius: each foot is cut o
 KINDS = {"main": "vonkarman", "west": "conical", "east": "elliptical", "south": "ogive"}
 NAMES = {"main": "Main cone", "west": "West cone", "east": "East cone", "south": "South cone"}
 PROFILE_NAMES = {"vonkarman": "Von Kármán", "conical": "conical", "ogive": "tangent ogive", "elliptical": "elliptical"}
-# Diamond spacing rule (read with the lean at 0): see layout(). Centres in units of a (main cone size), y down.
+# Diamond spacing rule (read with the lean at 0): see layout(). Centers in units of a (main cone size), y down.
 GAP_W_R = 0.19      # horizontal gap from the left Von Karman foot corner to the west wing's inner foot corner, in r
 GAP_E_R = 0.23      # horizontal gap from the right Von Karman foot corner to the east wing's inner foot corner, in r
 WING_R = 0.47       # wing centroid line (both wings' area centroids) relative to the Von Karman foot line, in r (+ = below)
 TAIL_R = 0.21      # tail cone (ogive) tip relative to the Von Karman foot line, in r (+ = below, - = up into the notch)
 
 def centroid_y(kind, s):
-    """Height of a cone's area centroid relative to its own centre (y down), in units of a. Shoelace over the
+    """Height of a cone's area centroid relative to its own center (y down), in units of a. Shoelace over the
     exact outline, sampled finely (the outline is lines, arcs and cubics; 200 points per segment)."""
     pts = sample(cone_segments(None, 1.0, (0.0, 0.0), tilt=0.0, kind=kind, size=s, pos=(0.0, 0.0)), 200)
     a2 = 0.0; cy = 0.0
@@ -33,7 +33,7 @@ def centroid_y(kind, s):
 def layout(gap_w_r=None, gap_e_r=None, wing_r=None, tail_r=None, tilt=None):
     """Diamond: with the lean at 0, the Von Karman cone is north, the ogive sits behind it (south) on the same
     axis, and the conical (west) and elliptical (east) cones are the wings, with their area centroids on one
-    line. Laid out upright on the grid, then the whole grid is rotated by TILT. Returns cone centres in units
+    line. Laid out upright on the grid, then the whole grid is rotated by TILT. Returns cone centers in units
     of a (main cone size), y down. Each cone's foot line is its visible bottom edge (see foot())."""
     gap_w_r = GAP_W_R if gap_w_r is None else gap_w_r
     gap_e_r = GAP_E_R if gap_e_r is None else gap_e_r
@@ -41,9 +41,9 @@ def layout(gap_w_r=None, gap_e_r=None, wing_r=None, tail_r=None, tilt=None):
     tail_r = TAIL_R if tail_r is None else tail_r
     tilt = TILT if tilt is None else tilt
     r = W_K                                  # Von Karman base radius in units of a
-    B = (1 - TIP_K) * H_K                    # centre-to-base, per unit size
+    B = (1 - TIP_K) * H_K                    # center-to-base, per unit size
     F = {n: foot(KINDS[n], SIZE[n]) for n in SIZE}          # (height above base, flank half-width, notch half-width)
-    cf = {n: B * SIZE[n] - F[n][0] for n in SIZE}           # centre to foot line
+    cf = {n: B * SIZE[n] - F[n][0] for n in SIZE}           # center to foot line
     X = {n: F[n][1] for n in SIZE}                          # foot corner half-width
     yf = cf["main"]                                         # Von Karman foot line
     wing = yf + wing_r * r                                  # wing centroid line
@@ -59,7 +59,7 @@ DRAW_ORDER = ["south", "west", "east", "main"]   # back to front: the ogive (sou
 
 # ---------- Von Karman (LD-Haack, C = 0) as C1-continuous cubic Beziers ----------
 # Wikipedia / Haack: theta = arccos(1 - 2x/L), y = R/sqrt(pi) * sqrt(theta - sin(2 theta)/2 + C sin^3 theta)
-# Normalised (r in units of R, x in units of L, x from the tip). Tangent at the tip is perpendicular to the axis.
+# Normalized (r in units of R, x in units of L, x from the tip). Tangent at the tip is perpendicular to the axis.
 def _haack_pt(t):
     th = math.acos(1 - 2 * t)
     return (math.sqrt(max(th - math.sin(2 * th) / 2, 0.0)) / math.sqrt(math.pi), t)
@@ -110,7 +110,7 @@ def _bez1(P, u):
             m * m * m * P[0][1] + 3 * m * m * u * P[1][1] + 3 * m * u * u * P[2][1] + u * u * u * P[3][1])
 
 def _vk_at(tn):
-    """Point on the fitted Von Karman curve at normalised distance tn from the tip: (segment, u, radius/R)."""
+    """Point on the fitted Von Karman curve at normalized distance tn from the tip: (segment, u, radius/R)."""
     for i, P in enumerate(VK_SEGS):
         if P[3][1] >= tn or i == len(VK_SEGS) - 1: break
     if tn >= P[3][1]: return i, 1.0, float(P[3][0])

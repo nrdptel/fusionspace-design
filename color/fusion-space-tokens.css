@@ -2,7 +2,7 @@
 :root {
   --fs-gradient: linear-gradient(90deg, #DA7C30 0%, #D07D7A 35%, #A188CB 65%, #768DF5 100%);  /* the Fusion gradient, M to O, always left to right; the same on dark and light */
 
-  --fs-void: #0B0F1C;  /* Primary dark. Backgrounds, one-colour marks, text on light */
+  --fs-void: #0B0F1C;  /* Primary dark. Backgrounds, one-color marks, text on light */
   --fs-abyss: #141A2B;  /* Raised dark surface */
   --fs-graphite: #2A3248;  /* Rules and borders on dark */
   --fs-slate: #566079;  /* Secondary text on light */
@@ -10,8 +10,8 @@
   --fs-mist: #D6DAE4;  /* Rules and borders on light */
   --fs-paper: #F3F4F7;  /* Primary light background */
   --fs-white: #FFFFFF;  /* Pure white, reversed marks */
-  --fs-ion: #3350D6;  /* O-class accent for links, UI and text on light (5.9:1 on Paper). Not a logo colour */
-  --fs-ember: #B34F0C;  /* M-class accent for warnings and highlights on light (4.7:1 on Paper). Not a logo colour */
+  --fs-ion: #3350D6;  /* O-class accent for links, UI and text on light (5.9:1 on Paper). Not a logo color */
+  --fs-ember: #B34F0C;  /* M-class accent for warnings and highlights on light (4.7:1 on Paper). Not a logo color */
   --fs-m-orange: #DA7C30;  /* gradient start; warm two-tone cones; warm accent on dark (6.3:1 on Void) */
   --fs-o-blue: #768DF5;  /* gradient end; cool two-tone cones; cool accent on dark (6.3:1 on Void) */
   --fs-spectral-o: #768DF5;  /* class O, ≥ 33,000 K, blue */
@@ -28,4 +28,4 @@
 }
 
 /* gradient text: .fs-gradient-text { background: var(--fs-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; } */
-/* Spectral: O and M are the Fusion gradient ends: the O- and M-class star colours, deepened on 2 October 2026 so the whole gradient holds at least 3:1 on white. B to K are the star colours sampled from the Harvard classification. */
+/* Spectral: O and M are the Fusion gradient ends: the O- and M-class star colors, deepened on October 2, 2026 so the whole gradient holds at least 3:1 on white. B to K are the star colors sampled from the Harvard classification. */
