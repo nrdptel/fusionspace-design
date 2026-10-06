@@ -1,27 +1,27 @@
-"""Christen: tools/christen/, the tool that names a project after an IAU-approved star (it replaces the star name picker).
+"""Callsign: tools/callsign/, the tool that names a project after an IAU-approved star (it replaces the star name picker).
 
-Two files that each work on their own, made from source/christen/:
-- christen.html: the tool in a browser, on any device. Everything is inside the one file (the product stylesheet, the WOFF2
-  fonts, the one-color header lockup, the icons, the star list and christen.py for download), so it works opened from disk,
+Two files that each work on their own, made from source/callsign/:
+- callsign.html: the tool in a browser, on any device. Everything is inside the one file (the product stylesheet, the WOFF2
+  fonts, the one-color header lockup, the icons, the star list and callsign.py for download), so it works opened from disk,
   offline, or mailed to a phone.
-- christen.py: the same tool on the command line, Python 3.8+ with no dependencies, with the star list built in.
+- callsign.py: the same tool on the command line, Python 3.8+ with no dependencies, with the star list built in.
 Next to them: the list as JSON (which the page checks for a newer copy) and CSV, and a README.
 
-The star list is source/christen/iau-star-names.json, read from the IAU by `python3 source/christen/christen.py update
---out source/christen/iau-star-names.json`. The build never goes online, so two builds of the same sources match.
+The star list is source/callsign/iau-star-names.json, read from the IAU by `python3 source/callsign/callsign.py update
+--out source/callsign/iau-star-names.json`. The build never goes online, so two builds of the same sources match.
 """
 import os, re, json, base64, shutil, importlib.util
 import build, kit_icons, kit_product
 from kit_product import THEME_SWITCH, THEME_JS, status, note, titleblock
 
-D = "tools/christen"
-SRC = os.path.join(build.SRC, "christen")
+D = "tools/callsign"
+SRC = os.path.join(build.SRC, "callsign")
 DATE = "2026-10-06"                                         # date of issue of this version
 FONTS = (("Archivo", 400, "Archivo-Regular"), ("Archivo", 600, "Archivo-SemiBold"),
          ("Cascadia Mono", 400, "CascadiaMono-Regular"), ("Cascadia Mono", 600, "CascadiaMono-SemiBold"))
 
 def _module():
-    spec = importlib.util.spec_from_file_location("christen_src", os.path.join(SRC, "christen.py"))
+    spec = importlib.util.spec_from_file_location("callsign_src", os.path.join(SRC, "callsign.py"))
     m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
     return m
 
@@ -40,21 +40,21 @@ def _fonts():
     return "\n".join(faces)
 
 def build_cli(m, cat):
-    s = open(os.path.join(SRC, "christen.py"), encoding="utf-8").read()
+    s = open(os.path.join(SRC, "callsign.py"), encoding="utf-8").read()
     line = "CATALOG = None\n"
     assert s.count(line) == 1 and "'''" not in m.dumps(cat)
     s = s.replace("# The build puts the IAU list here, so this file works on its own. Without it, iau-star-names.json next to this file is read.\n",
-                  "# The IAU list, as built in. A newer copy (christen update, or iau-star-names.json next to this file) is used instead.\n")
+                  "# The IAU list, as built in. A newer copy (callsign update, or iau-star-names.json next to this file) is used instead.\n")
     s = s.replace(line, "CATALOG = json.loads(r'''" + m.dumps(cat) + "''')\n")
-    s = s.replace("Edit source/christen/christen.py in the fusionspace-design repository; tools/christen/christen.py is built from it.",
-                  "Built from source/christen/christen.py in the fusionspace-design repository; edit it there, not here.")
+    s = s.replace("Edit source/callsign/callsign.py in the fusionspace-design repository; tools/callsign/callsign.py is built from it.",
+                  "Built from source/callsign/callsign.py in the fusionspace-design repository; edit it there, not here.")
     return s
 
 def build_page(m, cat, cli):
-    s = open(os.path.join(SRC, "christen.html"), encoding="utf-8").read()
+    s = open(os.path.join(SRC, "callsign.html"), encoding="utf-8").read()
     fav = base64.b64encode(open(os.path.join(build.OUT, "logo/favicon/favicon.svg"), "rb").read()).decode()
     css = open(os.path.join(build.OUT, "product/web/fusionspace.css"), encoding="utf-8").read()
-    tb = titleblock([("Title", "Christen"), ("Designation", m.DESIGNATION), ("Version", m.VERSION), ("Date", DATE),
+    tb = titleblock([("Title", "Callsign"), ("Designation", m.DESIGNATION), ("Version", m.VERSION), ("Date", DATE),
                      ("Units", "vmag, degrees J2000"), ("Data", f"IAU star names, read {cat['read']}"), ("Status", "RELEASED"),
                      ("Notes", "Checks the repository for a newer list when online. Names in use stay in this browser.")])
     tb, n = re.subn(r'(<span class="k">Data</span><span class="v")', r'\1 data-tb="data"', tb)
@@ -75,18 +75,18 @@ def build_page(m, cat, cli):
     assert not left, left
     return s
 
-def build_christen():
+def build_callsign():
     m = _module()
     cat = json.load(open(os.path.join(SRC, "iau-star-names.json"), encoding="utf-8"))
     assert cat["fields"] == m.FIELDS and cat["count"] == len(cat["stars"]) >= 300
     unknown = {r[3] for r in cat["stars"]} - set(m.CONSTELLATIONS)
-    assert not unknown, f"constellations missing from christen.CONSTELLATIONS: {unknown}"
+    assert not unknown, f"constellations missing from callsign.CONSTELLATIONS: {unknown}"
     assert len(m.CONSTELLATIONS) == 88
     cli = build_cli(m, cat)
     os.makedirs(os.path.join(build.OUT, D), exist_ok=True)
-    build.wr(f"{D}/christen.py", cli)
-    os.chmod(os.path.join(build.OUT, D, "christen.py"), 0o755)
-    build.wr(f"{D}/christen.html", build_page(m, cat, cli))
+    build.wr(f"{D}/callsign.py", cli)
+    os.chmod(os.path.join(build.OUT, D, "callsign.py"), 0o755)
+    build.wr(f"{D}/callsign.html", build_page(m, cat, cli))
     build.wr(f"{D}/iau-star-names.json", m.dumps(cat))
     rows = ["name,code," + ",".join(m.FIELDS[1:])]
     q = lambda v: "" if v is None else (f'"{v}"' if any(c in str(v) for c in ',"') else str(v))

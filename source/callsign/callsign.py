@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0 · Copyright 2026 Neer Patel
-"""Christen: name a FusionSpace project after an IAU-approved star.
+"""Callsign: give a FusionSpace project its callsign, the name of an IAU-approved star.
 
 One file, no dependencies, Python 3.8 or later: macOS, Linux, Windows, and phones with a Python app (a-Shell, Termux).
 The star list is the IAU's own (https://iauarchive.eso.org/public/themes/naming_stars/#n4). A copy is built in, and
-`christen update` reads the list again from the IAU; it is also read again on its own when the copy is over 30 days old.
+`callsign update` reads the list again from the IAU; it is also read again on its own when the copy is over 30 days old.
 
-    christen                              draw a star
-    christen -n 5 -c Orion --vmag ..3     five bright stars in Orion
-    christen list --max-letters 5         every short name
-    christen show Vega                    one star
-    christen update                       read the IAU list now
-    christen ui                           open christen.html, the same tool in a browser
+    callsign                              draw a star
+    callsign -n 5 -c Orion --vmag ..3     five bright stars in Orion
+    callsign list --max-letters 5         every short name
+    callsign show Vega                    one star
+    callsign update                       read the IAU list now
+    callsign ui                           open callsign.html, the same tool in a browser
 
-Edit source/christen/christen.py in the fusionspace-design repository; tools/christen/christen.py is built from it.
+Edit source/callsign/callsign.py in the fusionspace-design repository; tools/callsign/callsign.py is built from it.
 """
 import argparse, datetime, difflib, html, json, os, random, re, sys, unicodedata, urllib.request
 
@@ -21,7 +21,7 @@ VERSION = "1.0.0"
 DESIGNATION = "FS · SW · TOOL 007"
 IAU_URL = "https://iauarchive.eso.org/public/themes/naming_stars/"
 IAU_LIST = IAU_URL + "#n4"
-DOCS = "https://github.com/nrdptel/fusionspace-design/tree/main/tools/christen"
+DOCS = "https://github.com/nrdptel/fusionspace-design/tree/main/tools/callsign"
 REFRESH_DAYS = 30
 FIELDS = ["name", "designation", "id", "con", "component", "wds", "vmag", "ra", "dec", "approved"]
 HEADERS = {"IAU Name": "name", "Designation": "designation", "ID": "id", "Const.": "con", "#": "component",
@@ -122,7 +122,7 @@ def parse_iau(page):
             "stars": sorted(stars, key=lambda s: fold(s[0]))}
 
 def fetch_iau(timeout=20):
-    req = urllib.request.Request(IAU_URL, headers={"User-Agent": f"christen/{VERSION} (FusionSpace; {DOCS})"})
+    req = urllib.request.Request(IAU_URL, headers={"User-Agent": f"callsign/{VERSION} (FusionSpace; {DOCS})"})
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:
             page = r.read().decode("utf-8", "replace")
@@ -134,17 +134,17 @@ def fetch_iau(timeout=20):
 def cache_path():
     if sys.platform == "win32":
         base = os.environ.get("LOCALAPPDATA") or os.path.expanduser(r"~\AppData\Local")
-        return os.path.join(base, "FusionSpace", "christen", "iau-star-names.json")
+        return os.path.join(base, "FusionSpace", "callsign", "iau-star-names.json")
     if sys.platform == "darwin":
-        return os.path.expanduser("~/Library/Caches/christen/iau-star-names.json")
+        return os.path.expanduser("~/Library/Caches/callsign/iau-star-names.json")
     base = os.environ.get("XDG_CACHE_HOME") or os.path.expanduser("~/.cache")
-    return os.path.join(base, "christen", "iau-star-names.json")
+    return os.path.join(base, "callsign", "iau-star-names.json")
 
 def here(name):
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
 
 def load_catalogs():
-    """Every copy of the list there is, newest first: the cache (from christen update), the file next to this one, the built-in one."""
+    """Every copy of the list there is, newest first: the cache (from callsign update), the file next to this one, the built-in one."""
     found = []
     for where, path in (("cache", cache_path()), ("file", here("iau-star-names.json"))):
         try:
@@ -176,12 +176,12 @@ def same_stars(a, b):
 def catalog(args, out):
     found = load_catalogs()
     if not found:
-        raise Fail("no star list: this copy of christen has none built in, and there's no iau-star-names.json next to it",
-                   "run `christen update` to read the list from the IAU")
+        raise Fail("no star list: this copy of callsign has none built in, and there's no iau-star-names.json next to it",
+                   "run `callsign update` to read the list from the IAU")
     where, path, c = found[0]
     checked = c.get("checked", c["read"])
     age = (datetime.date.today() - datetime.date.fromisoformat(checked[:10])).days
-    if age > REFRESH_DAYS and not args.offline and not os.environ.get("CHRISTEN_OFFLINE") and not os.environ.get("CI"):
+    if age > REFRESH_DAYS and not args.offline and not os.environ.get("CALLSIGN_OFFLINE") and not os.environ.get("CI"):
         if sys.stderr.isatty():
             out.note(f"the star list was last checked {age} days ago; reading it again from the IAU (--offline skips this)")
         try:
@@ -226,7 +226,7 @@ def find_con(text):
     names = {fold(n): a for a, n in CONSTELLATIONS.items()}
     close = difflib.get_close_matches(fold(text.strip()), list(names), n=1, cutoff=0.6)
     hint = f"did you mean {CONSTELLATIONS[names[close[0]]]} ({names[close[0]]})? " if close else ""
-    raise Fail(f"no constellation named {text}", hint + "`christen constellations` lists them", code=2, kind="usage")
+    raise Fail(f"no constellation named {text}", hint + "`callsign constellations` lists them", code=2, kind="usage")
 
 def vmag_range(text):
     """'..3', '2..5', '-1.5..2', '4..', or one number (that magnitude or brighter)."""
@@ -271,7 +271,7 @@ def no_match(c, args):
         inside = [star(r) for r in c["stars"] if star(r)["con"] in args.cons]
         mags = [s["vmag"] for s in inside if s["vmag"] is not None]
         if not inside:
-            raise Fail(msg, "no IAU-named star is in that constellation; `christen constellations` lists the ones with names")
+            raise Fail(msg, "no IAU-named star is in that constellation; `callsign constellations` lists the ones with names")
         b = min(inside, key=lambda s: s["vmag"] if s["vmag"] is not None else 99)
         raise Fail(msg, f"{len(inside)} named stars are in {' or '.join(con_name(a) for a in args.cons)}, vmag {min(mags):g} to {max(mags):g}; the brightest is {b['name']}")
     raise Fail(msg, "widen the vmag range or the name length")
@@ -363,7 +363,7 @@ def cmd_show(c, args, out):
     close = difflib.get_close_matches(want, [fold(r[0]) for r in c["stars"]], n=3, cutoff=0.6)
     names = {fold(r[0]): r[0] for r in c["stars"]}
     raise Fail(f"no IAU star named {' '.join(args.name)}",
-               ("did you mean " + " or ".join(names[x] for x in close) + "?") if close else "`christen list` shows every name")
+               ("did you mean " + " or ".join(names[x] for x in close) + "?") if close else "`callsign list` shows every name")
 
 def cmd_constellations(c, args, out):
     count = {}
@@ -409,9 +409,9 @@ def cmd_update(c_old, args, out):
         if gone: print(f"{'removed':<16}  " + ", ".join(gone))
 
 def cmd_ui(c, args, out):
-    page = here("christen.html")
+    page = here("callsign.html")
     if not os.path.exists(page):
-        raise Fail(f"no christen.html next to {os.path.basename(__file__)}", f"download it from {DOCS} and keep the two files together")
+        raise Fail(f"no callsign.html next to {os.path.basename(__file__)}", f"download it from {DOCS} and keep the two files together")
     import pathlib, webbrowser
     webbrowser.open(pathlib.Path(page).as_uri())
     print(page)
@@ -433,15 +433,15 @@ def parser():
     o.add_argument("--offline", action="store_true", help="don't read the IAU list again, even when the copy is over 30 days old")
     o.add_argument("--verbose", action="store_true", help="say why an automatic update failed")
 
-    p = argparse.ArgumentParser(prog="christen", parents=[common],
-        description="Name a FusionSpace project after an IAU-approved star.",
+    p = argparse.ArgumentParser(prog="callsign", parents=[common],
+        description="Give a FusionSpace project its callsign: the name of an IAU-approved star.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="examples:\n  christen                              draw a star\n"
-               "  christen -n 5 -c Orion --vmag ..3     five bright stars in Orion\n"
-               "  christen list --max-letters 5         every name of five letters or fewer\n"
-               "  christen show Vega                    one star\n"
-               "  christen update                       read the IAU list now\n"
-               "  christen ui                           the same tool in a browser\n\n"
+        epilog="examples:\n  callsign                              draw a star\n"
+               "  callsign -n 5 -c Orion --vmag ..3     five bright stars in Orion\n"
+               "  callsign list --max-letters 5         every name of five letters or fewer\n"
+               "  callsign show Vega                    one star\n"
+               "  callsign update                       read the IAU list now\n"
+               "  callsign ui                           the same tool in a browser\n\n"
                f"star list: {IAU_LIST}\ndocs: {DOCS}")
     p.add_argument("--version", action="store_true", help="the version, and which star list is in use")
     sub = p.add_subparsers(dest="cmd", metavar="command")
@@ -458,7 +458,7 @@ def parser():
     k.add_argument("--all", action="store_true", help="include the constellations with no named star")
     u = sub.add_parser("update", parents=[common], help="read the star list from the IAU now", description=f"Read the star list from {IAU_LIST}.")
     u.add_argument("--out", metavar="FILE", help="write the list here instead of the cache")
-    sub.add_parser("ui", parents=[common], help="open christen.html, the same tool in a browser")
+    sub.add_parser("ui", parents=[common], help="open callsign.html, the same tool in a browser")
     return p
 
 def main(argv=None):
@@ -476,7 +476,7 @@ def main(argv=None):
             cmd_update(found[0][2] if found else None, args, out); return 0
         c = catalog(args, out)
         if args.version:
-            print(f"christen {VERSION} ({DESIGNATION})\nstar list: {c['count']} IAU names, read {c['read']} from {c['url']}"); return 0
+            print(f"callsign {VERSION} ({DESIGNATION})\nstar list: {c['count']} IAU names, read {c['read']} from {c['url']}"); return 0
         {"draw": cmd_draw, "list": cmd_list, "show": cmd_show, "constellations": cmd_constellations, "ui": cmd_ui}[args.cmd](c, args, out)
         return 0
     except Fail as e:

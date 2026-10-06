@@ -6,13 +6,13 @@
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#F3F4F7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B0F1C" media="(prefers-color-scheme: dark)">
-<title>Christen · FusionSpace</title>
-<meta name="description" content="Name a FusionSpace project after an IAU-approved star.">
+<title>Callsign · FusionSpace</title>
+<meta name="description" content="Give a FusionSpace project its callsign: the name of an IAU-approved star.">
 <link rel="icon" href="{{favicon}}">
 <style>
 {{fonts}}
 {{stylesheet}}
-/* Christen */
+/* Callsign */
 [hidden] { display: none !important; }
 #filters { align-content: start; }
 #simbad svg { width: 14px; height: 14px; vertical-align: -2px; }
@@ -46,8 +46,8 @@ pre.c-cli { overflow-x: auto; }
 <main>
 <section style="padding:40px 0 24px;display:grid;gap:12px">
   <div class="fs-row"><span class="fs-tag">{{designation}}</span>{{status_released}}</div>
-  <h1>Christen</h1>
-  <p class="fs-lead">Name a new project after an IAU-approved star: draw one at random, or narrow the list by constellation and brightness first.</p>
+  <h1>Callsign</h1>
+  <p class="fs-lead">Give a new project its callsign, the name of an IAU-approved star: draw one at random, or narrow the list by constellation and brightness first.</p>
 </section>
 
 <section class="fs-sheet" id="draw"><div class="fs-sheet-rail"><span class="fs-sheet-no">SHEET 1 / 3</span><h2>Draw</h2></div><div class="fs-sheet-body">
@@ -119,16 +119,16 @@ pre.c-cli { overflow-x: auto; }
   <button class="fs-btn" data-variant="secondary" type="button" id="dl-csv">{{icon:download}}Download the list (CSV)</button>
   <button class="fs-btn" data-variant="secondary" type="button" id="dl-json">{{icon:download}}Download the list (JSON)</button>
 </div>
-<p class="fs-small fs-muted">A browser can't read the IAU page directly (the IAU doesn't allow it), so this page checks the copy in the fusionspace-design repository, which <code>christen update</code> reads from the IAU. Nothing else leaves the browser.</p>
+<p class="fs-small fs-muted">A browser can't read the IAU page directly (the IAU doesn't allow it), so this page checks the copy in the fusionspace-design repository, which <code>callsign update</code> reads from the IAU. Nothing else leaves the browser.</p>
 <h3>Command line</h3>
 <p>The same tool for a terminal, on macOS, Linux and Windows (and phones with a Python app): one file, Python 3.8 or later, no dependencies, the list built in. It reads the IAU list again by itself when its copy is over 30 days old.</p>
-<div class="fs-row"><button class="fs-btn" data-variant="secondary" type="button" id="dl-cli">{{icon:download}}Download christen.py</button></div>
-<pre class="c-cli">python3 christen.py                            # draw a star (on Windows: py christen.py)
-python3 christen.py -n 5 -c Orion --vmag ..3   # five bright stars in Orion
-python3 christen.py list --max-letters 5       # every short name
-python3 christen.py show Vega                  # one star
-python3 christen.py update                     # read the IAU list now
-python3 christen.py --help                     # everything else: --json, --plain, --skip</pre>
+<div class="fs-row"><button class="fs-btn" data-variant="secondary" type="button" id="dl-cli">{{icon:download}}Download callsign.py</button></div>
+<pre class="c-cli">python3 callsign.py                            # draw a star (on Windows: py callsign.py)
+python3 callsign.py -n 5 -c Orion --vmag ..3   # five bright stars in Orion
+python3 callsign.py list --max-letters 5       # every short name
+python3 callsign.py show Vega                  # one star
+python3 callsign.py update                     # read the IAU list now
+python3 callsign.py --help                     # everything else: --json, --plain, --skip</pre>
 </div></section>
 
 {{titleblock}}
@@ -142,7 +142,7 @@ python3 christen.py --help                     # everything else: --json, --plai
   var BUILT = {{catalog}};
   var CON = {{constellations}};
   var CLI = {{cli}};
-  var REMOTE = "https://raw.githubusercontent.com/nrdptel/fusionspace-design/main/tools/christen/iau-star-names.json";
+  var REMOTE = "https://raw.githubusercontent.com/nrdptel/fusionspace-design/main/tools/callsign/iau-star-names.json";
   var F = BUILT.fields, I = {}; F.forEach(function (f, i) { I[f] = i; });
   var $ = function (id) { return document.getElementById(id); };
   var cat = BUILT, current = null, sort = { key: "name", dir: 1 }, used = [];
@@ -273,7 +273,7 @@ python3 christen.py --help                     # everything else: --json, --plai
   function toggleUsed(name) {
     var i = used.findIndex(function (n) { return fold(n) === fold(name); });
     if (i >= 0) used.splice(i, 1); else used.push(name);
-    store("christen-used", used);
+    store("callsign-used", used);
     renderUsed(); render(); show(current);
   }
 
@@ -324,7 +324,7 @@ python3 christen.py --help                     # everything else: --json, --plai
       if (!valid(c)) throw new Error("not a star list");
       var t = new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit", timeZoneName: "short" });
       if (c.read > cat.read && JSON.stringify(c.stars) !== JSON.stringify(cat.stars)) {
-        store("christen-list", c); useList(c);
+        store("callsign-list", c); useList(c);
         st.textContent = "Loaded a newer list: " + plural(c.stars.length, "name", "names") + ", read from the IAU " + c.read + " (checked " + t + ")."; toast("Newer star list loaded.");
       } else st.textContent = "This is the newest list (checked " + t + ").";
     }).catch(function (e) {
@@ -367,10 +367,10 @@ python3 christen.py --help                     # everything else: --json, --plai
   $("check").addEventListener("click", function () { check(true); });
   $("dl-csv").addEventListener("click", function () { download("iau-star-names.csv", "text/csv", csv()); });
   $("dl-json").addEventListener("click", function () { download("iau-star-names.json", "application/json", JSON.stringify(cat, null, 1) + "\n"); });
-  $("dl-cli").addEventListener("click", function () { download("christen.py", "text/x-python", CLI); });
+  $("dl-cli").addEventListener("click", function () { download("callsign.py", "text/x-python", CLI); });
 
-  used = (store("christen-used") || []).filter(function (n) { return typeof n === "string"; });
-  var saved = store("christen-list");
+  used = (store("callsign-used") || []).filter(function (n) { return typeof n === "string"; });
+  var saved = store("callsign-list");
   if (valid(saved) && saved.read > BUILT.read) cat = saved;
   fillConstellations();
   var start = restore();

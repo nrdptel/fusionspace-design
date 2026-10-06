@@ -31,7 +31,7 @@ Open `guide/index.html` in a browser for the full guide.
 | `type/fonts` | Cascadia Mono and Archivo (SIL OFL) | install once |
 | `graphics` | Mark construction drawing, gradient strip, spectral bar | Inkscape |
 | `templates` | GitHub social card (1280×640), plus FreeCAD TechDraw sheets in ANSI A, ANSI B and A4 | Inkscape, FreeCAD |
-| `tools/christen` | Christen, the star name tool: `christen.html` (any browser, phones included) and `christen.py` (terminal, Python 3.8+), with the IAU star list as JSON and CSV | browser, terminal |
+| `tools/callsign` | Callsign, the star name tool: `callsign.html` (any browser, phones included) and `callsign.py` (terminal, Python 3.8+), with the IAU star list as JSON and CSV | browser, terminal |
 | `tools/mark-tuner` | `index.html`: tune the mark and both lockups in the browser and export SVGs | browser |
 | `product` | The product system: how FusionSpace sites, tools, PWAs, CLIs, iOS, Android, macOS, Windows and Linux apps, flight computers, boards and rockets are designed. Rules (start with `product/README.md`), tokens for every platform, a web stylesheet with a specimen and example screens, icons, device-screen mock-ups, a KiCad board title block, livery sheets, desktop packaging | anything |
 | `tools/build` | The scripts that build every file here (`python3 tools/build/build.py`); see `tools/build/README.md` | terminal |

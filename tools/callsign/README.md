@@ -1,32 +1,32 @@
-# Christen
+# Callsign
 
-Name a FusionSpace project after an IAU-approved star. `FS · SW · TOOL 007`, version 1.0.0.
+Give a FusionSpace project its callsign: the name of an IAU-approved star. `FS · SW · TOOL 007`, version 1.0.0.
 
 Every FusionSpace project takes the name of a star the International Astronomical Union has approved, and the star's code:
-Vega becomes `FS-VEGA`. Christen draws one at random, or from a narrower list: one constellation, a range of brightness
+Vega becomes `FS-VEGA`. Callsign draws one at random, or from a narrower list: one constellation, a range of brightness
 (vmag), or names up to a number of letters. It skips names already in use.
 
 ## Use it
 
 | Where | How |
 |---|---|
-| Any browser: macOS, Windows, Linux, iPhone, iPad, Android | Open `christen.html`. It is one file with everything inside, so it works from disk, offline, or sent to a phone. |
-| Terminal: macOS, Linux | `python3 christen.py` |
-| Terminal: Windows | `py christen.py` (Python from python.org or the Microsoft Store) |
-| Phones, in a terminal | `python3 christen.py` in a-Shell (iOS) or Termux (Android) |
+| Any browser: macOS, Windows, Linux, iPhone, iPad, Android | Open `callsign.html`. It is one file with everything inside, so it works from disk, offline, or sent to a phone. |
+| Terminal: macOS, Linux | `python3 callsign.py` |
+| Terminal: Windows | `py callsign.py` (Python from python.org or the Microsoft Store) |
+| Phones, in a terminal | `python3 callsign.py` in a-Shell (iOS) or Termux (Android) |
 
-Both files work on their own and do the same things. `christen.py ui` opens `christen.html` when the two sit together, and
-the page can download `christen.py`.
+Both files work on their own and do the same things. `callsign.py ui` opens `callsign.html` when the two sit together, and
+the page can download `callsign.py`.
 
 ```
-christen                                  draw a star
-christen -n 5 -c Orion --vmag ..3         five stars in Orion, vmag 3 or brighter
-christen --vmag 2..5 --max-letters 6      vmag 2 to 5, six letters or fewer
-christen --skip Vega,Rigel                not these
-christen list --sort vmag                 every star, brightest first (--csv, --json, --plain)
-christen show Vega                        one star, by name or code
-christen constellations                   the constellations with named stars
-christen update                           read the IAU list now
+callsign                                  draw a star
+callsign -n 5 -c Orion --vmag ..3         five stars in Orion, vmag 3 or brighter
+callsign --vmag 2..5 --max-letters 6      vmag 2 to 5, six letters or fewer
+callsign --skip Vega,Rigel                not these
+callsign list --sort vmag                 every star, brightest first (--csv, --json, --plain)
+callsign show Vega                        one star, by name or code
+callsign constellations                   the constellations with named stars
+callsign update                           read the IAU list now
 ```
 
 `--json` prints one JSON document; `--plain` prints names only, for scripts. Colors follow the terminal's theme and turn off
@@ -37,13 +37,13 @@ with `NO_COLOR` or `--color never`. Exit codes: 0 done, 1 no match or no list, 2
 The names come from the IAU's own list: the [Current List of IAU Star Names](https://iauarchive.eso.org/public/themes/naming_stars/#n4)
 on its Naming Stars page, with each star's designation, constellation, vmag, J2000 position and approval date.
 
-- **Command line.** A copy is built in. `christen update` reads the list from the IAU again and keeps it in the user cache
-  (`~/Library/Caches/christen` on macOS, `~/.cache/christen` on Linux, `%LOCALAPPDATA%\FusionSpace\christen` on Windows).
+- **Command line.** A copy is built in. `callsign update` reads the list from the IAU again and keeps it in the user cache
+  (`~/Library/Caches/callsign` on macOS, `~/.cache/callsign` on Linux, `%LOCALAPPDATA%\FusionSpace\callsign` on Windows).
   When the copy is over 30 days old, the next run reads it again on its own; if the IAU can't be reached, it carries on
-  with the copy it has. `--offline` (or `CHRISTEN_OFFLINE=1`) skips this.
+  with the copy it has. `--offline` (or `CALLSIGN_OFFLINE=1`) skips this.
 - **Browser.** A copy is built in. Browsers can't read the IAU page directly (the IAU doesn't allow it), so the page checks
   `iau-star-names.json` in this folder on GitHub, and uses it when it is newer.
-- **This repository.** `python3 source/christen/christen.py update --out source/christen/iau-star-names.json` reads the
+- **This repository.** `python3 source/callsign/callsign.py update --out source/callsign/iau-star-names.json` reads the
   list, then a build puts it into every file here.
 
 `iau-star-names.json` and `iau-star-names.csv` here are the list as built in.

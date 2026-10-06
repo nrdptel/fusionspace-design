@@ -822,12 +822,12 @@ def build_guide(info):
     s = s.replace("</style>", kit.GUIDE_CSS + kit_product.GUIDE_CSS + "</style>", 1)
     s = s.replace("  <footer>", kit.guide_sheet(8).replace("SHEET 8 / 8", f"SHEET 8 / {n}") + kit_product.guide_sheet(9, n) + "\n  <footer>", 1)
     tags = "".join(f'<div><span class="label">Tag</span><b>{t}</b><p>{d}.<br><code style="white-space:nowrap">FS-VEGA · {t}</code></p></div>' for t, d in kit.DISCIPLINES)
-    s = s.replace('      <div><a class="cta" href="../tools/christen/christen.html">',
+    s = s.replace('      <div><a class="cta" href="../tools/callsign/callsign.html">',
                   '      <p>Projects of any kind use the same scheme. An optional discipline tag after the code says what kind of project it is:</p>\n'
                   f'      <div class="codes" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">{tags}</div>\n'
-                  '      <div><a class="cta" href="../tools/christen/christen.html">', 1)
-    for a_, b_ in (("<tr><td>tools/christen/</td><td>Christen, the star name tool: <code>christen.html</code> for any browser, phones included, and <code>christen.py</code> for a terminal, with the IAU star list as JSON and CSV.</td></tr>",
-                    "<tr><td>tools/christen/</td><td>Christen, the star name tool: <code>christen.html</code> for any browser, phones included, and <code>christen.py</code> for a terminal, with the IAU star list as JSON and CSV.</td></tr>\n"
+                  '      <div><a class="cta" href="../tools/callsign/callsign.html">', 1)
+    for a_, b_ in (("<tr><td>tools/callsign/</td><td>Callsign, the star name tool: <code>callsign.html</code> for any browser, phones included, and <code>callsign.py</code> for a terminal, with the IAU star list as JSON and CSV.</td></tr>",
+                    "<tr><td>tools/callsign/</td><td>Callsign, the star name tool: <code>callsign.html</code> for any browser, phones included, and <code>callsign.py</code> for a terminal, with the IAU star list as JSON and CSV.</td></tr>\n"
                     "        <tr><td>tools/</td><td>The build scripts that make every file here, and the mark tuner. Apache-2.0 (<code>tools/LICENSE</code>).</td></tr>"),
                    ("<tr><td>_archive/</td><td>The original Illustrator and SolidWorks files, the Rev A single-star set and the Rev B star cluster.</td></tr>",
                     "<tr><td>source/</td><td>The Rev B files the build starts from: the outlined wordmark, the templates, the guide and the README text.</td></tr>")):
@@ -907,8 +907,8 @@ def build_readme():
          "some fill themselves in (author, date, scale, sheet). The sheets are transparent; with a dark TechDraw page color use the `-dark` ones, and print from the light ones."),
     ]
     reps += [(" The old Illustrator and SolidWorks files are kept in `_archive/`.", ""),
-             ("| `tools/christen` | Christen, the star name tool: `christen.html` (any browser, phones included) and `christen.py` (terminal, Python 3.8+), with the IAU star list as JSON and CSV | browser, terminal |",
-              "| `tools/christen` | Christen, the star name tool: `christen.html` (any browser, phones included) and `christen.py` (terminal, Python 3.8+), with the IAU star list as JSON and CSV | browser, terminal |\n"
+             ("| `tools/callsign` | Callsign, the star name tool: `callsign.html` (any browser, phones included) and `callsign.py` (terminal, Python 3.8+), with the IAU star list as JSON and CSV | browser, terminal |",
+              "| `tools/callsign` | Callsign, the star name tool: `callsign.html` (any browser, phones included) and `callsign.py` (terminal, Python 3.8+), with the IAU star list as JSON and CSV | browser, terminal |\n"
               "| `tools/mark-tuner` | `index.html`: tune the mark and both lockups in the browser and export SVGs | browser |\n"
               "| `product` | The product system: how FusionSpace sites, tools, PWAs, CLIs, iOS, Android, macOS, Windows and Linux apps, flight computers, boards and rockets are designed. Rules (start with `product/README.md`), tokens for every platform, a web stylesheet with a specimen and example screens, icons, device-screen mock-ups, a KiCad board title block, livery sheets, desktop packaging | anything |\n"
               "| `tools/build` | The scripts that build every file here (`python3 tools/build/build.py`); see `tools/build/README.md` | terminal |")]
@@ -940,7 +940,7 @@ def build_all():
     import kit; kit_info = kit.build_kit()
     import kit_product; kit_product.build_product()   # product/: the product system (needs the logos above)
     build_guide(info); build_readme()
-    import kit_christen; kit_christen.build_christen()   # tools/christen/
+    import kit_callsign; kit_callsign.build_callsign()   # tools/callsign/
     import kit_review; review = kit_review.build_review()   # review.html: every output, for sign-off
     return info, dxf, kit_info, review
 
