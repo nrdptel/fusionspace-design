@@ -4,7 +4,7 @@ thumbnail, title slide, report cover and a starter README, in dark and light.
     python3 tools/build/project.py --name Vega --tag EMB --desc "Flight software for a two-stage sounding rocket."
     python3 tools/build/project.py --name Achernar --tag GAME --kind "Game" --desc "A small orbital-mechanics puzzle game." --out ~/code/achernar/.github/brand
 
-Options: --name (an IAU star name, see tools/star-name-picker), --code (default FS-<NAME>), --tag (discipline tag, see
+Options: --name (an IAU star name, see tools/christen), --code (default FS-<NAME>), --tag (discipline tag, see
 kit.DISCIPLINES), --kind (free text after the code, default: the tag's description), --number (default 001),
 --desc (one line), --out (default projects/<name>). Needs the same tools as the build (rsvg-convert, fonts)."""
 import argparse, os, re, json, subprocess, sys

@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#F3F4F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B0F1C" media="(prefers-color-scheme: dark)">
+<title>Christen · FusionSpace</title>
+<meta name="description" content="Name a FusionSpace project after an IAU-approved star.">
+<link rel="icon" href="{{favicon}}">
+<style>
+{{fonts}}
+{{stylesheet}}
+/* Christen */
+[hidden] { display: none !important; }
+#filters { align-content: start; }
+#simbad svg { width: 14px; height: 14px; vertical-align: -2px; }
+.c-star { font: var(--fs-type-display); overflow-wrap: anywhere; }
+.c-code { font: 600 20px/28px var(--fs-font-mono); letter-spacing: 0.02em; }
+.c-facts { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 16px; margin: 0; border-top: 1px solid var(--fs-rule); padding-top: 12px; }
+.c-facts dt { font: var(--fs-type-label); text-transform: uppercase; letter-spacing: 0.06em; color: var(--fs-ink-muted); padding-top: 3px; }
+.c-facts dd { margin: 0; font: var(--fs-type-code); overflow-wrap: anywhere; }
+.c-used { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--fs-rule); }
+.c-used li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 0; border-bottom: 1px solid var(--fs-rule); font: var(--fs-type-code); }
+.c-range { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; align-items: center; }
+.c-table td button { all: unset; cursor: pointer; color: var(--fs-action); text-decoration: underline; text-underline-offset: 3px; }
+.c-table td button:focus-visible { outline: 2px solid var(--fs-focus, var(--fs-action)); outline-offset: 2px; }
+.c-table th button { all: unset; cursor: pointer; }
+.c-table th button:focus-visible { outline: 2px solid var(--fs-action); outline-offset: 2px; }
+.c-table th[aria-sort="ascending"] button::after { content: " ↑"; }
+.c-table th[aria-sort="descending"] button::after { content: " ↓"; }
+.c-table tr[data-current] td { background: var(--fs-surface); font-weight: 600; }
+.c-muted-row td { color: var(--fs-ink-muted); }
+pre.c-cli { overflow-x: auto; }
+</style>
+</head>
+<body>
+<div class="fs-strip"></div>
+<div class="fs-page">
+<header class="fs-header">
+  <span class="fs-logo" aria-label="FusionSpace">{{logo}}</span>
+  <span></span>
+  {{theme_switch}}
+</header>
+<main>
+<section style="padding:40px 0 24px;display:grid;gap:12px">
+  <div class="fs-row"><span class="fs-tag">{{designation}}</span>{{status_released}}</div>
+  <h1>Christen</h1>
+  <p class="fs-lead">Name a new project after an IAU-approved star: draw one at random, or narrow the list by constellation and brightness first.</p>
+</section>
+
+<section class="fs-sheet" id="draw"><div class="fs-sheet-rail"><span class="fs-sheet-no">SHEET 1 / 3</span><h2>Draw</h2></div><div class="fs-sheet-body">
+<div class="fs-split">
+  <form class="fs-stack" id="filters" onsubmit="return false">
+    <div class="fs-field"><label for="con">Constellation</label>
+      <select class="fs-select" id="con"></select>
+      <span class="fs-help">Only constellations with an IAU-named star are listed.</span></div>
+    <div class="fs-field"><span class="fs-field-label" id="vmag-label">Brightness · <span class="u">vmag</span></span>
+      <div class="c-range" role="group" aria-labelledby="vmag-label">
+        <div class="fs-input-group"><input class="fs-input" id="lo" inputmode="decimal" autocomplete="off" placeholder="any" aria-label="Brightest vmag"><span class="fs-unit">from</span></div>
+        <span class="fs-muted">–</span>
+        <div class="fs-input-group"><input class="fs-input" id="hi" inputmode="decimal" autocomplete="off" placeholder="any" aria-label="Faintest vmag"><span class="fs-unit">to</span></div>
+      </div>
+      <span class="fs-help">Smaller is brighter: Sirius is −1.46, and the faintest stars you can see without a telescope are about 6.</span>
+      <span class="fs-error" id="vmag-error" hidden></span></div>
+    <div class="fs-field"><label for="max">Longest name</label>
+      <div class="fs-input-group"><input class="fs-input" id="max" inputmode="numeric" autocomplete="off" placeholder="any"><span class="fs-unit">letters</span></div>
+      <span class="fs-help">Short names make short codes: FS-VEGA.</span>
+      <span class="fs-error" id="max-error" hidden></span></div>
+    <p class="fs-small" id="count" role="status"></p>
+    <div class="fs-row"><button class="fs-btn" data-variant="secondary" type="button" id="reset">Clear the filters</button></div>
+    <div class="fs-stack" style="gap:8px">
+      <h3>Names in use</h3>
+      <p class="fs-small fs-muted" id="used-empty">None yet. Mark a name as used and it won't be drawn again. The list is kept in this browser.</p>
+      <ul class="c-used" id="used"></ul>
+      <div class="fs-row" id="used-tools" hidden><button class="fs-btn" data-variant="quiet" type="button" id="copy-used">{{icon:copy}}Copy the list</button></div>
+    </div>
+  </form>
+
+  <div class="fs-stack fs-sticky">
+    <div class="fs-panel fs-stack" style="border:2px solid var(--fs-ink)" id="result" aria-live="polite">
+      <div class="fs-readout"><span class="fs-label">Star</span><span class="c-star" id="star-name">–</span><span class="c-code" id="star-code"></span></div>
+      <dl class="c-facts" id="facts"></dl>
+      <div class="fs-row">
+        <button class="fs-btn" type="button" id="again">{{icon:refresh}}Draw a star</button>
+        <button class="fs-btn" data-variant="secondary" type="button" id="copy">{{icon:copy}}Copy the code</button>
+        <button class="fs-btn" data-variant="secondary" type="button" id="use" aria-pressed="false">{{icon:check}}Mark as used</button>
+      </div>
+      <a class="fs-small" id="simbad" href="#" target="_blank" rel="noopener" hidden>Look it up in SIMBAD {{icon:external}}</a>
+    </div>
+    {{note_check}}
+  </div>
+</div>
+</div></section>
+
+<section class="fs-sheet" id="catalog"><div class="fs-sheet-rail"><span class="fs-sheet-no">SHEET 2 / 3</span><h2>Catalog</h2><p class="fs-small fs-muted">Every star that matches the filters. Pick one by its name.</p></div><div class="fs-sheet-body">
+<p class="fs-scroll-hint" aria-hidden="true">Wide table: scroll it sideways.</p>
+<div class="fs-table-wrap"><table class="fs-table c-table">
+  <caption id="caption"></caption>
+  <thead><tr>
+    <th aria-sort="ascending" data-key="name"><button type="button">Name</button></th>
+    <th>Code</th>
+    <th data-key="con"><button type="button">Constellation</button></th>
+    <th class="n" data-key="vmag"><button type="button">vmag</button></th>
+    <th>Designation</th>
+    <th data-key="approved"><button type="button">Approved</button></th>
+  </tr></thead>
+  <tbody id="rows"></tbody>
+</table></div>
+</div></section>
+
+<section class="fs-sheet" id="source"><div class="fs-sheet-rail"><span class="fs-sheet-no">SHEET 3 / 3</span><h2>Source</h2></div><div class="fs-sheet-body fs-stack">
+<p>The names are the IAU's own: the <a href="https://iauarchive.eso.org/public/themes/naming_stars/#n4">Current List of IAU Star Names</a> on the IAU's Naming Stars page, kept by its Working Group on Star Names. Positions are J2000 in degrees, as the IAU gives them; vmag is the visual magnitude it lists.</p>
+<dl class="c-facts" id="list-facts"></dl>
+<p class="fs-small" id="update-status" role="status"></p>
+<div class="fs-row">
+  <button class="fs-btn" data-variant="secondary" type="button" id="check">{{icon:refresh}}Check for a newer list</button>
+  <button class="fs-btn" data-variant="secondary" type="button" id="dl-csv">{{icon:download}}Download the list (CSV)</button>
+  <button class="fs-btn" data-variant="secondary" type="button" id="dl-json">{{icon:download}}Download the list (JSON)</button>
+</div>
+<p class="fs-small fs-muted">A browser can't read the IAU page directly (the IAU doesn't allow it), so this page checks the copy in the fusionspace-design repository, which <code>christen update</code> reads from the IAU. Nothing else leaves the browser.</p>
+<h3>Command line</h3>
+<p>The same tool for a terminal, on macOS, Linux and Windows (and phones with a Python app): one file, Python 3.8 or later, no dependencies, the list built in. It reads the IAU list again by itself when its copy is over 30 days old.</p>
+<div class="fs-row"><button class="fs-btn" data-variant="secondary" type="button" id="dl-cli">{{icon:download}}Download christen.py</button></div>
+<pre class="c-cli">python3 christen.py                            # draw a star (on Windows: py christen.py)
+python3 christen.py -n 5 -c Orion --vmag ..3   # five bright stars in Orion
+python3 christen.py list --max-letters 5       # every short name
+python3 christen.py show Vega                  # one star
+python3 christen.py update                     # read the IAU list now
+python3 christen.py --help                     # everything else: --json, --plain, --skip</pre>
+</div></section>
+
+{{titleblock}}
+</main>
+</div>
+<div class="fs-toast" id="toast" role="status" hidden></div>
+{{theme_js}}
+<script>
+(function () {
+  "use strict";
+  var BUILT = {{catalog}};
+  var CON = {{constellations}};
+  var CLI = {{cli}};
+  var REMOTE = "https://raw.githubusercontent.com/nrdptel/fusionspace-design/main/tools/christen/iau-star-names.json";
+  var F = BUILT.fields, I = {}; F.forEach(function (f, i) { I[f] = i; });
+  var $ = function (id) { return document.getElementById(id); };
+  var cat = BUILT, current = null, sort = { key: "name", dir: 1 }, used = [];
+
+  function store(key, value) { try { if (value === undefined) return JSON.parse(localStorage.getItem(key)); localStorage.setItem(key, JSON.stringify(value)); } catch (e) { return null; } }
+  function fold(s) { return s.normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase(); }
+  function code(name) { return "FS-" + fold(name).toUpperCase().replace(/['’]/g, "").replace(/[^A-Z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+  function letters(name) { return (name.match(/\p{L}/gu) || []).length; }
+  function star(r) { var s = {}; F.forEach(function (f, i) { s[f] = r[i]; }); return s; }
+  function minus(s) { return String(s).replace("-", "−"); }
+  function mag(v) { return v === null ? "–" : minus(v.toFixed(2)); }
+  function hms(ra) { var h = ra / 15, m = (h % 1) * 60, s = (m % 1) * 60; return pad(Math.floor(h)) + "h " + pad(Math.floor(m)) + "m " + s.toFixed(1).padStart(4, "0") + "s"; }
+  function dms(dec) { var d = Math.abs(dec), m = (d % 1) * 60, s = Math.min(59, Math.round((m % 1) * 60)); return (dec < 0 ? "−" : "+") + pad(Math.floor(d)) + "° " + pad(Math.floor(m)) + "′ " + pad(s) + "″"; }
+  function pad(n) { return String(n).padStart(2, "0"); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function plural(n, one, many) { return n.toLocaleString("en-US") + " " + (n === 1 ? one : many); }
+  function num(text) { var t = text.trim().replace("−", "-"); if (!t) return null; return /^[-+]?(\d+\.?\d*|\.\d+)$/.test(t) ? parseFloat(t) : NaN; }
+  function toast(text) { var t = $("toast"); t.textContent = text; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(function () { t.hidden = true; }, 6000); }
+
+  // ------------------------------------------------------------ filters
+  function filters() {
+    var lo = num($("lo").value), hi = num($("hi").value), max = num($("max").value), bad = false;
+    var ve = $("vmag-error"), me = $("max-error");
+    ve.hidden = me.hidden = true;
+    if (isNaN(lo) || isNaN(hi)) { ve.textContent = "A magnitude is a number, like 2.5 or −1."; ve.hidden = false; bad = true; }
+    else if (lo !== null && hi !== null && lo > hi) { ve.textContent = "The first number is the brighter end: the smaller one."; ve.hidden = false; bad = true; }
+    if (isNaN(max) || (max !== null && (max < 1 || max % 1))) { me.textContent = "A whole number of letters, 1 or more."; me.hidden = false; bad = true; }
+    $("lo").closest(".fs-field").toggleAttribute("data-invalid", !ve.hidden);
+    $("max").closest(".fs-field").toggleAttribute("data-invalid", !me.hidden);
+    return { con: $("con").value, lo: bad ? null : lo, hi: bad ? null : hi, max: bad ? null : max };
+  }
+  function matches(f, skipUsed) {
+    var u = {}; used.forEach(function (n) { u[fold(n)] = 1; });
+    return cat.stars.map(star).filter(function (s) {
+      if (f.con && s.con !== f.con) return false;
+      if ((f.lo !== null || f.hi !== null) && s.vmag === null) return false;
+      if (f.lo !== null && s.vmag < f.lo) return false;
+      if (f.hi !== null && s.vmag > f.hi) return false;
+      if (f.max !== null && letters(s.name) > f.max) return false;
+      if (skipUsed && u[fold(s.name)]) return false;
+      return true;
+    });
+  }
+  function describe(f) {
+    var p = [];
+    if (f.con) p.push(CON[f.con]);
+    if (f.lo !== null && f.hi !== null) p.push("vmag " + minus(f.lo) + " to " + minus(f.hi));
+    else if (f.hi !== null) p.push("vmag " + minus(f.hi) + " or brighter");
+    else if (f.lo !== null) p.push("vmag " + minus(f.lo) + " or fainter");
+    if (f.max !== null) p.push(f.max + " letters or fewer");
+    return p.join(", ");
+  }
+  function fillConstellations() {
+    var n = {}, sel = $("con"), keep = sel.value || (location.hash && params().get("con")) || "";
+    cat.stars.forEach(function (r) { n[r[I.con]] = (n[r[I.con]] || 0) + 1; });
+    var opts = Object.keys(n).filter(function (a) { return CON[a]; }).sort(function (a, b) { return CON[a].localeCompare(CON[b]); });
+    sel.innerHTML = '<option value="">Any (' + cat.stars.length + ")</option>" + opts.map(function (a) {
+      return '<option value="' + a + '">' + esc(CON[a]) + " · " + a + " (" + n[a] + ")</option>"; }).join("");
+    sel.value = n[keep] ? keep : "";
+  }
+
+  // ------------------------------------------------------------ result
+  function show(s) {
+    current = s;
+    $("star-name").textContent = s ? s.name : "–";
+    $("star-code").textContent = s ? code(s.name) : "";
+    var rows = [];
+    if (s) {
+      rows.push(["Designation", [s.designation, s.id ? s.id + " " + s.con : null].filter(Boolean).join(", ")]);
+      rows.push(["Constellation", CON[s.con] + " (" + s.con + ")"]);
+      if (s.wds) rows.push(["Double star", "WDS J" + s.wds + (s.component ? ", component " + s.component : "")]);
+      rows.push(["vmag", s.vmag === null ? "Not given by the IAU" : mag(s.vmag)]);
+      if (s.ra !== null) rows.push(["Position", "RA " + hms(s.ra) + ", Dec " + dms(s.dec) + " (J2000)"]);
+      rows.push(["Approved", s.approved || "Not given"]);
+    }
+    $("facts").innerHTML = rows.map(function (r) { return "<dt>" + r[0] + "</dt><dd>" + esc(r[1]) + "</dd>"; }).join("");
+    $("copy").disabled = $("use").disabled = !s;
+    var inUse = s && used.some(function (n) { return fold(n) === fold(s.name); });
+    $("use").setAttribute("aria-pressed", String(!!inUse));
+    $("use").lastChild.textContent = inUse ? "Used: unmark" : "Mark as used";
+    var link = $("simbad");
+    link.hidden = !s || !s.designation;
+    if (s && s.designation) link.href = "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=" + encodeURIComponent(s.designation);
+    $("again").lastChild.textContent = s ? "Draw again" : "Draw a star";
+    document.querySelectorAll("#rows tr").forEach(function (tr) { tr.toggleAttribute("data-current", !!s && tr.dataset.name === s.name); });
+    save();
+  }
+  function draw() {
+    var f = filters(), pool = matches(f, true);
+    if (current && pool.length > 1) pool = pool.filter(function (s) { return s.name !== current.name; });
+    if (!pool.length) { toast("No star matches: " + (describe(f) || "every name is marked as used") + "."); return; }
+    var r = new Uint32Array(1); crypto.getRandomValues(r);
+    show(pool[r[0] % pool.length]);
+  }
+
+  // ------------------------------------------------------------ catalog table and counts
+  function render() {
+    var f = filters(), all = matches(f, false), free = matches(f, true), d = describe(f);
+    $("count").textContent = plural(free.length, "star", "stars") + " of " + cat.stars.length + " can be drawn" +
+      (d ? " (" + d + ")" : "") + (all.length > free.length ? "; " + (all.length - free.length) + " in use skipped" : "") + ".";
+    var key = sort.key, dir = sort.dir;
+    all.sort(function (a, b) {
+      var x = a[key], y = b[key];
+      if (key === "con") { x = CON[x]; y = CON[y]; }
+      if (key === "vmag") { x = x === null ? 99 : x; y = y === null ? 99 : y; return (x - y) * dir || a.name.localeCompare(b.name); }
+      return String(x || "").localeCompare(String(y || "")) * dir || a.name.localeCompare(b.name);
+    });
+    var u = {}; used.forEach(function (n) { u[fold(n)] = 1; });
+    $("caption").textContent = plural(all.length, "star", "stars") + (d ? " (" + d + ")" : "") + ", from the IAU list read " + cat.read + ".";
+    $("rows").innerHTML = all.map(function (s) {
+      var inUse = u[fold(s.name)];
+      return '<tr data-name="' + esc(s.name) + '"' + (inUse ? ' class="c-muted-row"' : "") + (current && current.name === s.name ? " data-current" : "") + ">" +
+        '<td><button type="button">' + esc(s.name) + "</button>" + (inUse ? " · in use" : "") + "</td>" +
+        '<td class="fs-mono">' + code(s.name) + "</td><td>" + esc(CON[s.con] || s.con) + "</td>" +
+        '<td class="n">' + mag(s.vmag) + "</td><td>" + esc([s.designation, s.id ? s.id + " " + s.con : ""].filter(Boolean).join(", ")) + "</td>" +
+        '<td class="fs-mono">' + (s.approved || "–") + "</td></tr>";
+    }).join("");
+    document.querySelectorAll(".c-table th[data-key]").forEach(function (th) {
+      if (th.dataset.key === key) th.setAttribute("aria-sort", dir > 0 ? "ascending" : "descending"); else th.removeAttribute("aria-sort"); });
+    save();
+  }
+  function renderUsed() {
+    $("used").innerHTML = used.map(function (n, i) {
+      return "<li><span>" + esc(n) + " · " + code(n) + '</span><button class="fs-btn" data-variant="quiet" type="button" data-unuse="' + i + '">Remove</button></li>'; }).join("");
+    $("used-empty").hidden = used.length > 0;
+    $("used-tools").hidden = used.length === 0;
+  }
+  function toggleUsed(name) {
+    var i = used.findIndex(function (n) { return fold(n) === fold(name); });
+    if (i >= 0) used.splice(i, 1); else used.push(name);
+    store("christen-used", used);
+    renderUsed(); render(); show(current);
+  }
+
+  // ------------------------------------------------------------ address: #con=Ori&vmag=..3&max=6&star=Vega
+  function params() { return new URLSearchParams(location.hash.slice(1)); }
+  function save() {
+    var f = filters(), p = new URLSearchParams();
+    if (f.con) p.set("con", f.con);
+    if (f.lo !== null || f.hi !== null) p.set("vmag", (f.lo !== null ? f.lo : "") + ".." + (f.hi !== null ? f.hi : ""));
+    if (f.max !== null) p.set("max", f.max);
+    if (current) p.set("star", current.name);
+    var h = p.toString();
+    try { history.replaceState(null, "", h ? "#" + h : location.pathname + location.search); } catch (e) {}
+  }
+  function restore() {
+    var p = params(), v = (p.get("vmag") || "").split("..");
+    $("con").value = CON[p.get("con")] ? p.get("con") : "";
+    if (v.length === 2) { $("lo").value = minus(v[0]); $("hi").value = minus(v[1]); }
+    if (p.get("max")) $("max").value = p.get("max");
+    var want = p.get("star");
+    return want ? cat.stars.map(star).find(function (s) { return fold(s.name) === fold(want); }) : null;
+  }
+
+  // ------------------------------------------------------------ the list: built in, or a newer copy
+  function valid(c) { return c && Array.isArray(c.stars) && c.stars.length >= 300 && JSON.stringify(c.fields) === JSON.stringify(F) && typeof c.read === "string"; }
+  function listFacts(extra) {
+    var rows = [["List", plural(cat.stars.length, "name", "names")], ["Read from the IAU", cat.read], ["The IAU's heading", cat.heading || "None"],
+                ["Newest approval", cat.stars.reduce(function (m, r) { return r[I.approved] > m ? r[I.approved] : m; }, "")],
+                ["This copy", cat === BUILT ? "Built into this page" : "Newer copy, from the repository"]];
+    $("list-facts").innerHTML = rows.map(function (r) { return "<dt>" + r[0] + "</dt><dd>" + esc(r[1]) + "</dd>"; }).join("");
+    var tb = document.querySelector("[data-tb=data]"); if (tb) tb.textContent = "IAU star names, read " + cat.read;
+  }
+  function useList(c) {
+    cat = c; F.forEach(function (f, i) { I[f] = i; });
+    fillConstellations(); render(); listFacts();
+    if (current) show(cat.stars.map(star).find(function (s) { return s.name === current.name; }) || null);
+  }
+  function check(manual) {
+    var st = $("update-status");
+    if (!window.fetch || navigator.onLine === false) { if (manual) st.textContent = "Offline: using the list read " + cat.read + "."; return; }
+    st.textContent = "Checking for a newer list…";
+    var ctl = window.AbortController ? new AbortController() : null, timer = setTimeout(function () { if (ctl) ctl.abort(); }, 8000);
+    fetch(REMOTE, { cache: "no-cache", signal: ctl ? ctl.signal : undefined }).then(function (r) {
+      if (r.status === 404) throw new Error("the repository has no copy yet");
+      if (!r.ok) throw new Error("HTTP " + r.status); return r.json();
+    }).then(function (c) {
+      clearTimeout(timer);
+      if (!valid(c)) throw new Error("not a star list");
+      var t = new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit", timeZoneName: "short" });
+      if (c.read > cat.read && JSON.stringify(c.stars) !== JSON.stringify(cat.stars)) {
+        store("christen-list", c); useList(c);
+        st.textContent = "Loaded a newer list: " + plural(c.stars.length, "name", "names") + ", read from the IAU " + c.read + " (checked " + t + ")."; toast("Newer star list loaded.");
+      } else st.textContent = "This is the newest list (checked " + t + ").";
+    }).catch(function (e) {
+      clearTimeout(timer);
+      st.textContent = "Couldn't check for a newer list (" + (e.name === "AbortError" ? "no answer in 8 s" : e.message) + "). Using the list read " + cat.read + ".";
+    });
+  }
+
+  // ------------------------------------------------------------ files
+  function download(name, type, text) {
+    var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: type })); a.download = name;
+    document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }
+  function csv() {
+    var q = function (v) { v = v === null ? "" : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    return ["name,code," + F.slice(1).join(",")].concat(cat.stars.map(function (r) { return [r[0], code(r[0])].concat(r.slice(1)).map(q).join(","); })).join("\n") + "\n";
+  }
+  function copy(text, said) {
+    var done = function () { toast(said); };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
+    function fallback() { var t = document.createElement("textarea"); t.value = text; t.style.position = "fixed"; t.style.opacity = "0";
+      document.body.appendChild(t); t.select(); try { document.execCommand("copy"); done(); } catch (e) { toast("Couldn't copy: select the text instead."); } t.remove(); }
+  }
+
+  // ------------------------------------------------------------ wiring
+  ["con", "lo", "hi", "max"].forEach(function (id) { $(id).addEventListener(id === "con" ? "change" : "input", render); });
+  $("reset").addEventListener("click", function () { $("con").value = ""; $("lo").value = $("hi").value = $("max").value = ""; render(); });
+  $("again").addEventListener("click", draw);
+  $("copy").addEventListener("click", function () { if (current) copy(code(current.name), "Copied " + code(current.name) + "."); });
+  $("use").addEventListener("click", function () { if (current) toggleUsed(current.name); });
+  $("used").addEventListener("click", function (e) { var b = e.target.closest("[data-unuse]"); if (b) toggleUsed(used[+b.dataset.unuse]); });
+  $("copy-used").addEventListener("click", function () { copy(used.map(function (n) { return n + "\t" + code(n); }).join("\n") + "\n", "Copied " + plural(used.length, "name", "names") + "."); });
+  $("rows").addEventListener("click", function (e) {
+    var b = e.target.closest("td button"); if (!b) return;
+    show(cat.stars.map(star).find(function (s) { return s.name === b.closest("tr").dataset.name; }));
+    $("result").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "nearest" });
+  });
+  document.querySelectorAll(".c-table th[data-key] button").forEach(function (b) {
+    b.addEventListener("click", function () { var k = b.parentNode.dataset.key; sort = { key: k, dir: sort.key === k ? -sort.dir : 1 }; render(); }); });
+  $("check").addEventListener("click", function () { check(true); });
+  $("dl-csv").addEventListener("click", function () { download("iau-star-names.csv", "text/csv", csv()); });
+  $("dl-json").addEventListener("click", function () { download("iau-star-names.json", "application/json", JSON.stringify(cat, null, 1) + "\n"); });
+  $("dl-cli").addEventListener("click", function () { download("christen.py", "text/x-python", CLI); });
+
+  used = (store("christen-used") || []).filter(function (n) { return typeof n === "string"; });
+  var saved = store("christen-list");
+  if (valid(saved) && saved.read > BUILT.read) cat = saved;
+  fillConstellations();
+  var start = restore();
+  renderUsed(); render(); listFacts();
+  if (start) show(start); else draw();
+  check(false);
+})();
+</script>
+</body>
+</html>

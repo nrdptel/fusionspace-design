@@ -25,7 +25,7 @@ Open `guide/index.html` in a browser for the full guide.
 | `type/fonts` | Cascadia Mono and Archivo (SIL OFL) | install once |
 | `graphics` | Mark construction drawing, gradient strip, spectral bar | Inkscape |
 | `templates` | GitHub social card (1280×640), plus FreeCAD TechDraw sheets in ANSI A, ANSI B and A4 | Inkscape, FreeCAD |
-| `tools/star-name-picker` | `index.html` picker and the cleaned `iau-star-names.csv` | browser |
+| `tools/christen` | Christen, the star name tool: `christen.html` (any browser, phones included) and `christen.py` (terminal, Python 3.8+), with the IAU star list as JSON and CSV | browser, terminal |
 | `guide` | Brand guide | browser |
 
 ## Palette
