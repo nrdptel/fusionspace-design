@@ -16,7 +16,7 @@ body { width: var(--w); height: var(--h); overflow: hidden; background: #000; }
 .u { color: var(--fs-ink-muted); text-transform: none; letter-spacing: 0; }
 
 /* ------------------------------------------------------------------ watchOS: title and time on top, page dots, glass buttons */
-.wt-top { position: absolute; top: 0; left: 0; right: 0; height: 40px; padding: 10px 18px 0; display: flex; justify-content: space-between; align-items: baseline; z-index: 5; }
+.wt-top { position: absolute; top: 0; left: 0; right: 0; height: 40px; padding: 20px 26px 0; display: flex; justify-content: space-between; align-items: baseline; z-index: 5; }
 .wt-title { font: 600 16px/20px var(--sys); color: var(--fs-action); }
 .wt-time { font: 600 16px/20px var(--sys); }
 .wt-dots { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); display: grid; gap: 4px; z-index: 5; }
@@ -31,14 +31,15 @@ body { width: var(--w); height: var(--h); overflow: hidden; background: #000; }
 .timetext { position: absolute; top: 0; left: 0; z-index: 5; }
 .wo-pos { position: absolute; right: 6px; top: 50%; height: 56px; margin-top: -28px; width: 4px; border-radius: 2px; background: rgba(255,255,255,.2); z-index: 5; }
 .wo-pos i { display: block; height: 22px; border-radius: 2px; background: #fff; margin-top: 4px; }
-.edgebtn { position: absolute; left: 50%; bottom: 0; width: 132px; margin-left: -66px; height: 46px; padding-top: 8px; box-sizing: border-box;
-  border-radius: 23px 23px 66px 66px / 23px 23px 46px 46px; display: grid; place-items: start center;
+/* the edge button hugs the bezel: the round screen, 4 px in, cut to a band along the bottom */
+.edgebtn { --eh: 46px; position: absolute; left: 0; right: 0; bottom: 0; height: var(--eh); padding-top: 8px; box-sizing: border-box;
+  clip-path: circle(calc(var(--w) / 2 - 4px) at 50% calc(var(--eh) - var(--w) / 2)); display: grid; place-items: start center;
   font: 500 15px/20px var(--sys); background: var(--fs-surface); color: var(--fs-ink); z-index: 5; }
 .edgebtn.primary { background: var(--fs-action); color: var(--fs-on-action); }
 .edgebtn.onfill { background: #fff; color: #AC001E; }
 
 /* ------------------------------------------------------------------ the content layer, on a watch */
-.wbody { position: absolute; inset: 40px 14px 12px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+.wbody { position: absolute; inset: 46px 14px 12px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
 .wearos .wbody { inset: 30px 22px 46px; justify-content: center; }
 .w-k { font: 400 12px/15px var(--fs-font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--fs-ink-muted); }
 .w-read { display: flex; align-items: baseline; gap: 5px; }
@@ -88,7 +89,7 @@ body { width: var(--w); height: var(--h); overflow: hidden; background: #000; }
 
 /* Always On: the control stays, unavailable (outlined, muted) */
 .wt-btn.dim { background: transparent; color: var(--fs-ink-muted); border: 1.5px solid var(--fs-rule-strong); -webkit-backdrop-filter: none; backdrop-filter: none; }
-.edgebtn.dim { background: transparent; color: var(--fs-ink-muted); border: 1.5px solid var(--fs-rule-strong); border-bottom: 0; }
+.edgebtn.dim { background: color-mix(in srgb, var(--fs-rule-strong) 35%, transparent); color: var(--fs-ink-muted); }
 /* the smallest sizes */
 .small .wbody { inset: 34px 10px 10px; }
 .small.wearos .wbody { inset: 26px 18px 42px; }
@@ -96,4 +97,4 @@ body { width: var(--w); height: var(--h); overflow: hidden; background: #000; }
 .small .wt-title, .small .wt-time { font-size: 15px; }
 .small .wt-top { padding: 8px 14px 0; }
 .small .wt-btn { height: 38px; bottom: 8px; left: 10px; right: 10px; font-size: 15px; }
-.small .edgebtn { width: 112px; margin-left: -56px; height: 40px; padding-top: 6px; font-size: 14px; }
+.small .edgebtn { --eh: 40px; padding-top: 6px; font-size: 14px; }

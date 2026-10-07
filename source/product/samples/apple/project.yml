@@ -1,0 +1,122 @@
+# SPDX-License-Identifier: Apache-2.0 · Copyright 2026 Neer Patel
+# FusionSpace sample apps for iPhone and Apple Watch. They compile the published reference files in product/ directly, so
+# running them tests exactly what a project would copy. Generate the Xcode project with XcodeGen: `xcodegen generate`.
+name: FusionSpaceSample
+options:
+  bundleIdPrefix: co.fusionspace
+  deploymentTarget:
+    iOS: "26.0"
+    watchOS: "26.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    CODE_SIGNING_ALLOWED: "NO"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  FusionSpaceSample:
+    type: application
+    platform: iOS
+    sources:
+      - iOS
+      - Shared
+      - path: ../../../../product/tokens/FusionSpaceColors.swift
+      - path: ../../../../product/mobile/swiftui/FSComponents.swift
+      - path: ../../../../product/mobile/swiftui/FSFlightActivity.swift
+      - path: ../../../../type/fonts/CascadiaMono-Regular.ttf
+        buildPhase: resources
+      - path: ../../../../type/fonts/CascadiaMono-SemiBold.ttf
+        buildPhase: resources
+      - path: ../../../../type/fonts/Archivo-Regular.ttf
+        buildPhase: resources
+    info:
+      path: build-info/iOS-Info.plist
+      properties:
+        CFBundleDisplayName: FusionSpace
+        UILaunchScreen: {}
+        UIAppFonts: [CascadiaMono-Regular.ttf, CascadiaMono-SemiBold.ttf, Archivo-Regular.ttf]
+        NSSupportsLiveActivities: true
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+    dependencies:
+      - target: FusionSpaceWidgets
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: co.fusionspace.sample
+        TARGETED_DEVICE_FAMILY: "1"
+  FusionSpaceSampleWatch:
+    type: application
+    platform: watchOS
+    sources:
+      - watchOS
+      - Shared
+      - path: ../../../../product/tokens/FusionSpaceColors.swift
+      - path: ../../../../product/mobile/swiftui/FSComponents.swift
+      - path: ../../../../product/watch/swiftui/FSWatch.swift
+      - path: ../../../../type/fonts/CascadiaMono-Regular.ttf
+        buildPhase: resources
+      - path: ../../../../type/fonts/CascadiaMono-SemiBold.ttf
+        buildPhase: resources
+      - path: ../../../../type/fonts/Archivo-Regular.ttf
+        buildPhase: resources
+    info:
+      path: build-info/watchOS-Info.plist
+      properties:
+        CFBundleDisplayName: FusionSpace
+        WKApplication: true
+        WKWatchOnly: true
+        UIAppFonts: [CascadiaMono-Regular.ttf, CascadiaMono-SemiBold.ttf, Archivo-Regular.ttf]
+    dependencies:
+      - target: FusionSpaceWatchWidgets
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: co.fusionspace.sample.watch
+  FusionSpaceWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - Widgets
+      - path: ../../../../product/tokens/FusionSpaceColors.swift
+      - path: ../../../../product/mobile/swiftui/FSComponents.swift
+      - path: ../../../../product/mobile/swiftui/FSWindWidget.swift
+      - path: ../../../../product/mobile/swiftui/FSFlightActivity.swift
+      - path: ../../../../type/fonts/CascadiaMono-Regular.ttf
+        buildPhase: resources
+      - path: ../../../../type/fonts/CascadiaMono-SemiBold.ttf
+        buildPhase: resources
+      - path: ../../../../type/fonts/Archivo-Regular.ttf
+        buildPhase: resources
+    info:
+      path: build-info/Widgets-Info.plist
+      properties:
+        CFBundleDisplayName: FusionSpace
+        UIAppFonts: [CascadiaMono-Regular.ttf, CascadiaMono-SemiBold.ttf, Archivo-Regular.ttf]
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: co.fusionspace.sample.widgets
+        TARGETED_DEVICE_FAMILY: "1"
+  FusionSpaceWatchWidgets:
+    type: app-extension
+    platform: watchOS
+    sources:
+      - WatchWidgets
+      - path: ../../../../product/tokens/FusionSpaceColors.swift
+      - path: ../../../../product/mobile/swiftui/FSComponents.swift
+      - path: ../../../../product/watch/swiftui/FSWatch.swift
+      - path: ../../../../product/watch/swiftui/FSWatchComplications.swift
+      - path: ../../../../type/fonts/CascadiaMono-Regular.ttf
+        buildPhase: resources
+      - path: ../../../../type/fonts/CascadiaMono-SemiBold.ttf
+        buildPhase: resources
+    info:
+      path: build-info/WatchWidgets-Info.plist
+      properties:
+        CFBundleDisplayName: FusionSpace
+        UIAppFonts: [CascadiaMono-Regular.ttf, CascadiaMono-SemiBold.ttf]
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: co.fusionspace.sample.watch.widgets

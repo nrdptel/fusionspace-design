@@ -10,7 +10,7 @@ Screens and the complication/tile page are HTML on product/web/fusionspace.css, 
 Compose parts are written in source/product/watch/ and copied with their {{...}} values filled in.
 """
 import os, re, math, shutil, html
-import build, kit_product as kp, kit_icons, kit_mobile as km
+import build, kit_product as kp, kit_icons, kit_clip, kit_mobile as km
 from build import VOID, PAPER, WHITE
 
 W = "watch"
@@ -25,9 +25,9 @@ ico = km.ico
 # Apple: px from apple.com/watch/compare at @2x. Google publishes size classes, not per-device dp: small 192-224 dp, large
 # 225 dp and up; the large watch is drawn at 228 dp, the small at the class's 192 dp floor.
 DEVICES = {
-    "watchos": {"name": "Apple Watch Ultra 4", "size": "49 mm", "short": "Ultra 4 49 mm", "os": "watchOS 27", "w": 211, "h": 257, "radius": 52, "round": False},
+    "watchos": {"name": "Apple Watch Ultra 4", "size": "49 mm", "short": "Ultra 4 49 mm", "os": "watchOS 27", "w": 211, "h": 257, "radius": 58, "round": False, "mask": "apple-watch-ultra-49mm"},
     "wearos": {"name": "Pixel Watch 5", "size": "45 mm", "short": "Pixel Watch 5 45 mm", "os": "Wear OS 7", "w": 228, "h": 228, "radius": 114, "round": True},
-    "watchos-small": {"name": "Apple Watch SE 3", "size": "40 mm", "short": "SE 3 40 mm", "os": "watchOS 27", "w": 162, "h": 197, "radius": 40, "round": False},
+    "watchos-small": {"name": "Apple Watch SE 3", "size": "40 mm", "short": "SE 3 40 mm", "os": "watchOS 27", "w": 162, "h": 197, "radius": 29, "round": False, "mask": "apple-watch-se-40mm"},
     "wearos-small": {"name": "Wear OS small round", "size": "", "short": "small class", "os": "Wear OS 7", "w": 192, "h": 192, "radius": 96, "round": True},
 }
 def plat(p): return p.split("-")[0]
@@ -66,7 +66,7 @@ def arrow(deg, size=112, outline=False, stale=False):
 def curved_time(d, text="9:41"):
     """Wear OS TimeText: the time on an arc along the top edge (the system draws it; this is a stand-in)."""
     w = d["w"]; r = w / 2 - 14
-    return (f'<svg class="timetext" viewBox="0 0 {w} 40" width="{w}" height="40"><defs><path id="tt" d="M {w / 2 - r} {w / 2} A {r} {r} 0 0 1 {w / 2 + r} {w / 2}"/></defs>'
+    return (f'<svg class="timetext" viewBox="0 0 {w} 26" width="{w}" height="26"><defs><path id="tt" d="M {w / 2 - r} {w / 2} A {r} {r} 0 0 1 {w / 2 + r} {w / 2}"/></defs>'
             f'<text font-family="Roboto" font-size="13" font-weight="500" fill="var(--fs-ink)" text-anchor="middle"><textPath href="#tt" startOffset="50%">{text}</textPath></text></svg>')
 
 def chrome(p, body, title="", theme="dark", aod=False, edge="", bg=None, extra_cls=""):
@@ -113,7 +113,7 @@ def scr_find(p, aod=False):
     """Walking to a landed rocket: the way, how far, how old the fix is. The one screen a watch is best at."""
     rel = ROCKET["bearing"] - ROCKET["heading"]
     age = "fix 4 s ago" if not aod else "as of 9:41"
-    size = {"watchos": 104, "wearos": 84, "watchos-small": 60, "wearos-small": 60}[p]
+    size = {"watchos": 84, "wearos": 84, "watchos-small": 56, "wearos-small": 60}[p]
     body = (f'<div class="w-find">{arrow(rel, size, outline=aod)}'
             f'<div class="w-read"><span class="w-big">1,352</span><span class="u">ft</span></div>'
             f'<div class="w-sub">062° T · {age}</div></div>')
@@ -225,7 +225,7 @@ body { margin: 0; background: #fff; }
 .f-time { font: 600 44px/44px -apple-system, system-ui; color: #fff; padding-left: 4px; }
 .f-row { display: flex; justify-content: space-between; padding: 0 2px; }
 .c-rect { width: 100%%; box-sizing: border-box; padding: 6px 8px; border-radius: 14px; background: rgba(255,255,255,.10); display: grid; gap: 1px; }
-.c-rect.flat { background: transparent; padding: 0; }
+.c-rect.flat { background: transparent; padding: 0; border-radius: 0; }
 .c-h { display: flex; justify-content: space-between; font: 400 11px/14px 'Cascadia Mono', monospace; letter-spacing: .05em; color: var(--fs-ink-muted); }
 .c-big { font: 400 24px/28px 'Cascadia Mono', monospace; font-variant-numeric: tabular-nums; }
 .c-big .u { font-size: 12px; }
@@ -234,8 +234,8 @@ body { margin: 0; background: #fff; }
   background: var(--fs-caution-fill); color: var(--fs-on-caution-fill); }
 .c-caution svg { width: 11px; height: 11px; }
 .c-circ { width: %(circ)spx; height: %(circ)spx; border-radius: 50%%; background: rgba(255,255,255,.10); display: grid; place-content: center; justify-items: center; gap: 0; }
-.c-circ .w-arrow { width: 24px; height: 24px; }
-.c-cv { font: 400 13px/14px 'Cascadia Mono', monospace; }
+.c-circ .w-arrow { width: 16px; height: 16px; }
+.c-cv { font: 400 12px/13px 'Cascadia Mono', monospace; }
 .c-cv.l { font-size: 18px; line-height: 19px; }
 .c-cu { font: 400 10px/11px 'Cascadia Mono', monospace; color: var(--fs-ink-muted); letter-spacing: .04em; }
 .c-box { font: 600 10px/1 'Cascadia Mono', monospace; padding: 3px 4px; border: 1.5px solid var(--fs-ink); }
@@ -250,7 +250,7 @@ body { margin: 0; background: #fff; }
 .tinted .c-box { border-color: #fff; }
 /* Smart Stack */
 .stack { gap: 8px; }
-.f-sttime { font: 600 15px/18px -apple-system, system-ui; text-align: right; padding-right: 8px; color: #fff; }
+.f-sttime { font: 600 15px/18px -apple-system, system-ui; text-align: right; padding: 6px 26px 0 0; color: #fff; }
 .st-card { border-radius: 18px; background: #1c1d22; padding: 8px 10px; display: grid; gap: 1px; }
 .st-card.la { background: %(abyss)s; }
 /* Wear OS tile: title slot, main slot, edge button */
@@ -258,8 +258,8 @@ body { margin: 0; background: #fff; }
 .t-title { margin-top: 34px; font: 400 11px/14px 'Cascadia Mono', monospace; letter-spacing: .06em; color: var(--fs-ink-muted); }
 .t-main { margin-top: 14px; display: grid; justify-items: center; gap: 2px; text-align: center; }
 .tile .c-big { font-size: 30px; line-height: 34px; }
-.t-edge { position: absolute; left: 50%%; bottom: 0; width: 132px; margin-left: -66px; height: 46px; padding-top: 8px; box-sizing: border-box;
-  border-radius: 23px 23px 66px 66px / 23px 23px 46px 46px; text-align: center; font: 500 15px/20px Roboto, sans-serif; background: var(--fs-action); color: var(--fs-on-action); }
+.t-edge { position: absolute; left: 0; right: 0; bottom: 0; height: 46px; padding-top: 8px; box-sizing: border-box;
+  clip-path: circle(110px at 50%% -68px); text-align: center; font: 500 15px/20px Roboto, sans-serif; background: var(--fs-action); color: var(--fs-on-action); }
 .t-edge.q { background: var(--fs-surface); color: var(--fs-ink); }
 .timetext { position: absolute; top: 0; left: 0; }
 /* Wear OS face */
@@ -320,7 +320,9 @@ def faces_page():
 def build_faces():
     pg, ids = faces_page()
     wr("faces/index.html", pg)
-    return shots([("faces/index.html", f"faces/{i}.png", 1200, 900, f"#{i}") for i in ids])
+    frames = [{"selector": ".wface.apple"}, {"selector": ".wface.wear", "circle": True}, {"selector": ".c-rect:not(.flat)"},
+              {"selector": ".c-circ", "circle": True}, {"selector": ".st-card"}, {"selector": ".wc.side", "circle": True}]
+    return shots([("faces/index.html", f"faces/{i}.png", 1200, 900, f"#{i}", {"frames": frames}) for i in ids])
 
 
 # ================================================================ code (product/watch/swiftui/, product/watch/compose/)
@@ -367,6 +369,8 @@ Open the HTML in a browser, or look at the PNG (2x).
 |---|---|
 {screens}
 
+`devices/` has the same screens running for real (simulator and emulator captures).
+
 `screens/watch.css` draws the platform chrome for the mock-ups only (time, page dots, toolbar and edge buttons); apps use
 the system's. The case outlines are drawn, not Apple's or Google's artwork.
 
@@ -387,12 +391,13 @@ the system's. The case outlines are drawn, not Apple's or Google's artwork.
 |---|---|
 {code}
 
-**Checked** (October 2026): the Swift typechecks in Swift 6 mode against the macOS 26.2 SDK's SwiftUI, SwiftUICore,
-WidgetKit and RelevanceKit interfaces with their macOS restrictions removed (there is no watchOS SDK on the build machine),
-which checks every SwiftUI and WidgetKit call and type but isn't a watchOS build; `WKInterfaceDevice` haptics (WatchKit) and
-`widgetLabel` aren't in that SDK and are unchecked. The Kotlin compiles with Kotlin 2.2.20 against Android API 36.1, Compose
-1.12.1 for Android, Wear Compose Material 3 1.7.0, Tiles 1.6.2, ProtoLayout 1.4.2, watchface-complications 1.3.0 and
-wear-ongoing 1.1.0. None of it has run on a watch yet.
+**Proven on real screens** (October 6, 2026): the code runs in the sample apps (`source/product/samples/apple`,
+`source/product/samples/android`) on the watchOS 27 simulator (Apple Watch Ultra 4 49 mm, SE 3 40 mm) and the Wear OS 7
+emulator (large and small round); the captures are in `devices/`. Running them found what compiling didn't: the
+token file not building for watchOS, the bottom-bar "Found it" drawing as an empty capsule over the text, truncated and
+clipped text on the 40 mm SE, ambient mode never engaging on Wear OS, the tile dropping the bearing and the fix's age. The
+drawn screens are checked by `tools/build/kit_clip.py` against each watch's real outline (the simulator's screen mask, or
+the circle).
 """
 def build_readme():
     a, w_ = DEVICES["watchos"], DEVICES["wearos"]
@@ -409,14 +414,18 @@ def shots(jobs):
         return False
     with sync_playwright() as p_:
         b = p_.chromium.launch()
-        for rel, dest, w, h, sel in jobs:
+        problems = []
+        for job in jobs:
+            rel, dest, w, h, sel = job[:5]; clip = job[5] if len(job) > 5 else None
             pg = b.new_page(viewport={"width": w, "height": h}, device_scale_factor=SCALE)
             pg.goto("file://" + out(rel)); pg.evaluate("document.fonts.ready"); pg.wait_for_timeout(250)
             os.makedirs(os.path.dirname(out(dest)), exist_ok=True)
             if sel: pg.locator(sel).screenshot(path=out(dest))
             else: pg.screenshot(path=out(dest), clip={"x": 0, "y": 0, "width": w, "height": h})
+            if clip: problems += [f"{dest}: {x}" for x in kit_clip.check(pg, **clip)]
             pg.close()
         b.close()
+    kit_clip.assert_clean(problems, os.path.dirname(jobs[0][1]) if jobs else "")
     return True
 
 def build_screens():
@@ -426,27 +435,20 @@ def build_screens():
     for key, fn, _ in SCREENS:
         for p in ("watchos", "wearos"):
             wr(f"screens/{p}-{key}.html", fn(p))
-            d = DEVICES[p + "-small" if key.endswith("small") else p]; jobs.append((f"screens/{p}-{key}.html", f"screens/{p}-{key}.png", d["w"], d["h"], None))
+            d = DEVICES[p + "-small" if key.endswith("small") else p]
+            clip = {"frames": [{"selector": ".face", "radius": d["radius"], "circle": d["round"], "mask": d.get("mask")}],
+                    "overlays": [".wt-btn", ".edgebtn", ".wt-top", ".timetext"]}
+            jobs.append((f"screens/{p}-{key}.html", f"screens/{p}-{key}.png", d["w"], d["h"], None, clip))
     return shots(jobs)
 
 def watch_tile(png, p, scale=1.0):
-    """A shot masked to the screen's shape, with a 2 px drawn outline of the case (a line drawing, not a photo)."""
-    from PIL import Image, ImageDraw
-    d = DEVICES[p]; im = Image.open(png).convert("RGB")
-    w, h = round(d["w"] * scale), round(d["h"] * scale)
-    im = im.resize((w, h), Image.LANCZOS)
-    pad = 14
-    tile = Image.new("RGB", (w + 2 * pad, h + 2 * pad), tuple(kp._hex_rgb(PAPER)))
-    mask = Image.new("L", (w, h), 0); md = ImageDraw.Draw(mask)
-    dr = ImageDraw.Draw(tile); ink = tuple(kp._hex_rgb(VOID))
-    if d["round"]:
-        md.ellipse((0, 0, w - 1, h - 1), fill=255)
-        dr.ellipse((pad - 10, pad - 10, w + pad + 9, h + pad + 9), outline=ink, width=2)
-    else:
-        r = round(d["radius"] * scale); md.rounded_rectangle((0, 0, w - 1, h - 1), r, fill=255)
-        dr.rounded_rectangle((pad - 10, pad - 10, w + pad + 9, h + pad + 9), r + 10, outline=ink, width=2)
-        cy = pad + h * 0.30; dr.rounded_rectangle((w + pad + 9, cy, w + pad + 15, cy + 34), 3, outline=ink, width=2)   # crown
-    tile.paste(im, (pad, pad), mask)
+    """A shot cut to the screen's real outline (simulator mask, or a circle), with a drawn case line and crown."""
+    from PIL import ImageDraw
+    d = DEVICES[p]; w, h = round(d["w"] * scale), round(d["h"] * scale)
+    tile = km.screen_tile(png, w, h, d.get("mask"), round(d["radius"] * scale), d["round"], pad=16, gap=8)
+    if not d["round"]:
+        dr = ImageDraw.Draw(tile); cy = 16 + h * 0.30
+        dr.rounded_rectangle((w + 16 + 9, cy, w + 16 + 15, cy + 34), 3, outline=tuple(kp._hex_rgb(VOID)), width=2)   # crown
     return tile
 
 def build_preview():

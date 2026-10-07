@@ -68,7 +68,8 @@ Each is drawn on an iPhone 17 Pro (402 × 874 pt, iOS 27) and a Pixel 10
 
 Titles, labels and readouts are Cascadia Mono on both platforms; list rows, buttons and prose are the system font. The large
 title is the platform's (a large navigation title on iOS, the top app bar's title on Android) set in Cascadia Mono through
-its theming, not a custom bar.
+its theming, not a custom bar. On iOS 26 and later that is `ToolbarItem(placement: .largeTitle)`: `UINavigationBarAppearance`
+fonts are not applied to large titles on iOS 27.
 
 ## Field use
 
@@ -132,10 +133,23 @@ From `kit/apps/`: one layered master (the mark on a Void tile), built in Icon Co
 (default, dark, clear light and dark, tinted light and dark), and an Android adaptive icon with its own monochrome layer, so
 Android's automatic theming doesn't draw one. Per-tool apps add nothing to the mark; the tool's name is the app's name.
 
+## Real screens
+
+The reference code runs in two sample apps, `source/product/samples/apple` (Xcode, generated with XcodeGen) and
+`source/product/samples/android` (Gradle), which compile the files in `product/` in place. Their simulator and emulator
+captures are in [`mobile/devices/`](mobile/devices/):
+
+![The reference code running](mobile/devices/preview.png)
+
+Run them after changing anything in `product/mobile/` or `product/tokens/`: compiling is not enough. On October 6, 2026
+running them found layout bugs that every compile check had passed (a control taking the whole screen, text under a
+button, a border cut by a rounded end, units in capitals), all fixed in the files here.
+
 ## Checklist
 
 - [ ] System navigation, controls and gestures, unmodified except for tint and fonts.
 - [ ] Every text style scales; tested at the largest size and at 200%.
+- [ ] Runs in the sample app on a simulator or emulator, smallest screen included, with nothing cut by an edge or a corner.
 - [ ] Colors from `FS` / `FsColors` only; static scheme on Android.
 - [ ] Field theme on Increase Contrast; field-size targets on pad screens.
 - [ ] Every status has a word and a shape; every value has a unit; every prediction is labeled.

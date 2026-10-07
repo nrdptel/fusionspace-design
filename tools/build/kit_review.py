@@ -400,6 +400,9 @@ REPS = [   # (representative, [items it covers], why it stands for them)
     ("product/watch/preview", [r"^product/watch/(screens/|README)"], "every screen as HTML and a 2x PNG on both platforms, and the mock-up stylesheet"),
     ("product/watch/faces/watchos-complications", [r"^product/watch/faces/"], "the Smart Stack, the Wear OS tiles and face, and the page they're drawn on"),
     ("product/watch/swiftui/FSWatch", [r"^product/watch/(swiftui|compose)/"], "the complications in SwiftUI, and the Wear OS screens, tile and complications in Compose"),
+    # real screens (October 6, 2026): simulator and emulator captures of the reference code running
+    ("product/mobile/devices/preview", [r"^product/mobile/devices/"], "each capture on its own and the README saying which device and OS"),
+    ("product/watch/devices/preview", [r"^product/watch/devices/"], "each capture on its own and the README saying which device and OS"),
 ]
 CORE = (r"^(guide/|product/|logo/|kit/web/|kit/apps/|kit/github/|kit/social/|kit/documents/|README\.md$|kit/projects/(hpr-motor-finder|charge|window|muster)/|kit/production/stickers/sticker-mark-50mm-dark$)")
            # focus items people will see from you first (identity, web, GitHub, social, documents) and the open options;

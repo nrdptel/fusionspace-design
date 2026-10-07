@@ -12,7 +12,7 @@ The SwiftUI and Compose parts are written in source/product/mobile/ (with {{...}
 constants) and copied to product/mobile/swiftui/ and product/mobile/compose/.
 """
 import os, re, math, shutil, html
-import build, kit_product as kp, kit_icons
+import build, kit_product as kp, kit_icons, kit_clip
 from build import VOID, PAPER, WHITE
 
 M = "mobile"
@@ -25,7 +25,7 @@ def out(rel): return kp.out(f"{M}/{rel}")
 # iPhone 17 Pro (and 18 Pro, same panel); the Pixel 10 is 1080 x 2424 px at 2.625 (420 dpi), 411 x 923 dp. Neither vendor
 # publishes inset values (apps read them from the system), so the insets here are drawn, not measured.
 DEVICES = {
-    "ios": {"name": "iPhone 17 Pro", "os": "iOS 27", "w": 402, "h": 874, "top": 62, "bottom": 34, "radius": 62,
+    "ios": {"name": "iPhone 17 Pro", "os": "iOS 27", "w": 402, "h": 874, "top": 62, "bottom": 34, "radius": 62, "mask": "iphone-17-pro",
             "island": (125, 37, 11)},                                   # Dynamic Island: width, height, top (pt)
     "android": {"name": "Pixel 10", "os": "Android 17", "w": 411, "h": 923, "top": 52, "bottom": 24, "radius": 48,
                 "punch": (24, 16)},                                     # camera hole: diameter, top (dp)
@@ -169,7 +169,7 @@ def scr_pad(p):
            '<div class="alt">Arm with a confirmation instead</div></div>')
     return chrome(p, "field", body, title="Pad 3", back="Flights", trailing=(ELLIPSIS if p == "ios" else ""), extra=act)
 
-def track_map(theme, w=370, h=236):
+def track_map(theme, w=370, h=200):
     """Offline recovery map (product/data.md#maps): muted base, north up, scale bar, pad square, measured track, rocket
     diamond with its age, the predicted landing as a dashed Nebula ellipse, the phone as the platform's location dot."""
     c = lambda r: kp.role(r, theme)
@@ -179,15 +179,18 @@ def track_map(theme, w=370, h=236):
     for x in range(-40, w + 60, 64): o.append(f'<line x1="{x}" y1="0" x2="{x + 40}" y2="{h}" stroke="{c("rule")}" stroke-width="1"/>')
     for y in range(18, h, 64): o.append(f'<line x1="0" y1="{y}" x2="{w}" y2="{y - 25}" stroke="{c("rule")}" stroke-width="1"/>')
     o.append(f'<path d="M0 {h - 40} C {w * .3} {h - 70}, {w * .6} {h - 20}, {w} {h - 60}" fill="none" stroke="{c("rule")}" stroke-width="5" stroke-linecap="round"/>')
-    pad = (92, 176); you = (70, 200); rk = (258, 92); pl = (300, 62)
+    # positions were laid out on a 236-high map; scale them to this height so nothing lands on the edge
+    k = h / 236
+    pad = (110, round(176 * k)); you = (64, round(206 * k) - 12); rk = (258, round(92 * k)); pl = (300, round(62 * k))
     o.append(f'<ellipse cx="{pl[0]}" cy="{pl[1]}" rx="48" ry="25" transform="rotate(-24 {pl[0]} {pl[1]})" fill="{c("predicted")}" fill-opacity=".08" stroke="{c("predicted")}" stroke-width="2" stroke-dasharray="8 4"/>')
     o.append(f'<text x="{pl[0] - 36}" y="{pl[1] - 36}" font-family="Cascadia Mono" font-size="11" fill="{c("predicted")}" text-anchor="middle">PREDICTED LANDING</text>')
-    tr = [(92, 176), (110, 150), (138, 126), (170, 112), (200, 104), (226, 98), (244, 95), (258, 92)]
+    tr = [(110, 176), (124, 150), (146, 126), (174, 112), (202, 104), (226, 98), (244, 95), (258, 92)]
+    tr = [(x, round(y * k)) for x, y in tr]
     o.append('<polyline points="' + " ".join(f"{x},{y}" for x, y in tr) + f'" fill="none" stroke="{c("ink")}" stroke-width="2" stroke-linejoin="round"/>')
     for x, y in tr[1:-1]: o.append(f'<circle cx="{x}" cy="{y}" r="2" fill="{c("ink")}"/>')
     o.append(f'<line x1="{you[0]}" y1="{you[1]}" x2="{rk[0]}" y2="{rk[1]}" stroke="{c("ink-muted")}" stroke-width="1" stroke-dasharray="24 3 1 3"/>')
     o.append(f'<rect x="{pad[0] - 6}" y="{pad[1] - 6}" width="12" height="12" fill="{c("ink")}"/>')
-    o.append(f'<text x="{pad[0] + 10}" y="{pad[1] + 16}" font-family="Cascadia Mono" font-size="11" fill="{c("ink-muted")}">PAD 3</text>')
+    o.append(f'<text x="{pad[0] + 12}" y="{pad[1] + 4}" font-family="Cascadia Mono" font-size="11" fill="{c("ink-muted")}">PAD 3</text>')
     o.append(f'<rect x="{rk[0] - 7}" y="{rk[1] - 7}" width="14" height="14" transform="rotate(45 {rk[0]} {rk[1]})" fill="{c("ink")}" stroke="{c("surface")}" stroke-width="2"/>')
     o.append(f'<text x="{rk[0]}" y="{rk[1] + 26}" font-family="Cascadia Mono" font-size="11" fill="{c("ink")}" text-anchor="middle">VEGA · 0.4 s</text>')
     o.append(f'<circle cx="{you[0]}" cy="{you[1]}" r="11" fill="{c("action")}" fill-opacity=".18"/><circle cx="{you[0]}" cy="{you[1]}" r="6" fill="{c("action")}" stroke="{c("surface")}" stroke-width="2"/>')
@@ -212,7 +215,7 @@ def scr_track(p):
     body = head + sheet(1, 2, "Now", now) + track_map("dark") + sheet(2, 2, "Find it", find)
     return chrome(p, "dark", body, title="Track", tab="track")
 
-def mini_chart(theme, w=370, h=224):
+def mini_chart(theme, w=370, h=196):
     """Altitude only, for a phone: measured solid, predicted dashed Nebula with its band, events as numbered balloons."""
     import numpy as np
     pred, meas = kp.example_flight(); ev = meas["events"]
@@ -256,12 +259,11 @@ def scr_report(p):
     spread = 0.04 * pap + 8
     head = (f'<div class="m-tags"><span class="fs-tag">FS-VEGA · REPORT 003</span>{status("ok", "Released", "check")}</div>'
             f'<h1 class="m-title">Flight 03</h1><p class="m-sub">J350W-L · 2026-10-04 · dual deploy</p>'
-            f'<p class="m-lead">Apogee {num(pap - ap)} ft ({(1 - ap / pap) * 100:.1f}%) under the prediction, outside its ±{num(spread)} ft spread.</p>')
+            f'<p class="m-lead">Apogee {num(pap - ap)} ft ({(1 - ap / pap) * 100:.1f}%) under the prediction.</p>')
     reads = ('<div class="fs-readouts">' + readout("Apogee", num(ap), "ft AGL", "Barometer, 20 Hz", size="m")
              + readout("Predicted", num(pap), "ft AGL", f"±{num(spread)} ft · hpr-sim 0.9", "predicted", size="m")
-             + readout("Max speed", num(float(meas["vel"].max())), "ft/s", "Mach 0.58", size="m")
-             + readout("Descent", f"{abs(float(meas['vel'][-60])):.0f}", "ft/s", "Under the main", size="m") + "</div>")
-    chart = mini_chart("light") + '<p class="m-note">Solid: measured. Dashed with a band: predicted. 1 liftoff · 2 burnout · 3 apogee · 4 drogue · 5 main · 6 landing.</p>'
+             + "</div>")
+    chart = mini_chart("light") + '<p class="m-note">Solid measured, dashed predicted. 1 liftoff · 3 apogee · 5 main · 6 landing.</p>'
     ch = rows([("1 · DROGUE", f'{ev["drogue"]:.2f} <span class="u">s</span>', status("ok", "Fired", "check")),
                ("2 · MAIN", f'{ev["main"]:.2f} <span class="u">s</span>', status("ok", "Fired", "check"))])
     body = head + sheet(1, 2, "Flight", reads + chart) + sheet(2, 2, "Channels", ch)
@@ -276,8 +278,7 @@ def scr_device(p):
     chans = system_list(p, "Channels", [("1 · Drogue", "Apogee + 0.4 s", tr, ""), ("2 · Main", "700 ft, descending", tr, ""),
                                         ("3", "Not used", tr, "")],
                         "Changes need SAFE. Nothing here can fire a channel.")
-    fw = system_list(p, "Firmware", [("Installed", "1.2.0", "", ""), ("Available", "1.3.0", f'<span class="lbtn">Update…</span>', "")],
-                     "Only while SAFE, and it asks twice.")
+    fw = system_list(p, "Firmware", [("Installed", "1.2.0", "", ""), ("Available", "1.3.0", f'<span class="lbtn">Update…</span>', "")])
     tb = ('<div class="m-tb">'
           f'<div><span class="k">Owner</span><span class="v">{_mark()}FusionSpace</span></div>'
           + "".join(f'<div{" class=wide" if wide else ""}><span class="k">{k}</span><span class="v">{v}</span></div>' for k, v, wide in (
@@ -570,7 +571,9 @@ def glance_page():
 def build_glance():
     pg, ids = glance_page()
     wr("glance/index.html", pg)
-    return shots([("glance/index.html", f"glance/{i}.png", 1400, 1000, f"#{i}") for i in ids])
+    frames = [{"selector": ".la"}, {"selector": ".di"}, {"selector": ".wg"}, {"selector": ".acc.rect"},
+              {"selector": ".acc.circ", "circle": True}, {"selector": ".lu"}, {"selector": ".watch"}, {"selector": ".chip"}]
+    return shots([("glance/index.html", f"glance/{i}.png", 1400, 1000, f"#{i}", {"frames": frames}) for i in ids])
 
 
 # ================================================================ code (product/mobile/swiftui/, product/mobile/compose/)
@@ -611,6 +614,8 @@ bars and Roboto. Open the HTML in a browser, or look at the PNG (2x).
 |---|---|---|
 {screens}
 
+`devices/` has the same screens running for real (simulator and emulator captures).
+
 `screens/mock.css` draws the platform chrome for the mock-ups only; apps use the system's bars. The status-bar and Dynamic
 Island glyphs are drawn stand-ins, not Apple's or Google's artwork.
 
@@ -634,11 +639,12 @@ Copy these into an app with `product/tokens/FusionSpaceColors.swift` or `FusionS
 |---|---|
 {code}
 
-**Checked** (October 2026): the Swift files typecheck in Swift 6 mode against the macOS 26.2 SDK; the iOS-only parts
-(ActivityKit, the widget's Lock Screen families) against that SDK's ActivityKit and WidgetKit interfaces with their macOS
-restrictions removed, which checks every call and type but isn't an iOS build. `UIApplication` in `fsKeepsScreenOn()` is
-unchecked (no iOS SDK on the build machine). The Kotlin files compile with Kotlin 2.2.20 against Compose Multiplatform 1.9
-(material3 1.9.0) and, for `FsLiveUpdate.kt`, Android's API 37 `android.jar`. None of it has run on a phone yet.
+**Proven on real screens** (October 6, 2026): every file here runs in the sample apps (`source/product/samples/apple`,
+`source/product/samples/android`) on the iOS 27 simulator (iPhone 17 Pro) and the Android 17 emulator (Pixel 10); their
+captures are in `devices/`, next to the drawn screens they prove. Running them found what compiling didn't: the hold
+control filling the screen (both platforms), `fsKeepsScreenOn()` breaking widget extensions, status chips upper-casing
+units, Material's default purple in Compose dialogs, the Dynamic Island cutting the SAFE box. The drawn screens are
+checked by `tools/build/kit_clip.py`: nothing may be cut by the screen's real outline or sit under a bar.
 
 `fonts/Roboto.woff2` is a Latin subset of Roboto (SIL OFL, `fonts/OFL-Roboto.txt`) so the Android mock-ups show Android's
 type; apps get Roboto from the system.
@@ -670,14 +676,18 @@ def shots(jobs):
         return False
     with sync_playwright() as p_:
         b = p_.chromium.launch()
-        for rel, dest, w, h, sel in jobs:
+        problems = []
+        for job in jobs:
+            rel, dest, w, h, sel = job[:5]; clip = job[5] if len(job) > 5 else None
             pg = b.new_page(viewport={"width": w, "height": h}, device_scale_factor=SCALE)
             pg.goto("file://" + out(rel)); pg.evaluate("document.fonts.ready"); pg.wait_for_timeout(250)
             os.makedirs(os.path.dirname(out(dest)), exist_ok=True)
             if sel: pg.locator(sel).screenshot(path=out(dest))
             else: pg.screenshot(path=out(dest), clip={"x": 0, "y": 0, "width": w, "height": h})
+            if clip: problems += [f"{dest}: {x}" for x in kit_clip.check(pg, **clip)]
             pg.close()
         b.close()
+    kit_clip.assert_clean(problems, os.path.dirname(jobs[0][1]) if jobs else "")
     return True
 
 def build_screens():
@@ -687,7 +697,12 @@ def build_screens():
     for key, fn, _ in SCREENS:
         for p in ("ios", "android"):
             wr(f"screens/{p}-{key}.html", fn(p))
-            d = DEVICES[p]; jobs.append((f"screens/{p}-{key}.html", f"screens/{p}-{key}.png", d["w"], d["h"], None))
+            d = DEVICES[p]
+            clip = {"frames": [{"selector": ".dev", "radius": d["radius"], "mask": d.get("mask")}],
+                    "content": {"selector": ".scroll", "above": [".sb", ".nav", ".appbar"],
+                                "below": [".tabbar", ".navbar", ".m-arm", ".homebar", ".gesture"]},
+                    "overlays": [".tabbar", ".navbar", ".m-arm", ".nav .gbtn", ".nav .gpill", ".appbar"]}
+            jobs.append((f"screens/{p}-{key}.html", f"screens/{p}-{key}.png", d["w"], d["h"], None, clip))
     return shots(jobs)
 
 def _font(size, semibold=False):
@@ -695,18 +710,29 @@ def _font(size, semibold=False):
     try: return ImageFont.truetype(os.path.join(build.ROOT, "type", "fonts", "CascadiaMono-SemiBold.ttf" if semibold else "CascadiaMono-Regular.ttf"), size)
     except OSError: return ImageFont.load_default()
 
-def phone_tile(png, p, scale=1.0):
-    """A shot with the device's corner radius and a 2 px drawn outline (a line drawing of the phone, not a photo of one)."""
-    from PIL import Image, ImageDraw
-    d = DEVICES[p]; im = Image.open(png).convert("RGB")
-    w, h = round(d["w"] * scale), round(d["h"] * scale)
-    im = im.resize((w, h), Image.LANCZOS)
-    pad = 6; r = round(d["radius"] * scale)
-    tile = Image.new("RGB", (w + 2 * pad, h + 2 * pad), tuple(kp._hex_rgb(PAPER)))
-    mask = Image.new("L", (w, h), 0); ImageDraw.Draw(mask).rounded_rectangle((0, 0, w - 1, h - 1), r, fill=255)
-    tile.paste(im, (pad, pad), mask)
-    ImageDraw.Draw(tile).rounded_rectangle((pad - 4, pad - 4, w + pad + 3, h + pad + 3), r + 4, outline=tuple(kp._hex_rgb(VOID)), width=2)
+def screen_tile(png, w, h, mask=None, radius=0, circle=False, pad=8, gap=4, line=2):
+    """A screen cut to its real outline (the simulator's mask, a circle, or a rounded rectangle), with a 2 px drawn case
+    line `gap` px outside it: a line drawing of the device, not a photo of one."""
+    from PIL import Image, ImageDraw, ImageFilter, ImageChops
+    im = Image.open(png).convert("RGB").resize((w, h), Image.LANCZOS)
+    big = Image.new("L", (w + 2 * pad, h + 2 * pad), 0)
+    if mask:
+        m = Image.open(os.path.join(kit_clip.MASKS, mask + ".png")).convert("L").resize((w, h), Image.LANCZOS)
+    else:
+        m = Image.new("L", (w, h), 0); dr = ImageDraw.Draw(m)
+        if circle: dr.ellipse((0, 0, w - 1, h - 1), fill=255)
+        else: dr.rounded_rectangle((0, 0, w - 1, h - 1), radius, fill=255)
+    big.paste(m, (pad, pad))
+    grow = lambda img, n: img.filter(ImageFilter.MaxFilter(2 * n + 1)) if n else img
+    ring = ImageChops.subtract(grow(big, gap + line), grow(big, gap))
+    tile = Image.new("RGB", big.size, tuple(kp._hex_rgb(PAPER)))
+    tile.paste(Image.new("RGB", big.size, tuple(kp._hex_rgb(VOID))), (0, 0), ring)
+    tile.paste(im, (pad, pad), m)
     return tile
+
+def phone_tile(png, p, scale=1.0):
+    d = DEVICES[p]
+    return screen_tile(png, round(d["w"] * scale), round(d["h"] * scale), d.get("mask"), round(d["radius"] * scale))
 
 def build_preview():
     """product/mobile/preview.png: the four screens on both platforms, iOS above Android."""

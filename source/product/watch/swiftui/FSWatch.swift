@@ -71,31 +71,49 @@ public struct FSWatchFind: View {
     public var body: some View {
         let d = FS.darkPalette
         TimelineView(.periodic(from: .now, by: dimmed ? 60 : 1)) { tl in
-            VStack(spacing: 2) {
-                // Without a heading (no compass, or not calibrated) the arrow points to the bearing from north, and says so.
-                FSBearingArrow(relativeDegrees: bearingTrue - (headingTrue ?? 0), outline: dimmed).frame(maxHeight: 104)
-                HStack(alignment: .firstTextBaseline, spacing: 4) {
-                    Text(distanceFt.formatted()).font(FS.readout(32, relativeTo: .title))
-                    Text("ft").font(FS.label()).foregroundStyle(d.inkMuted)
-                }
-                .foregroundStyle(dimmed ? d.inkMuted : d.ink)
-                Text(qualifier(now: tl.date)).font(FS.label()).foregroundStyle(d.inkMuted)
+            // The largest arrow that leaves room for everything else: fits every case size without clipping.
+            ViewThatFits(in: .vertical) {
+                ForEach([104, 84, 64, 48], id: \.self) { size in screen(arrow: CGFloat(size), now: tl.date) }
             }
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel(Text("Rocket \(distanceFt.formatted()) feet away, bearing \(Int(bearingTrue)) degrees true"))
-            .accessibilityValue(Text(FSFreshness.age(since: fixedAt, now: tl.date)))
-        }
-        .toolbar {
-            ToolbarItem(placement: .bottomBar) { Button("Found it", action: onFound) }
+            .accessibilityElement(children: .contain)
         }
         .navigationTitle("Find")
         .fsWatchHapticOnStale(fixedAt: fixedAt, limit: FSFreshness.flight * {{FIND_STALE_X}})
     }
 
+    private func screen(arrow: CGFloat, now: Date) -> some View {
+        let d = FS.darkPalette
+        return VStack(spacing: 2) {
+            // Without a heading (no compass, or not calibrated) the arrow points to the bearing from north, and says so.
+            FSBearingArrow(relativeDegrees: bearingTrue - (headingTrue ?? 0), outline: dimmed).frame(width: arrow, height: arrow)
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                Text(distanceFt.formatted()).font(FS.readout(32, relativeTo: .title))
+                Text("ft").font(FS.label()).foregroundStyle(d.inkMuted)
+            }
+            .foregroundStyle(dimmed ? d.inkMuted : d.ink)
+            .lineLimit(1).minimumScaleFactor(0.7)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(Text("Rocket \(distanceFt.formatted()) feet away, bearing \(Int(bearingTrue)) degrees true"))
+            .accessibilityValue(Text(FSFreshness.age(since: fixedAt, now: now)))
+            Text(qualifier(now: now)).font(FS.label()).foregroundStyle(d.inkMuted)
+                .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+            // The primary action, full width in the content (a bottom-bar item would sit over the text above).
+            // Always On shows it as unavailable instead of removing it.
+            Button(action: onFound) {
+                Text("Found it").frame(maxWidth: .infinity).foregroundStyle(dimmed ? d.inkMuted : d.onAction)
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(dimmed)
+            .padding(.top, 2)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
     private func qualifier(now: Date) -> String {
         let bearing = String(format: "%03d° T", Int(bearingTrue.rounded()) % 360)
-        if dimmed { return "\(bearing) · as of \(fixedAt.formatted(date: .omitted, time: .shortened))" }
-        return "\(bearing) · fix \(FSFreshness.age(since: fixedAt, now: now))" + (headingTrue == nil ? " · from north" : "")
+        // Two short lines rather than one long one: the smallest watch is 162 pt wide.
+        if dimmed { return "\(bearing)\nas of \(fixedAt.formatted(date: .omitted, time: .shortened))" }
+        return "\(bearing)" + (headingTrue == nil ? " · from north" : "") + "\nfix \(FSFreshness.age(since: fixedAt, now: now))"
     }
 }
 
@@ -113,18 +131,50 @@ public struct FSWatchState: View {
         self.designation = designation; self.armed = armed; self.channels = channels; self.linkAge = linkAge
     }
     public var body: some View {
-        let d = FS.darkPalette
-        ScrollView {
-            VStack(spacing: 6) {
-                Text("\(designation) · \(linkAge)").font(FS.label()).foregroundStyle(d.inkMuted)
-                FSStateBox(armed: armed)
-                ForEach(channels) { ch in
-                    HStack { Text("\(ch.id) \(ch.name)").font(FS.label()); Spacer(); FSStatus(ch.word, signal: ch.state) }
-                }
-                Text("Safe it with the switch or the phone.").font(.footnote).foregroundStyle(d.inkMuted).multilineTextAlignment(.center)
-            }
+        // The first layout that fits wins: full, then tighter, then scrolling (large text sizes). Nothing is ever cut.
+        ViewThatFits(in: .vertical) {
+            content(compact: false)
+            content(compact: true)
+            content(compact: true, side: true)
+            ScrollView { content(compact: false) }
         }
         .environment(\.fsTheme, .dark)
+    }
+    private func content(compact: Bool, side: Bool = false) -> some View {
+        let d = FS.darkPalette
+        let box = Text(armed ? "ARMED" : "SAFE")
+            .font(.custom("CascadiaMono-SemiBold", size: compact ? 18 : 22, relativeTo: .title3))
+            .padding(.horizontal, compact ? 6 : 10).padding(.vertical, compact ? 3 : 5)
+            .foregroundStyle(armed ? FS.onDangerFill : d.ink)
+            .background(armed ? FS.dangerFill : Color.clear)
+            .overlay(Rectangle().strokeBorder(armed ? FS.dangerFill : d.ink, lineWidth: 3))
+        let link = Text("\(designation) · \(linkAge)").font(FS.label()).foregroundStyle(d.inkMuted).lineLimit(1).minimumScaleFactor(0.8)
+        return VStack(spacing: compact ? 2 : 4) {
+            if side {
+                // the smallest watches: the designation beside the box saves a line
+                HStack(spacing: 6) {
+                    box
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text(designation).font(FS.label()).lineLimit(1).minimumScaleFactor(0.7)
+                        Text(linkAge).font(FS.label()).foregroundStyle(d.inkMuted)
+                    }
+                }
+            } else {
+                box
+                link
+            }
+            ForEach(channels) { ch in
+                HStack(spacing: 4) {
+                    Text("\(ch.id) \(ch.name)").font(FS.label()).lineLimit(1)
+                    Spacer(minLength: 4)
+                    FSStatus(ch.word, signal: ch.state, minHeight: 20)
+                }
+            }
+            Text(compact ? "Safe: switch or phone." : "Safe it with the switch or phone.").font(.caption2).foregroundStyle(d.inkMuted)
+                .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+        }
+        .foregroundStyle(d.ink)
+        .scenePadding(.horizontal)
     }
 }
 
@@ -135,19 +185,34 @@ public struct FSWatchUnfired: View {
     let onAcknowledge: () -> Void
     public init(channel: String, onAcknowledge: @escaping () -> Void) { self.channel = channel; self.onAcknowledge = onAcknowledge }
     public var body: some View {
-        VStack(spacing: 4) {
-            Image(systemName: "exclamationmark.triangle").font(.title2)
-            Text("UNFIRED").font(.custom("CascadiaMono-SemiBold", size: 26, relativeTo: .title))
-            Text(channel).font(FS.readout(18, relativeTo: .headline))
-            Text("Approach as live. Disarm before handling.").font(.footnote).multilineTextAlignment(.center)
-            Button("OK", action: onAcknowledge).padding(.top, 6)
+        ViewThatFits(in: .vertical) {
+            content(compact: false)
+            content(compact: true)
+            content(compact: true, tight: true)
+            ScrollView { content(compact: false) }
         }
         .foregroundStyle(FS.onDangerFill)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(FS.dangerFill)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(Text("Unfired charge, \(channel). Approach as live. Disarm before handling."))
+        .background(FS.dangerFill.ignoresSafeArea())
         .onAppear { FSWristEvent.unfired.play() }
+    }
+    private func content(compact: Bool, tight: Bool = false) -> some View {
+        VStack(spacing: compact ? 2 : 4) {
+            HStack(spacing: tight ? 4 : 6) {
+                Image(systemName: "exclamationmark.triangle")
+                Text(tight ? "UNFIRED \(channel)" : "UNFIRED")
+                    .font(.custom("CascadiaMono-SemiBold", size: tight ? 15 : (compact ? 20 : 24), relativeTo: .title2))
+                    .lineLimit(1).minimumScaleFactor(0.8)
+            }
+            .accessibilityElement(children: .combine)
+            if !tight { Text(channel).font(FS.readout(compact ? 16 : 18, relativeTo: .headline)) }
+            Text("Approach as live. Disarm before handling.").font(compact ? .caption2 : .footnote)
+                .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+            Button("OK", action: onAcknowledge).padding(.top, compact ? 0 : 4)
+        }
+        .scenePadding(.horizontal)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(Text("Unfired charge, \(channel). Approach as live. Disarm before handling."))
     }
 }
 

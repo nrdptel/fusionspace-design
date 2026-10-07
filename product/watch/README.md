@@ -22,6 +22,8 @@ Open the HTML in a browser, or look at the PNG (2x).
 | `screens/{watchos,wearos}-pad` | the device's state, read only |
 | `screens/{watchos,wearos}-unfired` | a charge that didn't fire, first |
 
+`devices/` has the same screens running for real (simulator and emulator captures).
+
 `screens/watch.css` draws the platform chrome for the mock-ups only (time, page dots, toolbar and edge buttons); apps use
 the system's. The case outlines are drawn, not Apple's or Google's artwork.
 
@@ -45,9 +47,10 @@ the system's. The case outlines are drawn, not Apple's or Google's artwork.
 | `compose/FsWear.kt` | Wear OS: FsWearColors, FusionSpaceWearTheme, FsBearingArrow, FsWearFind (ambient aware), FsWearStateBox, FsWearUnfired, FsWristEvent, the ongoing activity |
 | `compose/FsWearTile.kt` | Wear OS: the Find tile (ProtoLayout Material 3) and its complications |
 
-**Checked** (October 2026): the Swift typechecks in Swift 6 mode against the macOS 26.2 SDK's SwiftUI, SwiftUICore,
-WidgetKit and RelevanceKit interfaces with their macOS restrictions removed (there is no watchOS SDK on the build machine),
-which checks every SwiftUI and WidgetKit call and type but isn't a watchOS build; `WKInterfaceDevice` haptics (WatchKit) and
-`widgetLabel` aren't in that SDK and are unchecked. The Kotlin compiles with Kotlin 2.2.20 against Android API 36.1, Compose
-1.12.1 for Android, Wear Compose Material 3 1.7.0, Tiles 1.6.2, ProtoLayout 1.4.2, watchface-complications 1.3.0 and
-wear-ongoing 1.1.0. None of it has run on a watch yet.
+**Proven on real screens** (October 6, 2026): the code runs in the sample apps (`source/product/samples/apple`,
+`source/product/samples/android`) on the watchOS 27 simulator (Apple Watch Ultra 4 49 mm, SE 3 40 mm) and the Wear OS 7
+emulator (large and small round); the captures are in `devices/`. Running them found what compiling didn't: the
+token file not building for watchOS, the bottom-bar "Found it" drawing as an empty capsule over the text, truncated and
+clipped text on the 40 mm SE, ambient mode never engaging on Wear OS, the tile dropping the bearing and the fix's age. The
+drawn screens are checked by `tools/build/kit_clip.py` against each watch's real outline (the simulator's screen mask, or
+the circle).

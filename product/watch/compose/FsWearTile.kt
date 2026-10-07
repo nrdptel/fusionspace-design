@@ -7,15 +7,20 @@
 // is a glance, so anything that moves (the arrow, a live altitude) belongs in the app.
 package co.fusionspace.design.wear
 
+import androidx.compose.ui.graphics.toArgb
 import androidx.concurrent.futures.ResolvableFuture
 import androidx.wear.protolayout.ActionBuilders
+import androidx.wear.protolayout.LayoutElementBuilders
 import androidx.wear.protolayout.ModifiersBuilders
 import androidx.wear.protolayout.ResourceBuilders
 import androidx.wear.protolayout.TimelineBuilders
+import androidx.wear.protolayout.material3.ColorScheme
+import androidx.wear.protolayout.material3.Typography
 import androidx.wear.protolayout.material3.materialScope
 import androidx.wear.protolayout.material3.primaryLayout
 import androidx.wear.protolayout.material3.text
 import androidx.wear.protolayout.material3.textEdgeButton
+import androidx.wear.protolayout.types.LayoutColor
 import androidx.wear.protolayout.types.layoutString
 import androidx.wear.tiles.RequestBuilders
 import androidx.wear.tiles.TileBuilders
@@ -47,10 +52,24 @@ open class FsFindTileService : TileService() {
                 ActionBuilders.AndroidActivity.Builder().setPackageName(packageName).setClassName("$packageName.FindActivity").build()
             ).build()
         ).build()
-        val layout = materialScope(this, requestParams.deviceConfiguration) {
+        // The static FusionSpace scheme, not the watch's dynamic one: the colors mean something (product/watch.md).
+        val layout = materialScope(this, requestParams.deviceConfiguration, allowDynamicTheme = false, defaultColorScheme = fsTileColors()) {
             primaryLayout(
-                titleSlot = { text("${s.name.uppercase()} · ${s.phase}".layoutString) },
-                mainSlot = { text("%,d ft".format(s.distanceFt).layoutString) },
+                titleSlot = { text("${s.name.uppercase()} · ${s.phase}".layoutString, color = colorScheme.onSurfaceVariant) },
+                // One readout with its unit and its age: the distance, then the bearing and how old the fix is.
+                mainSlot = {
+                    LayoutElementBuilders.Column.Builder()
+                        .addContent(
+                            LayoutElementBuilders.Row.Builder()
+                                .setVerticalAlignment(LayoutElementBuilders.VERTICAL_ALIGN_BOTTOM)
+                                .addContent(text("%,d".format(s.distanceFt).layoutString, typography = Typography.NUMERAL_MEDIUM, color = colorScheme.onSurface))
+                                .addContent(text(" ft".layoutString, typography = Typography.LABEL_MEDIUM, color = colorScheme.onSurfaceVariant))
+                                .build(),
+                        )
+                        .addContent(text("%03d° T · fix %s".format(s.bearingTrue, s.fixAge).layoutString,
+                            typography = Typography.BODY_MEDIUM, color = colorScheme.onSurfaceVariant))
+                        .build()
+                },
                 bottomSlot = { textEdgeButton(onClick = open, labelContent = { text("Find".layoutString) }) },
             )
         }
@@ -64,6 +83,23 @@ open class FsFindTileService : TileService() {
 
     override fun onTileResourcesRequest(requestParams: RequestBuilders.ResourcesRequest): ListenableFuture<ResourceBuilders.Resources> =
         ResolvableFuture.create<ResourceBuilders.Resources>().apply { set(ResourceBuilders.Resources.Builder().setVersion("1").build()) }
+}
+
+/** The dark roles as a ProtoLayout Material 3 scheme: the action color for the edge button, black behind everything. */
+private fun fsTileColors(): ColorScheme {
+    val c = FsWearColors
+    fun lc(color: androidx.compose.ui.graphics.Color) = LayoutColor(color.toArgb())
+    return ColorScheme(
+        primary = lc(c.action), primaryDim = lc(c.action), primaryContainer = lc(c.surface), onPrimary = lc(c.onAction),
+        onPrimaryContainer = lc(c.ink), secondary = lc(c.inkMuted), secondaryDim = lc(c.inkMuted), secondaryContainer = lc(c.surface),
+        onSecondary = lc(c.canvas), onSecondaryContainer = lc(c.ink), tertiary = lc(c.predicted), tertiaryDim = lc(c.predicted),
+        tertiaryContainer = lc(c.surface), onTertiary = lc(c.canvas), onTertiaryContainer = lc(c.predicted),
+        surfaceContainerLow = lc(c.canvas), surfaceContainer = lc(c.surface), surfaceContainerHigh = lc(c.rule),
+        onSurface = lc(c.ink), onSurfaceVariant = lc(c.inkMuted), outline = lc(c.ruleStrong), outlineVariant = lc(c.rule),
+        background = lc(androidx.compose.ui.graphics.Color.Black), onBackground = lc(c.ink),
+        error = lc(c.dangerFill), errorDim = lc(c.dangerFill), errorContainer = lc(c.dangerFill), onError = lc(c.onDangerFill),
+        onErrorContainer = lc(c.onDangerFill),
+    )
 }
 
 /** SHORT_TEXT (distance), LONG_TEXT (name, distance, bearing), RANGED_VALUE (altitude on the way down). */

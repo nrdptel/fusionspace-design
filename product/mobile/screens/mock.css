@@ -58,7 +58,7 @@ body { width: var(--w); height: var(--h); overflow: hidden; background: #000; }
 .nitem[aria-current] .pill { background: color-mix(in srgb, var(--fs-action) 16%, var(--fs-surface)); color: var(--fs-action); }
 
 /* ------------------------------------------------------------------ the content layer (FusionSpace's) */
-.scroll { position: absolute; inset: 0; overflow: hidden; padding: calc(var(--top) + 56px) 16px var(--tabh); display: flex; flex-direction: column; gap: 14px; }
+.scroll { position: absolute; inset: 0; overflow: hidden; padding: calc(var(--top) + 56px) 16px var(--tabh); display: flex; flex-direction: column; gap: 12px; }
 .scroll > * { flex-shrink: 0; }
 .android .scroll { padding-top: calc(var(--top) + 64px); }
 .m-tags { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
@@ -122,7 +122,7 @@ body { width: var(--w); height: var(--h); overflow: hidden; background: #000; }
 
 /* title block as the About screen */
 .m-tb { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid var(--fs-ink); background: var(--fs-surface); }
-.m-tb > div { padding: 5px 10px 7px; border-right: 1px solid var(--fs-rule-strong); border-bottom: 1px solid var(--fs-rule-strong); display: grid; gap: 2px; }
+.m-tb > div { padding: 4px 10px 5px; border-right: 1px solid var(--fs-rule-strong); border-bottom: 1px solid var(--fs-rule-strong); display: grid; gap: 2px; }
 .m-tb > div:nth-child(2n+1):not(.wide) { }
 .m-tb .wide { grid-column: span 2; }
 .m-tb .k { font: 400 11px/14px var(--fs-font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--fs-ink-muted); }

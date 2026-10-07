@@ -1,0 +1,146 @@
+[
+ {
+  "file": "phone-pad.png",
+  "what": "Pad, field theme",
+  "device": "pixel_10 (AVD profile; display cutout emulation: hole)",
+  "os": "Android 17, API 37.0 (Google APIs arm64 system image r6, build CE2A.260420.019)",
+  "size_px": [
+   1080,
+   2424
+  ],
+  "density_dpi": 420,
+  "size_dp": [
+   411,
+   923
+  ],
+  "captured": "2026-10-06"
+ },
+ {
+  "file": "phone-track.png",
+  "what": "Track, dark",
+  "device": "pixel_10 (AVD profile; display cutout emulation: hole)",
+  "os": "Android 17, API 37.0 (Google APIs arm64 system image r6, build CE2A.260420.019)",
+  "size_px": [
+   1080,
+   2424
+  ],
+  "density_dpi": 420,
+  "size_dp": [
+   411,
+   923
+  ],
+  "captured": "2026-10-06"
+ },
+ {
+  "file": "phone-live-update.png",
+  "what": "Live Update in the notification shade (MetricStyle, semantic style SAFE)",
+  "device": "pixel_10 (AVD profile; display cutout emulation: hole)",
+  "os": "Android 17, API 37.0 (Google APIs arm64 system image r6, build CE2A.260420.019)",
+  "size_px": [
+   1080,
+   2424
+  ],
+  "density_dpi": 420,
+  "size_dp": [
+   411,
+   923
+  ],
+  "captured": "2026-10-06"
+ },
+ {
+  "file": "wear-find.png",
+  "what": "Find",
+  "device": "wearos_large_round (AVD profile, round)",
+  "os": "Wear OS 7.0, API 37.0 (android-wear-signed arm64 system image r1, build CP2A.260330.028.E2)",
+  "size_px": [
+   454,
+   454
+  ],
+  "density_dpi": 320,
+  "size_dp": [
+   227,
+   227
+  ],
+  "captured": "2026-10-06"
+ },
+ {
+  "file": "wear-pad.png",
+  "what": "Pad, read only",
+  "device": "wearos_large_round (AVD profile, round)",
+  "os": "Wear OS 7.0, API 37.0 (android-wear-signed arm64 system image r1, build CP2A.260330.028.E2)",
+  "size_px": [
+   454,
+   454
+  ],
+  "density_dpi": 320,
+  "size_dp": [
+   227,
+   227
+  ],
+  "captured": "2026-10-06"
+ },
+ {
+  "file": "wear-unfired.png",
+  "what": "Unfired",
+  "device": "wearos_large_round (AVD profile, round)",
+  "os": "Wear OS 7.0, API 37.0 (android-wear-signed arm64 system image r1, build CP2A.260330.028.E2)",
+  "size_px": [
+   454,
+   454
+  ],
+  "density_dpi": 320,
+  "size_dp": [
+   227,
+   227
+  ],
+  "captured": "2026-10-06"
+ },
+ {
+  "file": "wear-find-ambient.png",
+  "what": "Find in ambient mode (KEYCODE_SLEEP)",
+  "device": "wearos_large_round (AVD profile, round)",
+  "os": "Wear OS 7.0, API 37.0 (android-wear-signed arm64 system image r1, build CP2A.260330.028.E2)",
+  "size_px": [
+   454,
+   454
+  ],
+  "density_dpi": 320,
+  "size_dp": [
+   227,
+   227
+  ],
+  "captured": "2026-10-06"
+ },
+ {
+  "file": "wear-tile-find.png",
+  "what": "Find tile",
+  "device": "wearos_large_round (AVD profile, round)",
+  "os": "Wear OS 7.0, API 37.0 (android-wear-signed arm64 system image r1, build CP2A.260330.028.E2)",
+  "size_px": [
+   454,
+   454
+  ],
+  "density_dpi": 320,
+  "size_dp": [
+   227,
+   227
+  ],
+  "captured": "2026-10-06"
+ },
+ {
+  "file": "wear-small-find.png",
+  "what": "Find at the small size class",
+  "device": "wearos_small_round (AVD profile, round)",
+  "os": "Wear OS 7.0, API 37.0 (android-wear-signed arm64 system image r1, build CP2A.260330.028.E2)",
+  "size_px": [
+   384,
+   384
+  ],
+  "density_dpi": 320,
+  "size_dp": [
+   192,
+   192
+  ],
+  "captured": "2026-10-06"
+ }
+]

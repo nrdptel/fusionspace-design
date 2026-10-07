@@ -34,25 +34,36 @@ public enum FSSignal: Sendable {
 public struct FSStatus: View {
     let signal: FSSignal
     let word: String
+    let detail: String?
     let symbol: String?
+    let minHeight: CGFloat
 
-    public init(_ word: String, signal: FSSignal, symbol: String? = nil) {
-        self.word = word; self.signal = signal; self.symbol = symbol
+    /// - Parameters:
+    ///   - word: the state, shown in capitals (`CONT`, `ARMED`).
+    ///   - detail: a value after it, shown as written so units keep their case (`Link · 0.3 s`, not `0.3 S`).
+    ///   - minHeight: 24 pt by default; 20 on a watch.
+    public init(_ word: String, signal: FSSignal, detail: String? = nil, symbol: String? = nil, minHeight: CGFloat = 24) {
+        self.word = word; self.signal = signal; self.detail = detail; self.symbol = symbol; self.minHeight = minHeight
     }
 
     public var body: some View {
         FSPaletteReader { p in
             HStack(spacing: 6) {
                 Image(systemName: symbol ?? signal.defaultSymbol).imageScale(.small)
-                Text(word.uppercased()).font(FS.label().weight(.semibold))
+                HStack(spacing: 0) {
+                    Text(word.uppercased())
+                    if let detail { Text(" · \(detail)") }
+                }
+                .font(FS.label().weight(.semibold))
             }
+            .lineLimit(1)
             .padding(.horizontal, 8)
-            .frame(minHeight: 24)
+            .frame(minHeight: minHeight)
             .foregroundStyle(foreground(p))
             .background(fill(p))
             .overlay(border(p))
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel(Text(word))
+            .accessibilityLabel(Text(detail.map { "\(word), \($0)" } ?? word))
         }
     }
 
@@ -286,26 +297,28 @@ public struct FSHoldToConfirm: View {
 
     public var body: some View {
         FSPaletteReader { p in
-            ZStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 6) {
+                Label(title.uppercased(), systemImage: "bolt.horizontal").font(FS.heading().weight(.semibold))
+                Text("\(designation) · \(Int(duration)) s").font(FS.readout(14, relativeTo: .footnote))
+                Text("Keep holding").font(FS.label().weight(.semibold)).foregroundStyle(p.danger)
+                    .opacity(progress > 0 ? 1 : 0)      // reserved, so the label doesn't jump when it appears
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .frame(maxWidth: .infinity, minHeight: FS.gloveTarget, alignment: .leading)
+            // The progress lives in the background, sized by the control, never sizing it (a GeometryReader in the
+            // stack would take every point it's offered).
+            .background {
                 GeometryReader { g in
-                    p.danger.opacity(0.10).frame(width: g.size.width * progress)
-                    VStack { Spacer(); ZStack(alignment: .leading) {
+                    ZStack(alignment: .bottomLeading) {
+                        p.surface
+                        p.danger.opacity(0.10).frame(width: g.size.width * progress)
                         p.rule.frame(height: 8)
                         p.danger.frame(width: g.size.width * progress, height: 8)
-                    } }
-                }
-                VStack(alignment: .leading, spacing: 6) {
-                    Label(title.uppercased(), systemImage: "bolt.horizontal").font(FS.heading().weight(.semibold))
-                    Text("\(designation) · \(Int(duration)) s").font(FS.readout(14, relativeTo: .footnote))
-                    if progress > 0 {
-                        Text("Keep holding").font(FS.label().weight(.semibold)).foregroundStyle(p.danger)
                     }
                 }
-                .padding(.horizontal, 16)
             }
-            .frame(maxWidth: .infinity, minHeight: FS.gloveTarget)
             .foregroundStyle(p.ink)
-            .background(p.surface)
             .overlay(Rectangle().strokeBorder(p.ink, lineWidth: 2))
             .contentShape(Rectangle())
             .onLongPressGesture(minimumDuration: duration, maximumDistance: 40) {
@@ -347,6 +360,8 @@ public enum FSFreshness {
 
 extension View {
     /// Keeps the screen awake while this view is on screen: countdown and tracking screens only, released on leaving.
+    /// Apps only: widgets and Live Activities can't hold the screen on (and can't reach UIApplication).
+    @available(iOSApplicationExtension, unavailable)
     public func fsKeepsScreenOn() -> some View {
         #if os(iOS)
         return self

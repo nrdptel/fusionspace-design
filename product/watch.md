@@ -141,6 +141,18 @@ watchOS allows 5 Bluetooth alerts in 24 hours, enough for a rare alarm and a rea
   from the watch app). Either way the screen shows the age of the fix.
 - **Offline.** Nothing needs a network at the field: the watch's GPS and compass, and a link to the phone or the ground station.
 
+## Real screens
+
+The reference code runs in two sample apps, `source/product/samples/apple` (Xcode, generated with XcodeGen) and
+`source/product/samples/android` (Gradle), which compile the files in `product/` in place. Their simulator and emulator
+captures are in [`watch/devices/`](watch/devices/):
+
+![The reference code running](watch/devices/preview.png)
+
+Run them after changing anything in `product/watch/` or `product/tokens/`: compiling is not enough. On October 6, 2026
+running them found layout bugs that every compile check had passed (a control taking the whole screen, text under a
+button, a border cut by a rounded end, units in capitals), all fixed in the files here.
+
 ## Checklist
 
 - [ ] Nothing on the watch commands hardware; safing is pointed to, not offered.
@@ -150,3 +162,4 @@ watchOS allows 5 Bluetooth alerts in 24 hours, enough for a rare alarm and a rea
 - [ ] Complications and tiles: one value, unit, age; readable tinted; no logo; arrows from north.
 - [ ] Taps only for the events in the table; UNFIRED repeats until acknowledged.
 - [ ] Find survives the screen turning off and releases its session at the end.
+- [ ] Runs in the sample app on the smallest watch (SE 40 mm, Wear OS small round) with nothing cut by the edge or the bezel.

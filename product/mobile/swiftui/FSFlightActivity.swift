@@ -57,14 +57,21 @@ public struct FSFlightActivity: Widget {
             } compactLeading: {
                 Group {
                     if s.phase == .pad, let t = s.padTime {
-                        Text(timerInterval: Date.now...max(t, .now), countsDown: true).monospacedDigit().frame(maxWidth: 64)
+                        // compact leading is about 52 pt: wider pushes the island over the clock
+                        HStack(spacing: 0) {
+                            Text("T−")
+                            Text(timerInterval: Date.now...max(t, .now), countsDown: true).monospacedDigit()
+                        }
+                        .font(.custom("CascadiaMono-SemiBold", size: 13))
+                        .frame(maxWidth: 52, alignment: .leading)
                     } else {
                         Text(s.phase.rawValue.uppercased())
                     }
                 }
                 .font(.custom("CascadiaMono-SemiBold", size: 15)).foregroundStyle(d.ink)
             } compactTrailing: {
-                if s.phase == .pad { FSIslandState(armed: s.armed) }
+                // inset from the island's rounded end, so the box's border is never cut by the curve
+                if s.phase == .pad { FSIslandState(armed: s.armed).padding(.trailing, 4) }
                 else { Text("\(s.altitudeFt.map(fsNumber) ?? "—") ft").font(.custom("CascadiaMono-SemiBold", size: 15)).foregroundStyle(d.ink) }
             } minimal: {
                 VStack(spacing: 0) {
@@ -162,8 +169,8 @@ struct FSPhaseStrip: View {
 struct FSIslandState: View {
     let armed: Bool
     var body: some View {
-        Text(armed ? "ARMED" : "SAFE").font(.custom("CascadiaMono-SemiBold", size: 11))
-            .padding(.horizontal, 5).padding(.vertical, 3)
+        Text(armed ? "ARMED" : "SAFE").font(.custom("CascadiaMono-SemiBold", size: 10))
+            .padding(.horizontal, 4).padding(.vertical, 2)
             .foregroundStyle(armed ? FS.onDangerFill : FS.darkPalette.ink)
             .background(armed ? FS.dangerFill : Color.clear)
             .overlay(Rectangle().strokeBorder(armed ? FS.dangerFill : FS.darkPalette.ink, lineWidth: 1.5))

@@ -22,13 +22,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -44,8 +46,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
@@ -100,8 +104,28 @@ fun FusionSpaceTheme(
         headlineSmall = display(base.headlineSmall), titleLarge = display(base.titleLarge),
     )
     CompositionLocalProvider(LocalFsColors provides colors, LocalFsMono provides mono) {
-        MaterialTheme(colorScheme = if (dark) FsDarkScheme else FsLightScheme, typography = typography, content = content)
+        MaterialTheme(colorScheme = fsScheme(if (dark) FsDarkScheme else FsLightScheme, colors), typography = typography, content = content)
     }
+}
+
+/**
+ * The Material roles FsLightScheme / FsDarkScheme leave at Material's baseline (purple) defaults, filled from the FusionSpace
+ * roles: dialogs, menus, sheets and app bars use the surface containers, and the field theme's whiter canvas and darker
+ * muted ink reach the Material components too.
+ */
+private fun fsScheme(base: ColorScheme, c: FsColors): ColorScheme {
+    val tinted = lerp(c.surface, c.action, 0.16f)
+    return base.copy(
+        background = c.canvas, onBackground = c.ink, surface = c.surface, onSurface = c.ink,
+        surfaceVariant = c.surface, onSurfaceVariant = c.inkMuted, outline = c.ruleStrong, outlineVariant = c.rule,
+        surfaceTint = c.action, surfaceBright = c.surface, surfaceDim = c.canvas,
+        surfaceContainerLowest = c.surface, surfaceContainerLow = c.surface, surfaceContainer = c.surface,
+        surfaceContainerHigh = c.surface, surfaceContainerHighest = c.surface,
+        primary = c.action, onPrimary = c.onAction, primaryContainer = tinted, onPrimaryContainer = c.ink,
+        secondary = c.inkMuted, onSecondary = c.surface, secondaryContainer = tinted, onSecondaryContainer = c.ink,
+        tertiary = c.predicted, onTertiary = c.surface, tertiaryContainer = c.surface, onTertiaryContainer = c.predicted,
+        inverseSurface = c.ink, inverseOnSurface = c.canvas, inversePrimary = c.action, scrim = Color.Black,
+    )
 }
 
 val LocalFsMono = androidx.compose.runtime.staticCompositionLocalOf<FontFamily> { FontFamily.Monospace }
@@ -119,10 +143,12 @@ enum class FsSignal { Danger, Caution, Ok, Info, Off, Stale, Predicted }
 
 /**
  * A status chip: `CONT`, `ARMED`, `NOT USED`. Danger, caution and normal are filled the same on every background, like a
- * safety sign; the others are outlined. [icon] is a FusionSpace icon (product/icons/android/) drawn by the caller.
+ * safety sign; the others are outlined. [icon] is a FusionSpace icon (product/icons/android/) drawn by the caller; an
+ * `Icon` there takes the chip's foreground color through LocalContentColor. The word is set in capitals; [detail] (a value
+ * with its unit, "0.3 s") follows it as written, since a capital S is siemens, not seconds.
  */
 @Composable
-fun FsStatus(word: String, signal: FsSignal, modifier: Modifier = Modifier, icon: (@Composable () -> Unit)? = null) {
+fun FsStatus(word: String, signal: FsSignal, modifier: Modifier = Modifier, detail: String? = null, icon: (@Composable () -> Unit)? = null) {
     val c = LocalFsColors.current
     val (fg, bg) = when (signal) {
         FsSignal.Danger -> c.onDangerFill to c.dangerFill
@@ -141,12 +167,15 @@ fun FsStatus(word: String, signal: FsSignal, modifier: Modifier = Modifier, icon
     }
     Row(
         modifier.background(bg).then(edge).heightIn(min = 24.dp).padding(horizontal = 8.dp)
-            .clearAndSetSemantics { contentDescription = word },
+            .clearAndSetSemantics { contentDescription = listOfNotNull(word, detail).joinToString(", ") },
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         if (signal == FsSignal.Stale) FsHatch(c.inkFaint, Modifier.width(8.dp).height(24.dp))
-        icon?.invoke()
-        Text(word.uppercase(), style = FsType.label().copy(fontWeight = FontWeight.SemiBold), color = fg)
+        icon?.let { CompositionLocalProvider(LocalContentColor provides fg, content = it) }
+        // One line, always: a chip that wraps breaks its word letter by letter. Lay chips out in a FlowRow so a large
+        // text size moves the chip to the next line instead.
+        Text(word.uppercase() + (detail?.let { " · $it" } ?: ""), style = FsType.label().copy(fontWeight = FontWeight.SemiBold), color = fg,
+            maxLines = 1, softWrap = false)
     }
 }
 
@@ -270,8 +299,10 @@ fun FsCommandedConfirmed(commanded: String?, confirmed: String, age: String, mod
     val c = LocalFsColors.current
     Column(modifier.clearAndSetSemantics { contentDescription = "Commanded ${commanded ?: "nothing"}. Confirmed $confirmed, $age." },
         verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Row { Text("COMMANDED", style = FsType.label(), color = c.inkMuted, modifier = Modifier.width(104.dp)); Text(commanded ?: "—", style = FsType.readout(15), color = c.ink) }
-        Row { Text("CONFIRMED", style = FsType.label(), color = c.inkMuted, modifier = Modifier.width(104.dp)); Text("$confirmed · $age", style = FsType.readout(15), color = c.ink) }
+        // The labels grow with the text size (a fixed width split them mid-word at 200%); the values wrap.
+        val label = Modifier.widthIn(min = 104.dp).padding(end = 8.dp)
+        Row { Text("COMMANDED", style = FsType.label(), color = c.inkMuted, modifier = label, maxLines = 1, softWrap = false); Text(commanded ?: "—", style = FsType.readout(15), color = c.ink) }
+        Row { Text("CONFIRMED", style = FsType.label(), color = c.inkMuted, modifier = label, maxLines = 1, softWrap = false); Text("$confirmed · $age", style = FsType.readout(15), color = c.ink) }
     }
 }
 
@@ -292,11 +323,13 @@ fun FsStateBox(armed: Boolean, modifier: Modifier = Modifier) {
 /**
  * Arming from the app is a second step on top of the airframe's switch: a press held for 2 s that shows the device's
  * designation (product/embedded.md). Letting go early cancels. TalkBack and Switch Access get the accessible alternative,
- * still two steps: a custom action that opens a confirmation. Put SAFE, one action, to its right.
+ * still two steps: a custom action that opens [FsArmConfirmation]; show the same as a visible text button under it ("Arm
+ * with a confirmation instead"). Put SAFE, one action, to its right.
  */
 @Composable
 fun FsHoldToConfirm(
     title: String, designation: String, onConfirmed: () -> Unit, modifier: Modifier = Modifier, holdMillis: Int = 2000,
+    action: String = title.removePrefix("Hold to ").replaceFirstChar { it.uppercase() },
 ) {
     val c = LocalFsColors.current
     val haptics = LocalHapticFeedback.current
@@ -306,7 +339,15 @@ fun FsHoldToConfirm(
     Box(
         modifier
             .fillMaxWidth().heightIn(min = FS_GLOVE_TARGET_DP.dp)
-            .background(c.surface).border(2.dp, c.ink)
+            .background(c.surface)
+            .drawBehind {
+                // Drawn, not laid out: fill-height children would make the box take every bit of height it's offered.
+                val bar = 8.dp.toPx(); val done = size.width * progress.value
+                drawRect(c.danger.copy(alpha = 0.10f), size = Size(done, size.height))
+                drawRect(c.rule, Offset(0f, size.height - bar), Size(size.width, bar))
+                drawRect(c.danger, Offset(0f, size.height - bar), Size(done, bar))
+            }
+            .border(2.dp, c.ink)
             .pointerInput(holdMillis) {
                 awaitEachGesture {
                     awaitFirstDown()
@@ -324,27 +365,34 @@ fun FsHoldToConfirm(
                 role = Role.Button
                 contentDescription = "$title $designation. Press and hold for ${holdMillis / 1000} seconds."
                 stateDescription = if (progress.value > 0f) "Holding" else ""
-                customActions = listOf(CustomAccessibilityAction("$title with a confirmation") { confirming = true; true })
+                customActions = listOf(CustomAccessibilityAction("$action with a confirmation") { confirming = true; true })
             },
     ) {
-        Box(Modifier.fillMaxHeight().fillMaxWidth(progress.value).background(c.danger.copy(alpha = 0.10f)))
-        Box(Modifier.align(Alignment.BottomStart).fillMaxWidth().height(8.dp).background(c.rule))
-        Box(Modifier.align(Alignment.BottomStart).fillMaxWidth(progress.value).height(8.dp).background(c.danger))
-        Column(Modifier.align(Alignment.CenterStart).padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        // Clear of the 8 dp progress bar at the bottom, however large the text gets.
+        Column(Modifier.align(Alignment.CenterStart).padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(title.uppercase(), style = FsType.heading().copy(fontSize = 18.sp), color = c.ink)
             Text("$designation · ${holdMillis / 1000} s", style = FsType.readout(14), color = c.ink)
             if (progress.value > 0f) Text("Keep holding", style = FsType.label().copy(fontWeight = FontWeight.SemiBold), color = c.danger)
         }
     }
-    if (confirming) {
-        AlertDialog(
-            onDismissRequest = { confirming = false },
-            title = { Text("$title $designation?") },
-            text = { Text("The airframe's switch must already be on. SAFE stays one tap away.") },
-            confirmButton = { TextButton(onClick = { confirming = false; onConfirmed() }) { Text(title, color = c.danger) } },
-            dismissButton = { TextButton(onClick = { confirming = false }) { Text("Cancel") } },
-        )
-    }
+    if (confirming) FsArmConfirmation(action, designation, onConfirmed = { confirming = false; onConfirmed() }, onDismiss = { confirming = false })
+}
+
+/**
+ * The accessible alternative to [FsHoldToConfirm], still two steps: a visible button ("Arm with a confirmation instead") or
+ * the TalkBack action opens this, and the second step is its confirm button. [action] is the verb ("Arm"), not the hold
+ * control's title.
+ */
+@Composable
+fun FsArmConfirmation(action: String, designation: String, onConfirmed: () -> Unit, onDismiss: () -> Unit) {
+    val c = LocalFsColors.current
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("$action $designation?") },
+        text = { Text("The airframe's switch must already be on. SAFE stays one tap away.") },
+        confirmButton = { TextButton(onClick = onConfirmed) { Text(action, color = c.danger) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
+    )
 }
 
 // ------------------------------------------------------------------ freshness

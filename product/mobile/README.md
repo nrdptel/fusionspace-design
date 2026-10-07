@@ -18,6 +18,8 @@ bars and Roboto. Open the HTML in a browser, or look at the PNG (2x).
 | `screens/{ios,android}-report` | light | readouts, altitude chart, channels |
 | `screens/{ios,android}-device` | light | system lists for settings, the title block as About |
 
+`devices/` has the same screens running for real (simulator and emulator captures).
+
 `screens/mock.css` draws the platform chrome for the mock-ups only; apps use the system's bars. The status-bar and Dynamic
 Island glyphs are drawn stand-ins, not Apple's or Google's artwork.
 
@@ -45,11 +47,12 @@ Copy these into an app with `product/tokens/FusionSpaceColors.swift` or `FusionS
 | `compose/FsComponents.kt` | Compose parts: FusionSpaceTheme, FsStatus, FsReadout, FsSheetHeader, FsTitleBlock, FsStateBox, FsCommandedConfirmed, FsHoldToConfirm, FsFreshness |
 | `compose/FsLiveUpdate.kt` | A flight's Live Update: ProgressStyle on Android 16, MetricStyle with semantic colors on Android 17 |
 
-**Checked** (October 2026): the Swift files typecheck in Swift 6 mode against the macOS 26.2 SDK; the iOS-only parts
-(ActivityKit, the widget's Lock Screen families) against that SDK's ActivityKit and WidgetKit interfaces with their macOS
-restrictions removed, which checks every call and type but isn't an iOS build. `UIApplication` in `fsKeepsScreenOn()` is
-unchecked (no iOS SDK on the build machine). The Kotlin files compile with Kotlin 2.2.20 against Compose Multiplatform 1.9
-(material3 1.9.0) and, for `FsLiveUpdate.kt`, Android's API 37 `android.jar`. None of it has run on a phone yet.
+**Proven on real screens** (October 6, 2026): every file here runs in the sample apps (`source/product/samples/apple`,
+`source/product/samples/android`) on the iOS 27 simulator (iPhone 17 Pro) and the Android 17 emulator (Pixel 10); their
+captures are in `devices/`, next to the drawn screens they prove. Running them found what compiling didn't: the hold
+control filling the screen (both platforms), `fsKeepsScreenOn()` breaking widget extensions, status chips upper-casing
+units, Material's default purple in Compose dialogs, the Dynamic Island cutting the SAFE box. The drawn screens are
+checked by `tools/build/kit_clip.py`: nothing may be cut by the screen's real outline or sit under a bar.
 
 `fonts/Roboto.woff2` is a Latin subset of Roboto (SIL OFL, `fonts/OFL-Roboto.txt`) so the Android mock-ups show Android's
 type; apps get Roboto from the system.

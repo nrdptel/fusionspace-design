@@ -11,6 +11,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.os.VibrationEffect
 import android.os.Vibrator
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -46,7 +49,9 @@ import androidx.wear.compose.foundation.AmbientMode
 import androidx.wear.compose.foundation.LocalAmbientModeManager
 import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
 import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
+import androidx.wear.compose.foundation.rememberAmbientModeManager
 import androidx.wear.compose.material3.AppScaffold
+import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.ColorScheme
 import androidx.wear.compose.material3.EdgeButton
 import androidx.wear.compose.material3.EdgeButtonSize
@@ -73,6 +78,8 @@ object FsWearColors {
  * Material 3 for Wear OS with the static FusionSpace scheme: the action color as primary, Void/black background, the danger
  * fill as error. Not dynamic color: anything that carries meaning must not shift with the watch face. [mono] is the bundled
  * Cascadia Mono (`FontFamily(Font(R.font.cascadia_mono_regular))`); readouts and labels use it, everything else Roboto.
+ * It also provides LocalAmbientModeManager when the app hasn't (its default is null, which would keep every screen
+ * here out of ambient mode for good).
  */
 @Composable
 fun FusionSpaceWearTheme(mono: FontFamily = FontFamily.Monospace, content: @Composable () -> Unit) {
@@ -83,7 +90,11 @@ fun FusionSpaceWearTheme(mono: FontFamily = FontFamily.Monospace, content: @Comp
             onSurface = c.ink, onSurfaceVariant = c.inkMuted, outline = c.ruleStrong, outlineVariant = c.rule,
             error = c.dangerFill, onError = c.onDangerFill,
         ),
-    ) { FsWearMono.family = mono; content() }
+    ) {
+        FsWearMono.family = mono
+        if (LocalAmbientModeManager.current != null) content()
+        else CompositionLocalProvider(LocalAmbientModeManager provides rememberAmbientModeManager(), content = content)
+    }
 }
 
 internal object FsWearMono { var family: FontFamily = FontFamily.Monospace }
@@ -131,10 +142,18 @@ fun FsBearingArrow(relativeDegrees: Float, modifier: Modifier = Modifier, outlin
 fun FsWearFind(distanceFt: Int, bearingTrue: Float, headingTrue: Float?, fixAge: String, asOf: String, onFound: () -> Unit) {
     val ambient = LocalAmbientModeManager.current?.currentAmbientMode is AmbientMode.Ambient
     val c = FsWearColors
+    // Wear OS's small class (192-224 dp) gets a smaller arrow and readout, so the edge button keeps its whole label.
+    val small = LocalConfiguration.current.screenWidthDp < 225
     val state = rememberTransformingLazyColumnState()
     AppScaffold(timeText = { TimeText() }) {
         ScreenScaffold(scrollState = state, edgeButton = {
-            if (!ambient) EdgeButton(onClick = onFound, buttonSize = EdgeButtonSize.Medium) { Text("Found it") }
+            // In ambient the control stays, shown as unavailable: outlined and muted, no fill (product/watch.md#always-on-and-ambient).
+            EdgeButton(
+                onClick = onFound, buttonSize = EdgeButtonSize.Medium, enabled = !ambient,
+                colors = if (ambient) ButtonDefaults.outlinedButtonColors(contentColor = c.inkMuted, disabledContentColor = c.inkMuted)
+                else ButtonDefaults.buttonColors(),
+                border = if (ambient) BorderStroke(1.dp, c.ruleStrong) else null,
+            ) { Text("Found it") }
         }) { padding ->
             TransformingLazyColumn(state = state, contentPadding = padding) {
                 item {
@@ -144,9 +163,9 @@ fun FsWearFind(distanceFt: Int, bearingTrue: Float, headingTrue: Float?, fixAge:
                         },
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        FsBearingArrow(bearingTrue - (headingTrue ?: 0f), Modifier.size(84.dp), outline = ambient)
+                        FsBearingArrow(bearingTrue - (headingTrue ?: 0f), Modifier.size(if (small) 56.dp else 84.dp), outline = ambient)
                         Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text("%,d".format(distanceFt), style = readout(28), color = if (ambient) c.inkMuted else c.ink)
+                            Text("%,d".format(distanceFt), style = readout(if (small) 24 else 28), color = if (ambient) c.inkMuted else c.ink)
                             Text("ft", style = label(), modifier = Modifier.padding(bottom = 5.dp))
                         }
                         val bearing = "%03d° T".format(bearingTrue.toInt() % 360)
@@ -161,36 +180,55 @@ fun FsWearFind(distanceFt: Int, bearingTrue: Float, headingTrue: Float?, fixAge:
 
 // ------------------------------------------------------------------ state and alerts
 
-/** The device's state at the pad, read only: SAFE outlined or ARMED inverted. Safing is the switch or the phone. */
+/**
+ * The device's state at the pad, read only: SAFE outlined or ARMED inverted. Safing is the switch or the phone. In ambient
+ * the fill becomes an outline (ARMED stays a word in its box, in danger ink) and SAFE turns muted.
+ */
 @Composable
 fun FsWearStateBox(armed: Boolean, modifier: Modifier = Modifier) {
     val c = FsWearColors
+    val ambient = LocalAmbientModeManager.current?.currentAmbientMode is AmbientMode.Ambient
+    val ink = when { ambient && armed -> c.danger; ambient -> c.inkMuted; armed -> c.onDangerFill; else -> c.ink }
     Text(
-        if (armed) "ARMED" else "SAFE", style = readout(20).copy(fontWeight = FontWeight.SemiBold),
-        color = if (armed) c.onDangerFill else c.ink,
-        modifier = modifier.background(if (armed) c.dangerFill else Color.Transparent)
-            .border(3.dp, if (armed) c.dangerFill else c.ink).padding(horizontal = 10.dp, vertical = 5.dp),
+        if (armed) "ARMED" else "SAFE", style = readout(20).copy(fontWeight = FontWeight.SemiBold), color = ink,
+        modifier = modifier.background(if (armed && !ambient) c.dangerFill else Color.Transparent)
+            .border(3.dp, if (armed && !ambient) c.dangerFill else ink).padding(horizontal = 10.dp, vertical = 5.dp),
     )
 }
 
-/** A configured charge that didn't fire: full screen in Flare, first, taps repeating until "OK". The device keeps beeping. */
+/**
+ * A configured charge that didn't fire: full screen in Flare, first, taps repeating until "OK". The device keeps beeping.
+ * In ambient the Flare fill would break the burn-in rules (85% black, no fills), so the screen turns black and UNFIRED
+ * stays as a word in its box, in danger ink.
+ */
 @Composable
 fun FsWearUnfired(channel: String, onAcknowledge: () -> Unit) {
     val c = FsWearColors
     val context = LocalContext.current
+    val ambient = LocalAmbientModeManager.current?.currentAmbientMode is AmbientMode.Ambient
+    val bg = if (ambient) Color.Black else c.dangerFill
+    val fg = if (ambient) c.danger else c.onDangerFill
     LaunchedEffect(Unit) { FsWristEvent.Unfired.play(context) }
     val state = rememberTransformingLazyColumnState()
-    AppScaffold(timeText = { TimeText() }, modifier = Modifier.background(c.dangerFill)) {
+    AppScaffold(timeText = { TimeText() }, modifier = Modifier.background(bg)) {
         ScreenScaffold(scrollState = state, edgeButton = {
-            EdgeButton(onClick = onAcknowledge, buttonSize = EdgeButtonSize.Medium) { Text("OK") }
+            // OK in the inverse of the screen (Paper on Flare), not the action color, which would clash with the Flare fill.
+            EdgeButton(
+                onClick = onAcknowledge, buttonSize = EdgeButtonSize.Medium, enabled = !ambient,
+                colors = if (ambient) ButtonDefaults.outlinedButtonColors(contentColor = c.inkMuted, disabledContentColor = c.inkMuted)
+                else ButtonDefaults.buttonColors(containerColor = c.onDangerFill, contentColor = c.dangerFill),
+                border = if (ambient) BorderStroke(1.dp, c.ruleStrong) else null,
+            ) { Text("OK") }
         }) { padding ->
-            TransformingLazyColumn(state = state, contentPadding = padding, modifier = Modifier.background(c.dangerFill)) {
+            TransformingLazyColumn(state = state, contentPadding = padding, modifier = Modifier.background(bg)) {
                 item {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth(0.8f)
-                        .clearAndSetSemantics { contentDescription = "Unfired charge, $channel. Approach as live. Disarm before handling." }) {
-                        Text("UNFIRED", style = readout(22).copy(fontWeight = FontWeight.SemiBold), color = c.onDangerFill)
-                        Text(channel, style = readout(16), color = c.onDangerFill)
-                        Text("Approach as live. Disarm before handling.", color = c.onDangerFill, textAlign = TextAlign.Center, fontSize = 12.sp)
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
+                            .clearAndSetSemantics { contentDescription = "Unfired charge, $channel. Approach as live. Disarm before handling." }) {
+                        Text("UNFIRED", style = readout(22).copy(fontWeight = FontWeight.SemiBold), color = fg,
+                            modifier = if (ambient) Modifier.border(2.dp, c.danger).padding(horizontal = 8.dp, vertical = 2.dp) else Modifier)
+                        Text(channel, style = readout(16), color = fg)
+                        Text("Approach as live. Disarm before handling.", color = fg, textAlign = TextAlign.Center, fontSize = 12.sp)
                     }
                 }
             }
