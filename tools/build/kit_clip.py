@@ -151,3 +151,81 @@ def check(page, frames, content=None, margin=1, overlays=None):
 def assert_clean(problems, where):
     if problems:
         raise SystemExit(f"clipping in {where}:\n  " + "\n  ".join(problems))
+
+# ================================================================ web pages
+PAGE_JS = r"""
+() => {
+  const out = [];
+  const de = document.documentElement;
+  if (de.scrollWidth > innerWidth + 1) {
+    // the widest offenders, so the report says what to fix
+    const wide = [...document.querySelectorAll('body *')].filter(e => {
+      const r = e.getBoundingClientRect(); return r.right > innerWidth + 1 && r.width > 0 && getComputedStyle(e).position !== 'fixed';
+    }).filter(e => !e.closest('[data-scroll-x], .fs-table-wrap, pre, .scroll-x')).slice(0, 4)
+      .map(e => (e.className && e.className.baseVal === undefined ? '.' + String(e.className).split(' ')[0] : e.tagName.toLowerCase()) + ` (to ${Math.round(e.getBoundingClientRect().right)})`);
+    if (wide.length) out.push(`page scrolls sideways: ${de.scrollWidth} > ${innerWidth}: ${wide.join(', ')}`);
+  }
+  const label = (el, t) => (t || el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 40);
+  const runs = [];
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n;
+  while ((n = walker.nextNode())) {
+    if (!n.textContent.trim()) continue;
+    const el = n.parentElement; if (!el || el.closest('script, style, noscript, select, option, textarea')) continue;
+    const cs = getComputedStyle(el);
+    // only what the browser actually draws (closed <details>, display:none ancestors, hidden or transparent text)
+    if (!el.checkVisibility({contentVisibilityAuto: true, opacityProperty: true, visibilityProperty: true})) continue;
+    if (el.closest('details:not([open])') && !el.closest('summary')) continue;
+    const range = document.createRange(); range.selectNodeContents(n);
+    const rects = [...range.getClientRects()].filter(r => r.width > 0.5 && r.height > 0.5);
+    if (!rects.length) continue;
+    // cut by an ancestor that hides overflow (inside a horizontal scroller is fine: it scrolls)
+    for (let a = el; a && a !== document.body; a = a.parentElement) {
+      const s = getComputedStyle(a);
+      if (/(auto|scroll)/.test(s.overflowX + s.overflowY)) break;
+      if (/(hidden|clip)/.test(s.overflowX + s.overflowY) || s.textOverflow === 'ellipsis') {
+        const ar = a.getBoundingClientRect();
+        if (rects.some(r => r.left < ar.left - 1 || r.right > ar.right + 1 || r.top < ar.top - 1 || r.bottom > ar.bottom + 1)) {
+          out.push(`"${label(el, n.textContent)}" is cut by its container (${a.tagName.toLowerCase()}.${String(a.className).split(' ')[0]})`); break;
+        }
+      }
+    }
+    if (el.scrollWidth > el.clientWidth + 1 && /(hidden|clip)/.test(cs.overflowX) ) out.push(`"${label(el, n.textContent)}" overflows its own box`);
+    // overlap: rotated SVG labels have loose axis-aligned boxes (skip them); text in a scroller counts only where it shows
+    if (el instanceof SVGGraphicsElement) { const m = el.getCTM(); if (m && Math.abs(m.b) > 0.01) continue; }
+    let sc = null;
+    for (let a = el; a && a !== document.body; a = a.parentElement) { const s2 = getComputedStyle(a); if (/(auto|scroll)/.test(s2.overflowX + s2.overflowY)) { sc = a.getBoundingClientRect(); break; } }
+    for (const r of rects) {
+      if (!sc) { runs.push([n, r]); continue; }
+      const L = Math.max(r.left, sc.left), T = Math.max(r.top, sc.top), Rr = Math.min(r.right, sc.right), B = Math.min(r.bottom, sc.bottom);
+      if (Rr - L > 0.5 && B - T > 0.5) runs.push([n, {left: L, top: T, right: Rr, bottom: B, width: Rr - L, height: B - T}]);
+    }
+  }
+  for (let i = 0; i < runs.length; i++) for (let j = i + 1; j < runs.length; j++) {
+    const [a, ra] = runs[i], [b, rb] = runs[j];
+    if (a === b) continue;
+    const ix = Math.min(ra.right, rb.right) - Math.max(ra.left, rb.left), iy = Math.min(ra.bottom, rb.bottom) - Math.max(ra.top, rb.top);
+    if (ix > 2 && iy > Math.min(ra.height, rb.height) * 0.35) out.push(`"${label(a.parentElement, a.textContent)}" overlaps "${label(b.parentElement, b.textContent)}"`);
+  }
+  return [...new Set(out)];
+}
+"""
+
+def check_page(page):
+    """A web page: no sideways scrolling, no text cut by a box that hides overflow, no text on text."""
+    return page.evaluate(PAGE_JS)
+
+def check_pages(paths, widths=(360, 390, 768, 1280), schemes=("light",)):
+    """Run check_page on local HTML files at several widths; returns ["file @ width: problem", ...]."""
+    from playwright.sync_api import sync_playwright
+    out = []
+    with sync_playwright() as p_:
+        b = p_.chromium.launch()
+        for path in paths:
+            for w in widths:
+                for sc in schemes:
+                    pg = b.new_page(viewport={"width": w, "height": 900}, color_scheme=sc)
+                    pg.goto("file://" + os.path.abspath(path)); pg.evaluate("document.fonts.ready"); pg.wait_for_timeout(200)
+                    out += [f"{os.path.relpath(path, build.ROOT)} @ {w}px{'' if sc == 'light' else ' ' + sc}: {x}" for x in check_page(pg)]
+                    pg.close()
+        b.close()
+    return out

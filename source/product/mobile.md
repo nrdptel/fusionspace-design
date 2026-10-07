@@ -143,7 +143,9 @@ captures are in [`mobile/devices/`](mobile/devices/):
 
 ![The reference code running](mobile/devices/preview.png)
 
-Run them after changing anything in `product/mobile/` or `product/tokens/`: compiling is not enough. On October 6, 2026
+They also carry Apple's accessibility audit as UI tests, run at the default text size, and the screens are checked by eye
+at xxxLarge and Accessibility XXXL (on Android at font scale 2.0): nothing may be cut, truncated or split, and at the
+largest sizes the screens scroll instead. Run them after changing anything in `product/mobile/` or `product/tokens/`: compiling is not enough. On October 6, 2026
 running them found layout bugs that every compile check had passed (a control taking the whole screen, text under a
 button, a border cut by a rounded end, units in capitals), all fixed in the files here.
 

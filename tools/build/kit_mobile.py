@@ -403,7 +403,7 @@ def watch_la():
 
 GLANCE_CSS = """
 body { margin: 0; background: #fff; }
-.fig { display: inline-block; padding: 24px; background: var(--paper); }
+.fig { max-width: 100%%; overflow-x: auto; box-sizing: border-box; display: inline-block; padding: 24px; background: var(--paper); }
 .fig > h2 { font: 600 15px/20px 'Cascadia Mono', monospace; margin: 0 0 4px; color: #0B0F1C; }
 .fig > p.cap { font: 400 13px/18px 'Cascadia Mono', monospace; color: #566079; margin: 0 0 16px; max-width: 780px; }
 .row { display: flex; gap: 20px; align-items: flex-start; flex-wrap: nowrap; }

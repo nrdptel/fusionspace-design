@@ -849,11 +849,14 @@ def guide_review_fixes(s):
           ".panel.draw svg [fill=\"#F3F4F7\"]{fill:var(--surface)}"
     # Sheet 3, Spectral: each temperature range stays on one line (B wrapped to three lines and A's "K" dropped to a line of
     # its own), and the row switches to four columns before the seven get too narrow for the ranges.
+    # Below about 440 px (a phone), four columns are too narrow for "10,000–33,000 K" on one line: three columns, and a range
+    # may wrap, only after its dash.
     css += ".spectrum .rng{white-space:nowrap}#color .sheet-body>div:has(>.spectrum){container-type:inline-size}" \
-           "@container (max-width:800px){.spectrum{grid-template-columns:repeat(4,minmax(0,1fr))}}"
+           "@container (max-width:800px){.spectrum{grid-template-columns:repeat(4,minmax(0,1fr))}}" \
+           "@container (max-width:440px){.spectrum{grid-template-columns:repeat(3,minmax(0,1fr))}.spectrum .rng{white-space:normal}}"
     assert s.count("</style>") >= 1
     s = s.replace("</style>", css + "</style>", 1)
-    s, n = re.subn(r'<span class="t">([^<]*?) K<br>', r'<span class="t"><span class="rng">\1&#160;K</span><br>', s)
+    s, n = re.subn(r'<span class="t">([^<]*?) K<br>', lambda m: '<span class="t"><span class="rng">' + m.group(1).replace("–", "–<wbr>") + '&#160;K</span><br>', s)
     assert n == 7, n
     # Sheet 3: Ion and Ember are presented as text-on-light colors, not as deeper versions of O and M.
     old = re.search(r'<h3 style="margin-bottom:6px">Signal</h3>\s*<p class="muted" style="font-size:14px;margin-bottom:14px">.*?</p>', s, re.S)
@@ -933,6 +936,19 @@ README_LICENSE = """## License and trademarks
 See `LICENSE` for the full terms.
 """
 
+def check_web_pages():
+    """Every page a person opens: at 360, 390, 768 and 1280 px, in light and dark, nothing may scroll the page sideways,
+    be cut by a box that hides overflow, or overlap other text (tools/build/kit_clip.py). Skipped without Playwright."""
+    try:
+        import playwright  # noqa: F401
+    except ImportError:
+        print("WARN web check: no Playwright, pages not checked"); return
+    import glob, kit_clip
+    pages = [os.path.join(OUT, p) for p in ("guide/index.html", "product/web/index.html", "kit/index.html", "tools/callsign/callsign.html")]
+    pages += sorted(glob.glob(os.path.join(OUT, "product/web/examples/*.html")))
+    pages += [os.path.join(ROOT, "tools/mark-tuner/index.html")]          # assembled from tools/mark-tuner/src, not by this build
+    kit_clip.assert_clean(kit_clip.check_pages([p for p in pages if os.path.exists(p)], schemes=("light", "dark")), "web pages")
+
 def build_all():
     if os.path.exists(OUT): shutil.rmtree(OUT)
     build_marks(); info = build_lockups(); build_favicons(); build_pngs(); dxf = build_dxf()
@@ -941,6 +957,7 @@ def build_all():
     import kit_product; kit_product.build_product()   # product/: the product system (needs the logos above)
     build_guide(info); build_readme()
     import kit_callsign; kit_callsign.build_callsign()   # tools/callsign/
+    check_web_pages()                                     # nothing scrolls sideways, is cut, or overlaps, at phone to desktop widths
     import kit_review; review = kit_review.build_review()   # review.html: every output, for sign-off
     return info, dxf, kit_info, review
 

@@ -149,6 +149,7 @@ public struct FSWatchState: View {
             .background(armed ? FS.dangerFill : Color.clear)
             .overlay(Rectangle().strokeBorder(armed ? FS.dangerFill : d.ink, lineWidth: 3))
         let link = Text("\(designation) · \(linkAge)").font(FS.label()).foregroundStyle(d.inkMuted).lineLimit(1).minimumScaleFactor(0.8)
+            .accessibilityLabel(Text("\(designation), link \(linkAge)"))
         return VStack(spacing: compact ? 2 : 4) {
             if side {
                 // the smallest watches: the designation beside the box saves a line
@@ -158,6 +159,8 @@ public struct FSWatchState: View {
                         Text(designation).font(FS.label()).lineLimit(1).minimumScaleFactor(0.7)
                         Text(linkAge).font(FS.label()).foregroundStyle(d.inkMuted)
                     }
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(Text("\(designation), link \(linkAge)"))
                 }
             } else {
                 box

@@ -48,10 +48,10 @@
    402,
    874
   ],
-  "shows": "Pad screen (field theme), sample app, -screen pad",
+  "shows": "Pad screen (field theme), sample app, -screen pad; FusionSpace SF Symbols in the tab bar and chips",
   "simulator": "Xcode 27.0 (27A266a)",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-10-06"
+  "captured": "2026-10-07"
  },
  {
   "file": "ios-track.png",
@@ -66,10 +66,10 @@
    402,
    874
   ],
-  "shows": "Track screen, system dark appearance, -screen track",
+  "shows": "Track screen, system dark appearance, -screen track; FusionSpace SF Symbols in the tab bar and chips",
   "simulator": "Xcode 27.0 (27A266a)",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-10-06"
+  "captured": "2026-10-07"
  },
  {
   "file": "watch-se40-find-aod.png",
@@ -87,7 +87,7 @@
   "shows": "FSWatchFind with isLuminanceReduced forced true (Always On), for the capture",
   "simulator": "Xcode 27.0 (27A266a)",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-10-06"
+  "captured": "2026-10-07"
  },
  {
   "file": "watch-se40-find.png",
@@ -105,7 +105,7 @@
   "shows": "FSWatchFind",
   "simulator": "Xcode 27.0 (27A266a)",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-10-06"
+  "captured": "2026-10-07"
  },
  {
   "file": "watch-se40-pad.png",
@@ -123,7 +123,7 @@
   "shows": "FSWatchState, ARMED",
   "simulator": "Xcode 27.0 (27A266a)",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-10-06"
+  "captured": "2026-10-07"
  },
  {
   "file": "watch-se40-unfired.png",
@@ -141,7 +141,7 @@
   "shows": "FSWatchUnfired",
   "simulator": "Xcode 27.0 (27A266a)",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-10-06"
+  "captured": "2026-10-07"
  },
  {
   "file": "watch-ultra-find-aod.png",
@@ -159,7 +159,7 @@
   "shows": "FSWatchFind with isLuminanceReduced forced true (Always On), for the capture",
   "simulator": "Xcode 27.0 (27A266a)",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-10-06"
+  "captured": "2026-10-07"
  },
  {
   "file": "watch-ultra-find.png",
@@ -177,7 +177,7 @@
   "shows": "FSWatchFind",
   "simulator": "Xcode 27.0 (27A266a)",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-10-06"
+  "captured": "2026-10-07"
  },
  {
   "file": "watch-ultra-pad.png",
@@ -195,7 +195,7 @@
   "shows": "FSWatchState, ARMED",
   "simulator": "Xcode 27.0 (27A266a)",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-10-06"
+  "captured": "2026-10-07"
  },
  {
   "file": "watch-ultra-unfired.png",
@@ -213,6 +213,6 @@
   "shows": "FSWatchUnfired",
   "simulator": "Xcode 27.0 (27A266a)",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-10-06"
+  "captured": "2026-10-07"
  }
 ]

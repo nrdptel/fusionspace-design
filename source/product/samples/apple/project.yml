@@ -138,6 +138,18 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: co.fusionspace.sample.uitests
         TEST_TARGET_NAME: FusionSpaceSample
         GENERATE_INFOPLIST_FILE: "YES"
+  FusionSpaceSampleWatchUITests:
+    type: bundle.ui-testing
+    platform: watchOS
+    sources:
+      - UITestsWatch
+    dependencies:
+      - target: FusionSpaceSampleWatch
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: co.fusionspace.sample.watch.uitests
+        TEST_TARGET_NAME: FusionSpaceSampleWatch
+        GENERATE_INFOPLIST_FILE: "YES"
 schemes:
   FusionSpaceSample:
     build:
@@ -155,3 +167,11 @@ schemes:
     test:
       targets:
         - FusionSpaceSampleUITests
+  FusionSpaceSampleWatchUITests:
+    build:
+      targets:
+        FusionSpaceSampleWatch: all
+        FusionSpaceSampleWatchUITests: [test]
+    test:
+      targets:
+        - FusionSpaceSampleWatchUITests
