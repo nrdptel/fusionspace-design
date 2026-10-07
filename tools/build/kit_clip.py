@@ -11,8 +11,9 @@ meaning (status chips, tags, state boxes, buttons, with their own corner radius)
 
 A box is tested along its own rounded outline (a capsule's corners are round), text by its rectangle.
 
-The same module checks web pages (check_pages: no sideways scrolling, no text cut by a box, no text on text) and SVG
-graphics (check_svgs: every visible line of text inside the canvas and off the other text).
+The same module checks web pages (check_pages: no sideways scrolling, no text cut by a box, no text on text), SVG
+graphics (check_svgs: every visible line of text inside the canvas and off the other text) and the real-screen captures
+(check_captures: no text cut short with "…", and every element of ours inside the screen's own outline).
 """
 import os, math
 import build
@@ -265,4 +266,69 @@ def check_svgs(paths):
             pg.goto("file://" + os.path.abspath(path)); pg.evaluate("document.fonts.ready")
             out += [f"{os.path.relpath(path, build.ROOT)}: {x}" for x in pg.evaluate(SVG_JS)]
         b.close()
+    return out
+
+# ================================================================ real-screen captures
+ELLIPSIS = __import__("re").compile(r"…|\.\.(\s|$)|\.\.\.")
+
+def ocr(paths):
+    """Text in images, read with macOS's Vision framework (tools/build/ocr_text.swift): {path: [(text, box px)]}, or None
+    where it can't run (not a Mac, no Xcode)."""
+    import sys, json, shutil, subprocess
+    if sys.platform != "darwin" or not shutil.which("xcrun") or not paths: return None
+    res = subprocess.run(["xcrun", "swift", os.path.join(build.ROOT, "tools", "build", "ocr_text.swift"), *paths],
+                         capture_output=True, text=True)
+    if res.returncode: print("WARN capture check: text recognition failed:", res.stderr.strip()[-300:]); return None
+    out = {}
+    for line in res.stdout.splitlines():
+        d = json.loads(line); out[d["file"]] = [(l["text"], l["box"]) for l in d.get("lines", [])]
+    return out
+
+def _outline(x, y, w, h, r):
+    """Points every ~1 pt along a rectangle's outline, its corners rounded by r (a capsule: r = h / 2)."""
+    pts, n = [], lambda L: max(2, int(L))
+    for k in range(n(w - 2 * r) + 1):
+        px = x + r + (w - 2 * r) * k / n(w - 2 * r); pts += [(px, y), (px, y + h)]
+    for k in range(n(h - 2 * r) + 1):
+        py = y + r + (h - 2 * r) * k / n(h - 2 * r); pts += [(x, py), (x + w, py)]
+    for cx, cy, a0 in ((x + r, y + r, 180), (x + w - r, y + r, 270), (x + w - r, y + h - r, 0), (x + r, y + h - r, 90)):
+        for k in range(10):
+            a = math.radians(a0 + 90 * k / 9); pts.append((cx + r * math.cos(a), cy + r * math.sin(a)))
+    return pts
+
+def check_captures(src):
+    """The captures in src/<platform>/ (devices.json lists them): text recognition finds no line cut short with "…" (".." as
+    read), and each element recorded in elements.json (frames in points from Device Hub's element tree) lies inside the
+    screen's own outline, the alpha mask the simulator writes with the screenshot, along its whole border. An element out of
+    view entirely (scrolled away) is skipped; one partly out of view is cut. Returns ["platform/file: problem", ...]."""
+    import json
+    from PIL import Image
+    out, pngs = [], []
+    for platform in sorted(os.listdir(src)):
+        dj = os.path.join(src, platform, "devices.json")
+        if not os.path.exists(dj): continue
+        rows = {r["file"]: r for r in json.load(open(dj, encoding="utf-8"))}
+        pngs += [os.path.join(src, platform, f) for f in sorted(rows) if os.path.exists(os.path.join(src, platform, f))]
+        ej = os.path.join(src, platform, "elements.json")
+        for f, spec in (json.load(open(ej, encoding="utf-8")).items() if os.path.exists(ej) else []):
+            if f not in rows: out.append(f"{platform}/{f}: elements.json names a capture devices.json doesn't list"); continue
+            im = Image.open(os.path.join(src, platform, f))
+            W, H = rows[f]["size_pt"]; s = im.width / W
+            alpha = im.getchannel("A") if "A" in im.getbands() else Image.new("L", im.size, 255)
+            for e in spec["elements"]:
+                x, y, w, h = e["rect"]
+                if x >= W or y >= H or x + w <= 0 or y + h <= 0: continue                 # out of view: scrolled away
+                pts = _outline(x + 0.5, y + 0.5, w - 1, h - 1, max(0, e.get("radius", 0) - 0.5))
+                bad = [(px, py) for px, py in pts if not (0 <= px < W and 0 <= py < H) or alpha.getpixel((min(im.width - 1, int(px * s)), min(im.height - 1, int(py * s)))) < 128]
+                if bad: out.append(f"{platform}/{f}: {e['what']} is cut by the screen's edge or corner near ({bad[0][0]:.0f}, {bad[0][1]:.0f}) pt")
+    found = ocr(pngs)
+    if found is not None and sum(len(v) for v in found.values()) < len(pngs):
+        out.append(f"text recognition read almost nothing from {len(pngs)} captures: the '…' check can't be trusted")
+    if found is None:
+        print("WARN capture check: no text recognition here (needs macOS and Xcode); '…' not checked")
+    else:
+        for path, lines in found.items():
+            for text, box in lines:
+                if ELLIPSIS.search(text):
+                    out.append(f"{os.path.relpath(path, src)}: text cut short with '…': \"{text}\" at ({box[0]:.0f}, {box[1]:.0f}) px")
     return out

@@ -5,6 +5,8 @@ import SwiftUI
 
 @main
 struct FusionSpaceSampleApp: App {
+    init() { CaptureClock.apply() }
+
     var body: some Scene {
         WindowGroup { SampleRoot().task { await SampleActivity.startIfAsked() } }
     }

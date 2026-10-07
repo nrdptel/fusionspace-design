@@ -160,9 +160,11 @@ enum class FsSignal { Danger, Caution, Ok, Info, Off, Stale, Predicted }
  * safety sign; the others are outlined. [icon] is a FusionSpace icon (product/icons/android/) drawn by the caller; an
  * `Icon` there takes the chip's foreground color through LocalContentColor. The word is set in capitals; [detail] (a value
  * with its unit joined by a non-breaking space, "0.3\u00A0s") follows it as written, since a capital S is siemens, not seconds.
+ * [spoken] is what TalkBack says for an abbreviated word ("Cont" → "Continuity").
  */
 @Composable
-fun FsStatus(word: String, signal: FsSignal, modifier: Modifier = Modifier, detail: String? = null, icon: (@Composable () -> Unit)? = null) {
+fun FsStatus(word: String, signal: FsSignal, modifier: Modifier = Modifier, detail: String? = null, icon: (@Composable () -> Unit)? = null,
+             spoken: String? = null) {
     val c = LocalFsColors.current
     val (fg, bg) = when (signal) {
         FsSignal.Danger -> c.onDangerFill to c.dangerFill
@@ -181,7 +183,7 @@ fun FsStatus(word: String, signal: FsSignal, modifier: Modifier = Modifier, deta
     }
     Row(
         modifier.background(bg).then(edge).heightIn(min = 24.dp).padding(horizontal = 8.dp)
-            .clearAndSetSemantics { contentDescription = listOfNotNull(word, detail).joinToString(", ") },
+            .clearAndSetSemantics { contentDescription = listOfNotNull(spoken ?: word, detail).joinToString(", ") },
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         if (signal == FsSignal.Stale) FsHatch(c.inkFaint, Modifier.width(8.dp).height(24.dp))

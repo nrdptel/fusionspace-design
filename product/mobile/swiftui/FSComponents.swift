@@ -45,13 +45,17 @@ public struct FSStatus: View {
     let detail: String?
     let symbol: String?
     let minHeight: CGFloat
+    let spoken: String?
 
     /// - Parameters:
     ///   - word: the state, shown in capitals (`CONT`, `ARMED`).
     ///   - detail: a value after it, shown as written so units keep their case (`Link · 0.3 s`, not `0.3 S`).
     ///   - minHeight: 24 pt by default; 20 on a watch.
-    public init(_ word: String, signal: FSSignal, detail: String? = nil, symbol: String? = nil, minHeight: CGFloat = 24) {
+    ///   - spoken: what VoiceOver and TalkBack say for the word when the chip abbreviates it (`Cont` → `Continuity`).
+    public init(_ word: String, signal: FSSignal, detail: String? = nil, symbol: String? = nil, minHeight: CGFloat = 24,
+                spoken: String? = nil) {
         self.word = word; self.signal = signal; self.detail = detail; self.symbol = symbol; self.minHeight = minHeight
+        self.spoken = spoken
     }
     @Environment(\.dynamicTypeSize) private var typeSize
 
@@ -75,7 +79,7 @@ public struct FSStatus: View {
             .background(fill(p))
             .overlay(border(p))
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel(Text(detail.map { "\(word), \($0)" } ?? word))
+            .accessibilityLabel(Text(detail.map { "\(spoken ?? word), \($0)" } ?? spoken ?? word))
         }
     }
 
@@ -121,6 +125,7 @@ public struct FSHatch: View {
             }
             ctx.stroke(path, with: .color(color), lineWidth: 1)
         }
+        .clipped()                  // a Canvas draws past its frame: the lines start left of it
         .accessibilityHidden(true)
     }
 }
@@ -384,6 +389,8 @@ public struct FSStateBox: View {
                 .foregroundStyle(armed ? FS.onDangerFill : p.ink)
                 .background(armed ? FS.dangerFill : Color.clear)
                 .overlay(Rectangle().strokeBorder(armed ? FS.dangerFill : p.ink, lineWidth: 3))
+                // the word alone would read like the SAFE button beside it
+                .accessibilityLabel(Text(armed ? "Device state, armed" : "Device state, safe"))
         }
     }
 }

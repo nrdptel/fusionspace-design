@@ -21,22 +21,30 @@ public struct FSBearingArrow: View {
     public var body: some View {
         let d = FS.darkPalette
         Canvas { ctx, size in
-            let c = CGPoint(x: size.width / 2, y: size.height / 2), r = min(size.width, size.height) / 2 - 4
-            ctx.stroke(Path(ellipseIn: CGRect(x: c.x - r, y: c.y - r, width: 2 * r, height: 2 * r)), with: .color(d.ruleStrong), lineWidth: 1.5)
-            for a in stride(from: 0.0, to: 360, by: 30) {
-                let r0 = r - (a == 0 ? 7 : 4), t = a * .pi / 180
-                var p = Path()
-                p.move(to: CGPoint(x: c.x + r0 * sin(t), y: c.y - r0 * cos(t)))
-                p.addLine(to: CGPoint(x: c.x + r * sin(t), y: c.y - r * cos(t)))
-                ctx.stroke(p, with: .color(d.inkMuted), lineWidth: a == 0 ? 2 : 1)
+            // Every length is a share of the radius, so the cone stays inside the ring at any size (a fixed inset put the
+            // tip past the centre in a 22 pt complication). Below 44 pt (complications) the ticks would crowd the cone:
+            // the ring and the arrow only.
+            let side = min(size.width, size.height), small = side < 44
+            let c = CGPoint(x: size.width / 2, y: size.height / 2), r = side / 2 - (small ? 1 : 4)
+            ctx.stroke(Path(ellipseIn: CGRect(x: c.x - r, y: c.y - r, width: 2 * r, height: 2 * r)), with: .color(d.ruleStrong), lineWidth: small ? 1 : 1.5)
+            if !small {
+                for a in stride(from: 0.0, to: 360, by: 30) {
+                    let r0 = r * (a == 0 ? 0.85 : 0.92), t = a * .pi / 180
+                    var p = Path()
+                    p.move(to: CGPoint(x: c.x + r0 * sin(t), y: c.y - r0 * cos(t)))
+                    p.addLine(to: CGPoint(x: c.x + r * sin(t), y: c.y - r * cos(t)))
+                    ctx.stroke(p, with: .color(d.inkMuted), lineWidth: a == 0 ? 2 : 1)
+                }
             }
             var g = ctx
             g.translateBy(x: c.x, y: c.y); g.rotate(by: .degrees(degrees)); g.translateBy(x: -c.x, y: -c.y)
-            let cone = FSBearingArrow.noseCone(tip: CGPoint(x: c.x, y: c.y - r + 10), length: r * 0.78, radius: r * 0.3)
-            if outline { g.stroke(cone, with: .color(d.ink), lineWidth: 2) } else { g.fill(cone, with: .color(d.ink)) }
+            let tip = c.y - r * (small ? 0.75 : 0.79), length = r * (small ? 0.85 : 0.78), radius = r * (small ? 0.36 : 0.3)
+            let cone = FSBearingArrow.noseCone(tip: CGPoint(x: c.x, y: tip), length: length, radius: radius)
+            let line = small ? 1.5 : max(2, r / 24)
+            if outline { g.stroke(cone, with: .color(d.ink), lineWidth: line) } else { g.fill(cone, with: .color(d.ink)) }
             var shaft = Path()
-            shaft.move(to: CGPoint(x: c.x, y: c.y - r + 10 + r * 0.78)); shaft.addLine(to: CGPoint(x: c.x, y: c.y + r * 0.45))
-            g.stroke(shaft, with: .color(d.ink), lineWidth: outline ? 2 : 4)
+            shaft.move(to: CGPoint(x: c.x, y: tip + length)); shaft.addLine(to: CGPoint(x: c.x, y: c.y + r * (small ? 0.6 : 0.45)))
+            g.stroke(shaft, with: .color(d.ink), lineWidth: outline ? line : max(1.5, r / (small ? 5 : 12)))
         }
         .aspectRatio(1, contentMode: .fit)
         .accessibilityHidden(true)
@@ -93,7 +101,7 @@ public struct FSWatchFind: View {
             .foregroundStyle(dimmed ? d.inkMuted : d.ink)
             .lineLimit(1).minimumScaleFactor(0.7)
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel(Text("Rocket \(distanceFt.formatted()) feet away, bearing \(Int(bearingTrue)) degrees true"))
+            .accessibilityLabel(Text("Rocket \(distanceFt.formatted()) feet away, \(spokenDirection)"))
             .accessibilityValue(Text(FSFreshness.age(since: fixedAt, now: now)))
             Text(qualifier(now: now)).font(FS.label()).foregroundStyle(d.inkMuted)
                 .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
@@ -107,6 +115,16 @@ public struct FSWatchFind: View {
             .padding(.top, 2)
         }
         .frame(maxWidth: .infinity)
+    }
+
+    /// The arrow is hidden from VoiceOver, so its answer, which way to walk, is in the readout's label.
+    private var spokenDirection: String {
+        let b = Int(bearingTrue.rounded()) % 360
+        guard let h = headingTrue else { return "bearing \(b) degrees true from north" }
+        var r = Int((bearingTrue - h).rounded()) % 360
+        if r > 180 { r -= 360 } else if r <= -180 { r += 360 }
+        let way = abs(r) < 10 ? "straight ahead" : abs(r) > 170 ? "behind you" : "\(abs(r)) degrees to your \(r > 0 ? "right" : "left")"
+        return "\(way), bearing \(b) degrees true"
     }
 
     private func qualifier(now: Date) -> String {
@@ -123,8 +141,16 @@ public struct FSWatchFind: View {
 /// sends a command; safing is the airframe switch or the phone.
 public struct FSWatchState: View {
     public struct Channel: Identifiable, Sendable {
-        public let id: Int; let name: String; let state: FSSignal; let word: String
-        public init(_ n: Int, _ name: String, _ state: FSSignal, _ word: String) { id = n; self.name = name; self.state = state; self.word = word }
+        public let id: Int; let name: String; let state: FSSignal; let word: String; let spoken: String?
+        /// - spoken: what VoiceOver says for an abbreviated state word (`Cont` → `Continuity`).
+        public init(_ n: Int, _ name: String, _ state: FSSignal, _ word: String, spoken: String? = nil) {
+            id = n; self.name = name; self.state = state; self.word = word; self.spoken = spoken
+        }
+        /// One stop per row: "Channel 1, drogue, continuity"; a channel with no charge ("—") is just its state.
+        var label: String {
+            let named = name.trimmingCharacters(in: .whitespaces)
+            return "Channel \(id), " + (named.isEmpty || named == "—" ? "" : "\(named.lowercased()), ") + (spoken ?? word).lowercased()
+        }
     }
     let designation: String, armed: Bool, channels: [Channel], linkAge: String
     public init(designation: String, armed: Bool, channels: [Channel], linkAge: String) {
@@ -148,6 +174,7 @@ public struct FSWatchState: View {
             .foregroundStyle(armed ? FS.onDangerFill : d.ink)
             .background(armed ? FS.dangerFill : Color.clear)
             .overlay(Rectangle().strokeBorder(armed ? FS.dangerFill : d.ink, lineWidth: 3))
+            .accessibilityLabel(Text(armed ? "Device state, armed" : "Device state, safe"))
         let link = Text("\(designation) · \(linkAge)").font(FS.label()).foregroundStyle(d.inkMuted).lineLimit(1).minimumScaleFactor(0.8)
             .accessibilityLabel(Text("\(designation), link \(linkAge)"))
         return VStack(spacing: compact ? 2 : 4) {
@@ -180,6 +207,8 @@ public struct FSWatchState: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(Text(ch.label))
             }
             Text(compact ? "Safe: switch or phone." : "Safe it with the switch or phone.").font(.caption2).foregroundStyle(d.inkMuted)
                 .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
@@ -209,21 +238,38 @@ public struct FSWatchUnfired: View {
     }
     private func content(compact: Bool, tight: Bool = false) -> some View {
         VStack(spacing: compact ? 2 : 4) {
-            HStack(spacing: tight ? 4 : 6) {
-                Image(systemName: "exclamationmark.triangle")
-                Text(tight ? "UNFIRED \(channel)" : "UNFIRED")
-                    .font(.custom("CascadiaMono-SemiBold", size: tight ? 15 : (compact ? 20 : 24), relativeTo: .title2))
-                    .lineLimit(1).minimumScaleFactor(0.8)
+            // the warning is read once, as one sentence, then the button (a labelled container also exposed its parts)
+            VStack(spacing: compact ? 2 : 4) {
+                if tight {
+                    // The channel beside the word when the line fits across, under it when it doesn't: the outer ViewThatFits
+                    // only measures height, so a one-line title here was cut to "UNFIRED 2 ·…" at the largest text sizes.
+                    ViewThatFits(in: .horizontal) {
+                        title("UNFIRED \(channel)", size: 15).fixedSize()
+                        VStack(spacing: 0) {
+                            title("UNFIRED", size: 15)
+                            Text(channel).font(.custom("CascadiaMono-SemiBold", size: 15, relativeTo: .title2))
+                        }
+                    }
+                } else {
+                    title("UNFIRED", size: compact ? 20 : 24)
+                    Text(channel).font(FS.readout(compact ? 16 : 18, relativeTo: .headline))
+                }
+                Text("Approach as live. Disarm before handling.").font(compact ? .caption2 : .footnote)
+                    .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
             }
-            .accessibilityElement(children: .combine)
-            if !tight { Text(channel).font(FS.readout(compact ? 16 : 18, relativeTo: .headline)) }
-            Text("Approach as live. Disarm before handling.").font(compact ? .caption2 : .footnote)
-                .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(Text("Unfired charge, \(channel.replacingOccurrences(of: " · ", with: ", ")). Approach as live. Disarm before handling."))
+            .accessibilityAddTraits(.isHeader)
             Button("OK", action: onAcknowledge).padding(.top, compact ? 0 : 4)
         }
         .scenePadding(.horizontal)
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel(Text("Unfired charge, \(channel). Approach as live. Disarm before handling."))
+    }
+    private func title(_ word: String, size: CGFloat) -> some View {
+        HStack(spacing: size < 20 ? 4 : 6) {
+            Image(systemName: "exclamationmark.triangle")
+            Text(word).font(.custom("CascadiaMono-SemiBold", size: size, relativeTo: .title2)).lineLimit(1).minimumScaleFactor(0.6)
+        }
+        .accessibilityElement(children: .combine)
     }
 }
 

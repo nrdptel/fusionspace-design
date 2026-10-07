@@ -36,42 +36,6 @@
   "captured": "2026-10-06"
  },
  {
-  "file": "ios-pad.png",
-  "device": "iPhone 17 Pro",
-  "os": "iOS 27.0 (24A434)",
-  "size_px": [
-   1206,
-   2622
-  ],
-  "scale": 3,
-  "size_pt": [
-   402,
-   874
-  ],
-  "shows": "Pad screen (field theme), sample app, -screen pad; FusionSpace SF Symbols in the tab bar and chips",
-  "simulator": "Xcode 27.0 (27A266a)",
-  "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-10-07"
- },
- {
-  "file": "ios-track.png",
-  "device": "iPhone 17 Pro",
-  "os": "iOS 27.0 (24A434)",
-  "size_px": [
-   1206,
-   2622
-  ],
-  "scale": 3,
-  "size_pt": [
-   402,
-   874
-  ],
-  "shows": "Track screen, system dark appearance, -screen track; FusionSpace SF Symbols in the tab bar and chips",
-  "simulator": "Xcode 27.0 (27A266a)",
-  "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-10-07"
- },
- {
   "file": "watch-se40-find-aod.png",
   "device": "Apple Watch SE 3 (40mm)",
   "os": "watchOS 27.0 (24R362)",
@@ -216,6 +180,78 @@
   "captured": "2026-10-07"
  },
  {
+  "file": "ios-home-widgets-dark.png",
+  "device": "iPhone 17 Pro",
+  "os": "iOS 27.0 (24A434)",
+  "size_px": [
+   1206,
+   2622
+  ],
+  "scale": 3,
+  "size_pt": [
+   402,
+   874
+  ],
+  "shows": "Window's wind widget on the Home Screen, medium and small, system dark appearance; added through Device Hub (long-press, Edit, Add Widget); built with FS_CAPTURE_CLOCK=9:41 so the measured time agrees with the status bar",
+  "simulator": "Xcode 27.0 (27A266a)",
+  "mask": "alpha (simctl io screenshot --mask=alpha)",
+  "captured": "2026-10-07"
+ },
+ {
+  "file": "ios-home-widgets-light.png",
+  "device": "iPhone 17 Pro",
+  "os": "iOS 27.0 (24A434)",
+  "size_px": [
+   1206,
+   2622
+  ],
+  "scale": 3,
+  "size_pt": [
+   402,
+   874
+  ],
+  "shows": "Window's wind widget on the Home Screen, medium and small, system light appearance; added through Device Hub (long-press, Edit, Add Widget); built with FS_CAPTURE_CLOCK=9:41 so the measured time agrees with the status bar",
+  "simulator": "Xcode 27.0 (27A266a)",
+  "mask": "alpha (simctl io screenshot --mask=alpha)",
+  "captured": "2026-10-07"
+ },
+ {
+  "file": "ios-pad.png",
+  "device": "iPhone 17 Pro",
+  "os": "iOS 27.0 (24A434)",
+  "size_px": [
+   1206,
+   2622
+  ],
+  "scale": 3,
+  "size_pt": [
+   402,
+   874
+  ],
+  "shows": "Pad screen (field theme), sample app opened from its Home Screen icon through Device Hub (screen chosen in the app's defaults, so iOS draws no back-link); FusionSpace SF Symbols in the chips",
+  "simulator": "Xcode 27.0 (27A266a)",
+  "mask": "alpha (simctl io screenshot --mask=alpha)",
+  "captured": "2026-10-07"
+ },
+ {
+  "file": "ios-track.png",
+  "device": "iPhone 17 Pro",
+  "os": "iOS 27.0 (24A434)",
+  "size_px": [
+   1206,
+   2622
+  ],
+  "scale": 3,
+  "size_pt": [
+   402,
+   874
+  ],
+  "shows": "Track screen, system dark appearance, opened from the Home Screen icon through Device Hub (no back-link); FusionSpace SF Symbols in the tab bar and chips",
+  "simulator": "Xcode 27.0 (27A266a)",
+  "mask": "alpha (simctl io screenshot --mask=alpha)",
+  "captured": "2026-10-07"
+ },
+ {
   "file": "ios-lock-flight.png",
   "device": "iPhone 17 Pro",
   "os": "iOS 27.0 (24A434)",
@@ -228,9 +264,9 @@
    402,
    874
   ],
+  "shows": "Live Activity on the Lock Screen in flight (phase strip, altitude, distance and bearing), -activity flight, locked and woken with the power button through Device Hub; dark",
   "simulator": "Xcode 27.0 (27A266a)",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "shows": "Live Activity on the Lock Screen in flight (phase strip, altitude, distance and bearing), -activity flight, locked by LockScreenTests; dark",
   "captured": "2026-10-07"
  },
  {
@@ -246,9 +282,81 @@
    402,
    874
   ],
+  "shows": "Live Activity on the Lock Screen at the pad (countdown and the device's SAFE state), -activity pad, locked and woken with the power button through Device Hub; dark. Built with FS_CAPTURE_CLOCK=9:41, so the pad time (9:45 AM) agrees with the 9:41 clock and the 3:48 countdown",
   "simulator": "Xcode 27.0 (27A266a)",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "shows": "Live Activity on the Lock Screen at the pad (countdown and the device's SAFE state), -activity pad, locked by LockScreenTests; dark. The pad time is the simulator's real clock, not the 9:41 of the status bar",
+  "captured": "2026-10-07"
+ },
+ {
+  "file": "watch-ultra-face.png",
+  "device": "Apple Watch Ultra 4 (49mm)",
+  "os": "watchOS 27.0 (24R362)",
+  "size_px": [
+   422,
+   514
+  ],
+  "scale": 2,
+  "size_pt": [
+   211,
+   257
+  ],
+  "shows": "Modular Ultra face with Find the rocket as the middle (rectangular) and bottom (circular) complications, set through Device Hub (long-press, Edit, crown); the age counts up on its own. The face shows the simulator's real time: watchOS has no status bar override",
+  "simulator": "Xcode 27.0 (27A266a)",
+  "mask": "alpha (simctl io screenshot --mask=alpha)",
+  "captured": "2026-10-07"
+ },
+ {
+  "file": "watch-ultra-face-aod.png",
+  "device": "Apple Watch Ultra 4 (49mm)",
+  "os": "watchOS 27.0 (24R362)",
+  "size_px": [
+   422,
+   514
+  ],
+  "scale": 2,
+  "size_pt": [
+   211,
+   257
+  ],
+  "shows": "The same face in Always On (WatchFaceTests presses the lock button; Device Hub has no wrist-down): the system dims the complications and shows the age to the minute",
+  "simulator": "Xcode 27.0 (27A266a)",
+  "mask": "alpha (simctl io screenshot --mask=alpha)",
+  "captured": "2026-10-07"
+ },
+ {
+  "file": "watch-se40-face.png",
+  "device": "Apple Watch SE 3 (40mm)",
+  "os": "watchOS 27.0 (24R362)",
+  "size_px": [
+   324,
+   394
+  ],
+  "scale": 2,
+  "size_pt": [
+   162,
+   197
+  ],
+  "shows": "Infograph face with Find the rocket in the top-right corner (curved label) and the right subdial (circular), set through Device Hub (long-press, Edit, crown); Battery and Astronomy are the system's. Real time on the face: watchOS has no status bar override",
+  "simulator": "Xcode 27.0 (27A266a)",
+  "mask": "alpha (simctl io screenshot --mask=alpha)",
+  "captured": "2026-10-07"
+ },
+ {
+  "file": "watch-se40-face-aod.png",
+  "device": "Apple Watch SE 3 (40mm)",
+  "os": "watchOS 27.0 (24R362)",
+  "size_px": [
+   324,
+   394
+  ],
+  "scale": 2,
+  "size_pt": [
+   162,
+   197
+  ],
+  "shows": "The same face in Always On (WatchFaceTests presses the lock button; Device Hub has no wrist-down)",
+  "simulator": "Xcode 27.0 (27A266a)",
+  "mask": "alpha (simctl io screenshot --mask=alpha)",
   "captured": "2026-10-07"
  }
 ]

@@ -13,12 +13,16 @@ public struct FSWindEntry: TimelineEntry, Sendable {
     public let measuredAt: Date      // when the station measured it: the age shown comes from this, not from `date`
     public let windMph: Int, gustMph: Int?, fromDegrees: Int
     public let limitMph: Int         // the NAR and Tripoli surface-wind limit, 20 mph
+    // The medium size's second column: the cloud ceiling and the winds aloft, each with its own age (nil: not shown).
+    public var ceilingFtAGL: Int? = nil
+    public var upperWindMph: Int? = nil, upperWindAtFt: Int? = nil, upperIssuedAt: Date? = nil
 
     public var nearLimit: Bool { (gustMph ?? windMph) >= limitMph - 2 }
     public var overLimit: Bool { (gustMph ?? windMph) > limitMph }
 
     public static let example = FSWindEntry(date: .now, measuredAt: .now.addingTimeInterval(-240), windMph: 12, gustMph: 19,
-                                            fromDegrees: 270, limitMph: 20)
+                                            fromDegrees: 270, limitMph: 20, ceilingFtAGL: 6500, upperWindMph: 31,
+                                            upperWindAtFt: 6000, upperIssuedAt: .now.addingTimeInterval(-4 * 3600))
 }
 
 public struct FSWindProvider: TimelineProvider {
@@ -31,7 +35,8 @@ public struct FSWindProvider: TimelineProvider {
         let e = FSWindEntry.example
         let entries = (0..<4).map { i in
             FSWindEntry(date: .now.addingTimeInterval(Double(i) * 900), measuredAt: e.measuredAt, windMph: e.windMph,
-                        gustMph: e.gustMph, fromDegrees: e.fromDegrees, limitMph: e.limitMph)
+                        gustMph: e.gustMph, fromDegrees: e.fromDegrees, limitMph: e.limitMph, ceilingFtAGL: e.ceilingFtAGL,
+                        upperWindMph: e.upperWindMph, upperWindAtFt: e.upperWindAtFt, upperIssuedAt: e.upperIssuedAt)
         }
         completion(Timeline(entries: entries, policy: .after(.now.addingTimeInterval(3600))))
     }
@@ -53,7 +58,7 @@ struct FSWindView: View {
         case .accessoryRectangular: rectangular
         case .accessoryInline: Text("Wind \(entry.windMph)\u{00A0}mph\(gust) · \(age)")
         #endif
-        case .systemMedium: HStack(alignment: .top, spacing: 12) { main; Spacer(minLength: 0) }
+        case .systemMedium: HStack(alignment: .top, spacing: 16) { main; side; Spacer(minLength: 0) }
         default: main
         }
     }
@@ -74,9 +79,56 @@ struct FSWindView: View {
             }
             if entry.nearLimit { limitTag }
             Spacer(minLength: 0)
-            Text(stale ? "Stale · \(age)" : age).font(.caption2).foregroundStyle(p.inkMuted)
+            // "2:10 PM · 4 min ago" when it fits, else the age alone: never cut
+            ViewThatFits(in: .horizontal) {
+                Text(stale ? "Stale · \(measured) · \(age)" : "\(measured) · \(age)")
+                Text(stale ? "Stale · \(age)" : age)
+            }
+            .font(.caption2).foregroundStyle(p.inkMuted).lineLimit(1)
         }
         .accessibilityElement(children: .combine)
+    }
+
+    private var measured: String { entry.measuredAt.formatted(date: .omitted, time: .shortened) }
+
+    /// The medium size's second column: the ceiling, then the winds aloft. A forecast hours old is past the weather stale
+    /// limit, so it reads muted with the hatched edge (product/data.md), and says how old it is.
+    @ViewBuilder private var side: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            if let c = entry.ceilingFtAGL {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("CEILING").font(FS.label()).tracking(0.7).foregroundStyle(p.inkMuted)
+                    HStack(alignment: .firstTextBaseline, spacing: 4) {
+                        Text(c.formatted()).font(FS.readout(20, relativeTo: .title3)).foregroundStyle(p.ink).widgetAccentable()
+                        Text("ft AGL").font(FS.label()).foregroundStyle(p.inkMuted)
+                    }
+                }
+                .accessibilityElement(children: .combine)
+            }
+            if let u = entry.upperWindMph {
+                let old = entry.upperIssuedAt.map { FSFreshness.isStale(since: $0, limit: FSFreshness.weather, now: entry.date) } ?? false
+                HStack(alignment: .top, spacing: 8) {
+                    if old { FSHatch(color: p.inkFaint).frame(width: 6) }
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("UPPER WIND").font(FS.label()).tracking(0.7).foregroundStyle(p.inkMuted)
+                        HStack(alignment: .firstTextBaseline, spacing: 4) {
+                            Text("\(u)").font(FS.readout(20, relativeTo: .title3)).foregroundStyle(old ? p.inkMuted : p.ink)
+                            Text("mph").font(FS.label()).foregroundStyle(p.inkMuted)
+                        }
+                        Text(upperQualifier).font(.caption2).foregroundStyle(p.inkMuted)
+                    }
+                }
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityElement(children: .combine)
+            }
+        }
+    }
+
+    private var upperQualifier: String {
+        var parts: [String] = []
+        if let a = entry.upperWindAtFt { parts.append("at \(a.formatted())\u{00A0}ft") }
+        if let i = entry.upperIssuedAt { parts.append(FSFreshness.age(since: i, now: entry.date).replacingOccurrences(of: " ago", with: " old")) }
+        return parts.joined(separator: " · ")
     }
 
     /// Caution as a word and a triangle. Full color: a Sodium fill. Accented and vibrant: an outline in the system's tint.

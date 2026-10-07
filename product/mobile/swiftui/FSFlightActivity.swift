@@ -41,11 +41,12 @@ public struct FSFlightActivity: Widget {
             let s = context.state, d = FS.darkPalette
             return DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    FSIslandValue(label: "ALTITUDE", value: s.altitudeFt.map(fsNumber) ?? "—", unit: "ft AGL", big: true)
+                    FSIslandValue(label: "ALTITUDE", value: s.altitudeFt.map(fsNumber) ?? "—", unit: "ft AGL", big: true, spoken: fsSpokenAltitude(s.altitudeFt))
                 }
                 DynamicIslandExpandedRegion(.trailing) {
                     FSIslandValue(label: "FROM YOU", value: s.distanceFt.map(fsNumber) ?? "—", unit: "ft",
-                                  note: s.bearingTrue.map { String(format: "%03d°\u{00A0}T", $0) })
+                                  note: s.bearingTrue.map { String(format: "%03d°\u{00A0}T", $0) },
+                                  spoken: fsSpokenFromYou(s.distanceFt, s.bearingTrue))
                 }
                 DynamicIslandExpandedRegion(.bottom) {
                     VStack(spacing: 8) {
@@ -111,10 +112,11 @@ struct FSFlightLockScreen: View {
             } else {
                 FSActivityPhaseStrip(phase: s.phase)
                 HStack(alignment: .top) {                                   // the two labels on one line
-                    FSIslandValue(label: "ALTITUDE", value: s.altitudeFt.map(fsNumber) ?? "—", unit: "ft AGL", big: true)
+                    FSIslandValue(label: "ALTITUDE", value: s.altitudeFt.map(fsNumber) ?? "—", unit: "ft AGL", big: true, spoken: fsSpokenAltitude(s.altitudeFt))
                     Spacer()
                     FSIslandValue(label: "FROM YOU", value: s.distanceFt.map(fsNumber) ?? "—", unit: "ft",
-                                  note: s.bearingTrue.map { String(format: "%03d°\u{00A0}T", $0) })
+                                  note: s.bearingTrue.map { String(format: "%03d°\u{00A0}T", $0) },
+                                  spoken: fsSpokenFromYou(s.distanceFt, s.bearingTrue))
                 }
             }
         }
@@ -131,6 +133,7 @@ struct FSIslandValue: View {
     let label: String, value: String, unit: String
     var note: String? = nil
     var big = false
+    var spoken: String? = nil          // read instead of the abbreviations: "Altitude, 612 feet above ground"
     var body: some View {
         let d = FS.darkPalette
         VStack(alignment: .leading, spacing: 2) {
@@ -143,6 +146,7 @@ struct FSIslandValue: View {
         }
         .foregroundStyle(d.ink)
         .accessibilityElement(children: .combine)
+        .accessibilityLabel(spoken.map { Text($0) } ?? Text("\(label), \(value) \(unit)"))
     }
 }
 
@@ -174,7 +178,15 @@ struct FSIslandState: View {
             .foregroundStyle(armed ? FS.onDangerFill : FS.darkPalette.ink)
             .background(armed ? FS.dangerFill : Color.clear)
             .overlay(Rectangle().strokeBorder(armed ? FS.dangerFill : FS.darkPalette.ink, lineWidth: 1.5))
+            .accessibilityLabel(Text(armed ? "Device state, armed" : "Device state, safe"))
     }
+}
+
+/// What VoiceOver reads for the readouts, without the abbreviations ("ft AGL", "062° T").
+func fsSpokenAltitude(_ ft: Int?) -> String { ft.map { "Altitude, \(fsNumber($0)) feet above ground" } ?? "Altitude unknown" }
+func fsSpokenFromYou(_ ft: Int?, _ bearing: Int?) -> String {
+    guard let ft else { return "Distance unknown" }
+    return "From you, \(fsNumber(ft)) feet" + (bearing.map { ", bearing \($0) degrees true" } ?? "")
 }
 
 /// US-style grouping for the screen: 1,352.

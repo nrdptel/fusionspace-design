@@ -5,6 +5,8 @@ import WidgetKit
 
 @main
 struct FusionSpaceWidgets: WidgetBundle {
+    init() { CaptureClock.apply() }
+
     var body: some Widget {
         FSWindWidget()
         FSFlightActivity()

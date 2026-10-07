@@ -1,3 +1,5 @@
 # Generated: run xcodegen generate
 *.xcodeproj/
 build-info/
+# Builds and captures (tools/capture)
+build/

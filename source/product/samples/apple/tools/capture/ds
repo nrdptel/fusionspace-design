@@ -1,0 +1,28 @@
+#!/bin/zsh
+# SPDX-License-Identifier: Apache-2.0 · Copyright 2026 Neer Patel
+# ds "<command>" [session] [grep]: one Device Hub interaction (DeviceInteractionSynthesize: "t x y" taps, "t x y 1.5"
+# long-presses, "t x0 y0 f x1 y1 0.3" swipes, "b p" power, "b h" home, "b c" crown, "c 0.5" turns it, "" only looks).
+# Prints the labelled elements of the tree it returns; the screenshot goes to $OUT/last.png, the tree to $OUT/last-tree.txt.
+# DS_SESS names the session and DS_DEV the device (a UDID); a closed session (a UI test run ends them) is reopened under a
+# fresh name. Needs devicehub.py running.
+X=${0:A:h}; OUT=${FS_OUT:-${X:h:h}/build/captures}; mkdir -p $OUT
+DEV=${DS_DEV:-$(xcrun simctl list devices available | grep -F "    ${FS_IPHONE:-FS iPhone 17 Pro} (" | head -1 | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')}
+BASE=${2:-${DS_SESS:-FS capture}}; key=$(echo "$BASE $DEV" | tr -c 'A-Za-z0-9' '_'); SESS=$(cat $OUT/.session-$key 2>/dev/null || echo "$BASE")
+call() {
+  args=$(python3 -c 'import json,sys; d={"interactSessionKey":sys.argv[1]}; c=sys.argv[2]
+if c: d["interactionCommand"]=c
+print(json.dumps(d))' "$SESS" "$1")
+  python3 $X/xc.py DeviceInteractionSynthesize "$args" 180
+}
+out=$(call "$1")
+if echo "$out" | grep -q "Session not found\|doesn't exist"; then
+  SESS="$BASE $(date +%H%M%S)"
+  python3 $X/xc.py DeviceInteractionStartSession "{\"deviceIdentifier\":\"$DEV\",\"sessionIdentifier\":\"$SESS\"}" 300 >/dev/null
+  echo "$SESS" > $OUT/.session-$key
+  out=$(call "$1")
+fi
+echo "$out" | grep -q hierarchyPath || { echo "$out"; exit 1; }
+h=$(echo "$out" | python3 -c 'import json,sys; print(json.load(sys.stdin)["hierarchyPath"])')
+s=$(echo "$out" | python3 -c 'import json,sys; print(json.load(sys.stdin)["screenshotPath"])')
+cp "$s" $OUT/last.png; cp "$h" $OUT/last-tree.txt
+grep -E "label: '[^ ']|identifier: '|activationBundleId|Application bundle" "$h" | grep -E "${3:-.}" | sed -E 's/hitPoint: //' | cut -c1-170 | head -${DS_MAX:-80}

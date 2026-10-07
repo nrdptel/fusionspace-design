@@ -8,12 +8,14 @@ options:
     iOS: "26.0"
     watchOS: "26.0"
   createIntermediateGroups: true
+  preGenCommand: tools/app-icon.sh             # the kit's app icon, into build-info/ (generated)
 settings:
   base:
     SWIFT_VERSION: "6.0"
     CODE_SIGNING_ALLOWED: "NO"
     MARKETING_VERSION: "1.0"
     CURRENT_PROJECT_VERSION: "1"
+    FS_CAPTURE_CLOCK: ""                         # "9:41" for screenshots: clock times agree with the status bar
 targets:
   FusionSpaceSample:
     type: application
@@ -24,6 +26,7 @@ targets:
       - path: ../../../../product/tokens/FusionSpaceColors.swift
       - path: ../../../../product/mobile/swiftui/FSComponents.swift
       - path: ../../../../product/mobile/swiftui/FSFlightActivity.swift
+      - path: build-info/AppIcon.xcassets
       - path: ../../../../product/icons/sf-symbols/FusionSpaceSymbols.xcassets
       - path: ../../../../type/fonts/CascadiaMono-Regular.ttf
         buildPhase: resources
@@ -34,6 +37,7 @@ targets:
     info:
       path: build-info/iOS-Info.plist
       properties:
+        FSCaptureClock: $(FS_CAPTURE_CLOCK)         # empty unless a capture build sets it (Shared/CaptureClock.swift)
         CFBundleDisplayName: FusionSpace
         UILaunchScreen: {}
         UIAppFonts: [CascadiaMono-Regular.ttf, CascadiaMono-SemiBold.ttf, Archivo-Regular.ttf]
@@ -44,7 +48,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: co.fusionspace.sample
-        ASSETCATALOG_COMPILER_APPICON_NAME: ""      # the symbol catalog has no app icon
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         TARGETED_DEVICE_FAMILY: "1"
   FusionSpaceSampleWatch:
     type: application
@@ -55,6 +59,7 @@ targets:
       - path: ../../../../product/tokens/FusionSpaceColors.swift
       - path: ../../../../product/mobile/swiftui/FSComponents.swift
       - path: ../../../../product/watch/swiftui/FSWatch.swift
+      - path: build-info/AppIcon.xcassets
       - path: ../../../../product/icons/sf-symbols/FusionSpaceSymbols.xcassets
       - path: ../../../../type/fonts/CascadiaMono-Regular.ttf
         buildPhase: resources
@@ -74,12 +79,13 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: co.fusionspace.sample.watch
-        ASSETCATALOG_COMPILER_APPICON_NAME: ""      # the symbol catalog has no app icon
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
   FusionSpaceWidgets:
     type: app-extension
     platform: iOS
     sources:
       - Widgets
+      - Shared/CaptureClock.swift
       - path: ../../../../product/tokens/FusionSpaceColors.swift
       - path: ../../../../product/mobile/swiftui/FSComponents.swift
       - path: ../../../../product/mobile/swiftui/FSWindWidget.swift
@@ -93,6 +99,7 @@ targets:
     info:
       path: build-info/Widgets-Info.plist
       properties:
+        FSCaptureClock: $(FS_CAPTURE_CLOCK)         # empty unless a capture build sets it (Shared/CaptureClock.swift)
         CFBundleDisplayName: FusionSpace
         UIAppFonts: [CascadiaMono-Regular.ttf, CascadiaMono-SemiBold.ttf, Archivo-Regular.ttf]
         NSExtension:

@@ -11,6 +11,7 @@ struct PadScreen: View {
     @State private var commanded: String? = nil
     @State private var armed = false
     @State private var confirmedAt = Date.now.addingTimeInterval(-0.3)
+    @State private var confirmingArm = false
 
     var body: some View {
         FSPaletteReader { p in
@@ -21,7 +22,7 @@ struct PadScreen: View {
                         VStack(alignment: .leading, spacing: 6) { FSTag("\(Sample.designation) rev B"); FSStatus("Link", signal: .ok, detail: "0.3\u{00A0}s", symbol: "fs.link") }
                     }
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Pad 3 · Flight 04").font(FS.title()).foregroundStyle(p.ink)
+                        Text("Pad 3 · Flight 04").font(FS.title()).foregroundStyle(p.ink).accessibilityAddTraits(.isHeader)
                         Text("K535W · dual deploy · screen stays on").font(FS.label()).foregroundStyle(p.inkMuted)
                     }
                     VStack(spacing: 8) {
@@ -32,8 +33,8 @@ struct PadScreen: View {
                     }
                     VStack(spacing: 8) {
                         FSSheetHeader("Channels", number: 2, of: 2)
-                        PadRow(key: "1 · DROGUE", value: "Apogee + 0.4\u{00A0}s", status: FSStatus("Cont", signal: .ok, symbol: "fs.continuity"))
-                        PadRow(key: "2 · MAIN", value: "700\u{00A0}ft desc.", status: FSStatus("Cont", signal: .ok, symbol: "fs.continuity"))
+                        PadRow(key: "1 · DROGUE", value: "Apogee + 0.4\u{00A0}s", status: FSStatus("Cont", signal: .ok, symbol: "fs.continuity", spoken: "Continuity"))
+                        PadRow(key: "2 · MAIN", value: "700\u{00A0}ft desc.", status: FSStatus("Cont", signal: .ok, symbol: "fs.continuity", spoken: "Continuity"))
                         PadRow(key: "3 · —", value: "Not used", status: FSStatus("Not used", signal: .off), muted: true)
                     }
                     // Large text: the controls scroll with everything else instead of a fixed panel that would leave no room.
@@ -83,9 +84,16 @@ struct PadScreen: View {
                         .buttonStyle(.plain)
                         .accessibilityLabel("Safe \(Sample.designation)")
                     }
-                    Button("Arm with a confirmation instead") {}
-                        .frame(maxWidth: .infinity, minHeight: 44)
-                        .multilineTextAlignment(.center)
+                    // the two-step alternative to holding: the whole 44 pt row is the target, not just the words
+                    Button { confirmingArm = true } label: {
+                        Text("Arm with a confirmation instead").multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity, minHeight: 44).contentShape(Rectangle())
+                    }
+                    .confirmationDialog("Arm \(Sample.designation)?", isPresented: $confirmingArm, titleVisibility: .visible) {
+                        Button("Arm \(Sample.designation)", role: .destructive) { commanded = "ARM"; armed = true; confirmedAt = .now }
+                    } message: {
+                        Text("The charges can fire once the device is armed.")
+                    }
                 }
     }
 }
@@ -115,6 +123,7 @@ struct PadRow: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .frame(minHeight: 36)
+                .accessibilityElement(children: .combine)       // one stop per row: label, value, state
                 Rectangle().fill(p.rule).frame(height: 1)
             }
         }

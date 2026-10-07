@@ -26,9 +26,12 @@ public struct FSFindProvider: TimelineProvider {
     public func placeholder(in context: Context) -> FSFindEntry { .example }
     public func getSnapshot(in context: Context, completion: @escaping (FSFindEntry) -> Void) { completion(.example) }
     public func getTimeline(in context: Context, completion: @escaping (Timeline<FSFindEntry>) -> Void) {
-        // The app reloads the timeline when a new fix arrives (WidgetCenter.shared.reloadTimelines(ofKind:)); between fixes
-        // the entry's age grows, and past the stale limit the view says so.
-        completion(Timeline(entries: [.example], policy: .never))
+        // The app reloads the timeline when a new fix arrives (WidgetCenter.shared.reloadTimelines(ofKind:)). Two entries per
+        // fix: the fix itself, whose age counts up on its own, and the moment it goes stale, when the view says so.
+        let e = FSFindEntry.example
+        let stale = FSFindEntry(date: e.fixedAt.addingTimeInterval(60 + 1), fixedAt: e.fixedAt, name: e.name, phase: e.phase,
+                                distanceFt: e.distanceFt, bearingTrue: e.bearingTrue)
+        completion(Timeline(entries: [e, stale], policy: .never))
     }
     public func relevance() async -> WidgetRelevance<Void> {
         // Ranked high in the Smart Stack only while a rocket is out and unfound.
@@ -43,26 +46,51 @@ struct FSFindComplication: View {
     private var d: FSPalette { FS.darkPalette }
     private var stale: Bool { FSFreshness.isStale(since: entry.fixedAt, limit: 60, now: entry.date) }
     private var bearing: String { String(format: "%03d°\u{00A0}T", entry.bearingTrue) }
+    /// The fix's age, counting up on its own between timeline entries and in Always On ("4 sec", "1 min"): computed once
+    /// per entry, it would still say "4 s" a minute later.
+    private var age: Text { Text(entry.fixedAt, style: .relative) }
+    private var distanceForms: [String] {
+        let n = entry.distanceFt
+        return [n.formatted(), "\(n)", (Double(n) / 1000).formatted(.number.precision(.fractionLength(1))) + "k"]
+    }
+    /// One sentence for VoiceOver on the face, whatever the family shows.
+    private var spoken: Text {
+        let what = "\(entry.name), \(entry.phase.lowercased()), \(entry.distanceFt.formatted()) feet, bearing \(entry.bearingTrue) degrees true"
+        return stale ? Text("\(what), fix stale") : Text("\(what), fix \(age) old")
+    }
 
     var body: some View {
+        content
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(spoken)
+    }
+
+    @ViewBuilder private var content: some View {
         switch family {
         case .accessoryCircular:
             VStack(spacing: 0) {
                 // The complication can't know which way the wrist points, so the arrow is the bearing from north.
-                FSBearingArrow(relativeDegrees: Double(entry.bearingTrue)).frame(width: 22, height: 22)
-                Text("\(entry.distanceFt)").font(FS.readout(13, relativeTo: .caption)).widgetAccentable()
+                // stale: the arrow outlined and the number muted (no room for the word)
+                FSBearingArrow(relativeDegrees: Double(entry.bearingTrue), outline: stale).frame(width: 22, height: 22)
+                // the first that fits the circle, never cut with "…": 1,352 / 12,345, then 12345, then 12.3k
+                ViewThatFits(in: .horizontal) {
+                    ForEach(distanceForms, id: \.self) { Text($0).lineLimit(1).fixedSize() }
+                }
+                .font(FS.readout(13, relativeTo: .caption)).foregroundStyle(stale ? d.inkMuted : d.ink).widgetAccentable()
                 Text("ft").font(.system(size: 8))
             }
         case .accessoryCorner:
-            FSBearingArrow(relativeDegrees: Double(entry.bearingTrue)).widgetLabel { Text("\(entry.distanceFt.formatted())\u{00A0}ft · \(bearing)") }
+            FSBearingArrow(relativeDegrees: Double(entry.bearingTrue), outline: stale)
+                // the curved label holds about 17 characters before the system cuts it with "…": stale drops the bearing
+                .widgetLabel { Text(stale ? "Stale · \(entry.distanceFt.formatted())\u{00A0}ft" : "\(entry.distanceFt.formatted())\u{00A0}ft · \(bearing)") }
         case .accessoryInline:
-            Text("\(entry.name) \(entry.distanceFt.formatted())\u{00A0}ft \(bearing)")
+            Text("\(entry.name)\(stale ? " stale" : "") \(entry.distanceFt.formatted())\u{00A0}ft \(bearing)")
         default:
             VStack(alignment: .leading, spacing: 1) {
                 HStack {
                     Text("\(entry.name.uppercased()) · \(entry.phase)")
                     Spacer()
-                    Text(stale ? "STALE" : FSFreshness.age(since: entry.fixedAt, now: entry.date).replacingOccurrences(of: " ago", with: ""))
+                    if stale { Text("STALE") } else { age.monospacedDigit().multilineTextAlignment(.trailing) }  // a relative date takes the spare width
                 }
                 .font(FS.label()).foregroundStyle(d.inkMuted)
                 HStack(alignment: .firstTextBaseline, spacing: 4) {

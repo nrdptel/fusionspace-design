@@ -9,9 +9,11 @@ They compile the files in `product/` directly (nothing is copied), so a change t
 | `FusionSpaceWidgets` (iOS widget extension) | The flight's Live Activity and Window's wind widget | the above plus `FSWindWidget.swift` |
 | `FusionSpaceSampleWatch` (watchOS 26+, watch only) | Find, Find in Always On, Pad and Unfired | the above plus `product/watch/swiftui/FSWatch.swift` |
 | `FusionSpaceWatchWidgets` (watchOS widget extension) | Find on every complication family | the above plus `FSWatchComplications.swift` |
-| `FusionSpaceSampleUITests`, `FusionSpaceSampleWatchUITests` | Apple's accessibility audit (`performAccessibilityAudit`) on Pad and Track, and on Find, Pad and Unfired; `LockScreenTests` locks the iPhone to show the Live Activity on the Lock Screen | |
+| `FusionSpaceSampleUITests`, `FusionSpaceSampleWatchUITests` | Apple's accessibility audit (`performAccessibilityAudit`) on Pad and Track, and on Find, Pad and Unfired at the default size, xxxLarge, Accessibility 1 and 3; `LockScreenTests` locks the iPhone (the fallback for the Lock Screen capture); `WatchFaceTests` dims a watch to Always On and raises it again | |
 
-The apps also use the FusionSpace SF Symbols (`product/icons/sf-symbols/`) in the tab bar and the status chips.
+The apps also use the FusionSpace SF Symbols (`product/icons/sf-symbols/`) in the tab bar and the status chips, and the kit's
+app icon (`kit/apps/ios/AppIcon-1024.png`, put in an asset catalog under `build-info/` by `tools/app-icon.sh` when XcodeGen
+runs).
 
 Fonts come from `type/fonts/` (SIL OFL).
 
@@ -32,7 +34,12 @@ xcodebuild test -project FusionSpaceSample.xcodeproj -scheme FusionSpaceSampleWa
 ```
 
 Large text: `xcrun simctl ui <iphone> content_size accessibility-extra-extra-extra-large` (and `extra-extra-extra-large`), then
-launch as below. The watch's text size can't be set with simctl, so the watch app takes `-typesize ax3` (or `xxxl`).
+launch as below. simctl can't set a watch's text size; the watch's own setting is in its Settings app (Display & Brightness ›
+Text Size, reachable through Device Hub), and the watch app takes `-typesize` with any size: `xs` … `xxxl`, `ax1` … `ax5`.
+Measured with the watch's own setting (October 7, 2026): the default is Large on the 40 mm SE and xLarge on the 49 mm Ultra;
+the largest setting is Accessibility 1 on the 40 mm and Accessibility 3 on the Ultra, each pixel for pixel the same as the
+app's `-typesize`; Accessibility 4 and 5 draw as 3. Accessibility (Larger Text) is greyed out on a watch simulator with no
+paired iPhone.
 
 From the command line (simulators; no signing needed):
 
@@ -47,9 +54,10 @@ xcrun simctl launch <watch> co.fusionspace.sample.watch -screen find    # find, 
 xcrun simctl io <device> screenshot --mask=alpha shot.png
 ```
 
-The Lock Screen (only a locked iPhone shows the Live Activity there, and without Simulator.app nothing else can lock it):
-`LockScreenTests` starts the activity, presses the lock button through `XCUIDevice`, wakes the screen, allows Live
-Activities if iOS asks, and holds the Lock Screen for `TEST_RUNNER_FS_HOLD` seconds, while `simctl io screenshot` captures it:
+The Lock Screen (only a locked iPhone shows the Live Activity there): Device Hub's power button locks and wakes it
+(`tools/capture/lock.sh`, below). Without Device Hub, `LockScreenTests` does it: it starts the activity, presses the lock
+button through `XCUIDevice`, wakes the screen, allows Live Activities if iOS asks, and holds the Lock Screen for
+`TEST_RUNNER_FS_HOLD` seconds, while `simctl io screenshot` captures it:
 
 ```
 TEST_RUNNER_FS_HOLD=40 xcodebuild test -project FusionSpaceSample.xcodeproj -scheme FusionSpaceSampleUITests \
@@ -60,8 +68,44 @@ sleep 75; xcrun simctl io <iphone> screenshot --mask=alpha lock.png    # once th
 Now and then the card is missing from the Lock Screen (SpringBoard logs `sceneNotReady` for the activity's snapshot):
 run it again.
 
-The captures in `source/product/devices/apple/` were made this way on Xcode 27.0 with the iOS 27.0 and watchOS 27.0
-simulators (iPhone 17 Pro, Apple Watch Ultra 4 49 mm, Apple Watch SE 3 40 mm); `devices.json` there says which is which.
+## Captures, through Device Hub
+
+Xcode 27 has no Simulator.app: its simulators run in **Device Hub**, which Xcode's MCP tools drive (taps, long presses,
+swipes, the power and Home buttons, the watch's crown, and the element tree of what's on screen). `tools/capture/` holds
+the scripts that made the captures in `source/product/devices/apple/` (Xcode 27.0, iOS 27.0 and watchOS 27.0 simulators
+named "FS iPhone 17 Pro", "FS Ultra 4" and "FS SE 3 40", or Apple's default names); `devices.json` there says which is which.
+
+```
+cd tools/capture
+python3 devicehub.py &          # one lasting connection to Xcode's MCP tools (xcrun mcpbridge), for ds and xc.py
+CLOCK=9:41 ./build.sh           # XcodeGen, build both apps with the capture clock, install on the three simulators
+./app.sh                        # Pad and Track, opened from the Home Screen icon (no "◂ Calendar" back-link)
+./home.sh                       # the wind widgets on the Home Screen, dark and light
+./lock.sh                       # the Live Activity on the Lock Screen, locked and woken with the power button
+./watch.sh                      # Find, Find in Always On, Pad, Unfired on both watches, with their element trees
+./face.sh ultra; AT_SECOND=27 ./face.sh se40      # a watch face with our complications, awake and in Always On
+python3 keep.py ios-pad.png app # copy one into source/product/devices/apple, with its row and its element frames
+```
+
+Captures land in `build/captures/` (not committed) with the element tree Device Hub returned (`*.tree.txt`); `keep.py`
+records our elements' frames in `elements.json`, and the build tests each one against the screen's outline and reads every
+capture back with text recognition for "…" (`tools/build/kit_clip.py`, `check_captures`). One-time setup by hand through
+`ds` (or Device Hub's window): the widgets on page 2 of the Home Screen (long-press, Edit, Add Widget, FusionSpace, the
+medium size, then the small one), and a face with complication slots on each watch (long-press the face, swipe to New,
+Modular Ultra on the Ultra and Infograph on the SE, Edit, the complications page, FusionSpace › Find the rocket in each
+slot, the crown to scroll the list).
+
+- **The capture clock.** simctl draws 9:41 in the iPhone's status bar and on its Lock Screen, but the widget and the Live
+  Activity format times from the real clock ("measured 6:03 AM", "your pad time, 11:15 PM"). Built with `CLOCK=9:41`
+  (`FS_CAPTURE_CLOCK`, `Shared/CaptureClock.swift`), the iPhone app and its widget extension move their own time zone so
+  that now reads 9:41 when they start: the widget says "9:37 AM · 4 min ago" and the pad time 9:45 AM with 3:48 to go,
+  in agreement. Ages and countdowns are untouched. Not on the watch: watchOS has no status bar override, so the watch
+  keeps its real clock and the app and complications agree with it.
+- **No back-link.** iOS puts "◂ Settings" or "◂ Calendar" in the status bar when an app is opened from another app, which
+  `simctl launch` does; `app.sh` sets the screen in the app's defaults and taps the icon instead.
+- **Always On.** Device Hub has no wrist-down. `WatchFaceTests/testAlwaysOn` presses the lock button through `XCUIDevice`,
+  which dims the watch; `testWake` raises it again (until then every app on that watch draws in Always On).
+- **Sessions.** A UI test run ends Device Hub's sessions; `ds` opens a new one when that happens.
 
 ## What running them found (October 6, 2026)
 
@@ -82,6 +126,29 @@ Everything below compiled before; it broke or looked wrong only when it ran:
   the clock: the box is inset and the countdown fits the compact width.
 - `UINavigationBarAppearance` fonts aren't applied to large titles on iOS 27: the sample sets the Cascadia Mono large title
   with `ToolbarItem(placement: .largeTitle)`.
+
+## What Device Hub found (October 7, 2026, later)
+
+Putting the parts where a person meets them, and reading the element tree, found what the earlier runs couldn't:
+
+- **On a real watch face:** the bearing arrow, drawn with fixed offsets for the app's 48 to 104 pt sizes, put its tip past
+  the centre at a complication's 22 pt and drew a blob at the corner's 36 pt (every length is now a share of the radius,
+  and below 44 pt the ticks go); the complication's age was a string made once per timeline entry, so it would still say
+  "4 s" a minute later and in Always On (now a relative date that counts up, plus an entry at the stale limit); the circle
+  and the corner showed no sign of a stale fix (now an outlined arrow, a muted number, "Stale ·"); the corner label with
+  "Stale ·" was cut by the face to "STALE · 1,352 F…", and a 5-digit distance to "12,3…" in the circle (the label drops the
+  bearing when stale, and the circle shows the first of 12,345 / 12345 / 12.3k that fits).
+- **At the watch's own largest text size:** Unfired's title was cut to "UNFIRED 2 ·…" on the 40 mm (the tight layout put
+  the channel on the title's line without checking its width). Apple's audit passed it; the build's text recognition is
+  what catches it now.
+- **The medium widget** left its right half empty: the mock-up's ceiling and winds aloft were never written in SwiftUI. They
+  are now, the winds aloft marked stale with `FSHatch`, whose Canvas drew past its frame across the widget until clipped.
+- **The element tree:** the Pad's "Arm with a confirmation instead" had a 20 pt tall target (its 44 pt frame sat outside
+  the button) and did nothing (now a 44 pt row that opens a confirmation); each Pad and watch channel row was three stops
+  for VoiceOver ("SWITCH", "ON", "On") and is one now; `CONT` was spoken "Cont" (`FSStatus` takes `spoken:`); the state box
+  read "SAFE" like the SAFE button beside it ("Device state, safe"); the watch's Find hid its arrow from VoiceOver without
+  saying which way to turn (now "42 degrees to your right"); Unfired read its message twice; the Live Activity read "ft AGL"
+  and "062° T" as letters.
 
 ## What large text and the audits found (October 7, 2026)
 

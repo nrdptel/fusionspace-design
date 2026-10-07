@@ -94,6 +94,13 @@ Drawn in [`watch/faces/`](watch/faces/).
   the value is the accent group (`widgetAccentable()`) and the caution is a word in an outline, never only a color. Lines at
   least 2 pt.
 - **The arrow on a complication points from north**, since a complication can't follow the wrist; it says `062° T`.
+- **The age counts up on its own** (a relative date, not a string made once per timeline entry: on a face, a fix's "4 s"
+  would still say 4 s a minute later), and the timeline carries a second entry at the stale limit. In Always On the system
+  shows the age to the minute (`<1min`). Past the limit every family says so: `STALE` in words where there's room, `Stale ·`
+  in a corner's label, and in a circle an outlined arrow and a muted number.
+- **Nothing is cut with "…" on a face.** A corner's curved label holds about 17 characters (the face sets it in capitals):
+  distance and bearing (`1,352 ft · 062° T`), and stale drops the bearing. A circle shows the first number that fits:
+  `1,352`, then `12345`, then `12.3k`. Checked on real faces, awake and Always On, in [`watch/devices/`](watch/devices/).
 - **watchOS** (45-49 mm sizes): circular 50 pt, corner 38 pt, rectangular 193 × 82 pt, Smart Stack
   191 × 81.5 pt on 49 mm. Find on every accessory family. The phone's Live Activity arrives in the Smart Stack on its own
   during a flight ([`mobile.md`](mobile.md#glanceable-surfaces)); give it a `.small` layout. The Find widget raises its own
@@ -149,10 +156,19 @@ captures are in [`watch/devices/`](watch/devices/):
 
 ![The reference code running](watch/devices/preview.png)
 
-They also carry the platforms' accessibility checks as tests (Apple's audit as UI tests, on the SE 40 mm and the Ultra; on
-Wear OS, the Accessibility Test Framework at 100% and 124% text), and the screens are checked by eye on the smallest watches
-at xxxLarge and Accessibility 3 (the watch app's `-typesize`), and on Wear OS at 124%, its largest: nothing may be cut,
-truncated or split, and at the largest sizes the screens scroll instead. Run them after changing anything in `product/watch/` or `product/tokens/`: compiling is not enough. On October 6, 2026
+They also carry the platforms' accessibility checks as tests (Apple's audit as UI tests, on the SE 40 mm and the Ultra, at
+the default size and at xxxLarge, Accessibility 1 and Accessibility 3; on Wear OS, the Accessibility Test Framework at 100%
+and 124% text), and the screens are checked by eye on the smallest watches and on Wear OS at 124%, its largest: nothing may
+be cut, truncated or split, and at the largest sizes the screens scroll instead.
+
+- **The sizes a watch really reaches.** Measured on the watchOS 27 simulators in Settings › Display & Brightness › Text Size:
+  the default is Large on the 40 mm SE and xLarge on the 49 mm Ultra, and the largest setting is Accessibility 1 on the 40 mm
+  and Accessibility 3 on the Ultra (sizes past Accessibility 3 draw as Accessibility 3). The sample's `-typesize` (`xs` …
+  `ax5`) renders each of them pixel for pixel.
+- **Apple's audit doesn't see "…".** At the 40 mm watch's largest setting, Unfired's title was cut to `UNFIRED 2 ·…`, and
+  the audit passed. Every capture is read back with text recognition in the build (`tools/build/kit_clip.py`), and a line
+  ending in "…" stops it, as does any element of ours, from the element tree Device Hub records, that the screen's outline
+  cuts. Run them after changing anything in `product/watch/` or `product/tokens/`: compiling is not enough. On October 6, 2026
 running them found layout bugs that every compile check had passed (a control taking the whole screen, text under a
 button, a border cut by a rounded end, units in capitals), all fixed in the files here.
 
@@ -162,7 +178,9 @@ button, a border cut by a rounded end, units in capitals), all fixed in the file
 - [ ] Dark roles only; at least 11 pt/sp; one readout per screen, with its unit and its age.
 - [ ] Every state is a word and a shape; ARMED and UNFIRED survive Always On as words.
 - [ ] Always On / ambient: outlines, muted, no counting seconds, ages as times.
-- [ ] Complications and tiles: one value, unit, age; readable tinted; no logo; arrows from north.
+- [ ] Complications and tiles: one value, unit, age; readable tinted; no logo; arrows from north; the age counts up and
+  stale is shown on every family; nothing cut with "…" (corner labels about 17 characters).
 - [ ] Taps only for the events in the table; UNFIRED repeats until acknowledged.
 - [ ] Find survives the screen turning off and releases its session at the end.
 - [ ] Runs in the sample app on the smallest watch (SE 40 mm, Wear OS small round) with nothing cut by the edge or the bezel.
+- [ ] VoiceOver reads each row and readout as one sentence (channel, name, state spelled out; Find says which way to turn).

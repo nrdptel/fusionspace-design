@@ -123,7 +123,8 @@ Drawn in [`mobile/glance/`](mobile/glance/); worked through in code in `FSFlight
   Android 17 use `MetricStyle` (up to three values with units) and its semantic styles, which match the signal colors:
   `SAFE` for Aurora, `CAUTION` for Sodium, `DANGER` for Flare, `INFO` for the action color. Wear OS 7 can bridge Live Updates
   to the watch (not on every watch, and without `MetricStyle`): see [`watch.md`](watch.md).
-- **Widgets** show one readout (next launch window, surface wind with its age), and must read in tinted, clear and vibrant
+- **Widgets** show one readout (next launch window, surface wind with its age; a medium widget adds a second column, such as
+  the ceiling and the winds aloft, each with its own age, a forecast hours old marked stale), and must read in tinted, clear and vibrant
   modes, where the system draws everything in one tint: the readout and its unit are text, the value is the accent group
   (`widgetAccentable()`), and a caution is a word and a triangle in an outline, never only a Sodium fill. Android widgets
   use the static FusionSpace scheme inside the launcher's container, not wallpaper color, because the caution means
@@ -143,8 +144,9 @@ captures are in [`mobile/devices/`](mobile/devices/):
 
 ![The reference code running](mobile/devices/preview.png)
 
-The captures include the Live Activity on the Lock Screen and in the Dynamic Island, and the Live Update on Android 17
-(MetricStyle) and Android 16 (ProgressStyle, with its status-bar chip). The apps also carry the platforms' accessibility
+The captures include the wind widget on the Home Screen in light and dark (added there the way a person would, through
+Xcode 27's Device Hub), the Live Activity on the Lock Screen (locked and woken with the power button) and in the Dynamic
+Island, and the Live Update on Android 17 (MetricStyle) and Android 16 (ProgressStyle, with its status-bar chip). The apps also carry the platforms' accessibility
 checks as tests (Apple's audit as UI tests; on Android, the Accessibility Test Framework in instrumented tests, at 100% and
 200% text), and the screens are checked by eye at xxxLarge and Accessibility XXXL (on Android at font scale 2.0): nothing
 may be cut, truncated or split, and at the largest sizes the screens scroll instead. Run them after changing anything in `product/mobile/` or `product/tokens/`: compiling is not enough. On October 6, 2026
@@ -159,6 +161,8 @@ button, a border cut by a rounded end, units in capitals), all fixed in the file
 - [ ] Colors from `FS` / `FsColors` only; static scheme on Android.
 - [ ] Field theme on Increase Contrast; field-size targets on pad screens.
 - [ ] Every status has a word and a shape; every value has a unit; every prediction is labeled.
+- [ ] VoiceOver and TalkBack read each row as one stop, abbreviations spelled out (`CONT` is "continuity"), units as words.
+- [ ] Every control's target is at least 44 pt (48 dp), including text buttons: the frame inside the button, not around it.
 - [ ] Two actions for anything that arms, fires or erases; commanded vs confirmed shown.
 - [ ] Works in airplane mode after the pre-trip sync.
 - [ ] About screen is a title block with designation, version, build and data versions.

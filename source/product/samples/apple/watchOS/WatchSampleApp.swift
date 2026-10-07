@@ -19,7 +19,8 @@ struct WatchRoot: View {
         case "pad":
             NavigationStack {
                 FSWatchState(designation: Sample.designation, armed: true, channels: [
-                    .init(1, "DROGUE", .ok, "Cont"), .init(2, "MAIN", .ok, "Cont"), .init(3, "—", .off, "Not used"),
+                    .init(1, "DROGUE", .ok, "Cont", spoken: "Continuity"), .init(2, "MAIN", .ok, "Cont", spoken: "Continuity"),
+                    .init(3, "—", .off, "Not used"),
                 ], linkAge: "0.3\u{00A0}s")
                 .navigationTitle("Pad 3")
             }
@@ -40,13 +41,18 @@ struct WatchRoot: View {
     }
 }
 
-/// Follows the watch's own text size, unless `-typesize ax3` (or `xxxl`) asks for one to capture.
+/// Follows the watch's own text size, unless `-typesize` names one to capture: xs, s, m, l, xl, xxl, xxxl, ax1 … ax5.
+/// The watch's own largest Text Size (Settings › Display & Brightness, 100%) renders as ax1; see the README.
 struct SampleTypeSize: ViewModifier {
+    static let sizes: [String: DynamicTypeSize] = [
+        "xs": .xSmall, "s": .small, "m": .medium, "l": .large, "xl": .xLarge, "xxl": .xxLarge, "xxxl": .xxxLarge,
+        "ax1": .accessibility1, "ax2": .accessibility2, "ax3": .accessibility3, "ax4": .accessibility4, "ax5": .accessibility5,
+    ]
     func body(content: Content) -> some View {
-        switch UserDefaults.standard.string(forKey: "typesize") {
-        case "ax3": content.dynamicTypeSize(.accessibility3)
-        case "xxxl": content.dynamicTypeSize(.xxxLarge)
-        default: content
+        if let s = UserDefaults.standard.string(forKey: "typesize").flatMap({ Self.sizes[$0] }) {
+            content.dynamicTypeSize(s)
+        } else {
+            content
         }
     }
 }

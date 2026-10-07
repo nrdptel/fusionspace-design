@@ -112,8 +112,8 @@ fun PadScreen(onBack: () -> Unit) {
                 Line("GPS", "3D · 11\u00A0sat") { FsStatus("Fix", FsSignal.Ok, icon = { StatusIcon(R.drawable.fs_gps_fix) }) }
                 Spacer(Modifier.height(12.dp))
                 FsSheetHeader("Channels", 2, 2)
-                Line("1 · Drogue", "Apogee +\u00A00.4\u00A0s") { FsStatus("Cont", FsSignal.Ok, icon = { StatusIcon(R.drawable.fs_continuity) }) }
-                Line("2 · Main", "700\u00A0ft desc.") { FsStatus("Cont", FsSignal.Ok, icon = { StatusIcon(R.drawable.fs_continuity) }) }
+                Line("1 · Drogue", "Apogee +\u00A00.4\u00A0s") { FsStatus("Cont", FsSignal.Ok, icon = { StatusIcon(R.drawable.fs_continuity) }, spoken = "Continuity") }
+                Line("2 · Main", "700\u00A0ft desc.") { FsStatus("Cont", FsSignal.Ok, icon = { StatusIcon(R.drawable.fs_continuity) }, spoken = "Continuity") }
                 Line("3 · —", "Not used") { FsStatus("Not used", FsSignal.Off, icon = { StatusIcon(R.drawable.fs_minus) }) }
                 Spacer(Modifier.height(12.dp))
             }
