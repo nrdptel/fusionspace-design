@@ -9,6 +9,14 @@ import SwiftUI
 import UIKit
 #endif
 
+// MARK: - Icons
+
+extension FS {
+    /// A FusionSpace domain icon ("fs.rocket", from product/icons/sf-symbols/FusionSpaceSymbols.xcassets) or an SF Symbol
+    /// ("checkmark.circle"). Both scale with the text around them and take the same rendering modes.
+    public static func icon(_ name: String) -> Image { name.hasPrefix("fs.") ? Image(name) : Image(systemName: name) }
+}
+
 // MARK: - Signals
 
 /// A state with a word and a shape. Color is the third cue, never the only one (product/foundations.md).
@@ -50,7 +58,7 @@ public struct FSStatus: View {
     public var body: some View {
         FSPaletteReader { p in
             HStack(spacing: 6) {
-                Image(systemName: symbol ?? signal.defaultSymbol).imageScale(.small)
+                FS.icon(symbol ?? signal.defaultSymbol).imageScale(.small)
                 // One text: the state word in capitals, the detail as written. It wraps only between words, and only at
                 // accessibility sizes; at other sizes it keeps its full width ("CO / NT" and "0.3…" never happen).
                 Text(detail.map { "\(word.uppercased()) · \($0)" } ?? word.uppercased())

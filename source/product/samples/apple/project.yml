@@ -24,6 +24,7 @@ targets:
       - path: ../../../../product/tokens/FusionSpaceColors.swift
       - path: ../../../../product/mobile/swiftui/FSComponents.swift
       - path: ../../../../product/mobile/swiftui/FSFlightActivity.swift
+      - path: ../../../../product/icons/sf-symbols/FusionSpaceSymbols.xcassets
       - path: ../../../../type/fonts/CascadiaMono-Regular.ttf
         buildPhase: resources
       - path: ../../../../type/fonts/CascadiaMono-SemiBold.ttf
@@ -43,6 +44,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: co.fusionspace.sample
+        ASSETCATALOG_COMPILER_APPICON_NAME: ""      # the symbol catalog has no app icon
         TARGETED_DEVICE_FAMILY: "1"
   FusionSpaceSampleWatch:
     type: application
@@ -53,6 +55,7 @@ targets:
       - path: ../../../../product/tokens/FusionSpaceColors.swift
       - path: ../../../../product/mobile/swiftui/FSComponents.swift
       - path: ../../../../product/watch/swiftui/FSWatch.swift
+      - path: ../../../../product/icons/sf-symbols/FusionSpaceSymbols.xcassets
       - path: ../../../../type/fonts/CascadiaMono-Regular.ttf
         buildPhase: resources
       - path: ../../../../type/fonts/CascadiaMono-SemiBold.ttf
@@ -71,6 +74,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: co.fusionspace.sample.watch
+        ASSETCATALOG_COMPILER_APPICON_NAME: ""      # the symbol catalog has no app icon
   FusionSpaceWidgets:
     type: app-extension
     platform: iOS
@@ -96,6 +100,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: co.fusionspace.sample.widgets
+        ASSETCATALOG_COMPILER_APPICON_NAME: ""      # the symbol catalog has no app icon
         TARGETED_DEVICE_FAMILY: "1"
   FusionSpaceWatchWidgets:
     type: app-extension
@@ -120,6 +125,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: co.fusionspace.sample.watch.widgets
+        ASSETCATALOG_COMPILER_APPICON_NAME: ""      # the symbol catalog has no app icon
   FusionSpaceSampleUITests:
     type: bundle.ui-testing
     platform: iOS

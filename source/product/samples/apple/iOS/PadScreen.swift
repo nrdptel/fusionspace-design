@@ -17,8 +17,8 @@ struct PadScreen: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
                     ViewThatFits(in: .horizontal) {
-                        HStack(spacing: 8) { FSTag("\(Sample.designation) rev B"); FSStatus("Link", signal: .ok, detail: "0.3\u{00A0}s", symbol: "link") }
-                        VStack(alignment: .leading, spacing: 6) { FSTag("\(Sample.designation) rev B"); FSStatus("Link", signal: .ok, detail: "0.3\u{00A0}s", symbol: "link") }
+                        HStack(spacing: 8) { FSTag("\(Sample.designation) rev B"); FSStatus("Link", signal: .ok, detail: "0.3\u{00A0}s", symbol: "fs.link") }
+                        VStack(alignment: .leading, spacing: 6) { FSTag("\(Sample.designation) rev B"); FSStatus("Link", signal: .ok, detail: "0.3\u{00A0}s", symbol: "fs.link") }
                     }
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Pad 3 · Flight 04").font(FS.title()).foregroundStyle(p.ink)
@@ -27,13 +27,13 @@ struct PadScreen: View {
                     VStack(spacing: 8) {
                         FSSheetHeader("Checks", number: 1, of: 2)
                         PadRow(key: "SWITCH", value: "ON", status: FSStatus("On", signal: .ok))
-                        PadRow(key: "BATTERY", value: "8.1\u{00A0}V", status: FSStatus("OK", signal: .ok, symbol: "battery.100"))
-                        PadRow(key: "GPS", value: "3D · 11 sat", status: FSStatus("Fix", signal: .ok, symbol: "location"))
+                        PadRow(key: "BATTERY", value: "8.1\u{00A0}V", status: FSStatus("OK", signal: .ok, symbol: "fs.battery"))
+                        PadRow(key: "GPS", value: "3D · 11 sat", status: FSStatus("Fix", signal: .ok, symbol: "fs.gps-fix"))
                     }
                     VStack(spacing: 8) {
                         FSSheetHeader("Channels", number: 2, of: 2)
-                        PadRow(key: "1 · DROGUE", value: "Apogee + 0.4\u{00A0}s", status: FSStatus("Cont", signal: .ok, symbol: "waveform.path"))
-                        PadRow(key: "2 · MAIN", value: "700\u{00A0}ft desc.", status: FSStatus("Cont", signal: .ok, symbol: "waveform.path"))
+                        PadRow(key: "1 · DROGUE", value: "Apogee + 0.4\u{00A0}s", status: FSStatus("Cont", signal: .ok, symbol: "fs.continuity"))
+                        PadRow(key: "2 · MAIN", value: "700\u{00A0}ft desc.", status: FSStatus("Cont", signal: .ok, symbol: "fs.continuity"))
                         PadRow(key: "3 · —", value: "Not used", status: FSStatus("Not used", signal: .off), muted: true)
                     }
                     // Large text: the controls scroll with everything else instead of a fixed panel that would leave no room.

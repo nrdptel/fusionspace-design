@@ -10,8 +10,8 @@ struct TrackScreen: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
                     ViewThatFits(in: .horizontal) {
-                        HStack(spacing: 8) { FSTag("FLIGHT 04 · \(Sample.designation)"); FSStatus("Link", signal: .ok, detail: "0.4\u{00A0}s", symbol: "antenna.radiowaves.left.and.right") }
-                        VStack(alignment: .leading, spacing: 6) { FSTag("FLIGHT 04 · \(Sample.designation)"); FSStatus("Link", signal: .ok, detail: "0.4\u{00A0}s", symbol: "antenna.radiowaves.left.and.right") }
+                        HStack(spacing: 8) { FSTag("FLIGHT 04 · \(Sample.designation)"); FSStatus("Link", signal: .ok, detail: "0.4\u{00A0}s", symbol: "fs.telemetry") }
+                        VStack(alignment: .leading, spacing: 6) { FSTag("FLIGHT 04 · \(Sample.designation)"); FSStatus("Link", signal: .ok, detail: "0.4\u{00A0}s", symbol: "fs.telemetry") }
                     }
                     FSPhaseStrip(current: 5)
                     VStack(spacing: 8) {

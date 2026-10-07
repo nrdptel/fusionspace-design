@@ -1776,7 +1776,7 @@ FOLDER_READMES = {
                         "| `primitives.tokens.json` + `light`, `dark`, `field.tokens.json` | Design Tokens Community Group format 2025.10 (Style Dictionary 5 and others) |\n"
                         "| `fusionspace-ui.css` | Web custom properties; the full stylesheet is `../web/fusionspace.css` |\n"
                         "| `FusionSpaceColors.swift` | SwiftUI |\n| `FusionSpaceColors.kt` | Jetpack Compose |\n| `fusionspace_ui.h` | Firmware (RGB888, RGB565, flash timings) |\n",
-    "icons/README.md": "# Icons\n\nOne SVG per icon (24 x 24, `currentColor`, 1.5 px strokes), `sprite.svg` with every icon as a `<symbol id=\"fs-name\">`, and `android/` with each as a VectorDrawable (`fs_name.xml`, tinted by the theme). "
+    "icons/README.md": "# Icons\n\nOne SVG per icon (24 x 24, `currentColor`, 1.5 px strokes), `sprite.svg` with every icon as a `<symbol id=\"fs-name\">`, `android/` with each as a VectorDrawable (`fs_name.xml`, tinted by the theme), and `sf-symbols/` with each as an SF Symbols custom symbol for iOS and watchOS (`fs.name`). "
                        "Rules in `product/foundations.md#icons`.\n\n![Icons](preview.png)\n",
     "web/README.md": "# Web\n\n| File | What |\n|---|---|\n| `fusionspace.css` | Tokens and every component |\n| `tailwind-theme.css` | Tailwind v4 theme with the defaults removed |\n"
                      "| `fonts.css`, `fonts/` | WOFF2 subsets of Archivo and Cascadia Mono (SIL OFL) |\n| `index.html` | The specimen |\n"
@@ -1790,8 +1790,8 @@ FOLDER_READMES = {
 
 def build_product():
     rows, cvd = build_tokens()
-    import kit_mobile, kit_watch, kit_devices
-    build_icons(); build_web(); build_cli(); build_embedded(); build_hardware(); build_rockets(); build_desktop(); kit_mobile.build_mobile()
+    import kit_mobile, kit_watch, kit_devices, kit_symbols
+    build_icons(); kit_symbols.build_symbols(); build_web(); build_cli(); build_embedded(); build_hardware(); build_rockets(); build_desktop(); kit_mobile.build_mobile()
     kit_watch.build_watch(); kit_devices.build_devices(); build_docs()
     for k, v in FOLDER_READMES.items(): wr(k, v)
     return {"contrast": rows, "cvd": cvd}

@@ -44,8 +44,10 @@ Composer layers, Android adaptive layers with a monochrome layer, macOS, Google 
   Compose Canvas/Vico, styled to the chart rules, with an audio graph (iOS) or a semantics summary (Android).
 - **The sheet and the title block** inside scrolling content: 2 px top rules on sections, `SHEET n / N` labels, the title block
   as the About screen (designation, version, build, data versions, licenses).
-- **Domain icons** from [`icons/`](icons/), as SF Symbols custom symbols (drawn on the SF Symbols template from the 24 px
-  masters) and the Android vector drawables in `icons/android/`. System actions use SF Symbols and Material Symbols.
+- **Domain icons** from [`icons/`](icons/): on iOS and watchOS the ready-made SF Symbols custom symbols in
+  [`icons/sf-symbols/FusionSpaceSymbols.xcassets`](icons/sf-symbols/) (`Image("fs.rocket")`, `Tab("Pad", image:
+  "fs.launch-rail", …)`, `FS.icon(_:)`, small, medium and large scales); on Android the vector drawables in `icons/android/`.
+  System actions use SF Symbols and Material Symbols.
 
 ## Screens
 

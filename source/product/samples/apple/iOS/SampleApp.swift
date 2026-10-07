@@ -17,19 +17,19 @@ struct SampleRoot: View {
 
     var body: some View {
         TabView(selection: $tab) {
-            Tab("Pad", systemImage: "flag.pattern.checkered", value: .pad) {
+            Tab("Pad", image: "fs.launch-rail", value: .pad) {
                 NavigationStack(path: $padPath) {
                     FlightsList(open: { padPath.append("pad") })
                         .navigationDestination(for: String.self) { _ in PadScreen().toolbar(.hidden, for: .tabBar) }
                 }
             }
-            Tab("Track", systemImage: "scope", value: .track) {
+            Tab("Track", image: "fs.gps-fix", value: .track) {
                 NavigationStack { TrackScreen() }
             }
-            Tab("Flights", systemImage: "chart.xyaxis.line", value: .flights) {
+            Tab("Flights", image: "fs.flight-log", value: .flights) {
                 NavigationStack { Text("Flights").navigationTitle("Flights") }
             }
-            Tab("Devices", systemImage: "cpu", value: .devices) {
+            Tab("Devices", image: "fs.flight-computer", value: .devices) {
                 NavigationStack { Text("Devices").navigationTitle("Devices") }
             }
         }
