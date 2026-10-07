@@ -823,7 +823,7 @@ def build_guide(info):
     s = s.replace("  <footer>", kit.guide_sheet(8).replace("SHEET 8 / 8", f"SHEET 8 / {n}") + kit_product.guide_sheet(9, n) + "\n  <footer>", 1)
     tags = "".join(f'<div><span class="label">Tag</span><b>{t}</b><p>{d}.<br><code style="white-space:nowrap">FS-VEGA · {t}</code></p></div>' for t, d in kit.DISCIPLINES)
     s = s.replace('      <div><a class="cta" href="../tools/callsign/callsign.html">',
-                  '      <p>Projects of any kind use the same scheme. An optional discipline tag after the code says what kind of project it is:</p>\n'
+                  '      <p>Products of any kind use the same scheme. An optional discipline tag after the code says what kind of work it is:</p>\n'
                   f'      <div class="codes" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">{tags}</div>\n'
                   '      <div><a class="cta" href="../tools/callsign/callsign.html">', 1)
     for a_, b_ in (("<tr><td>tools/callsign/</td><td>Callsign, the star name tool: <code>callsign.html</code> for any browser, phones included, and <code>callsign.py</code> for a terminal, with the IAU star list as JSON and CSV.</td></tr>",

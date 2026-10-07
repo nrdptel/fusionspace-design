@@ -4,7 +4,7 @@
 2. **Profile README**: follow `profile-README.md` (a repo named after your username, plus the two banner PNGs).
 3. **Each repository**:
    - Social preview: Settings → General → Social preview → upload `social-preview-dark.png`, or a per-project one made with
-     `python3 tools/build/project.py --name <Star> --tag <TAG> --desc "..."` (example in `kit/projects/example-vega/`).
+     `python3 tools/build/project.py --star <Star> [--name <external name>] --tag <TAG> --desc "..."` (example in `kit/projects/example-vega/`).
    - README header: copy the project's `readme-banner-dark.png` and `-light.png` into `.github/brand/` and start from its
      `README-starter.md` (or use the brand banners here with `README-snippet.md`).
    - Labels: `./apply-labels.sh owner/repo` (needs the GitHub CLI, `gh`). Colors come from the palette; see `labels.json`.

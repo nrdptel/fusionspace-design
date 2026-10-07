@@ -8,12 +8,12 @@
 
 ### Hi, I'm Neer.
 
-Founder · Engineer. [FusionSpace](https://fusionspace.co) is everything I make, under one name: software and embedded systems, games, electronics, mechanical and machined parts, and aerospace. Each project is named after a star.
+Founder · Engineer. [FusionSpace](https://fusionspace.co) is everything I make, under one name: software and embedded systems, games, electronics, mechanical and machined parts, and aerospace. Each project is a constellation, and each product in it is one of its stars.
 
-| Project | What | Status |
-|---|---|---|
-| [FS-VEGA](https://github.com/nrdptel/vega) | One-line description | ![status: active](https://img.shields.io/badge/status-active-3350D6?style=flat-square&labelColor=0B0F1C) |
-| [FS-ACHERNAR](https://github.com/nrdptel/achernar) | One-line description | ![status: prototype](https://img.shields.io/badge/status-prototype-B34F0C?style=flat-square&labelColor=0B0F1C) |
+| Product | Project | What | Status |
+|---|---|---|---|
+| [FS-VEGA](https://github.com/nrdptel/vega) | FS-LYR | One-line description | ![status: active](https://img.shields.io/badge/status-active-3350D6?style=flat-square&labelColor=0B0F1C) |
+| [FS-ACHERNAR](https://github.com/nrdptel/achernar) | FS-ERI | One-line description | ![status: prototype](https://img.shields.io/badge/status-prototype-B34F0C?style=flat-square&labelColor=0B0F1C) |
 
 <details><summary>Discipline tags</summary>
 

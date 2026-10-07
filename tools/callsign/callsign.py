@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0 · Copyright 2026 Neer Patel
-"""Callsign: give a FusionSpace project its callsign, the name of an IAU-approved star.
+"""Callsign: names for FusionSpace work, from the IAU's own star list. A project takes a constellation (Orion is FS-ORI);
+each of its products takes one of that constellation's stars as its internal name (Rigel is FS-RIGEL).
 
 One file, no dependencies, Python 3.8 or later: macOS, Linux, Windows, and phones with a Python app (a-Shell, Termux).
 The star list is the IAU's own (https://iauarchive.eso.org/public/themes/naming_stars/#n4). A copy is built in, and
 `callsign update` reads the list again from the IAU; it is also read again on its own when the copy is over 30 days old.
 
     callsign                              draw a star
+    callsign project                      draw a constellation for a new project
+    callsign project Orion                one project: its code and its stars
+    callsign -c Orion --skip Rigel        a star for the next product in Orion
     callsign -n 5 -c Orion --vmag ..3     five bright stars in Orion
     callsign list --max-letters 5         every short name
     callsign show Vega                    one star
@@ -17,12 +21,13 @@ Built from source/callsign/callsign.py in the fusionspace-design repository; edi
 """
 import argparse, datetime, difflib, html, json, os, random, re, sys, unicodedata, urllib.request
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 DESIGNATION = "FS · SW · TOOL 007"
 IAU_URL = "https://iauarchive.eso.org/public/themes/naming_stars/"
 IAU_LIST = IAU_URL + "#n4"
 DOCS = "https://github.com/nrdptel/fusionspace-design/tree/main/tools/callsign"
 REFRESH_DAYS = 30
+MIN_STARS = 3                                               # a new project's constellation has room for this many products
 FIELDS = ["name", "designation", "id", "con", "component", "wds", "vmag", "ra", "dec", "approved"]
 HEADERS = {"IAU Name": "name", "Designation": "designation", "ID": "id", "Const.": "con", "#": "component",
            "WDS_J": "wds", "Vmag": "vmag", "RA(J2000)": "ra", "Dec(J2000)": "dec", "Approval Date": "approved"}
@@ -669,6 +674,10 @@ def code(name):
     s = fold(name).upper().replace("'", "").replace("’", "")
     return "FS-" + re.sub(r"[^A-Z0-9]+", "-", s).strip("-")
 
+def project_code(abbr):
+    """FS-<CON>: a project's code is its constellation's IAU abbreviation in capitals. Orion is FS-ORI."""
+    return "FS-" + abbr.upper()
+
 def letters(name):
     return sum(ch.isalpha() for ch in name)
 
@@ -682,7 +691,7 @@ def find_con(text):
     """A constellation from its abbreviation or name, in any case, with or without accents."""
     key = fold(text.strip()).replace(" ", "")
     for abbr, name in CONSTELLATIONS.items():
-        if key in (abbr.lower(), fold(name).replace(" ", "")):
+        if key in (abbr.lower(), fold(name).replace(" ", ""), project_code(abbr).lower()):
             return abbr
     names = {fold(n): a for a, n in CONSTELLATIONS.items()}
     close = difflib.get_close_matches(fold(text.strip()), list(names), n=1, cutoff=0.6)
@@ -747,7 +756,7 @@ def dms(dec):
 
 def as_json(s):
     return {"name": s["name"], "code": code(s["name"]), "designation": s["designation"], "id": s["id"],
-            "constellation": {"abbr": s["con"], "name": con_name(s["con"])}, "component": s["component"],
+            "constellation": {"abbr": s["con"], "name": con_name(s["con"])}, "project": project_code(s["con"]), "component": s["component"],
             "wds": s["wds"], "vmag": s["vmag"], "ra_deg": s["ra"], "dec_deg": s["dec"], "approved": s["approved"]}
 
 def meta(c):
@@ -756,7 +765,7 @@ def meta(c):
 def card(s, out):
     """One star, as label / value lines."""
     ident = ", ".join(x for x in (s["designation"], f"{s['id']} {s['con']}" if s["id"] else None) if x)
-    lines = [("designation", ident), ("constellation", f"{con_name(s['con'])} ({s['con']})"),
+    lines = [("designation", ident), ("constellation", f"{con_name(s['con'])} ({s['con']}), project {project_code(s['con'])}"),
              ("vmag", f"{s['vmag']:.2f}" if s["vmag"] is not None else "not given by the IAU"),
              ("position", f"RA {hms(s['ra'])}, Dec {dms(s['dec'])} (J2000)" if s["ra"] is not None else "not given"),
              ("approved", s["approved"] or "not given")]
@@ -765,12 +774,13 @@ def card(s, out):
     for k, v in lines:
         print(f"{k:<16}  {v}")
 
-def table(stars, out):
+def table(stars, out, used=None):
     w = max([4] + [len(s["name"]) for s in stars]); wc = max([4] + [len(code(s["name"])) for s in stars])
     print(out.paint(f"{'name':<{w}}  {'code':<{wc}}  con  {'vmag':>5}  designation", S.HEADING))
     for s in stars:
         v = f"{s['vmag']:5.2f}" if s["vmag"] is not None else "    -"
-        print(f"{s['name']:<{w}}  {code(s['name']):<{wc}}  {s['con']:<3}  {v}  {s['designation'] or ''}")
+        line = f"{s['name']:<{w}}  {code(s['name']):<{wc}}  {s['con']:<3}  {v}  {s['designation'] or ''}"
+        print(out.paint(line + "  (in use)", S.MUTED) if used and fold(s["name"]) in used else line)
 
 
 # ---------------------------------------------------------------- commands
@@ -821,21 +831,85 @@ def cmd_show(c, args, out):
             if args.json: print(json.dumps({"list": meta(c), "star": as_json(s)}, ensure_ascii=False, indent=2))
             else: card(s, out)
             return
+    for abbr, name in CONSTELLATIONS.items():
+        if want in (abbr.lower(), fold(name), project_code(abbr)[3:].lower()):
+            raise Fail(f"{' '.join(args.name)} is a constellation, so a project, not a star", f"`callsign project {name}` shows it and its stars")
     close = difflib.get_close_matches(want, [fold(r[0]) for r in c["stars"]], n=3, cutoff=0.6)
     names = {fold(r[0]): r[0] for r in c["stars"]}
     raise Fail(f"no IAU star named {' '.join(args.name)}",
                ("did you mean " + " or ".join(names[x] for x in close) + "?") if close else "`callsign list` shows every name")
+
+def taken(c, args):
+    """Constellations that already have a project: the ones named with --taken, and the ones a --skip star is in."""
+    skip = {fold(s) for s in args.skip}
+    return set(args.taken) | {r[3] for r in c["stars"] if fold(r[0]) in skip}
+
+def project_json(abbr, stars, skip):
+    return {"name": con_name(abbr), "abbr": abbr, "code": project_code(abbr), "stars": len(stars),
+            "free": sum(fold(s["name"]) not in skip for s in stars),
+            "names": [dict(as_json(s), in_use=fold(s["name"]) in skip) for s in stars]}
+
+def cmd_project(c, args, out):
+    """With a name: that project, its code and its stars. Without one: draw a constellation for a new project."""
+    skip = {fold(s) for s in args.skip}
+    if args.name:
+        abbr = find_con(" ".join(args.name))
+        stars = sorted((star(r) for r in c["stars"] if r[3] == abbr), key=lambda s: (s["vmag"] is None, s["vmag"] or 0))
+        if not stars:
+            raise Fail(f"no IAU-named star is in {con_name(abbr)}, so it can't be a project", "`callsign constellations` lists the ones with names")
+        if args.json:
+            print(json.dumps({"list": meta(c), "project": project_json(abbr, stars, skip)}, ensure_ascii=False, indent=2)); return
+        if args.plain:
+            print("\n".join(f"{s['name']}\t{code(s['name'])}" for s in stars if fold(s["name"]) not in skip)); return
+        free = [s for s in stars if fold(s["name"]) not in skip]
+        print(out.paint(f"{con_name(abbr):<16}", S.HEADING) + "  " + out.paint(project_code(abbr), S.HEADING))
+        print(f"{'constellation':<16}  {con_name(abbr)} ({abbr})")
+        print(f"{'named stars':<16}  {len(stars)}" + (f", {len(free)} free" if skip else ""))
+        print(f"{'next product':<16}  callsign -c {abbr}" + (" --skip " + ",".join(s["name"] for s in stars if fold(s["name"]) in skip) if len(free) < len(stars) else ""))
+        print()
+        table(stars, out, used=skip)
+        return
+    pool, gone = matches(c, args), taken(c, args)
+    count = {}
+    for s in pool: count.setdefault(s["con"], []).append(s)
+    room = args.min_stars
+    eligible = sorted((a for a, ss in count.items() if len(ss) >= room and a not in gone), key=lambda a: fold(con_name(a)))
+    if not eligible:
+        raise Fail(f"no constellation has {room} or more named stars" + (f" ({describe(args)})" if describe(args) else "")
+                   + (f" and no project yet" if gone else ""), "lower --min-stars or widen the filters")
+    rng = random.Random(args.seed) if args.seed is not None else random.SystemRandom()
+    picked = rng.sample(eligible, min(args.n, len(eligible)))
+    if args.json:
+        print(json.dumps({"list": meta(c), "filters": describe(args) or None, "min_stars": room, "taken": sorted(gone),
+                          "matched": len(eligible), "projects": [project_json(a, count[a], skip) for a in picked]},
+                         ensure_ascii=False, indent=2)); return
+    if args.plain:
+        print("\n".join(f"{con_name(a)}\t{project_code(a)}" for a in picked)); return
+    filt = ", ".join(x for x in (describe(args), f"{room} or more named stars", f"{len(gone)} with a project skipped" if gone else "") if x)
+    print(out.paint(f"drawn from {len(eligible)} of {len(CONSTELLATIONS)} constellations ({filt}), list read {c['read']}", S.MUTED, True), file=sys.stderr)
+    if args.n > len(eligible):
+        out.warn(f"asked for {args.n}, only {len(eligible)} match")
+    if len(picked) == 1:
+        a = picked[0]; ss = sorted(count[a], key=lambda s: (s["vmag"] is None, s["vmag"] or 0))
+        print(out.paint(f"{con_name(a):<16}", S.HEADING) + "  " + out.paint(project_code(a), S.HEADING))
+        print(f"{'constellation':<16}  {con_name(a)} ({a})")
+        print(f"{'named stars':<16}  {len(ss)}: " + ", ".join(s["name"] for s in ss))
+        print(f"{'first product':<16}  callsign -c {a}")
+    else:
+        w = max(len(con_name(a)) for a in picked)
+        print(out.paint(f"{'project':<{w}}  {'code':<6}  stars", S.HEADING))
+        for a in picked: print(f"{con_name(a):<{w}}  {project_code(a):<6}  {len(count[a]):>5}")
 
 def cmd_constellations(c, args, out):
     count = {}
     for r in c["stars"]: count[r[3]] = count.get(r[3], 0) + 1
     rows = sorted(CONSTELLATIONS.items(), key=lambda kv: fold(kv[1]))
     if args.json:
-        print(json.dumps([{"abbr": a, "name": n, "stars": count.get(a, 0)} for a, n in rows], ensure_ascii=False, indent=2)); return
-    print(out.paint(f"{'abbr':<4}  {'constellation':<20}  {'stars':>5}", S.HEADING))
+        print(json.dumps([{"abbr": a, "name": n, "project": project_code(a), "stars": count.get(a, 0)} for a, n in rows], ensure_ascii=False, indent=2)); return
+    print(out.paint(f"{'abbr':<4}  {'constellation':<20}  {'project':<7}  {'stars':>5}", S.HEADING))
     for a, n in rows:
         if count.get(a) or args.all:
-            print(f"{a:<4}  {n:<20}  {count.get(a, 0):>5}")
+            print(f"{a:<4}  {n:<20}  {project_code(a):<7}  {count.get(a, 0):>5}")
     if not args.all:
         print(out.paint(f"{sum(1 for a in CONSTELLATIONS if not count.get(a))} constellations have no IAU-named star; --all shows them", S.MUTED, True), file=sys.stderr)
 
@@ -895,9 +969,13 @@ def parser():
     o.add_argument("--verbose", action="store_true", help="say why an automatic update failed")
 
     p = argparse.ArgumentParser(prog="callsign", parents=[common],
-        description="Give a FusionSpace project its callsign: the name of an IAU-approved star.",
+        description="Names for FusionSpace work, from the IAU's star list. A project takes a constellation (Orion is FS-ORI); "
+                    "each of its products takes one of that constellation's stars as its internal name (Rigel is FS-RIGEL).",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="examples:\n  callsign                              draw a star\n"
+               "  callsign project                      draw a constellation for a new project\n"
+               "  callsign project Orion --skip Rigel   one project: its code, its stars, the ones in use\n"
+               "  callsign -c Orion --skip Rigel        a star for the next product in Orion\n"
                "  callsign -n 5 -c Orion --vmag ..3     five bright stars in Orion\n"
                "  callsign list --max-letters 5         every name of five letters or fewer\n"
                "  callsign show Vega                    one star\n"
@@ -915,7 +993,17 @@ def parser():
     l.add_argument("--csv", action="store_true", help="CSV on stdout, with every column")
     s = sub.add_parser("show", parents=[common], help="one star, by name or code", description="One star, by its name or its FS code.")
     s.add_argument("name", nargs="+")
-    k = sub.add_parser("constellations", parents=[common], help="constellations and how many named stars each has")
+    j = sub.add_parser("project", parents=[common], help="draw a constellation for a new project, or show one",
+                       description="Without a name: draw a constellation for a new project, one with room for its products and no project "
+                                   "yet. With a name (Orion, Ori or FS-ORI): that project's code and its stars.")
+    j.add_argument("name", nargs="*", help="a constellation, by name, abbreviation or project code")
+    j.add_argument("-n", type=int, default=1, metavar="N", help="how many constellations to draw (default 1)")
+    j.add_argument("--seed", type=int, help="the same seed draws the same constellations from the same list")
+    j.add_argument("--min-stars", type=int, default=MIN_STARS, metavar="N",
+                   help=f"only constellations with N or more named stars that pass the filters, room for N products (default {MIN_STARS})")
+    j.add_argument("--taken", action="append", default=[], metavar="NAMES",
+                   help="constellations that already have a project, separated with commas (a constellation with a --skip star counts too)")
+    k = sub.add_parser("constellations", parents=[common], help="constellations, their project codes and how many named stars each has")
     k.add_argument("--all", action="store_true", help="include the constellations with no named star")
     u = sub.add_parser("update", parents=[common], help="read the star list from the IAU now", description=f"Read the star list from {IAU_LIST}.")
     u.add_argument("--out", metavar="FILE", help="write the list here instead of the cache")
@@ -931,6 +1019,8 @@ def main(argv=None):
         if getattr(args, "n", 1) < 1: raise Fail("-n has to be 1 or more", code=2, kind="usage")
         args.cons = [find_con(x) for v in args.constellation for x in v.split(",") if x.strip()]
         args.skip = [x.strip() for v in args.skip for x in v.split(",") if x.strip()]
+        args.taken = [find_con(x) for v in getattr(args, "taken", []) for x in v.split(",") if x.strip()]
+        if getattr(args, "min_stars", 1) < 1: raise Fail("--min-stars has to be 1 or more", code=2, kind="usage")
         if args.max_letters is not None and args.max_letters < 1: raise Fail("--max-letters has to be 1 or more", code=2, kind="usage")
         if args.cmd == "update":
             found = load_catalogs()
@@ -938,7 +1028,7 @@ def main(argv=None):
         c = catalog(args, out)
         if args.version:
             print(f"callsign {VERSION} ({DESIGNATION})\nstar list: {c['count']} IAU names, read {c['read']} from {c['url']}"); return 0
-        {"draw": cmd_draw, "list": cmd_list, "show": cmd_show, "constellations": cmd_constellations, "ui": cmd_ui}[args.cmd](c, args, out)
+        {"draw": cmd_draw, "list": cmd_list, "show": cmd_show, "project": cmd_project, "constellations": cmd_constellations, "ui": cmd_ui}[args.cmd](c, args, out)
         return 0
     except Fail as e:
         if getattr(args, "json", False):

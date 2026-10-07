@@ -1,10 +1,16 @@
 # Callsign
 
-Give a FusionSpace project its callsign: the name of an IAU-approved star. `FS · SW · TOOL 007`, version 1.0.0.
+Names for FusionSpace work, from the International Astronomical Union's own star list. `FS · SW · TOOL 007`, version 1.1.0.
 
-Every FusionSpace project takes the name of a star the International Astronomical Union has approved, and the star's code:
-Vega becomes `FS-VEGA`. Callsign draws one at random, or from a narrower list: one constellation, a range of brightness
-(vmag), or names up to a number of letters. It skips names already in use.
+- **A project takes a constellation**, and its code is the IAU abbreviation: Lyra is `FS-LYR`. One project per constellation.
+- **Each product in it takes one of that constellation's IAU-approved stars** as its internal name, and the star's code:
+  Vega is `FS-VEGA`. Drawings and parts number off it: `FS-VEGA-001`.
+- **The external name**, the one customers see, is the star's name or a different one. The rules are on the guide's Naming
+  sheet and in `product/writing.md`.
+
+Callsign draws a constellation for a new project, with room for the products to come and no project yet, and a star for
+the next product in a project. Either draw can be narrowed by brightness (vmag) or name length, and it skips names already
+in use.
 
 ## Use it
 
@@ -19,17 +25,22 @@ Both files work on their own and do the same things. `callsign.py ui` opens `cal
 the page can download `callsign.py`.
 
 ```
+callsign project                          a constellation for a new project (3 named stars or more, --min-stars N)
+callsign project --skip Vega,Rigel        ... not Lyra or Orion, which have projects (or --taken Lyra,Orion)
+callsign project Lyra --skip Vega         one project: its code, its stars, the ones in use
+callsign -c Lyra --skip Vega              a star for the next product in Lyra
 callsign                                  draw a star
 callsign -n 5 -c Orion --vmag ..3         five stars in Orion, vmag 3 or brighter
 callsign --vmag 2..5 --max-letters 6      vmag 2 to 5, six letters or fewer
 callsign --skip Vega,Rigel                not these
 callsign list --sort vmag                 every star, brightest first (--csv, --json, --plain)
 callsign show Vega                        one star, by name or code
-callsign constellations                   the constellations with named stars
+callsign constellations                   the constellations with named stars, and their project codes
 callsign update                           read the IAU list now
 ```
 
-`--json` prints one JSON document; `--plain` prints names only, for scripts. Colors follow the terminal's theme and turn off
+A constellation can be written as `Orion`, `ori` or `FS-ORI`. `--json` prints one JSON document; `--plain` prints names
+only, for scripts. Colors follow the terminal's theme and turn off
 with `NO_COLOR` or `--color never`. Exit codes: 0 done, 1 no match or no list, 2 a wrong command line.
 
 ## The star list
@@ -52,8 +63,8 @@ on its Naming Stars page, with each star's designation, constellation, vmag, J20
 
 The list is read from the IAU's page as published. The page heads its table "as of January 1st, 2021", and it includes
 approvals up to April 2022, so newer names may be missing until the IAU updates it. The reader checks the table's columns
-and its size, and keeps the last good copy if either looks wrong. The IAU names stars, not products: search a name before it
-goes on a board, a box or a domain.
+and its size, and keeps the last good copy if either looks wrong. The IAU names stars, not products: a star name that is also
+a product's external name should be searched before it goes on a box or a domain.
 
 ## Design and license
 

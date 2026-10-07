@@ -1,11 +1,15 @@
 {
+  "star": "Vega",
+  "constellation": "Lyra",
+  "project": "Lyr",
+  "project_code": "FS-LYR",
   "name": "Vega",
   "code": "FS-VEGA",
   "tag": "EMB",
   "number": "001",
-  "desc": "Example project: flight software for a two-stage sounding rocket.",
-  "kind": "Project",
+  "desc": "Example product: flight software for a two-stage sounding rocket.",
+  "kind": "Product",
   "discipline": "Embedded and flight software",
-  "designation": "FS-VEGA \u00b7 EMB \u00b7 PROJECT 001",
+  "designation": "FS-VEGA \u00b7 EMB \u00b7 PRODUCT 001",
   "slug": "vega"
 }

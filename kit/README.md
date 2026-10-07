@@ -35,7 +35,7 @@ and white on dark; color, twotone-on-light and void on light).
 
 Brand line: **Tolerances tight. Ambitions loose.**. Title on cards and signatures: **Founder · Engineer**. Change them in `tools/build/kit.py` (`TAGLINE`, `ROLE`) and rebuild.
 
-Browse every image in `index.html`. New project? `python3 tools/build/project.py --name <Star> --tag <TAG> --desc "..."` (see `projects/example-vega/`).
+Browse every image in `index.html`. New product? `python3 tools/build/project.py --star <Star> [--name <external name>] --tag <TAG> --desc "..."` (see `projects/example-vega/`).
 
 ## Logo
 
@@ -271,7 +271,7 @@ Browse every image in `index.html`. New project? `python3 tools/build/project.py
 
 | File | What | Size | Use |
 |---|---|---|---|
-| `projects/example-vega/` | example output of tools/build/project.py (social preview, README banners, OG, YouTube thumbnail, title slides, report covers, starter README) |  | Run project.py for each new project; see HOW-TO-USE.md inside |
+| `projects/example-vega/` | example output of tools/build/project.py (social preview, README banners, OG, YouTube thumbnail, title slides, report covers, starter README) |  | Run project.py for each new product; see HOW-TO-USE.md inside |
 | `projects/hpr-motor-finder/` | HPR Motor Finder: project kit (social preview, README banners, OG, YouTube thumbnail, title slides, report covers, starter README); FS · SW · TOOL 001 |  | the tool's repo, its page on fusionspace.co, talks and reports |
 | `projects/charge/` | Charge: project kit (social preview, README banners, OG, YouTube thumbnail, title slides, report covers, starter README); FS · SW · TOOL 002 |  | the tool's repo, its page on fusionspace.co, talks and reports |
 | `projects/window/` | Window: project kit (social preview, README banners, OG, YouTube thumbnail, title slides, report covers, starter README); FS · SW · TOOL 003 |  | the tool's repo, its page on fusionspace.co, talks and reports |

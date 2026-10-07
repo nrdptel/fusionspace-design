@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#F3F4F7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B0F1C" media="(prefers-color-scheme: dark)">
 <title>Callsign · FusionSpace</title>
-<meta name="description" content="Give a FusionSpace project its callsign: the name of an IAU-approved star.">
+<meta name="description" content="Names for FusionSpace work: a constellation for each project, and one of its stars for each product.">
 <link rel="icon" href="{{favicon}}">
 <style>
 {{fonts}}
@@ -47,15 +47,20 @@ pre.c-cli { overflow-x: auto; }
 <section style="padding:40px 0 24px;display:grid;gap:12px">
   <div class="fs-row"><span class="fs-tag">{{designation}}</span>{{status_released}}</div>
   <h1>Callsign</h1>
-  <p class="fs-lead">Give a new project its callsign, the name of an IAU-approved star: draw one at random, or narrow the list by constellation and brightness first.</p>
+  <p class="fs-lead">A project takes a constellation, and each of its products takes one of that constellation's IAU-approved stars as its internal name. Draw a constellation for a new project, or a star for the next product.</p>
 </section>
 
 <section class="fs-sheet" id="draw"><div class="fs-sheet-rail"><span class="fs-sheet-no">SHEET 1 / 3</span><h2>Draw</h2></div><div class="fs-sheet-body">
 <div class="fs-split">
   <form class="fs-stack" id="filters" onsubmit="return false">
-    <div class="fs-field"><label for="con">Constellation</label>
+    <div class="fs-field"><label for="con">Project · constellation</label>
       <select class="fs-select" id="con"></select>
-      <span class="fs-help">Only constellations with an IAU-named star are listed.</span></div>
+      <span class="fs-help">For the next product in a project, pick the project's constellation. Only constellations with an IAU-named star are listed.</span></div>
+    <div class="fs-field"><label for="room">New project</label>
+      <div class="fs-row"><div class="fs-input-group"><input class="fs-input" id="room" inputmode="numeric" autocomplete="off" value="3"><span class="fs-unit">stars or more</span></div>
+        <button class="fs-btn" data-variant="secondary" type="button" id="new-project">{{icon:refresh}}Draw a constellation</button></div>
+      <span class="fs-help">Picks a constellation with room for that many products and no project yet (none of its stars in use), then draws its first star.</span>
+      <span class="fs-error" id="room-error" hidden></span></div>
     <div class="fs-field"><span class="fs-field-label" id="vmag-label">Brightness · <span class="u">vmag</span></span>
       <div class="c-range" role="group" aria-labelledby="vmag-label">
         <div class="fs-input-group"><input class="fs-input" id="lo" inputmode="decimal" autocomplete="off" placeholder="any" aria-label="Brightest vmag"><span class="fs-unit">from</span></div>
@@ -72,7 +77,7 @@ pre.c-cli { overflow-x: auto; }
     <div class="fs-row"><button class="fs-btn" data-variant="secondary" type="button" id="reset">Clear the filters</button></div>
     <div class="fs-stack" style="gap:8px">
       <h3>Names in use</h3>
-      <p class="fs-small fs-muted" id="used-empty">None yet. Mark a name as used and it won't be drawn again. The list is kept in this browser.</p>
+      <p class="fs-small fs-muted" id="used-empty">None yet. Mark a name as used and it won't be drawn again, and its constellation counts as a project. The list is kept in this browser.</p>
       <ul class="c-used" id="used"></ul>
       <div class="fs-row" id="used-tools" hidden><button class="fs-btn" data-variant="quiet" type="button" id="copy-used">{{icon:copy}}Copy the list</button></div>
     </div>
@@ -80,7 +85,7 @@ pre.c-cli { overflow-x: auto; }
 
   <div class="fs-stack fs-sticky">
     <div class="fs-panel fs-stack" style="border:2px solid var(--fs-ink)" id="result" aria-live="polite">
-      <div class="fs-readout"><span class="fs-label">Star</span><span class="c-star" id="star-name">–</span><span class="c-code" id="star-code"></span></div>
+      <div class="fs-readout"><span class="fs-label">Star</span><span class="c-star" id="star-name">–</span><span class="c-code" id="star-code"></span><span class="fs-small fs-muted" id="star-project"></span></div>
       <dl class="c-facts" id="facts"></dl>
       <div class="fs-row">
         <button class="fs-btn" type="button" id="again">{{icon:refresh}}Draw a star</button>
@@ -101,7 +106,7 @@ pre.c-cli { overflow-x: auto; }
   <thead><tr>
     <th aria-sort="ascending" data-key="name"><button type="button">Name</button></th>
     <th>Code</th>
-    <th data-key="con"><button type="button">Constellation</button></th>
+    <th data-key="con"><button type="button">Project</button></th>
     <th class="n" data-key="vmag"><button type="button">vmag</button></th>
     <th>Designation</th>
     <th data-key="approved"><button type="button">Approved</button></th>
@@ -124,6 +129,9 @@ pre.c-cli { overflow-x: auto; }
 <p>The same tool for a terminal, on macOS, Linux and Windows (and phones with a Python app): one file, Python 3.8 or later, no dependencies, the list built in. It reads the IAU list again by itself when its copy is over 30 days old.</p>
 <div class="fs-row"><button class="fs-btn" data-variant="secondary" type="button" id="dl-cli">{{icon:download}}Download callsign.py</button></div>
 <pre class="c-cli">python3 callsign.py                            # draw a star (on Windows: py callsign.py)
+python3 callsign.py project                    # a constellation for a new project
+python3 callsign.py project Orion --skip Rigel # one project: its code and its stars
+python3 callsign.py -c Orion --skip Rigel      # a star for the next product in Orion
 python3 callsign.py -n 5 -c Orion --vmag ..3   # five bright stars in Orion
 python3 callsign.py list --max-letters 5       # every short name
 python3 callsign.py show Vega                  # one star
@@ -150,6 +158,7 @@ python3 callsign.py --help                     # everything else: --json, --plai
   function store(key, value) { try { if (value === undefined) return JSON.parse(localStorage.getItem(key)); localStorage.setItem(key, JSON.stringify(value)); } catch (e) { return null; } }
   function fold(s) { return s.normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase(); }
   function code(name) { return "FS-" + fold(name).toUpperCase().replace(/['’]/g, "").replace(/[^A-Z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+  function pcode(abbr) { return "FS-" + abbr.toUpperCase(); }
   function letters(name) { return (name.match(/\p{L}/gu) || []).length; }
   function star(r) { var s = {}; F.forEach(function (f, i) { s[f] = r[i]; }); return s; }
   function minus(s) { return String(s).replace("-", "−"); }
@@ -188,7 +197,7 @@ python3 callsign.py --help                     # everything else: --json, --plai
   }
   function describe(f) {
     var p = [];
-    if (f.con) p.push(CON[f.con]);
+    if (f.con) p.push(CON[f.con] + " · " + pcode(f.con));
     if (f.lo !== null && f.hi !== null) p.push("vmag " + minus(f.lo) + " to " + minus(f.hi));
     else if (f.hi !== null) p.push("vmag " + minus(f.hi) + " or brighter");
     else if (f.lo !== null) p.push("vmag " + minus(f.lo) + " or fainter");
@@ -200,7 +209,7 @@ python3 callsign.py --help                     # everything else: --json, --plai
     cat.stars.forEach(function (r) { n[r[I.con]] = (n[r[I.con]] || 0) + 1; });
     var opts = Object.keys(n).filter(function (a) { return CON[a]; }).sort(function (a, b) { return CON[a].localeCompare(CON[b]); });
     sel.innerHTML = '<option value="">Any (' + cat.stars.length + ")</option>" + opts.map(function (a) {
-      return '<option value="' + a + '">' + esc(CON[a]) + " · " + a + " (" + n[a] + ")</option>"; }).join("");
+      return '<option value="' + a + '">' + esc(CON[a]) + " · " + pcode(a) + " (" + n[a] + ")</option>"; }).join("");
     sel.value = n[keep] ? keep : "";
   }
 
@@ -209,10 +218,11 @@ python3 callsign.py --help                     # everything else: --json, --plai
     current = s;
     $("star-name").textContent = s ? s.name : "–";
     $("star-code").textContent = s ? code(s.name) : "";
+    $("star-project").textContent = s ? "Project " + CON[s.con] + " · " + pcode(s.con) : "";
     var rows = [];
     if (s) {
       rows.push(["Designation", [s.designation, s.id ? s.id + " " + s.con : null].filter(Boolean).join(", ")]);
-      rows.push(["Constellation", CON[s.con] + " (" + s.con + ")"]);
+      rows.push(["Project", CON[s.con] + " (" + s.con + ") · " + pcode(s.con)]);
       if (s.wds) rows.push(["Double star", "WDS J" + s.wds + (s.component ? ", component " + s.component : "")]);
       rows.push(["vmag", s.vmag === null ? "Not given by the IAU" : mag(s.vmag)]);
       if (s.ra !== null) rows.push(["Position", "RA " + hms(s.ra) + ", Dec " + dms(s.dec) + " (J2000)"]);
@@ -229,6 +239,24 @@ python3 callsign.py --help                     # everything else: --json, --plai
     $("again").lastChild.textContent = s ? "Draw again" : "Draw a star";
     document.querySelectorAll("#rows tr").forEach(function (tr) { tr.toggleAttribute("data-current", !!s && tr.dataset.name === s.name); });
     save();
+  }
+  function newProject() {
+    var room = num($("room").value), re = $("room-error"), bad = room === null || isNaN(room) || room < 1 || room % 1;
+    re.textContent = "A whole number of stars, 1 or more."; re.hidden = !bad;
+    $("room").closest(".fs-field").toggleAttribute("data-invalid", bad);
+    if (bad) return;
+    var f = filters(), u = {}, gone = {}, n = {};
+    f.con = "";
+    used.forEach(function (x) { u[fold(x)] = 1; });
+    cat.stars.forEach(function (r) { if (u[fold(r[0])]) gone[r[I.con]] = 1; });
+    matches(f, true).forEach(function (s) { n[s.con] = (n[s.con] || 0) + 1; });
+    var ok = Object.keys(n).filter(function (a) { return CON[a] && n[a] >= room && !gone[a]; });
+    if (ok.length > 1) ok = ok.filter(function (a) { return a !== $("con").value; });
+    if (!ok.length) { toast("No constellation has " + room + " or more named stars" + (describe(f) ? " (" + describe(f) + ")" : "") + " and no project yet."); return; }
+    var r = new Uint32Array(1); crypto.getRandomValues(r);
+    var a = ok[r[0] % ok.length];
+    $("con").value = a; render(); draw();
+    toast("New project: " + CON[a] + ", " + pcode(a) + ", with " + plural(n[a], "free named star", "free named stars") + ".");
   }
   function draw() {
     var f = filters(), pool = matches(f, true);
@@ -256,7 +284,7 @@ python3 callsign.py --help                     # everything else: --json, --plai
       var inUse = u[fold(s.name)];
       return '<tr data-name="' + esc(s.name) + '"' + (inUse ? ' class="c-muted-row"' : "") + (current && current.name === s.name ? " data-current" : "") + ">" +
         '<td><button type="button">' + esc(s.name) + "</button>" + (inUse ? " · in use" : "") + "</td>" +
-        '<td class="fs-mono">' + code(s.name) + "</td><td>" + esc(CON[s.con] || s.con) + "</td>" +
+        '<td class="fs-mono">' + code(s.name) + "</td><td>" + esc(CON[s.con] || s.con) + ' <span class="fs-mono fs-muted">' + pcode(s.con) + "</span></td>" +
         '<td class="n">' + mag(s.vmag) + "</td><td>" + esc([s.designation, s.id ? s.id + " " + s.con : ""].filter(Boolean).join(", ")) + "</td>" +
         '<td class="fs-mono">' + (s.approved || "–") + "</td></tr>";
     }).join("");
@@ -266,7 +294,8 @@ python3 callsign.py --help                     # everything else: --json, --plai
   }
   function renderUsed() {
     $("used").innerHTML = used.map(function (n, i) {
-      return "<li><span>" + esc(n) + " · " + code(n) + '</span><button class="fs-btn" data-variant="quiet" type="button" data-unuse="' + i + '">Remove</button></li>'; }).join("");
+      var s = cat.stars.find(function (r) { return fold(r[0]) === fold(n); });
+      return "<li><span>" + esc(n) + " · " + code(n) + (s ? " · " + pcode(s[I.con]) : "") + '</span><button class="fs-btn" data-variant="quiet" type="button" data-unuse="' + i + '">Remove</button></li>'; }).join("");
     $("used-empty").hidden = used.length > 0;
     $("used-tools").hidden = used.length === 0;
   }
@@ -353,6 +382,7 @@ python3 callsign.py --help                     # everything else: --json, --plai
   ["con", "lo", "hi", "max"].forEach(function (id) { $(id).addEventListener(id === "con" ? "change" : "input", render); });
   $("reset").addEventListener("click", function () { $("con").value = ""; $("lo").value = $("hi").value = $("max").value = ""; render(); });
   $("again").addEventListener("click", draw);
+  $("new-project").addEventListener("click", newProject);
   $("copy").addEventListener("click", function () { if (current) copy(code(current.name), "Copied " + code(current.name) + "."); });
   $("use").addEventListener("click", function () { if (current) toggleUsed(current.name); });
   $("used").addEventListener("click", function (e) { var b = e.target.closest("[data-unuse]"); if (b) toggleUsed(used[+b.dataset.unuse]); });

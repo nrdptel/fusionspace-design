@@ -80,14 +80,26 @@ layout), with the hazard, the consequence and the avoidance:
 
 ## Names
 
-- **FusionSpace**, one word, always. Products keep their short names (Charge, Window, Muster) and their
-  designations (`FS · SW · TOOL 002`).
-- Projects are named after IAU-approved stars and take the star's code: `FS-VEGA`.
+- **FusionSpace**, one word, always.
+- **A project takes a constellation; its products take its stars.** A project is one of the IAU's 88 constellations, and
+  its code is the IAU abbreviation in capitals: Lyra is `FS-LYR`. A constellation has one project. Each product in the
+  project takes one of that constellation's IAU-approved star names as its **internal name**, with the star's code: Vega
+  is `FS-VEGA`. Choose a constellation with named stars to spare for the products to come; Callsign
+  (`tools/callsign`) draws one, and draws the star for each new product.
+- **The internal name never changes.** Repositories, folders, drawings, part numbers, boards, firmware, issue trackers and
+  designations use it, so they still match after a rename.
+- **The external name** is what customers read: the product's screens, its page, the store, the box. It is the star's
+  name or a different one (`FS-VEGA` could ship as Vega, or as a name of its own). An external name is never another
+  star's name. Where both appear (the about screen, a title block), the external name leads and the code follows:
+  `Vega · FS-VEGA · EMB · FIRMWARE 002`.
+- **Today's tools** (HPR Motor Finder, Charge, Window, Muster, Callsign) came before this rule. They keep their names, which
+  become their external names, and their designations (`FS · SW · TOOL 002`) until each moves into a project with a star
+  of its own.
 - **Designations** follow one grammar: `<code> · [<tag> ·] <kind> <number>`. The code is `FS` for things that belong to
-  FusionSpace as a whole and `FS-<STAR>` for a project's; the optional tag is a discipline (SW, EMB, ELEC, MECH, MFG, AERO,
-  GAME); the kind is a plain noun (TOOL, BOARD, FLIGHT, REPORT, SPEC, SITE); numbers are three digits. Examples:
-  `FS · SW · TOOL 002`, `FS-VEGA · ELEC · BOARD 004`, `FS · SPEC 001`. Drawing and part numbers are shorter:
-  `FS-VEGA-001`, with the revision after it (`rev B`).
+  FusionSpace as a whole, `FS-<CON>` for a project's and `FS-<STAR>` for a product's; the optional tag is a discipline (SW,
+  EMB, ELEC, MECH, MFG, AERO, GAME); the kind is a plain noun (TOOL, BOARD, FLIGHT, REPORT, SPEC, SITE); numbers are three
+  digits. Examples: `FS-VEGA · ELEC · BOARD 004`, `FS-LYR · SPEC 001`, `FS · SPEC 001`, `FS · SW · TOOL 002`. Drawing and
+  part numbers are shorter: `FS-VEGA-001`, with the revision after it (`rev B`).
 - Rocketry terms as the community uses them: e-match, ejection charge, shear pins, drogue, main, av-bay, motor (not engine),
   waiver, AGL. Spell out the role names once per page: range safety officer (RSO), launch control officer (LCO).
 

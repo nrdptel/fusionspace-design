@@ -6,7 +6,7 @@
 
 # Vega
 
-Example project: flight software for a two-stage sounding rocket.
+Example product: flight software for a two-stage sounding rocket.
 
 ![FS-VEGA](https://img.shields.io/badge/FS--VEGA-EMB-0B0F1C?style=flat-square&labelColor=3350D6)
 ![FusionSpace](https://img.shields.io/badge/FusionSpace-001-0B0F1C?style=flat-square&labelColor=B34F0C)
@@ -19,6 +19,8 @@ What it is, why it exists, and its current status.
 
 How to build, run or use it.
 
-## Project
+## Names
 
-`FS-VEGA · EMB · PROJECT 001` · part of [FusionSpace](https://fusionspace.co) · drawings and parts number off `FS-VEGA-001`.
+`FS-VEGA · EMB · PRODUCT 001` · part of [FusionSpace](https://fusionspace.co) · drawings and parts number off `FS-VEGA-001`.
+
+Internal name Vega (`FS-VEGA`), one of the stars of Lyra, project `FS-LYR`. External name: the same.

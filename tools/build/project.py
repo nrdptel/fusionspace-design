@@ -1,13 +1,14 @@
-"""FusionSpace per-project images: one command makes a project's social preview, README banners, OG image, YouTube
+"""FusionSpace per-product images: one command makes a product's social preview, README banners, OG image, YouTube
 thumbnail, title slide, report cover and a starter README, in dark and light.
 
-    python3 tools/build/project.py --name Vega --tag EMB --desc "Flight software for a two-stage sounding rocket."
-    python3 tools/build/project.py --name Achernar --tag GAME --kind "Game" --desc "A small orbital-mechanics puzzle game." --out ~/code/achernar/.github/brand
+    python3 tools/build/project.py --star Vega --tag EMB --desc "Flight software for a two-stage sounding rocket."
+    python3 tools/build/project.py --star Achernar --name Perihelion --tag GAME --kind Game --desc "A small orbital-mechanics puzzle game." --out ~/code/achernar/.github/brand
 
-Options: --name (an IAU star name, see tools/callsign), --code (default FS-<NAME>), --tag (discipline tag, see
-kit.DISCIPLINES), --kind (free text after the code, default: the tag's description), --number (default 001),
---desc (one line), --out (default projects/<name>). Needs the same tools as the build (rsvg-convert, fonts)."""
-import argparse, os, re, json, subprocess, sys
+Options: --star (the internal name: an IAU star name, see tools/callsign; its constellation is the project), --name (the
+external name, default the star's), --code (default FS-<STAR>), --tag (discipline tag, see kit.DISCIPLINES), --kind (the
+noun after the code, default Product), --number (default 001), --desc (one line), --out (default projects/<star>).
+Needs the same tools as the build (rsvg-convert, fonts)."""
+import argparse, os, re, json, subprocess, sys, importlib.util
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 import build, kit
 from kit import theme, background, text, layer, svg_open, art_horizontal, art_mark, gradient, f, TAGLINE
@@ -28,16 +29,44 @@ def wrap(s, n):
 
 def esc(s): return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
+def callsign():
+    """source/callsign/callsign.py, for the IAU star list and the codes."""
+    spec = importlib.util.spec_from_file_location("callsign_src", os.path.join(build.SRC, "callsign", "callsign.py"))
+    m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+    return m
+
+def stars():
+    return json.load(open(os.path.join(build.SRC, "callsign", "iau-star-names.json"), encoding="utf-8"))["stars"]
+
+def find_star(m, name):
+    """The IAU star with this name (any case, with or without accents), or None."""
+    return next((r for r in stars() if m.fold(r[0]) == m.fold(name.strip())), None)
+
 class Project:
-    def __init__(self, name, code=None, tag=None, kind=None, number="001", desc=""):
+    """A product's brand files. With a star, the star is the internal name and its constellation the project; the name
+    (the external one) defaults to the star's. Without one (the tools from before the naming rule) only the name is used."""
+    def __init__(self, name=None, code=None, tag=None, kind=None, number="001", desc="", star=None):
+        self.star = self.constellation = self.project = self.project_code = None
+        if star:
+            m = callsign(); r = find_star(m, star)
+            if not r:
+                raise SystemExit(f"{star} isn't an IAU star name; internal names are always stars (python3 tools/callsign/callsign.py list)")
+            self.star, abbr = r[0], r[3]
+            self.constellation = m.CONSTELLATIONS[abbr]; self.project = abbr; self.project_code = m.project_code(abbr)
+            code = code or m.code(self.star)
+            other = name and find_star(m, name)
+            if other and other[0] != self.star:
+                raise SystemExit(f"{name} is another star's name; an external name is the product's own star or a name that isn't a star")
+        name = name or self.star
+        assert name, "a star or a name"
         self.name = name; self.code = code or "FS-" + re.sub(r"[^A-Z0-9]+", "-", name.upper()).strip("-")
         self.tag = tag; self.number = number; self.desc = desc
         tags = dict(kit.DISCIPLINES)
-        self.kind = kind or "Project"
+        self.kind = kind or "Product"
         self.discipline = tags.get(tag, "") if tag else ""
         parts = [self.code] + ([tag] if tag else []) + [f"{self.kind.upper()} {number}"]
         self.designation = " · ".join(parts)
-        self.slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+        self.slug = self.code[3:].lower() if self.star else re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
 
 def card(p, w, h, dark, big=None, lockup_h=None, mark_side=True):
     """Social-card layout: small lockup top left, designation, project name, description, mark on the right."""
@@ -100,6 +129,10 @@ def make(p, outdir):
             fp = os.path.join(outdir, f"report-cover-{page}-{tone}.svg")
             open(fp, "w", encoding="utf-8").write(kit.cover_svg(page, dark, designation=p.designation, title=p.name, subtitle=p.desc or p.discipline))
             subprocess.run(["rsvg-convert", "-f", "pdf", fp, "-o", fp[:-4] + ".pdf"], check=True)
+    names = ""
+    if p.star:
+        names = (f"\nInternal name {p.star} (`{p.code}`), one of the stars of {p.constellation}, project `{p.project_code}`. "
+                 + ("External name: the same." if p.name == p.star else f"External name: {p.name}.") + "\n")
     readme = f'''<picture>
   <source media="(prefers-color-scheme: dark)" srcset=".github/brand/readme-banner-dark.png">
   <source media="(prefers-color-scheme: light)" srcset=".github/brand/readme-banner-light.png">
@@ -121,12 +154,13 @@ What it is, why it exists, and its current status.
 
 How to build, run or use it.
 
-## Project
+## {'Names' if p.star else 'Project'}
 
 `{p.designation}` · part of [FusionSpace]({kit.SITE_URL}) · drawings and parts number off `{p.code}-001`.
-'''
+{names}'''
     open(os.path.join(outdir, "README-starter.md"), "w", encoding="utf-8").write(readme)
-    json.dump(vars(p), open(os.path.join(outdir, "project.json"), "w"), indent=2)
+    STAR = ("star", "constellation", "project", "project_code")
+    json.dump({k: v for k, v in vars(p).items() if p.star or k not in STAR}, open(os.path.join(outdir, "project.json"), "w"), indent=2)
     open(os.path.join(outdir, "HOW-TO-USE.md"), "w", encoding="utf-8").write(f'''# {p.name}: brand files
 
 Made with `tools/build/project.py` from `project.json`. Re-run it to regenerate after changing the name or description.
@@ -144,11 +178,13 @@ Made with `tools/build/project.py` from `project.json`. Re-run it to regenerate 
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--name", required=True); ap.add_argument("--code"); ap.add_argument("--tag")
+    ap.add_argument("--star", help="the internal name: an IAU star name"); ap.add_argument("--name", help="the external name (default: the star's)")
+    ap.add_argument("--code"); ap.add_argument("--tag")
     ap.add_argument("--kind"); ap.add_argument("--number", default="001"); ap.add_argument("--desc", default="")
     ap.add_argument("--out")
     a = ap.parse_args(argv)
-    p = Project(a.name, a.code, a.tag, a.kind, a.number, a.desc)
+    if not a.star and not a.name: ap.error("give --star (the internal name), and --name if the external name is different")
+    p = Project(a.name, a.code, a.tag, a.kind, a.number, a.desc, star=a.star)
     outdir = os.path.expanduser(a.out or os.path.join(build.ROOT, "projects", p.slug))
     make(p, outdir); print("wrote", outdir)
 

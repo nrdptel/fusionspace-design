@@ -62,7 +62,8 @@ https://github.com/nrdptel/fusionspace-design/tree/main/product
 
 - Principles and foundations apply to everything; also read <web.md | cli.md | mobile.md | desktop.md | embedded.md | hardware.md | rockets.md>.
 - Colors, type and spacing come from product/tokens/ (copied into <path>); no other colors.
-- Designation: FS · SW · TOOL 00n. Show it, with the version, in the title block / about screen.
+- Names: internal <Star> (FS-<STAR>), in project <Constellation> (FS-<CON>); external <the star's name, or its own>.
+- Designation: FS-<STAR> · <TAG> · <KIND> 00n. Show it after the external name, with the version, in the title block / about screen.
 - Run the checklist in product/review.md before each release.
 ```
 

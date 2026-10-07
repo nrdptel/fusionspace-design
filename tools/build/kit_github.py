@@ -24,12 +24,12 @@ PROFILE = """<!-- GitHub profile README for FusionSpace. Create a repo named exa
 
 ### Hi, I'm Neer.
 
-{role}. [FusionSpace]({site_url}) is everything I make, under one name: {scope}. Each project is named after a star.
+{role}. [FusionSpace]({site_url}) is everything I make, under one name: {scope}. Each project is a constellation, and each product in it is one of its stars.
 
-| Project | What | Status |
-|---|---|---|
-| [FS-VEGA]({github}/vega) | One-line description | {active} |
-| [FS-ACHERNAR]({github}/achernar) | One-line description | {proto} |
+| Product | Project | What | Status |
+|---|---|---|---|
+| [FS-VEGA]({github}/vega) | FS-LYR | One-line description | {active} |
+| [FS-ACHERNAR]({github}/achernar) | FS-ERI | One-line description | {proto} |
 
 <details><summary>Discipline tags</summary>
 
@@ -46,7 +46,7 @@ HOWTO = """# GitHub setup with the FusionSpace kit
 2. **Profile README**: follow `profile-README.md` (a repo named after your username, plus the two banner PNGs).
 3. **Each repository**:
    - Social preview: Settings → General → Social preview → upload `social-preview-dark.png`, or a per-project one made with
-     `python3 tools/build/project.py --name <Star> --tag <TAG> --desc "..."` (example in `kit/projects/example-vega/`).
+     `python3 tools/build/project.py --star <Star> [--name <external name>] --tag <TAG> --desc "..."` (example in `kit/projects/example-vega/`).
    - README header: copy the project's `readme-banner-dark.png` and `-light.png` into `.github/brand/` and start from its
      `README-starter.md` (or use the brand banners here with `README-snippet.md`).
    - Labels: `./apply-labels.sh owner/repo` (needs the GitHub CLI, `gh`). Colors come from the palette; see `labels.json`.
@@ -75,13 +75,14 @@ def build_github_extras():
 
 def build_example_project():
     import project
-    p = project.Project("Vega", tag="EMB", desc="Example project: flight software for a two-stage sounding rocket.")
+    p = project.Project(star="Vega", tag="EMB", desc="Example product: flight software for a two-stage sounding rocket.")
     d = out(f"{KIT}/projects/example-vega")
     project.make(p, d)
     note(f"{KIT}/projects/example-vega/", "Per-project", "example output of tools/build/project.py (social preview, README banners, OG, YouTube thumbnail, title slides, report covers, starter README)",
-         "", "Run project.py for each new project; see HOW-TO-USE.md inside")
+         "", "Run project.py for each new product; see HOW-TO-USE.md inside")
 
-# The site's tools keep their own names (code FS, tag SW, numbered in the site's order); descriptions as on fusionspace.co
+# The site's tools came before the naming rule (a constellation per project, a star per product): until they move to it,
+# they keep their own names (code FS, tag SW, numbered in the site's order); descriptions as on fusionspace.co
 # (checked October 3, 2026).
 SITE_TOOLS = [
     ("HPR Motor Finder", "AeroTech, Cesaroni & Loki motor stock and pricing, aggregated across major U.S. vendors."),

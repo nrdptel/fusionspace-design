@@ -1,4 +1,5 @@
-"""Callsign: tools/callsign/, the tool that names a project after an IAU-approved star (it replaces the star name picker).
+"""Callsign: tools/callsign/, the naming tool: a constellation for each project, one of its IAU-named stars for each product
+(it replaces the star name picker).
 
 Two files that each work on their own, made from source/callsign/:
 - callsign.html: the tool in a browser, on any device. Everything is inside the one file (the product stylesheet, the WOFF2
@@ -16,7 +17,7 @@ from kit_product import THEME_SWITCH, THEME_JS, status, note, titleblock
 
 D = "tools/callsign"
 SRC = os.path.join(build.SRC, "callsign")
-DATE = "2026-10-06"                                         # date of issue of this version
+DATE = "2026-10-06"                                         # date of issue of this version (1.1.0: projects as constellations)
 FONTS = (("Archivo", 400, "Archivo-Regular"), ("Archivo", 600, "Archivo-SemiBold"),
          ("Cascadia Mono", 400, "CascadiaMono-Regular"), ("Cascadia Mono", 600, "CascadiaMono-SemiBold"))
 
@@ -63,8 +64,9 @@ def build_page(m, cat, cli):
         "favicon": "data:image/svg+xml;base64," + fav, "fonts": _fonts(), "stylesheet": css.strip(),
         "logo": kit_product._logo("hdr"), "theme_switch": THEME_SWITCH, "theme_js": THEME_JS,
         "designation": m.DESIGNATION, "status_released": status("ok", "Released", "check"),
-        "note_check": note("note", "Note", "<p>The IAU names stars, not products. Search the name before it goes on a board, "
-                                           "a box or a domain: someone may already use it.</p>"),
+        "note_check": note("note", "Note", "<p>The IAU names stars, not products. A star name is an internal name; if it is "
+                                           "also to be the external name, search it before it goes on a box or a domain: "
+                                           "someone may already use it.</p>"),
         "titleblock": tb, "catalog": _script_json(cat), "constellations": _script_json(m.CONSTELLATIONS), "cli": _script_json(cli),
     }
     s = re.sub(r"\{\{icon:([a-z-]+)\}\}", lambda g: kit_icons.inline(g.group(1), ""), s)

@@ -27,7 +27,7 @@ SITE_URL = "https://fusionspace.co"
 SIGNATURE_LOGO_BASE = "https://fusionspace.co/brand"   # where the site hosts the email-signature logo
 GITHUB = "github.com/nrdptel"
 GITHUB_URL = "https://github.com/nrdptel"                  # title on business cards, signature and letterhead
-# Optional discipline tags for project designations: FS-VEGA · EMB
+# Optional discipline tags for designations: FS-VEGA · EMB
 DISCIPLINES = [("SW", "Software"), ("EMB", "Embedded and flight software"), ("ELEC", "Electronics and PCBs"),
                ("MECH", "Mechanical design"), ("MFG", "Machining and fabrication"), ("AERO", "Aerospace"), ("GAME", "Games")]
 
@@ -700,7 +700,7 @@ def build_readme():
           "- PCB silkscreen: mark at least 6 mm tall (8 mm safest); features trimmed to ≥ 0.15 mm.",
           "- 3D printing (0.4 mm nozzle): features ≥ 0.6 mm, cone feet trimmed to 0.6 mm; the name at least 104 mm wide (horizontal lockup 130 mm). Print settings in `3d-print/README.md`.", "",
           f"Brand line: **{TAGLINE}**. Title on cards and signatures: **{ROLE}**. Change them in `tools/build/kit.py` (`TAGLINE`, `ROLE`) and rebuild.", "",
-          "Browse every image in `index.html`. New project? `python3 tools/build/project.py --name <Star> --tag <TAG> --desc \"...\"` (see `projects/example-vega/`).", ""]
+          "Browse every image in `index.html`. New product? `python3 tools/build/project.py --star <Star> [--name <external name>] --tag <TAG> --desc \"...\"` (see `projects/example-vega/`).", ""]
     for g in groups:
         L += [f"## {g}", "", "| File | What | Size | Use |", "|---|---|---|---|"]
         for p, gg, what, size, use in MANIFEST:
