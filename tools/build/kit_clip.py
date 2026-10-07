@@ -10,6 +10,9 @@ meaning (status chips, tags, state boxes, buttons, with their own corner radius)
   bar, fixed bottom panel and home indicator. Content may not run under a bar and look finished.
 
 A box is tested along its own rounded outline (a capsule's corners are round), text by its rectangle.
+
+The same module checks web pages (check_pages: no sideways scrolling, no text cut by a box, no text on text) and SVG
+graphics (check_svgs: every visible line of text inside the canvas and off the other text).
 """
 import os, math
 import build
@@ -227,5 +230,39 @@ def check_pages(paths, widths=(320, 360, 390, 768, 1280), schemes=("light",)):
                     pg.goto("file://" + os.path.abspath(path)); pg.evaluate("document.fonts.ready"); pg.wait_for_timeout(200)
                     out += [f"{os.path.relpath(path, build.ROOT)} @ {w}px{'' if sc == 'light' else ' ' + sc}: {x}" for x in check_page(pg)]
                     pg.close()
+        b.close()
+    return out
+
+SVG_JS = r"""
+() => {
+  const svg = document.documentElement, c = svg.getBoundingClientRect(), out = [];
+  const label = (t) => t.textContent.trim().replace(/\s+/g, ' ').slice(0, 40);
+  const texts = [...document.querySelectorAll('text')].filter(t => t.textContent.trim() && t.checkVisibility({visibilityProperty: true})
+                 && !t.closest('[opacity="0"]'));
+  const boxes = texts.map(t => [t, t.getBoundingClientRect(), /rotate|matrix/.test((t.getAttribute('transform') || '') + (t.parentElement.getAttribute('transform') || ''))]);
+  for (const [t, r] of boxes) {
+    const cut = [r.left < c.left - 0.5 && 'left', r.top < c.top - 0.5 && 'top', r.right > c.right + 0.5 && 'right', r.bottom > c.bottom + 0.5 && 'bottom'].filter(Boolean);
+    if (cut.length) out.push(`"${label(t)}" runs off the ${cut.join(' and ')} edge`);
+  }
+  for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
+    const [a, ra, rota] = boxes[i], [b, rb, rotb] = boxes[j];
+    if (rota || rotb || a.contains(b) || b.contains(a)) continue;
+    const ix = Math.min(ra.right, rb.right) - Math.max(ra.left, rb.left), iy = Math.min(ra.bottom, rb.bottom) - Math.max(ra.top, rb.top);
+    if (ix > 1 && iy > Math.min(ra.height, rb.height) * 0.35) out.push(`"${label(a)}" overlaps "${label(b)}"`);
+  }
+  return [...new Set(out)];
+}
+"""
+
+def check_svgs(paths):
+    """Every visible <text> in each SVG inside its canvas and off the other text, measured in Chromium with the brand fonts;
+    returns ["file: problem", ...]. Hidden layers (display:none, the trim and safe guides) are skipped."""
+    from playwright.sync_api import sync_playwright
+    out = []
+    with sync_playwright() as p_:
+        b = p_.chromium.launch(); pg = b.new_page(viewport={"width": 1600, "height": 1200})
+        for path in paths:
+            pg.goto("file://" + os.path.abspath(path)); pg.evaluate("document.fonts.ready")
+            out += [f"{os.path.relpath(path, build.ROOT)}: {x}" for x in pg.evaluate(SVG_JS)]
         b.close()
     return out

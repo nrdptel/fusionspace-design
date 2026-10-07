@@ -20,7 +20,7 @@ def fit_mono(s, size, max_w):
     return size if w <= max_w else size * max_w / w
 
 def wrap(s, n):
-    words, lines, cur = s.split(), [], ""
+    words, lines, cur = [w for w in s.split(" ") if w], [], ""   # split on plain spaces only: a non-breaking space keeps a number with its unit
     for w in words:
         if len(cur) + len(w) + 1 > n and cur: lines.append(cur); cur = w
         else: cur = (cur + " " + w).strip()

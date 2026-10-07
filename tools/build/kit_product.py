@@ -1563,7 +1563,13 @@ def livery_svg(od_in, length=220.0):
     for k_, v, cx_, cy_, w_ in cells:
         o.append(f'<rect x="{tx + cx_:.2f}" y="{ty + cy_:.2f}" width="{w_}" height="11" fill="none" stroke="{VOID}" stroke-width="0.2"/>')
         o.append(T(k_, tx + cx_ + 1.5, ty + cy_ + 3.3, 2.0, "#566079") + T(v, tx + cx_ + 1.5, ty + cy_ + 8.4, 3.0))
-    o.append(T("Print at 100 %. Measure the tube: wrap width = π × OD + overlap.", m, Hh - m - 2, 2.8, "#566079"))
+    # the note wraps in the room left of the title block (on the narrow sheets it ran under "1 : 1")
+    import textwrap
+    n_ = int((tx - m - 4) / (0.586 * 2.8)); sentences = ["Print at 100\u00A0%.", "Measure the tube: wrap width =\u00A0π\u00A0×\u00A0OD\u00A0+\u00A0overlap."]
+    note = [" ".join(sentences)] if len(" ".join(sentences)) <= n_ else \
+           [ln for s_ in sentences for ln in textwrap.wrap(s_, n_, break_long_words=False, break_on_hyphens=False)]
+    for i, ln in enumerate(note):
+        o.append(T(ln, m, Hh - m - 2 - (len(note) - 1 - i) * 3.8, 2.8, "#566079"))
     o.append("</svg>")
     return "\n".join(o), od
 

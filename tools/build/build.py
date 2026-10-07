@@ -949,6 +949,19 @@ def check_web_pages():
     pages += [os.path.join(ROOT, "tools/mark-tuner/index.html")]          # assembled from tools/mark-tuner/src, not by this build
     kit_clip.assert_clean(kit_clip.check_pages([p for p in pages if os.path.exists(p)], schemes=("light", "dark")), "web pages")
 
+def check_svg_text():
+    """Every SVG the build writes that has text (slides, covers, cards, banners, sheets): each visible line inside its
+    canvas and off the other text, measured in Chromium with the brand fonts (tools/build/kit_clip.py). SF Symbols
+    templates are skipped (their notes sit on Apple's template). Skipped without Playwright."""
+    try:
+        import playwright  # noqa: F401
+    except ImportError:
+        print("WARN SVG text check: no Playwright, SVGs not checked"); return
+    import glob, kit_clip
+    svgs = [p for p in sorted(glob.glob(os.path.join(OUT, "**", "*.svg"), recursive=True))
+            if "sf-symbols" not in p and "<text" in open(p, encoding="utf-8", errors="ignore").read()]
+    kit_clip.assert_clean(kit_clip.check_svgs(svgs), f"SVG text ({len(svgs)} files)")
+
 def build_all():
     if os.path.exists(OUT): shutil.rmtree(OUT)
     build_marks(); info = build_lockups(); build_favicons(); build_pngs(); dxf = build_dxf()
@@ -958,6 +971,7 @@ def build_all():
     build_guide(info); build_readme()
     import kit_callsign; kit_callsign.build_callsign()   # tools/callsign/
     check_web_pages()                                     # nothing scrolls sideways, is cut, or overlaps, at phone to desktop widths
+    check_svg_text()                                      # no text off a graphic's edge or on other text
     import kit_review; review = kit_review.build_review()   # review.html: every output, for sign-off
     return info, dxf, kit_info, review
 
