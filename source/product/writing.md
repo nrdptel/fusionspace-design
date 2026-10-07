@@ -92,7 +92,9 @@ layout), with the hazard, the consequence and the avoidance:
   name or a different one (`FS-VEGA` could ship as Vega, or as a name of its own). An external name is never another
   star's name. Where both appear (the about screen, a title block), the external name leads and the code follows:
   `Vega · FS-VEGA · EMB · FIRMWARE 002`.
-- **Today's tools** (HPR Motor Finder, Charge, Window, Muster, Callsign) came before this rule. They keep their names, which
+- **Project Ara** (`FS-ARA`) is the brand repository: Callsign is `FS-CERVANTES · SW · TOOL 001` and the Mark Tuner is
+  `FS-INQUILL · SW · TOOL 001`, with their names unchanged as external names.
+- **Today's other tools** (HPR Motor Finder, Charge, Window, Muster) came before this rule. They keep their names, which
   become their external names, and their designations (`FS · SW · TOOL 002`) until each moves into a project with a star
   of its own.
 - **Designations** follow one grammar: `<code> · [<tag> ·] <kind> <number>`. The code is `FS` for things that belong to

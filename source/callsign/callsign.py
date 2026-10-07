@@ -21,8 +21,8 @@ Edit source/callsign/callsign.py in the fusionspace-design repository; tools/cal
 """
 import argparse, datetime, difflib, html, json, os, random, re, sys, unicodedata, urllib.request
 
-VERSION = "1.1.0"
-DESIGNATION = "FS · SW · TOOL 007"
+VERSION = "1.1.1"
+DESIGNATION = "FS-CERVANTES · SW · TOOL 001"          # internal name Cervantes, in project Ara (FS-ARA)
 IAU_URL = "https://iauarchive.eso.org/public/themes/naming_stars/"
 IAU_LIST = IAU_URL + "#n4"
 DOCS = "https://github.com/nrdptel/fusionspace-design/tree/main/tools/callsign"

@@ -10,7 +10,7 @@ Open `guide/index.html` in a browser for the full guide.
 - **Mark.** Four stars in the original arrangement. Each star is the space left between four touching circles of radius *a*, so the tips are true points. The companion stars are 0.45, 0.40 and 0.32 the size of the main star (exact positions are in `color/fusion-space-tokens.json`).
 - **Color.** One soft gradient sweeps left to right across the whole mark, from M-class orange `#FFB56C` through rose and lavender to O-class blue `#9BB0FF`. The end colors come from the Harvard stellar classification.
 - **Wordmark.** `FusionSpace`, one word, in Cascadia Mono SemiBold with the same gradient.
-- **Projects.** Each project is named after an IAU-approved star, which becomes its code: `FS-VEGA`, then drawings `FS-VEGA-001`, with revisions A, B, C…
+- **Names.** A project takes a constellation (Lyra, `FS-LYR`), and each of its products takes one of that constellation's IAU-approved stars as its internal name (Vega, `FS-VEGA`), then drawings `FS-VEGA-001`, with revisions A, B, C… The name customers see can be the star's or a different one. This repository is project Ara (`FS-ARA`): Callsign's internal name is Cervantes (`FS-CERVANTES`) and the Mark Tuner's is Inquill (`FS-INQUILL`).
 
 ## Folder map
 

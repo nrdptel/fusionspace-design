@@ -1,6 +1,7 @@
 # Callsign
 
-Names for FusionSpace work, from the International Astronomical Union's own star list. `FS · SW · TOOL 007`, version 1.1.0.
+Names for FusionSpace work, from the International Astronomical Union's own star list. `FS-CERVANTES · SW · TOOL 001`,
+version 1.1.1. Its internal name is Cervantes, a star of Ara: it belongs to project Ara (`FS-ARA`) with the Mark Tuner (Inquill).
 
 - **A project takes a constellation**, and its code is the IAU abbreviation: Lyra is `FS-LYR`. One project per constellation.
 - **Each product in it takes one of that constellation's IAU-approved stars** as its internal name, and the star's code:

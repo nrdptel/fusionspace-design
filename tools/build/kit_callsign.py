@@ -17,7 +17,7 @@ from kit_product import THEME_SWITCH, THEME_JS, status, note, titleblock
 
 D = "tools/callsign"
 SRC = os.path.join(build.SRC, "callsign")
-DATE = "2026-10-06"                                         # date of issue of this version (1.1.0: projects as constellations)
+DATE = "2026-10-06"                                         # date of issue of this version (1.1.1: internal name Cervantes, project Ara)
 FONTS = (("Archivo", 400, "Archivo-Regular"), ("Archivo", 600, "Archivo-SemiBold"),
          ("Cascadia Mono", 400, "CascadiaMono-Regular"), ("Cascadia Mono", 600, "CascadiaMono-SemiBold"))
 
