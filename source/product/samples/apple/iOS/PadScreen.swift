@@ -89,10 +89,8 @@ struct PadScreen: View {
                         Text("Arm with a confirmation instead").multilineTextAlignment(.center)
                             .frame(maxWidth: .infinity, minHeight: 44).contentShape(Rectangle())
                     }
-                    .confirmationDialog("Arm \(Sample.designation)?", isPresented: $confirmingArm, titleVisibility: .visible) {
-                        Button("Arm \(Sample.designation)", role: .destructive) { commanded = "ARM"; armed = true; confirmedAt = .now }
-                    } message: {
-                        Text("The charges can fire once the device is armed.")
+                    .fsArmConfirmation(isPresented: $confirmingArm, designation: Sample.designation) {
+                        commanded = "ARM"; armed = true; confirmedAt = .now
                     }
                 }
     }

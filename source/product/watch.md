@@ -16,7 +16,11 @@ Stack and tiles, and SwiftUI and Compose code).
 - **It never commands hardware.** No ARM, no SAFE, no FIRE, no ground test, no configuration change, no firmware update. A watch
   screen is small enough that a cuff, a glove or a turn of the wrist can touch it, and there is no room for the device's
   designation and two separate actions ([`embedded.md`](embedded.md#arming-and-safety)). Arming is the airframe switch plus
-  the phone; safing is the switch, or the phone. The watch shows the state, including commanded and confirmed.
+  the phone; safing is the switch, or the phone. The watch shows the state, including commanded and confirmed. SAFE
+  isn't harmless either: safed by a cuff or the double-tap gesture between arming and launch, the rocket flies with no
+  deployment, and nobody at the flight line would know. The safety codes put the flier at the pad for arming and for
+  disarming (Tripoli 13-8, 13-10), beside the switch. If field use ever calls for it, the one exception worth weighing is
+  SAFE after landing: offered only once the device reports it has landed, held for 2 s, the confirmed state shown.
 - **It is never the only alert.** An unfired charge is reported first by the device (screen, LED, beeper) and the phone; the
   watch adds a tap and a full screen, it doesn't replace them.
 - **It doesn't decide.** Like every FusionSpace product it shows the wind and the limit, never a go or no-go.

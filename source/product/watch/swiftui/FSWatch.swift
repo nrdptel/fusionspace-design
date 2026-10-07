@@ -65,6 +65,24 @@ public struct FSBearingArrow: View {
     }
 }
 
+/// A fix's age on the watch, in whole seconds ("4 s ago", "3 min ago", "2 h ago"): the screen redraws once a second, so a
+/// tenths digit would sit still and only look precise. `spoken` is the same in words for VoiceOver ("4 seconds").
+enum FSWatchAge {
+    static func shown(since d: Date, now: Date) -> String {
+        let s = Int(max(0, now.timeIntervalSince(d)))
+        if s < 60 { return "\(s)\u{00A0}s ago" }
+        if s < 3600 { return "\(s / 60)\u{00A0}min ago" }
+        return "\(s / 3600)\u{00A0}h ago"
+    }
+    static func spoken(since d: Date, now: Date) -> String {
+        let s = Int(max(0, now.timeIntervalSince(d)))
+        func n(_ v: Int, _ unit: String) -> String { "\(v) \(unit)" + (v == 1 ? "" : "s") }
+        if s < 60 { return n(s, "second") }
+        if s < 3600 { return n(s / 60, "minute") }
+        return n(s / 3600, "hour")
+    }
+}
+
 /// Find: the way to a landed rocket, how far, the bearing in degrees true, and how old the fix is. Dims for Always On:
 /// outlines, muted, the age replaced by the time it was true ("as of 9:41"), redrawn once a minute.
 public struct FSWatchFind: View {
@@ -102,7 +120,7 @@ public struct FSWatchFind: View {
             .lineLimit(1).minimumScaleFactor(0.7)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(Text("Rocket \(distanceFt.formatted()) feet away, \(spokenDirection)"))
-            .accessibilityValue(Text(FSFreshness.age(since: fixedAt, now: now)))
+            .accessibilityValue(Text("fix \(FSWatchAge.spoken(since: fixedAt, now: now)) old"))
             Text(qualifier(now: now)).font(FS.label()).foregroundStyle(d.inkMuted)
                 .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
             // The primary action, full width in the content (a bottom-bar item would sit over the text above).
@@ -131,7 +149,7 @@ public struct FSWatchFind: View {
         let bearing = String(format: "%03d°\u{00A0}T", Int(bearingTrue.rounded()) % 360)
         // Two short lines rather than one long one: the smallest watch is 162 pt wide.
         if dimmed { return "\(bearing)\nas of \(fixedAt.formatted(date: .omitted, time: .shortened))" }
-        return "\(bearing)" + (headingTrue == nil ? " · from north" : "") + "\nfix \(FSFreshness.age(since: fixedAt, now: now))"
+        return "\(bearing)" + (headingTrue == nil ? " · from north" : "") + "\nfix \(FSWatchAge.shown(since: fixedAt, now: now))"
     }
 }
 

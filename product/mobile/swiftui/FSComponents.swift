@@ -452,11 +452,31 @@ public struct FSHoldToConfirm: View {
             .accessibilityLabel(Text("\(title) \(designation)"))
             .accessibilityHint(Text("Press and hold for \(Int(duration)) seconds, or use the action to confirm instead."))
             .accessibilityAddTraits(.isButton)
-            .accessibilityAction(named: Text("\(title) with a confirmation")) { confirming = true }
-            .confirmationDialog(Text("\(title) \(designation)?"), isPresented: $confirming, titleVisibility: .visible) {
-                Button(title, role: .destructive) { done += 1; action() }
-                Button("Cancel", role: .cancel) {}
-            }
+            .accessibilityAction(named: Text("\(verb) with a confirmation")) { confirming = true }
+            .fsArmConfirmation(isPresented: $confirming, action: verb, designation: designation) { done += 1; action() }
+        }
+    }
+
+    /// The verb the control stands for: "Hold to arm" → "Arm".
+    private var verb: String {
+        let v = title.hasPrefix("Hold to ") ? String(title.dropFirst(8)) : title
+        return v.prefix(1).uppercased() + v.dropFirst()
+    }
+}
+
+extension View {
+    /// The two-step alternative to `FSHoldToConfirm` (product/embedded.md): "Arm FS-VEGA-004?", what arming means, then a
+    /// button that repeats the action with the device's designation ("Arm FS-VEGA-004", destructive) and Cancel. Open it from
+    /// the hold control's VoiceOver action and from a visible "Arm with a confirmation instead" button under it. An alert, not
+    /// a confirmation dialog: iOS 27 draws those as a see-through popover over the arming panel, with no Cancel button.
+    public func fsArmConfirmation(isPresented: Binding<Bool>, action: String = "Arm", designation: String,
+                                  message: String = "Once armed, the charges can fire. The airframe switch must be on.",
+                                  onConfirmed: @escaping () -> Void) -> some View {
+        alert(Text("\(action) \(designation)?"), isPresented: isPresented) {
+            Button("\(action) \(designation)", role: .destructive, action: onConfirmed)
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text(message)
         }
     }
 }

@@ -151,14 +151,17 @@ internal object FsWearMono { var family: FontFamily = FontFamily.Monospace }
 private fun label() = TextStyle(fontFamily = FsWearMono.family, fontSize = 11.sp, letterSpacing = 0.06.em, color = FsWearColors.inkMuted)
 private fun readout(size: Int) = TextStyle(fontFamily = FsWearMono.family, fontSize = size.sp, fontFeatureSettings = "tnum, zero")
 
-/** How old a value is, as drawn: "0.4 s ago", "4 min ago", "2 h ago" (FsFreshness.age on the phone; number and unit kept together). */
+/**
+ * How old a fix is, as drawn, in whole seconds: "4 s ago", "4 min ago", "2 h ago" (number and unit kept together). Whole
+ * seconds, unlike the phone's FsFreshness.age: the watch redraws once a second, so a tenths digit would sit still and only
+ * look precise.
+ */
 fun fsWearAge(ageMs: Long): String {
-    val s = ageMs.coerceAtLeast(0) / 1000.0
+    val s = ageMs.coerceAtLeast(0) / 1000
     return when {
-        s < 10 -> "${"%.1f".format(s)}\u00A0s ago"
-        s < 60 -> "${s.toInt()}\u00A0s ago"
-        s < 3600 -> "${(s / 60).toInt()}\u00A0min ago"
-        else -> "${(s / 3600).toInt()}\u00A0h ago"
+        s < 60 -> "$s\u00A0s ago"
+        s < 3600 -> "${s / 60}\u00A0min ago"
+        else -> "${s / 3600}\u00A0h ago"
     }
 }
 

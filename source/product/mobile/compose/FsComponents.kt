@@ -539,16 +539,18 @@ fun FsHoldToConfirm(
 /**
  * The accessible alternative to [FsHoldToConfirm], still two steps: a visible button ("Arm with a confirmation instead") or
  * the TalkBack action opens this, and the second step is its confirm button. [action] is the verb ("Arm"), not the hold
- * control's title.
+ * control's title. "Arm FS-VEGA-004?", what arming means, then a button that repeats the action with the designation
+ * ("Arm FS-VEGA-004", in danger ink) and Cancel: the same words as `fsArmConfirmation` in SwiftUI.
  */
 @Composable
-fun FsArmConfirmation(action: String, designation: String, onConfirmed: () -> Unit, onDismiss: () -> Unit) {
+fun FsArmConfirmation(action: String, designation: String, onConfirmed: () -> Unit, onDismiss: () -> Unit,
+                      message: String = "Once armed, the charges can fire. The airframe switch must be on.") {
     val c = LocalFsColors.current
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("$action $designation?") },
-        text = { Text("The airframe's switch must already be on. SAFE stays one tap away.") },
-        confirmButton = { TextButton(onClick = onConfirmed) { Text(action, color = c.danger) } },
+        text = { Text(message) },
+        confirmButton = { TextButton(onClick = onConfirmed) { Text("$action $designation", color = c.danger) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
     )
 }
