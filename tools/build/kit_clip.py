@@ -214,7 +214,7 @@ def check_page(page):
     """A web page: no sideways scrolling, no text cut by a box that hides overflow, no text on text."""
     return page.evaluate(PAGE_JS)
 
-def check_pages(paths, widths=(360, 390, 768, 1280), schemes=("light",)):
+def check_pages(paths, widths=(320, 360, 390, 768, 1280), schemes=("light",)):
     """Run check_page on local HTML files at several widths; returns ["file @ width: problem", ...]."""
     from playwright.sync_api import sync_playwright
     out = []

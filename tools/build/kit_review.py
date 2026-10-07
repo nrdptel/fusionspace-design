@@ -497,7 +497,7 @@ def split_note(n):
     the rest (changes made without you, additions, fixes, options) still need your eyes."""
     segs = [x.strip() for x in re.split(r"\s*(?:Earlier today: |Earlier: )", n) if x.strip()]
     if ROUND:
-        cur = [x for x in segs if f"({ROUND}" in x[:60]]
+        cur = [x for x in segs if any(f"({r}" in x[:60] for r in ROUND.split("|"))]   # several rounds: "a|b"
         return cur, [x for x in segs if x not in cur]
     return [x for x in segs if not APPROVED_NOTE.search(x)], [x for x in segs if APPROVED_NOTE.search(x)]
 
@@ -615,7 +615,7 @@ def build_review():
                                   **({"note": notes[it["id"]]} if it["id"] in notes else {})} for it in all_items})
     nfocus = sum(1 for v in SC.values() if v["scope"] == "focus"); ncov = len(SC) - nfocus; ncore = sum(1 for v in SC.values() if v.get("tier") == "core")
     nt_focus = sum(1 for k, v in SC.items() if v["scope"] == "focus" and (split_note(notes.get(k, ""))[0] or any(split_note(notes.get(c, ""))[0] for c in v.get("covers", []))))
-    page = PAGE.replace("%TODAYBTN%", TODAY_BTN[bool(ROUND)]).replace("%NOTESINTRO%", NOTES_INTRO[bool(ROUND)].replace("%ROUND%", html.escape(ROUND))) \
+    page = PAGE.replace("%TODAYBTN%", TODAY_BTN[bool(ROUND)]).replace("%NOTESINTRO%", NOTES_INTRO[bool(ROUND)].replace("%ROUND%", html.escape(ROUND.replace(" ·", "").replace("|", "; ")))) \
                .replace("%NCORE%", str(ncore)).replace("%NKIT%", str(nfocus - ncore)).replace("%NFOCUS%", str(nfocus)).replace("%NCOV%", str(ncov)).replace("%NTF%", str(nt_focus)).replace("%STAMP%", stamp).replace("%N%", str(len(items))).replace("%NF%", str(sum(len(it["files"]) for it in items))) \
                .replace("%SIGTOL%", str(SIG_TOL)).replace("%RV%", renderer_id()).replace("%NT%", str(len(notes))) \
                .replace("%NO%", str(sum(1 for k, v in notes.items() if is_opt(v) and SC.get(k, {}).get("scope") == "focus"))) \

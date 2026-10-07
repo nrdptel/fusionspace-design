@@ -29,6 +29,19 @@ def wrap(s, n):
 
 def esc(s): return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
+SANS_EM = 0.485                # Archivo's average advance per em, for wrapping estimates
+def fit_desc(desc, max_w, sizes, max_lines, room):
+    """The largest size at which the whole description fits in max_lines lines and in `room` px of height (lines at 1.3 x
+    the size). Never truncates: returns None when nothing fits, and the caller asks for a shorter description."""
+    for size in sizes:
+        lines = wrap(desc, max(8, int(max_w / (SANS_EM * size))))
+        if len(lines) <= max_lines and len(lines) * size * 1.3 <= room: return size, lines
+    return None
+
+def too_long(where, desc, max_chars):
+    raise SystemExit(f"project.py: the description doesn't fit the {where} at any allowed size ({len(desc)} characters). "
+                     f"Shorten --desc to about {max_chars} characters; images never cut text off.")
+
 def callsign():
     """source/callsign/callsign.py, for the IAU star list and the codes."""
     spec = importlib.util.spec_from_file_location("callsign_src", os.path.join(build.SRC, "callsign", "callsign.py"))
@@ -85,10 +98,11 @@ def card(p, w, h, dark, big=None, lockup_h=None, mark_side=True):
     tx = text(x, 300 * u, esc(p.designation), min(24 * u, maxw / (len(p.designation) * (MONO_EM + 0.06))), t["label"], label="Designation", spacing=1.5 * u)
     tx += text(x - 6 * u, 300 * u + 30 * u + size * 0.82, esc(p.name), size, t["text"], weight=600, label="Project name")
     y = 300 * u + 30 * u + size * 0.82 + 62 * u
-    lines = wrap(p.desc, int(maxw / (15.5 * u)))
-    if len(lines) > 2: lines = lines[:2]; lines[1] = lines[1].rstrip(".,;:") + "…"
+    got = fit_desc(p.desc, maxw, [z * u for z in (32, 29, 26, 24)], 4, h - 56 * u - (y - 32 * u)) if p.desc else (32 * u, [])
+    if got is None: too_long("social preview", p.desc, 150)
+    dsize, lines = got
     for i, line in enumerate(lines):
-        tx += text(x, y + i * 42 * u, esc(line), 32 * u, t["muted"], family="sans", label=f"Description line {i + 1}")
+        tx += text(x, y + i * dsize * 1.3, esc(line), dsize, t["muted"], family="sans", label=f"Description line {i + 1}")
     s = svg_open(w, h, f"{p.name} · FusionSpace", page=t["bg"])
     s += f'<defs id="defs">{defs}</defs>\n' + bg + layer("Brand", brand + "\n") + layer("Text (edit me)", tx) + "</svg>\n"
     return s
@@ -103,8 +117,12 @@ def banner(p, w, h, dark):
     tx = text(80 * u, 118 * u, esc(p.designation), 18 * u, t["label"], label="Designation", spacing=1.2 * u)
     tx += text(76 * u, 118 * u + 22 * u + size * 0.8, esc(p.name), size, t["text"], weight=600, label="Project name")
     if p.desc:
-        ls = wrap(p.desc, int(w * 0.6 / (10.5 * u))); line = ls[0] + ("…" if len(ls) > 1 else "")
-        tx += text(80 * u, 118 * u + 22 * u + size * 0.8 + 44 * u, esc(line), 21 * u, t["muted"], family="sans", label="Description")
+        y0 = 118 * u + 22 * u + size * 0.8 + 44 * u
+        got = fit_desc(p.desc, w * 0.6, [z * u for z in (21, 19, 17)], 2, h - 30 * u - (y0 - 21 * u))
+        if got is None: too_long("README banner", p.desc, 120)
+        dsize, ls = got
+        for i, line in enumerate(ls):
+            tx += text(80 * u, y0 + i * dsize * 1.3, esc(line), dsize, t["muted"], family="sans", label=f"Description line {i + 1}")
     s = svg_open(w, h, f"{p.name} README banner", page=t["bg"])
     s += f'<defs id="defs">{bdefs}{mdefs}</defs>\n' + bg + layer("Brand", mg + "\n") + layer("Text (edit me)", tx) + "</svg>\n"
     return s
