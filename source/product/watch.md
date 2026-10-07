@@ -183,4 +183,6 @@ button, a border cut by a rounded end, units in capitals), all fixed in the file
 - [ ] Taps only for the events in the table; UNFIRED repeats until acknowledged.
 - [ ] Find survives the screen turning off and releases its session at the end.
 - [ ] Runs in the sample app on the smallest watch (SE 40 mm, Wear OS small round) with nothing cut by the edge or the bezel.
-- [ ] VoiceOver reads each row and readout as one sentence (channel, name, state spelled out; Find says which way to turn).
+- [ ] VoiceOver and TalkBack read each row and readout as one sentence (channel, name, state spelled out: "Channel 1,
+  drogue, continuity"; the state box "Device state, safe"; Find says which way to turn: "42 degrees to your right";
+  Unfired once), and each complication and tile as one sentence with its age counting.

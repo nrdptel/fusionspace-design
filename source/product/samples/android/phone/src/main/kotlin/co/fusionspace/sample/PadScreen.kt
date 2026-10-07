@@ -53,6 +53,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -103,7 +104,7 @@ fun PadScreen(onBack: () -> Unit) {
                     FsTag("FS-VEGA-004 rev B")
                     FsStatus("Link", FsSignal.Ok, detail = "0.3\u00A0s", icon = { StatusIcon(R.drawable.fs_link) })
                 }
-                Text("Pad 3 · Flight 04", style = MaterialTheme.typography.headlineMedium, color = c.ink)
+                Text("Pad 3 · Flight 04", style = MaterialTheme.typography.headlineMedium, color = c.ink, modifier = Modifier.semantics { heading() })
                 Text("K535W · dual deploy · screen stays on", style = mono(14), color = c.inkMuted)
                 Spacer(Modifier.height(12.dp))
                 FsSheetHeader("Checks", 1, 2)

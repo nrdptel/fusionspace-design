@@ -107,6 +107,13 @@ slot, the crown to scroll the list).
   which dims the watch; `testWake` raises it again (until then every app on that watch draws in Always On).
 - **Sessions.** A UI test run ends Device Hub's sessions; `ds` opens a new one when that happens.
 
+- **The watch app grid's icon.** A watch caches each app's grid icon by bundle version. Both simulators had cached a
+  placeholder from a first install made before the sample had its icon, and reinstalling the same version or restarting the
+  watch's home didn't replace it. Deleting the app would, but that empties the faces' complication slots. Instead the
+  version went up (`CURRENT_PROJECT_VERSION: "2"` in `project.yml`); after installing over the top, restart the watch's
+  home: `kill $(xcrun simctl spawn <watch> launchctl list | awk '$3=="com.apple.Carousel"{print $1}')` (it relaunches).
+  Bump the version again if a placeholder ever comes back.
+
 ## What running them found (October 6, 2026)
 
 Everything below compiled before; it broke or looked wrong only when it ran:

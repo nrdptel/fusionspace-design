@@ -14,7 +14,10 @@ settings:
     SWIFT_VERSION: "6.0"
     CODE_SIGNING_ALLOWED: "NO"
     MARKETING_VERSION: "1.0"
-    CURRENT_PROJECT_VERSION: "1"
+    # 2: a watch keeps the app grid's icon per bundle version, and both simulators had cached a placeholder from a first
+    # install made before the icon existed. A new version, then restarting Carousel, shows the real icon without
+    # deleting the app (which would empty the faces' complication slots). See README, "The watch app grid's icon".
+    CURRENT_PROJECT_VERSION: "2"
     FS_CAPTURE_CLOCK: ""                         # "9:41" for screenshots: clock times agree with the status bar
 targets:
   FusionSpaceSample:

@@ -25,10 +25,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -41,7 +48,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -71,6 +82,7 @@ import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
+import kotlinx.coroutines.delay
 
 // ------------------------------------------------------------------ colors and theme
 
@@ -118,6 +130,42 @@ internal object FsWearMono { var family: FontFamily = FontFamily.Monospace }
 private fun label() = TextStyle(fontFamily = FsWearMono.family, fontSize = 11.sp, letterSpacing = 0.06.em, color = FsWearColors.inkMuted)
 private fun readout(size: Int) = TextStyle(fontFamily = FsWearMono.family, fontSize = size.sp, fontFeatureSettings = "tnum, zero")
 
+/** How old a value is, as drawn: "0.4 s ago", "4 min ago", "2 h ago" (FsFreshness.age on the phone; number and unit kept together). */
+fun fsWearAge(ageMs: Long): String {
+    val s = ageMs.coerceAtLeast(0) / 1000.0
+    return when {
+        s < 10 -> "${"%.1f".format(s)}\u00A0s ago"
+        s < 60 -> "${s.toInt()}\u00A0s ago"
+        s < 3600 -> "${(s / 60).toInt()}\u00A0min ago"
+        else -> "${(s / 3600).toInt()}\u00A0h ago"
+    }
+}
+
+/** The same age as TalkBack should say it, in words: "4 seconds", "1 minute", "2 hours". */
+fun fsWearSpokenAge(ageMs: Long): String {
+    val s = ageMs.coerceAtLeast(0) / 1000
+    fun n(v: Long, unit: String) = "$v $unit" + if (v == 1L) "" else "s"
+    return when { s < 60 -> n(s, "second"); s < 3600 -> n(s / 60, "minute"); else -> n(s / 3600, "hour") }
+}
+
+/**
+ * Which way to turn, for TalkBack (the arrow is hidden from it): "42 degrees to your right, bearing 62 degrees true",
+ * "straight ahead", "behind you"; without a heading, "bearing 62 degrees true from north". The words VoiceOver says on
+ * Apple Watch.
+ */
+fun fsSpokenDirection(bearingTrue: Float, headingTrue: Float?): String {
+    val b = Math.round(bearingTrue).mod(360)
+    if (headingTrue == null) return "bearing $b degrees true from north"
+    var r = Math.round(bearingTrue - headingTrue).mod(360)
+    if (r > 180) r -= 360
+    val way = when {
+        kotlin.math.abs(r) < 10 -> "straight ahead"
+        kotlin.math.abs(r) > 170 -> "behind you"
+        else -> "${kotlin.math.abs(r)} degrees to your ${if (r > 0) "right" else "left"}"
+    }
+    return "$way, bearing $b degrees true"
+}
+
 // ------------------------------------------------------------------ the way to the rocket
 
 /** A Von Kármán nose cone pointing at the rocket relative to the wrist, on a ring with the heading at the top. Outline in ambient. */
@@ -153,12 +201,19 @@ fun FsBearingArrow(relativeDegrees: Float, modifier: Modifier = Modifier, outlin
 /**
  * Find: the way to a landed rocket, how far, the bearing in degrees true and the fix's age, with "Found it" on the edge
  * button. In ambient mode it drops to outlines and muted ink, and says when it was true instead of how old it is.
- * [headingTrue] is null without a compass: the arrow then points from north, and the text says so.
+ * [headingTrue] is null without a compass: the arrow then points from north, and the text says so. [fixedAtMs] is when
+ * the fix was taken (epoch milliseconds): the age counts up on its own, every second awake and every minute in ambient.
+ * TalkBack hears one stop: "Rocket 1,352 feet away, 42 degrees to your right, bearing 62 degrees true", then the age.
  */
 @Composable
-fun FsWearFind(distanceFt: Int, bearingTrue: Float, headingTrue: Float?, fixAge: String, asOf: String, onFound: () -> Unit) {
+fun FsWearFind(distanceFt: Int, bearingTrue: Float, headingTrue: Float?, fixedAtMs: Long, onFound: () -> Unit) {
     val ambient = LocalAmbientModeManager.current?.currentAmbientMode is AmbientMode.Ambient
     val c = FsWearColors
+    val context = LocalContext.current
+    var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    LaunchedEffect(ambient) { while (true) { now = System.currentTimeMillis(); delay(if (ambient) 60_000 else 1_000) } }
+    val fixAge = fsWearAge(now - fixedAtMs)
+    val asOf = android.text.format.DateFormat.getTimeFormat(context).format(java.util.Date(fixedAtMs))
     // Wear OS's small class (192-224 dp) gets a smaller arrow and readout, so the edge button keeps its whole label.
     val small = LocalConfiguration.current.screenWidthDp < 225
     val state = rememberTransformingLazyColumnState()
@@ -176,7 +231,8 @@ fun FsWearFind(distanceFt: Int, bearingTrue: Float, headingTrue: Float?, fixAge:
                 item {
                     Column(
                         Modifier.fillMaxWidth().clearAndSetSemantics {
-                            contentDescription = "Rocket $distanceFt feet away, bearing ${bearingTrue.toInt()} degrees true, fix $fixAge"
+                            contentDescription = "Rocket ${"%,d".format(distanceFt)} feet away, ${fsSpokenDirection(bearingTrue, headingTrue)}"
+                            stateDescription = if (ambient) "as of $asOf" else "fix ${fsWearSpokenAge(now - fixedAtMs)} old"
                         },
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
@@ -199,7 +255,8 @@ fun FsWearFind(distanceFt: Int, bearingTrue: Float, headingTrue: Float?, fixAge:
 
 /**
  * The device's state at the pad, read only: SAFE outlined or ARMED inverted. Safing is the switch or the phone. In ambient
- * the fill becomes an outline (ARMED stays a word in its box, in danger ink) and SAFE turns muted.
+ * the fill becomes an outline (ARMED stays a word in its box, in danger ink) and SAFE turns muted. TalkBack hears "Device
+ * state, safe", not a bare "SAFE" that would sound like a button.
  */
 @Composable
 fun FsWearStateBox(armed: Boolean, modifier: Modifier = Modifier) {
@@ -209,7 +266,7 @@ fun FsWearStateBox(armed: Boolean, modifier: Modifier = Modifier) {
     val word = if (armed) "ARMED" else "SAFE"
     Text(
         word, style = readout(20).copy(fontWeight = FontWeight.SemiBold), color = ink,
-        modifier = modifier.clearAndSetSemantics { contentDescription = "Device state: $word" }.background(if (armed && !ambient) c.dangerFill else Color.Transparent)
+        modifier = modifier.clearAndSetSemantics { contentDescription = "Device state, ${word.lowercase()}" }.background(if (armed && !ambient) c.dangerFill else Color.Transparent)
             .border(3.dp, if (armed && !ambient) c.dangerFill else ink).padding(horizontal = 10.dp, vertical = 5.dp),
     )
 }
@@ -242,7 +299,11 @@ fun FsWearUnfired(channel: String, onAcknowledge: () -> Unit) {
                 item {
                     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp),
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
-                            .clearAndSetSemantics { contentDescription = "Unfired charge, $channel. Approach as live. Disarm before handling." }) {
+                            // read once, as one sentence and a heading, then OK ("2 · MAIN" is read "2, main")
+                            .clearAndSetSemantics {
+                                contentDescription = "Unfired charge, ${channel.replace(" · ", ", ").lowercase()}. Approach as live. Disarm before handling."
+                                heading()
+                            }) {
                         Text("UNFIRED", style = readout(22).copy(fontWeight = FontWeight.SemiBold), color = fg,
                             modifier = if (ambient) Modifier.border(2.dp, c.danger).padding(horizontal = 8.dp, vertical = 2.dp) else Modifier)
                         Text(channel, style = readout(16), color = fg)
@@ -251,6 +312,47 @@ fun FsWearUnfired(channel: String, onAcknowledge: () -> Unit) {
                 }
             }
         }
+    }
+}
+
+/**
+ * A channel and its continuity, read only: [word] filled in Aurora when [ok] ("CONT"), outlined and gray otherwise ("NOT
+ * USED"); no fills in ambient. The name and the state share a line, or the state goes under the name when the text is too
+ * large for both. One TalkBack stop: "Channel 1, drogue, continuity" ([spoken] for an abbreviated word); a channel with no
+ * charge ("—") is just its state: "Channel 3, not used".
+ */
+@Composable
+fun FsWearChannel(number: Int, name: String, word: String, ok: Boolean, modifier: Modifier = Modifier, spoken: String? = null) {
+    val c = FsWearColors
+    val filled = ok && LocalAmbientModeManager.current?.currentAmbientMode !is AmbientMode.Ambient
+    val named = name.trim().takeUnless { it.isEmpty() || it == "—" }
+    val nameText = @Composable { Text("$number ${name.trim()}", style = readout(15).copy(letterSpacing = 0.04.em), color = c.ink, maxLines = 1, softWrap = false) }
+    val state = @Composable {
+        Text(
+            word, style = readout(13).copy(fontWeight = FontWeight.SemiBold, letterSpacing = 0.04.em),
+            color = if (filled) c.onOkFill else if (ok) c.ok else c.inkMuted, maxLines = 1, softWrap = false,
+            modifier = (if (filled) Modifier.background(c.okFill) else Modifier.border(1.dp, if (ok) c.ok else c.ruleStrong))
+                .heightIn(min = 24.dp).padding(horizontal = 8.dp, vertical = 3.dp),
+        )
+    }
+    val label = "Channel $number, " + (named?.let { "${it.lowercase()}, " } ?: "") + (spoken ?: word).lowercase()
+    FsWearFirstThatFits(modifier.fillMaxWidth().clearAndSetSemantics { contentDescription = label }) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            nameText(); Spacer(Modifier.width(8.dp)); Spacer(Modifier.weight(1f)); state()
+        }
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) { nameText(); state() }
+    }
+}
+
+/** The first child whose texts all fit the width on one line, else the last (FsFirstThatFits on the phone, ViewThatFits in SwiftUI). */
+@Composable
+fun FsWearFirstThatFits(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Layout(content, modifier) { measurables, constraints ->
+        val chosen = measurables.dropLast(1).firstOrNull {
+            !constraints.hasBoundedWidth || it.maxIntrinsicWidth(Constraints.Infinity) <= constraints.maxWidth
+        } ?: measurables.last()
+        val p = chosen.measure(constraints)
+        layout(p.width, p.height) { p.place(0, 0) }
     }
 }
 

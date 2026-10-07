@@ -14,42 +14,86 @@ import androidx.wear.protolayout.LayoutElementBuilders
 import androidx.wear.protolayout.ModifiersBuilders
 import androidx.wear.protolayout.ResourceBuilders
 import androidx.wear.protolayout.TimelineBuilders
+import androidx.wear.protolayout.TypeBuilders
+import androidx.wear.protolayout.expression.DynamicBuilders.DynamicInstant
+import androidx.wear.protolayout.expression.DynamicBuilders.DynamicString
 import androidx.wear.protolayout.material3.ColorScheme
 import androidx.wear.protolayout.material3.Typography
 import androidx.wear.protolayout.material3.materialScope
 import androidx.wear.protolayout.material3.primaryLayout
 import androidx.wear.protolayout.material3.text
 import androidx.wear.protolayout.material3.textEdgeButton
+import androidx.wear.protolayout.modifiers.LayoutModifier
+import androidx.wear.protolayout.modifiers.clearSemantics
+import androidx.wear.protolayout.modifiers.contentDescription
 import androidx.wear.protolayout.types.LayoutColor
+import androidx.wear.protolayout.types.LayoutString
 import androidx.wear.protolayout.types.layoutString
 import androidx.wear.tiles.RequestBuilders
 import androidx.wear.tiles.TileBuilders
 import androidx.wear.tiles.TileService
 import androidx.wear.watchface.complications.data.ComplicationData
 import androidx.wear.watchface.complications.data.ComplicationType
+import androidx.wear.watchface.complications.data.CountUpTimeReference
 import androidx.wear.watchface.complications.data.LongTextComplicationData
 import androidx.wear.watchface.complications.data.PlainComplicationText
 import androidx.wear.watchface.complications.data.RangedValueComplicationData
 import androidx.wear.watchface.complications.data.ShortTextComplicationData
+import androidx.wear.watchface.complications.data.TimeDifferenceComplicationText
+import androidx.wear.watchface.complications.data.TimeDifferenceStyle
 import androidx.wear.watchface.complications.datasource.ComplicationRequest
 import androidx.wear.watchface.complications.datasource.SuspendingComplicationDataSourceService
 import com.google.common.util.concurrent.ListenableFuture
+import java.time.Instant
 
-/** What the tile and complications show: the last fix the app saved. They never fetch at the field. */
-data class FsFindSnapshot(val name: String, val phase: String, val distanceFt: Int, val bearingTrue: Int, val fixAge: String,
-                          val altitudeFt: Int?, val apogeeFt: Int?)
+/**
+ * What the tile and complications show: the last fix the app saved. They never fetch at the field. [fixedAtMs] is when the
+ * fix was taken (epoch milliseconds): the age is counted from it by the watch itself, so it never freezes at "4 s".
+ */
+data class FsFindSnapshot(val name: String, val phase: String, val distanceFt: Int, val bearingTrue: Int, val fixedAtMs: Long,
+                          val altitudeFt: Int?, val apogeeFt: Int?) {
+    /** One sentence for TalkBack, whatever the surface shows: "Vega, landed, 1,352 feet, bearing 62 degrees true". */
+    val spoken: String get() = "$name, ${phase.lowercase()}, ${"%,d".format(distanceFt)} feet, bearing $bearingTrue degrees true"
+}
 
-private val EXAMPLE = FsFindSnapshot("Vega", "LANDED", 1352, 62, "4\u00A0s ago", null, 5104)
+private fun example() = FsFindSnapshot("Vega", "LANDED", 1352, 62, System.currentTimeMillis() - 4_000, null, 5104)
+
+/**
+ * The fix's age counting up on the watch, between tile updates: "4 s ago", "3 min ago", "2 h ago" or, for TalkBack,
+ * "4 seconds", "3 minutes". [static] is the value at the time of the request, for renderers without dynamic values.
+ */
+private fun tileAge(fixedAtMs: Long, words: Boolean): Pair<String, DynamicString> {
+    val ageS = ((System.currentTimeMillis() - fixedAtMs) / 1000).coerceAtLeast(0)
+    fun unit(n: Long, short: String, word: String) = "$n" + if (words) " $word" + (if (n == 1L) "" else "s") else "\u00A0$short ago"
+    val static = when { ageS < 60 -> unit(ageS, "s", "second"); ageS < 3600 -> unit(ageS / 60, "min", "minute"); else -> unit(ageS / 3600, "h", "hour") }
+    val age = DynamicInstant.withSecondsPrecision(Instant.ofEpochMilli(fixedAtMs)).durationUntil(DynamicInstant.platformTimeWithSecondsPrecision())
+    fun c(text: String) = DynamicString.constant(text)
+    fun part(n: androidx.wear.protolayout.expression.DynamicBuilders.DynamicInt32, short: String, word: String): DynamicString =
+        if (!words) n.format().concat(c("\u00A0$short ago"))
+        else DynamicString.onCondition(n.eq(1)).use(n.format().concat(c(" $word"))).elseUse(n.format().concat(c(" ${word}s")))
+    val dynamic = DynamicString.onCondition(age.toIntSeconds().lt(60)).use(part(age.toIntSeconds(), "s", "second"))
+        .elseUse(DynamicString.onCondition(age.toIntMinutes().lt(60)).use(part(age.toIntMinutes(), "min", "minute"))
+            .elseUse(part(age.toIntHours(), "h", "hour")))
+    return static to dynamic
+}
+
+private fun prop(static: String, dynamic: DynamicString) = TypeBuilders.StringProp.Builder(static).setDynamicValue(dynamic).build()
+private fun semantics(description: TypeBuilders.StringProp) = ModifiersBuilders.Modifiers.Builder()
+    .setSemantics(ModifiersBuilders.Semantics.Builder().setContentDescription(description).build()).build()
 
 /** Find: title slot (rocket and phase), main slot (distance and bearing with the fix's age), edge button (open the app). */
 open class FsFindTileService : TileService() {
-    open fun snapshot(): FsFindSnapshot = EXAMPLE
+    open fun snapshot(): FsFindSnapshot = example()
 
     /** The activity the edge button opens, a class name in this app: by default `<package>.FindActivity`. */
     open val findActivityClass: String get() = "$packageName.FindActivity"
 
     override fun onTileRequest(requestParams: RequestBuilders.TileRequest): ListenableFuture<TileBuilders.Tile> {
         val s = snapshot()
+        val (age, ageLive) = tileAge(s.fixedAtMs, words = false)
+        val (spokenAge, spokenAgeLive) = tileAge(s.fixedAtMs, words = true)
+        val bearing = "%03d°\u00A0T · fix ".format(s.bearingTrue)
+        val quiet = LayoutModifier.clearSemantics()  // the column's sentence says it; its texts aren't read again
         val open = ModifiersBuilders.Clickable.Builder().setId("find").setOnClick(
             ActionBuilders.LaunchAction.Builder().setAndroidActivity(
                 ActionBuilders.AndroidActivity.Builder().setPackageName(packageName).setClassName(findActivityClass).build()
@@ -58,19 +102,30 @@ open class FsFindTileService : TileService() {
         // The static FusionSpace scheme, not the watch's dynamic one: the colors mean something (product/watch.md).
         val layout = materialScope(this, requestParams.deviceConfiguration, allowDynamicTheme = false, defaultColorScheme = fsTileColors()) {
             primaryLayout(
-                titleSlot = { text("${s.name.uppercase()} · ${s.phase}".layoutString, color = colorScheme.onSurfaceVariant) },
-                // One readout with its unit and its age: the distance, then the bearing and how old the fix is.
+                titleSlot = {
+                    text("${s.name.uppercase()} · ${s.phase}".layoutString, color = colorScheme.onSurfaceVariant,
+                        modifier = LayoutModifier.contentDescription("${s.name}, ${s.phase.lowercase()}"))
+                },
+                // One readout with its unit and its age: the distance, then the bearing and how old the fix is, the age
+                // counting on the watch. TalkBack hears it as one sentence: "1,352 feet, bearing 62 degrees true, fix 4
+                // seconds old", not "062 degrees T".
                 mainSlot = {
                     LayoutElementBuilders.Column.Builder()
+                        .setModifiers(semantics(prop(
+                            "${"%,d".format(s.distanceFt)} feet, bearing ${s.bearingTrue} degrees true, fix $spokenAge old",
+                            DynamicString.constant("${"%,d".format(s.distanceFt)} feet, bearing ${s.bearingTrue} degrees true, fix ")
+                                .concat(spokenAgeLive).concat(DynamicString.constant(" old")),
+                        )))
                         .addContent(
                             LayoutElementBuilders.Row.Builder()
                                 .setVerticalAlignment(LayoutElementBuilders.VERTICAL_ALIGN_BOTTOM)
-                                .addContent(text("%,d".format(s.distanceFt).layoutString, typography = Typography.NUMERAL_MEDIUM, color = colorScheme.onSurface))
-                                .addContent(text(" ft".layoutString, typography = Typography.LABEL_MEDIUM, color = colorScheme.onSurfaceVariant))
+                                .addContent(text("%,d".format(s.distanceFt).layoutString, typography = Typography.NUMERAL_MEDIUM, color = colorScheme.onSurface, modifier = quiet))
+                                .addContent(text(" ft".layoutString, typography = Typography.LABEL_MEDIUM, color = colorScheme.onSurfaceVariant, modifier = quiet))
                                 .build(),
                         )
-                        .addContent(text("%03d°\u00A0T · fix %s".format(s.bearingTrue, s.fixAge).layoutString,
-                            typography = Typography.BODY_MEDIUM, color = colorScheme.onSurfaceVariant))
+                        .addContent(text(LayoutString(bearing + age, DynamicString.constant(bearing).concat(ageLive),
+                            TypeBuilders.StringLayoutConstraint.Builder(bearing + "59\u00A0min ago").build()),
+                            typography = Typography.BODY_MEDIUM, color = colorScheme.onSurfaceVariant, modifier = quiet))
                         .build()
                 },
                 bottomSlot = { textEdgeButton(onClick = open, labelContent = { text("Find".layoutString) }) },
@@ -107,14 +162,18 @@ private fun fsTileColors(): ColorScheme {
 
 /** SHORT_TEXT (distance), LONG_TEXT (name, distance, bearing), RANGED_VALUE (altitude on the way down). */
 open class FsFindComplicationService : SuspendingComplicationDataSourceService() {
-    open fun snapshot(): FsFindSnapshot = EXAMPLE
+    open fun snapshot(): FsFindSnapshot = example()
 
     override suspend fun onComplicationRequest(request: ComplicationRequest): ComplicationData? = data(request.complicationType, snapshot())
 
-    override fun getPreviewData(type: ComplicationType): ComplicationData? = data(type, EXAMPLE)
+    override fun getPreviewData(type: ComplicationType): ComplicationData? = data(type, example())
 
     private fun data(type: ComplicationType, s: FsFindSnapshot): ComplicationData? {
-        val spoken = PlainComplicationText.Builder("${s.name}: ${s.distanceFt} feet, bearing ${s.bearingTrue} degrees true, fix ${s.fixAge}").build()
+        // One sentence for TalkBack whatever the slot shows, the age counting up on the watch ("^1"): "Vega, landed, 1,352
+        // feet, bearing 62 degrees true, fix less than 1 min old" (the words VoiceOver reads on Apple Watch). Wear's word
+        // styles count in whole minutes, rounded up, hence "less than" (Apple's Always On says "<1min" the same way).
+        val spoken = TimeDifferenceComplicationText.Builder(TimeDifferenceStyle.WORDS_SINGLE_UNIT, CountUpTimeReference(Instant.ofEpochMilli(s.fixedAtMs)))
+            .setText("${s.spoken}, fix less than ^1 old").setDisplayAsNow(false).build()
         return when (type) {
             ComplicationType.SHORT_TEXT -> ShortTextComplicationData.Builder(
                 PlainComplicationText.Builder("%,d\u00A0ft".format(s.distanceFt)).build(), spoken,
@@ -124,7 +183,7 @@ open class FsFindComplicationService : SuspendingComplicationDataSourceService()
             ).build()
             ComplicationType.RANGED_VALUE -> if (s.altitudeFt != null && s.apogeeFt != null) RangedValueComplicationData.Builder(
                 s.altitudeFt.toFloat(), 0f, s.apogeeFt.toFloat(),
-                PlainComplicationText.Builder("Altitude ${s.altitudeFt} feet above ground").build(),
+                PlainComplicationText.Builder("${s.name}, ${s.phase.lowercase()}, altitude ${"%,d".format(s.altitudeFt)} feet above ground, apogee ${"%,d".format(s.apogeeFt)} feet").build(),
             ).setText(PlainComplicationText.Builder("${s.altitudeFt}").build())
                 .setTitle(PlainComplicationText.Builder("ft AGL").build()).build() else null
             else -> null

@@ -8,6 +8,12 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.junit4.accessibility.enableAccessibilityChecks
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.tryPerformAccessibilityChecks
 import androidx.compose.ui.unit.Density
@@ -46,4 +52,13 @@ class AccessibilityTest {
     @Test fun padLargeText() = check(FsTheme.Field, 2f) { PadScreen(onBack = {}) }
     @Test fun track() = check(FsTheme.Dark) { TrackScreen(onBack = {}) }
     @Test fun trackLargeText() = check(FsTheme.Dark, 2f) { TrackScreen(onBack = {}) }
+
+    // What TalkBack says: the words VoiceOver says on the iPhone (product/mobile/swiftui).
+    @Test fun padSpeech() {
+        check(FsTheme.Field) { PadScreen(onBack = {}) }
+        rule.onNodeWithContentDescription("Device state, safe").assertExists()
+        rule.onNode(hasText("Pad 3 · Flight 04") and SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading)).assertExists()
+        // the chip says the word in full (both of FsFirstThatFits's layouts carry it)
+        rule.onAllNodesWithContentDescription("Continuity", useUnmergedTree = true).onFirst().assertExists()
+    }
 }

@@ -12,8 +12,10 @@ meaning (status chips, tags, state boxes, buttons, with their own corner radius)
 A box is tested along its own rounded outline (a capsule's corners are round), text by its rectangle.
 
 The same module checks web pages (check_pages: no sideways scrolling, no text cut by a box, no text on text), SVG
-graphics (check_svgs: every visible line of text inside the canvas and off the other text) and the real-screen captures
-(check_captures: no text cut short with "…", and every element of ours inside the screen's own outline).
+graphics (check_svgs: every visible line of text inside the canvas and off the other text), the real-screen captures
+(check_captures: no text cut short with "…", and every element of ours inside the screen's own outline) and the Office
+templates (check_office: rendered by LibreOffice with the repo's fonts, every line inside its box, the page and the text
+column, off other text, and no page pushed on).
 """
 import os, math
 import build
@@ -332,3 +334,117 @@ def check_captures(src):
                 if ELLIPSIS.search(text):
                     out.append(f"{os.path.relpath(path, src)}: text cut short with '…': \"{text}\" at ({box[0]:.0f}, {box[1]:.0f}) px")
     return out
+
+# ================================================================ Office files
+FONTS = os.path.join(build.ROOT, "type", "fonts")
+OFFICE_PAGES = {"letterhead": 1, "report-template": 2}     # pages each Word template should come to; more means it overflowed
+
+def office_pdf(paths, outdir):
+    """Renders .docx/.pptx to PDF with LibreOffice into outdir, {path: pdf}, or None without LibreOffice. It runs with a
+    private profile whose fonts folder holds the repo's own fonts (type/fonts), so what's measured is Cascadia Mono and
+    Archivo, not a fallback (a headless LibreOffice doesn't reliably see the fonts installed on the Mac)."""
+    import shutil, subprocess, glob
+    office = shutil.which("soffice") or shutil.which("libreoffice")
+    if not office or not paths: return None
+    profile = os.path.join(outdir, "lo-profile")
+    os.makedirs(os.path.join(profile, "user", "fonts"), exist_ok=True)
+    for f in glob.glob(os.path.join(FONTS, "*.ttf")): shutil.copy(f, os.path.join(profile, "user", "fonts"))
+    subprocess.run([office, f"-env:UserInstallation=file://{os.path.abspath(profile)}", "--headless", "--convert-to", "pdf",
+                    "--outdir", outdir, *paths], check=True, capture_output=True, timeout=600)
+    return {p: os.path.join(outdir, os.path.splitext(os.path.basename(p))[0] + ".pdf") for p in paths}
+
+def _pdf_lines(pdf):
+    """Every line of text in a PDF, from poppler's pdftotext -bbox-layout: [(page w, page h, [(x0, y0, x1, y1, text)])] in pt."""
+    import subprocess, re, html
+    x = subprocess.run(["pdftotext", "-bbox-layout", pdf, "-"], capture_output=True, text=True, check=True).stdout
+    pages = []
+    for pg in re.finditer(r'<page width="([\d.]+)" height="([\d.]+)">(.*?)</page>', x, re.S):
+        lines = []
+        for ln in re.finditer(r'<line xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">(.*?)</line>', pg.group(3), re.S):
+            words = " ".join(html.unescape(w) for w in re.findall(r"<word[^>]*>(.*?)</word>", ln.group(5), re.S))
+            lines.append((*map(float, ln.group(1, 2, 3, 4)), words))
+        pages.append((float(pg.group(1)), float(pg.group(2)), lines))
+    return pages
+
+def _pptx_frames(path):
+    """For each slide, the frames (pt) of what holds text: its own text boxes and placeholders, tables and charts, and its
+    layout's (footer, slide number). Shapes without text (a card's rectangle, a rule) don't count: text that spills out of
+    its box onto a card is still out of its box."""
+    import zipfile, re
+    z = zipfile.ZipFile(path); emu = 12700.0
+    xfrm = re.compile(r'<a:off x="(-?\d+)" y="(-?\d+)"/>\s*<a:ext cx="(\d+)" cy="(\d+)"/>')
+    def frames(xml, layout=False):
+        out = []
+        for el in re.finditer(r"<p:(sp|graphicFrame)>(.*?)</p:\1>", xml, re.S):
+            body = el.group(2); ph = re.search(r'<p:ph\b[^>]*?type="(\w+)"', body) or re.search(r"<p:ph\b", body)
+            text = "<a:t>" in body or "<a:fld" in body
+            # on a slide, only shapes with text (an empty placeholder pptxgenjs leaves behind draws nothing)
+            if el.group(1) == "sp" and not layout and not text: continue
+            if el.group(1) == "sp" and layout and not text and not ph: continue
+            # a layout's title and body placeholders are only prompts: a slide that uses them has its own frame
+            if layout and ph and (ph.groups()[0] if ph.groups() else None) not in ("sldNum", "ftr", "dt"): continue
+            m = xfrm.search(body)
+            if not m: continue
+            x, y, w, h = (int(v) for v in m.groups())
+            rows = [int(r) for r in re.findall(r'<a:tr h="(\d+)"', body)]
+            if rows: h = max(h, sum(rows))           # a table is as tall as its rows, whatever its frame says
+            out.append((x / emu, y / emu, w / emu, h / emu))
+        return out
+    n = len([f for f in z.namelist() if re.fullmatch(r"ppt/slides/slide\d+\.xml", f)])
+    out = []
+    for i in range(1, n + 1):
+        xml = z.read(f"ppt/slides/slide{i}.xml").decode("utf-8")
+        rels = z.read(f"ppt/slides/_rels/slide{i}.xml.rels").decode("utf-8")
+        lay = re.search(r'Target="\.\./slideLayouts/(slideLayout\d+\.xml)"', rels)
+        fr = frames(xml) + (frames(z.read(f"ppt/slideLayouts/{lay.group(1)}").decode("utf-8"), layout=True) if lay else [])
+        out.append([(x, y, x + w, y + h) for x, y, w, h in fr if w > 0 and h > 0])
+    return out
+
+def _docx_columns(path):
+    """The text column of a Word file (pt): left margin to page width minus the right margin, the widest of its sections."""
+    import zipfile, re
+    x = zipfile.ZipFile(path).read("word/document.xml").decode("utf-8")
+    cols = []
+    for s in re.finditer(r'<w:pgSz w:w="(\d+)"[^>]*/>.*?<w:pgMar ([^>]*)/>', x, re.S):
+        mar = dict(re.findall(r'w:(\w+)="(-?\d+)"', s.group(2)))
+        cols.append((int(mar["left"]) / 20, (int(s.group(1)) - int(mar["right"])) / 20))
+    return min(c[0] for c in cols), max(c[1] for c in cols)
+
+def check_office(paths, edge=18.0, slack=2.0):
+    """The Office templates rendered by LibreOffice (office_pdf), every line of text measured: inside the page with at least
+    `edge` pt to spare (no line cut by the paper's or slide's edge), off every other line (no text run into other text), on
+    a slide inside a frame of that slide (text that overflows its box lands outside every frame), in a Word file inside the
+    text column and within the expected page count (OFFICE_PAGES: overflowing text pushes a page on). Returns
+    ["file p.N: problem", ...], or None where LibreOffice or poppler isn't installed."""
+    import shutil, tempfile
+    if not shutil.which("pdftotext"): return None
+    with tempfile.TemporaryDirectory() as td:
+        pdfs = office_pdf(paths, td)
+        if pdfs is None: return None
+        out = []
+        for path, pdf in pdfs.items():
+            name = os.path.basename(path)
+            if not os.path.exists(pdf): out.append(f"{name}: LibreOffice made no PDF"); continue
+            pages = _pdf_lines(pdf)
+            if not pages or not any(p[2] for p in pages): out.append(f"{name}: no text found in the PDF"); continue
+            slides = _pptx_frames(path) if path.endswith(".pptx") else None
+            column = _docx_columns(path) if path.endswith(".docx") else None
+            want = next((n for k, n in OFFICE_PAGES.items() if name.startswith(k)), None)
+            if want is not None and len(pages) != want: out.append(f"{name}: {len(pages)} pages, expected {want} (text pushed onto another page?)")
+            if slides is not None and len(slides) != len(pages): out.append(f"{name}: {len(pages)} pages for {len(slides)} slides")
+            for n, (W, H, lines) in enumerate(pages, 1):
+                where = f"{name} p.{n}"
+                for x0, y0, x1, y1, t in lines:
+                    if x0 < edge or y0 < edge or x1 > W - edge or y1 > H - edge:
+                        out.append(f'{where}: "{t[:40]}" within {edge:.0f} pt of the edge ({x0:.0f}, {y0:.0f}, {x1:.0f}, {y1:.0f} of {W:.0f} × {H:.0f})')
+                    if slides is not None and n <= len(slides) and not any(
+                            fx0 - slack <= x0 and fy0 - slack <= y0 and x1 <= fx1 + slack and y1 <= fy1 + slack for fx0, fy0, fx1, fy1 in slides[n - 1]):
+                        out.append(f'{where}: "{t[:40]}" runs out of its box ({x0:.0f}, {y0:.0f}, {x1:.0f}, {y1:.0f})')
+                    if column is not None and (x0 < column[0] - slack or x1 > column[1] + slack):
+                        out.append(f'{where}: "{t[:40]}" runs out of the text column ({x0:.0f}-{x1:.0f}, column {column[0]:.0f}-{column[1]:.0f})')
+                for i, a in enumerate(lines):
+                    for b in lines[i + 1:]:
+                        ix = min(a[2], b[2]) - max(a[0], b[0]); iy = min(a[3], b[3]) - max(a[1], b[1])
+                        if ix > 1 and iy > 1:
+                            out.append(f'{where}: "{a[4][:30]}" runs into "{b[4][:30]}"')
+        return out

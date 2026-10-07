@@ -108,9 +108,8 @@ def make_previews(fams):
             src = next((r for r in fl if r.endswith((".pptx", ".docx"))), None)
             if src and office and ppm:
                 with tempfile.TemporaryDirectory() as td:
-                    subprocess.run([office, "--headless", "--convert-to", "pdf", "--outdir", td, os.path.join(root, src)],
-                                   check=True, capture_output=True, timeout=180)
-                    pdf = glob.glob(os.path.join(td, "*.pdf"))[0]
+                    import kit_clip                      # LibreOffice with the repo's fonts, not a fallback
+                    pdf = kit_clip.office_pdf([os.path.join(root, src)], td)[os.path.join(root, src)]
                     subprocess.run([ppm, "-png", "-r", "72" if src.endswith(".pptx") else "50", pdf, os.path.join(td, "p")], check=True, capture_output=True, timeout=120)
                     pages = sorted(glob.glob(os.path.join(td, "p*.png")))
                     if contact_sheet(pages, dest, cols=3 if src.endswith(".pptx") else 2): extra[key] = dest_rel

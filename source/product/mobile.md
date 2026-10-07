@@ -123,6 +123,10 @@ Drawn in [`mobile/glance/`](mobile/glance/); worked through in code in `FSFlight
   Android 17 use `MetricStyle` (up to three values with units) and its semantic styles, which match the signal colors:
   `SAFE` for Aurora, `CAUTION` for Sodium, `DANGER` for Flare, `INFO` for the action color. Wear OS 7 can bridge Live Updates
   to the watch (not on every watch, and without `MetricStyle`): see [`watch.md`](watch.md).
+  TalkBack reads a Live Update as drawn: SystemUI passes its text without spans, so a `TtsSpan` with the words never
+  arrives (tried on Android 16 and 17), and `MetricStyle` writes the unit into the label itself ("Altitude (ft)"). Keep the
+  units short and standard (`ft`, `ft/s`, `° T`), since the speech engine reads them its own way. On Android 16 without
+  QPR2 (API 36.0) the system doesn't promote the notification: it shows as an ordinary `ProgressStyle` card, no chip.
 - **Widgets** show one readout (next launch window, surface wind with its age; a medium widget adds a second column, such as
   the ceiling and the winds aloft, each with its own age, a forecast hours old marked stale), and must read in tinted, clear and vibrant
   modes, where the system draws everything in one tint: the readout and its unit are text, the value is the accent group
@@ -166,4 +170,5 @@ button, a border cut by a rounded end, units in capitals), all fixed in the file
 - [ ] Two actions for anything that arms, fires or erases; commanded vs confirmed shown.
 - [ ] Works in airplane mode after the pre-trip sync.
 - [ ] About screen is a title block with designation, version, build and data versions.
-- [ ] Live Activity / Live Update and widgets read in every rendering mode, with units and ages, and say when they're stale.
+- [ ] Live Activity / Live Update and widgets read in every rendering mode, with units and ages, and say when they're stale;
+  the Live Activity's units spoken as words (the Live Update's are the system's).

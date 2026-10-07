@@ -339,8 +339,8 @@ def code_values():
             "UNFIRED_GAP_S": UNFIRED_GAP_S, "GAP_MS": int(UNFIRED_GAP_S * 1000), "TILE_FRESH_MS": TILE_FRESH_MS}
 CODE = [("swiftui/FSWatch.swift", "watchOS: FSBearingArrow, FSWatchFind (Always On aware), FSWatchState, FSWatchUnfired, FSWristEvent (the wrist language)"),
         ("swiftui/FSWatchComplications.swift", "WidgetKit: Find on every accessory family, with Smart Stack relevance"),
-        ("compose/FsWear.kt", "Wear OS: FsWearColors, FusionSpaceWearTheme, FsBearingArrow, FsWearFind (ambient aware), FsWearStateBox, FsWearUnfired, FsWristEvent, the ongoing activity"),
-        ("compose/FsWearTile.kt", "Wear OS: the Find tile (ProtoLayout Material 3) and its complications")]
+        ("compose/FsWear.kt", "Wear OS: FsWearColors, FusionSpaceWearTheme, FsBearingArrow, FsWearFind (ambient aware, its age counting), FsWearStateBox, FsWearChannel, FsWearUnfired, FsWristEvent, the ongoing activity, and what TalkBack says (fsSpokenDirection, fsWearSpokenAge)"),
+        ("compose/FsWearTile.kt", "Wear OS: the Find tile (ProtoLayout Material 3) and its complications, each read as one sentence, the age counting on the watch")]
 def build_code():
     vals = code_values()
     for rel, _ in CODE:

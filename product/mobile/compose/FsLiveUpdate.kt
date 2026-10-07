@@ -39,6 +39,9 @@ object FsLiveUpdate {
     }
 
     fun build(context: Context, channelId: String, smallIcon: Int, trackerIcon: Int, now: FsFlightNow): Notification {
+        // TalkBack reads this text as drawn: SystemUI hands it over without spans (no TtsSpan reaches TalkBack from the
+        // shade on Android 16 or 17, checked by LiveUpdateSpeechTest in the sample), so the units can't be given spoken
+        // words here as they are on the Live Activity; the screen reader's speech engine reads "ft" and "° T" its own way.
         val where = listOfNotNull(
             "${"%,d".format(now.altitudeFt)}\u00A0ft\u00A0AGL",
             "${if (now.verticalFtS < 0) "−" else "+"}${kotlin.math.abs(now.verticalFtS)}\u00A0ft/s",
@@ -76,6 +79,8 @@ object FsLiveUpdate {
     /** Android 17: three values with their units, the time since liftoff counting on its own, and the state as a semantic color. */
     private fun metricStyle(n: FsFlightNow): Notification.MetricStyle {
         val style = semantic(n.signal)
+        // The units stay "ft": SystemUI writes them into the label ("Altitude (ft)"), and "From you (feet)" would be cut
+        // to "From you (fe…" at the default text size.
         val metrics = buildList {
             add(Notification.Metric(Notification.Metric.FixedInt(n.altitudeFt, "ft"), "Altitude", style))
             if (n.distanceFt != null) add(Notification.Metric(Notification.Metric.FixedInt(n.distanceFt, "ft"), "From you", style))

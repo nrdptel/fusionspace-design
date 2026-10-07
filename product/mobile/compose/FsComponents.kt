@@ -462,7 +462,7 @@ fun FsFirstThatFits(modifier: Modifier = Modifier, content: @Composable () -> Un
 
 /**
  * The device's state as a box: SAFE outlined, ARMED inverted (product/embedded.md). Nothing else uses the inverted box.
- * TalkBack hears "Device state: SAFE", not a bare "SAFE" that would sound like the SAFE button beside it.
+ * TalkBack hears "Device state, safe", not a bare "SAFE" that would sound like the SAFE button beside it.
  */
 @Composable
 fun FsStateBox(armed: Boolean, modifier: Modifier = Modifier) {
@@ -471,7 +471,7 @@ fun FsStateBox(armed: Boolean, modifier: Modifier = Modifier) {
     Text(
         word, style = FsType.readout(28).copy(fontWeight = FontWeight.SemiBold),
         color = if (armed) c.onDangerFill else c.ink,
-        modifier = modifier.clearAndSetSemantics { contentDescription = "Device state: $word" }.background(if (armed) c.dangerFill else Color.Transparent)
+        modifier = modifier.clearAndSetSemantics { contentDescription = "Device state, ${word.lowercase()}" }.background(if (armed) c.dangerFill else Color.Transparent)
             .border(3.dp, if (armed) c.dangerFill else c.ink).padding(horizontal = 14.dp, vertical = 10.dp),
     )
 }

@@ -78,8 +78,44 @@ gradle :phone:connectedDebugAndroidTest      # with a phone emulator attached (A
 gradle :wear:connectedDebugAndroidTest       # with a watch emulator attached
 ```
 
-They pass on Android 17 (phone and Wear OS 7) and Android 16 (phone, API 36.1). Espresso is pinned to 3.7.0: the 3.5 that
+They pass on Android 17 (phone and Wear OS 7) and Android 16 (phone, API 36.1 and 36.0). Espresso is pinned to 3.7.0: the 3.5 that
 Compose's test library brings can't inject input on API 37 (`InputManager.getInstance` is gone).
+
+## What TalkBack hears
+
+Walked by the accessibility tree (October 7, 2026), against what VoiceOver says on iPhone and Apple Watch, and kept as
+tests so it can't drift: `AccessibilityTest` asserts the exact labels, `SpeechTest` (watch) and `LiveUpdateSpeechTest`
+(phone) read the tile, the complications and the notification shade through `UiAutomation` the way a screen reader gets
+them (uiautomator's dump can't: a counting age or chronometer never lets the screen go idle).
+
+| Where | TalkBack hears |
+|---|---|
+| Watch Find | "Rocket 1,352 feet away, 42 degrees to your right, bearing 62 degrees true", then "fix 4 seconds old" (in ambient "as of 9:41 AM") |
+| Watch Pad | "Device state, armed"; "FS-VEGA-004, link 0.3 seconds"; "Channel 1, drogue, continuity"; "Channel 3, not used" |
+| Watch Unfired | once, as a heading: "Unfired charge, 2, main. Approach as live. Disarm before handling.", then OK |
+| Find tile | "Vega, landed"; "1,352 feet, bearing 62 degrees true, fix 4 seconds old" (the age counts on the watch); "Find" |
+| Complications | one sentence, whatever the slot shows: "Vega, landed, 1,352 feet, bearing 62 degrees true, fix less than 1 min old" (Wear's word styles count whole minutes, rounded up) |
+| Phone Pad | "Device state, safe"; the title a heading; each row one stop, "Cont" read "Continuity" |
+| Live Update | as drawn: "612 ft AGL · −18 ft/s · 1,352 ft at 062° T" on Android 16, "Altitude (ft)", "612" … on 17 |
+
+The Live Update is the one place the units can't be given words: SystemUI passes the card's text to TalkBack without its
+spans, so a `TtsSpan` never arrives (tried on Android 16 and 17, promoted and not), and on 17 MetricStyle writes the unit
+into the label itself; "From you (feet)" would be cut to "From you (fe…". VoiceOver gets words on the Live Activity.
+
+## Captures
+
+`tools/wear-captures.sh <serial> wear|wear-small [out]` takes Find, Find in ambient, Pad, Unfired and the Find tile on one
+watch emulator, with the watch's own clock set to 9:41 (`cmd alarm set-time`, auto time off) and the fix taken at 9:41:00.
+The phone captures use SystemUI demo mode for the status bar (9:41, full battery). `tools/setup.sh` installs the SDK
+packages and creates the emulators used here.
+
+## Android 16 without QPR2 (API 36.0)
+
+Run on the API 36.0 image (AOSP `default`, build BE2A.250530.026.D1): the app runs (reading `Build.VERSION.SDK_INT_FULL`
+is fine there), posts with the `android.requestPromotedOngoing` extra, and the system doesn't promote it
+(`canPostPromotedNotifications` is false; 36.0 has the API flag but not the UI): an ordinary `ProgressStyle` card with the
+phases, the points and the rocket, nothing cut, no status-bar chip. The phone tests pass there too. Not published as a
+capture: the AOSP image doesn't take the Pixel 10 overlays (no camera cutout, AOSP SystemUI), so it isn't a Pixel screen.
 
 ## Large text
 
@@ -113,19 +149,19 @@ the rows lower on the circle.
 - Icons: `?attr/colorControlNormal` (AppCompat's) failed to link in an app without AppCompat; the generator now writes
   the framework's `?android:attr/colorControlNormal`, and the build copies the icons unchanged.
 - ATF: the state box's "SAFE" and the SAFE button read the same to TalkBack (`DuplicateSpeakableTextCheck`): `FsStateBox`
-  and `FsWearStateBox` now say "Device state: SAFE".
+  and `FsWearStateBox` now say "Device state, safe" (the words VoiceOver says).
 - ATF: Wear's list transformation fades rows at the screen's edge below 4.5:1 (`TextContrastCheck`), and it would dim
   ARMED; the watch Pad doesn't use it.
 - Wear OS: at 124% the time ran into the first row (the scaffold's padding doesn't grow); on the small watch Unfired needs
   a scroll at 124%, and the OK edge button stays collapsed until the list reaches its end (the platform's behaviour).
 - Android 16: `Build.VERSION.SDK_INT_FULL` is in the API 36 SDK, so the 36.0 branch (the `android.requestPromotedOngoing`
-  extra) doesn't need a guard; 36.1 takes `setRequestPromotedOngoing`. Checked on 36.1; no 36.0 image was run.
+  extra) doesn't need a guard; 36.1 takes `setRequestPromotedOngoing`. Checked on 36.1 and on 36.0 (above).
 
 ## What's sample and what's reference
 
-The screens' layout (the Pad's sheets and rows, Track's drawn map, the watch Pad's channel rows) is the
+The screens' layout (the Pad's sheets and rows, Track's drawn map, the watch Pad's list) is the
 sample's own; the parts on them (`FusionSpaceTheme`, `FsStatus`, `FsTag`, `FsPhaseStrip`, `FsSheetHeader`, `FsReadout`, `FsStateBox`,
 `FsCommandedConfirmed`, `FsHoldToConfirm`, `FsArmConfirmation`, `FsFirstThatFits`, `FsLiveUpdate`, `FusionSpaceWearTheme`,
-`FsWearFind`, `FsWearStateBox`, `FsWearUnfired`, `fsClearOfTime`, `FsFindTileService`, `FsFindComplicationService`) come
+`FsWearFind`, `FsWearStateBox`, `FsWearChannel`, `FsWearUnfired`, `fsClearOfTime`, `FsFindTileService`, `FsFindComplicationService`) come
 unchanged from `product/`.
 Nothing here sends anything to hardware: "Hold to arm" and SAFE only change the sample's state.

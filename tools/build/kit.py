@@ -6,7 +6,7 @@ Writes into <OUT>/kit (and the color-mode matrix of the logos into <OUT>/kit/log
 MANIFEST, which also becomes kit/README.md and the guide's Kit sheet. Office files (slides .pptx, letterhead
 .docx) come from kit_office.js and need node with the `pptxgenjs` and `docx` packages; without them they are
 skipped with a warning. CMYK PDFs need Ghostscript (`gs`); without it they are skipped with a warning."""
-import os, re, json, math, shutil, subprocess, textwrap, datetime
+import os, re, glob, json, math, shutil, subprocess, textwrap, datetime
 import geo, build
 from build import f, VOID, PAPER, WHITE, STOPS, MODES, ION, EMBER, M_ORANGE, O_BLUE, WARM, COOL
 
@@ -676,6 +676,17 @@ def build_office():
         WARN.append("office"); print("WARN kit: kit_office.js failed, .pptx/.docx skipped\n" + r.stderr[-800:])
     for fn in os.listdir(out(f"{KIT}/documents/slides")):
         if fn.startswith(("_logo-", "_img-")): os.remove(out(f"{KIT}/documents/slides/{fn}"))
+    # Overflow check: each file rendered by LibreOffice with the repo's fonts, every line inside its box, the page and the
+    # text column, off other text, and no page pushed on (kit_clip.check_office). Skipped with a warning without LibreOffice.
+    if r.returncode == 0:
+        import kit_clip
+        files = sorted(glob.glob(out(f"{KIT}/documents/*/*.pptx")) + glob.glob(out(f"{KIT}/documents/*/*.docx")))
+        problems = kit_clip.check_office(files)
+        if problems is None:
+            WARN.append("office-check"); print("WARN kit: LibreOffice or poppler not found, .pptx/.docx overflow not checked")
+        else:
+            kit_clip.assert_clean(problems, "the Office files")
+            print(f"office check: {len(files)} files, no text out of its box, off the page or pushed onto another page")
 
 # ---------------------------------------------------------------- 7. README
 def build_readme():
