@@ -31,14 +31,18 @@ data class FsFlightNow(
 object FsLiveUpdate {
     private const val SCALE = 10              // progress units per second, so short phases still get a segment
 
-    /** The chip: the one number that matters, with its unit, in {{CHIP_CHARS}} characters at most ("612 ft"). */
-    fun chipText(now: FsFlightNow): String = "${now.altitudeFt} ft".take({{CHIP_CHARS}})
+    /** The chip: the one number that matters, with its unit, in {{CHIP_CHARS}} characters at most ("612 ft", "9876 ft"). Never
+     *  cut off: a longer number goes to thousands ("12k ft"), so the chip can't read "12345 f". */
+    fun chipText(now: FsFlightNow): String {
+        val ft = now.altitudeFt
+        return listOf("$ft\u00A0ft", "${Math.round(ft / 1000.0)}k\u00A0ft").firstOrNull { it.length <= {{CHIP_CHARS}} } ?: "${Math.round(ft / 1000.0)}k"
+    }
 
     fun build(context: Context, channelId: String, smallIcon: Int, trackerIcon: Int, now: FsFlightNow): Notification {
         val where = listOfNotNull(
-            "${"%,d".format(now.altitudeFt)} ft AGL",
-            "${if (now.verticalFtS < 0) "−" else "+"}${kotlin.math.abs(now.verticalFtS)} ft/s",
-            if (now.distanceFt != null && now.bearingTrue != null) "${"%,d".format(now.distanceFt)} ft at ${"%03d".format(now.bearingTrue)}° T" else null,
+            "${"%,d".format(now.altitudeFt)}\u00A0ft\u00A0AGL",
+            "${if (now.verticalFtS < 0) "−" else "+"}${kotlin.math.abs(now.verticalFtS)}\u00A0ft/s",
+            if (now.distanceFt != null && now.bearingTrue != null) "${"%,d".format(now.distanceFt)}\u00A0ft at ${"%03d".format(now.bearingTrue)}°\u00A0T" else null,
         ).joinToString(" · ")
         val b = Notification.Builder(context, channelId)
             .setSmallIcon(smallIcon)

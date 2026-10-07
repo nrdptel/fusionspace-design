@@ -18,6 +18,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,6 +38,8 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.TextStyle
@@ -118,6 +123,18 @@ fun FusionSpaceWearTheme(mono: FontFamily = FontFamily.Monospace, content: @Comp
     }
 }
 
+/**
+ * ScreenScaffold's padding for a list, with the top grown by as much as the time above it grows with the text size (the
+ * scaffold's top padding stays the same at every size, so at the largest sizes the first item would run into the time).
+ */
+@Composable
+fun fsClearOfTime(padding: PaddingValues): PaddingValues {
+    val dir = LocalLayoutDirection.current
+    val grow = ((LocalDensity.current.fontScale - 1f).coerceAtLeast(0f) * 32).dp
+    return PaddingValues(start = padding.calculateStartPadding(dir), end = padding.calculateEndPadding(dir),
+        top = padding.calculateTopPadding() + grow, bottom = padding.calculateBottomPadding())
+}
+
 internal object FsWearMono { var family: FontFamily = FontFamily.Monospace }
 private fun label() = TextStyle(fontFamily = FsWearMono.family, fontSize = 11.sp, letterSpacing = 0.06.em, color = FsWearColors.inkMuted)
 private fun readout(size: Int) = TextStyle(fontFamily = FsWearMono.family, fontSize = size.sp, fontFeatureSettings = "tnum, zero")
@@ -176,7 +193,7 @@ fun FsWearFind(distanceFt: Int, bearingTrue: Float, headingTrue: Float?, fixAge:
                 border = if (ambient) BorderStroke(1.dp, c.ruleStrong) else null,
             ) { Text("Found it") }
         }) { padding ->
-            TransformingLazyColumn(state = state, contentPadding = padding) {
+            TransformingLazyColumn(state = state, contentPadding = fsClearOfTime(padding)) {
                 item {
                     Column(
                         Modifier.fillMaxWidth().clearAndSetSemantics {
@@ -189,7 +206,7 @@ fun FsWearFind(distanceFt: Int, bearingTrue: Float, headingTrue: Float?, fixAge:
                             Text("%,d".format(distanceFt), style = readout(if (small) 24 else 28), color = if (ambient) c.inkMuted else c.ink)
                             Text("ft", style = label(), modifier = Modifier.padding(bottom = 5.dp))
                         }
-                        val bearing = "%03d° T".format(bearingTrue.toInt() % 360)
+                        val bearing = "%03d°\u00A0T".format(bearingTrue.toInt() % 360)
                         Text(if (ambient) "$bearing · as of $asOf" else "$bearing · fix $fixAge" + if (headingTrue == null) " · from north" else "",
                             style = label().copy(letterSpacing = 0.em), textAlign = TextAlign.Center)
                     }
@@ -210,9 +227,10 @@ fun FsWearStateBox(armed: Boolean, modifier: Modifier = Modifier) {
     val c = FsWearColors
     val ambient = LocalAmbientModeManager.current?.currentAmbientMode is AmbientMode.Ambient
     val ink = when { ambient && armed -> c.danger; ambient -> c.inkMuted; armed -> c.onDangerFill; else -> c.ink }
+    val word = if (armed) "ARMED" else "SAFE"
     Text(
-        if (armed) "ARMED" else "SAFE", style = readout(20).copy(fontWeight = FontWeight.SemiBold), color = ink,
-        modifier = modifier.background(if (armed && !ambient) c.dangerFill else Color.Transparent)
+        word, style = readout(20).copy(fontWeight = FontWeight.SemiBold), color = ink,
+        modifier = modifier.clearAndSetSemantics { contentDescription = "Device state: $word" }.background(if (armed && !ambient) c.dangerFill else Color.Transparent)
             .border(3.dp, if (armed && !ambient) c.dangerFill else ink).padding(horizontal = 10.dp, vertical = 5.dp),
     )
 }
@@ -241,7 +259,7 @@ fun FsWearUnfired(channel: String, onAcknowledge: () -> Unit) {
                 border = if (ambient) BorderStroke(1.dp, c.ruleStrong) else null,
             ) { Text("OK") }
         }) { padding ->
-            TransformingLazyColumn(state = state, contentPadding = padding, modifier = Modifier.background(bg)) {
+            TransformingLazyColumn(state = state, contentPadding = fsClearOfTime(padding), modifier = Modifier.background(bg)) {
                 item {
                     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp),
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
@@ -293,5 +311,5 @@ fun fsTrackingOngoing(context: Context, notificationId: Int, notification: Notif
     OngoingActivity.Builder(context, notificationId, notification)
         .setStaticIcon(iconRes)
         .setTouchIntent(open)
-        .setStatus(Status.Builder().addTemplate("%,d ft · %03d° T".format(distanceFt, bearingTrue)).build())
+        .setStatus(Status.Builder().addTemplate("%,d\u00A0ft · %03d°\u00A0T".format(distanceFt, bearingTrue)).build())
         .build()

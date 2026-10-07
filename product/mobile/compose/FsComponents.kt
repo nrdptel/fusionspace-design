@@ -47,12 +47,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.IntrinsicMeasurable
+import androidx.compose.ui.layout.IntrinsicMeasureScope
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Measurable
+import androidx.compose.ui.layout.MeasurePolicy
+import androidx.compose.ui.layout.MeasureResult
+import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.Role
@@ -66,7 +76,11 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
@@ -145,7 +159,7 @@ enum class FsSignal { Danger, Caution, Ok, Info, Off, Stale, Predicted }
  * A status chip: `CONT`, `ARMED`, `NOT USED`. Danger, caution and normal are filled the same on every background, like a
  * safety sign; the others are outlined. [icon] is a FusionSpace icon (product/icons/android/) drawn by the caller; an
  * `Icon` there takes the chip's foreground color through LocalContentColor. The word is set in capitals; [detail] (a value
- * with its unit, "0.3 s") follows it as written, since a capital S is siemens, not seconds.
+ * with its unit joined by a non-breaking space, "0.3\u00A0s") follows it as written, since a capital S is siemens, not seconds.
  */
 @Composable
 fun FsStatus(word: String, signal: FsSignal, modifier: Modifier = Modifier, detail: String? = null, icon: (@Composable () -> Unit)? = null) {
@@ -172,10 +186,17 @@ fun FsStatus(word: String, signal: FsSignal, modifier: Modifier = Modifier, deta
     ) {
         if (signal == FsSignal.Stale) FsHatch(c.inkFaint, Modifier.width(8.dp).height(24.dp))
         icon?.let { CompositionLocalProvider(LocalContentColor provides fg, content = it) }
-        // One line, always: a chip that wraps breaks its word letter by letter. Lay chips out in a FlowRow so a large
-        // text size moves the chip to the next line instead.
-        Text(word.uppercase() + (detail?.let { " · $it" } ?: ""), style = FsType.label().copy(fontWeight = FontWeight.SemiBold), color = fg,
-            maxLines = 1, softWrap = false)
+        // The word is never split ("CO / NT"): it stays on one line. The detail keeps its whole width on the same line
+        // whenever the chip has room; only when it doesn't (very large text) does the detail wrap and the chip grow taller.
+        // Lay chips out in a FlowRow, so a large text size moves a chip to the next line first.
+        val style = FsType.label().copy(fontWeight = FontWeight.SemiBold)
+        FsFirstThatFits {
+            Text(word.uppercase() + (detail?.let { " · $it" } ?: ""), style = style, color = fg, maxLines = 1, softWrap = false)
+            Row(Modifier.padding(vertical = 4.dp)) {
+                Text(word.uppercase(), style = style, color = fg, maxLines = 1, softWrap = false)
+                detail?.let { Text(" · $it", style = style, color = fg, modifier = Modifier.weight(1f, fill = false)) }
+            }
+        }
     }
 }
 
@@ -217,15 +238,30 @@ fun FsReadout(
         if (kind == FsReadoutKind.Stale) append(", stale")
         qualifier?.let { append(", $it") }
     }
-    Column(modifier.semantics(mergeDescendants = true) { contentDescription = "$label, $spoken" }, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    val full = FsType.readout(size)
+    // The number never breaks across lines: it has one line at its size, or a little smaller, beside its unit; when even
+    // that doesn't fit (very large text in a narrow column), the unit goes under it, and only then does it shrink further.
+    val number = @Composable { scale: Float ->
+        Text(
+            value, style = full.copy(fontSize = full.fontSize * scale, lineHeight = full.lineHeight * scale),
+            color = if (kind == FsReadoutKind.Stale) c.inkMuted else c.ink, maxLines = 1, softWrap = false,
+            modifier = if (kind == FsReadoutKind.Predicted) Modifier.predictedUnderline(c.predicted) else Modifier,
+        )
+    }
+    val stale = @Composable { if (kind == FsReadoutKind.Stale) FsHatch(c.inkFaint, Modifier.width(10.dp).height(size.dp).border(1.dp, c.ruleStrong)) }
+    val unitText = @Composable { Text(unit, style = FsType.label().copy(letterSpacing = 0.em), color = c.inkMuted, modifier = Modifier.padding(bottom = 4.dp)) }
+    Column(modifier.clearAndSetSemantics { contentDescription = "$label, $spoken" }, verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(label.uppercase(), style = FsType.label(), color = c.inkMuted)
-        Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            if (kind == FsReadoutKind.Stale) FsHatch(c.inkFaint, Modifier.width(10.dp).height(size.dp).border(1.dp, c.ruleStrong))
-            Text(
-                value, style = FsType.readout(size), color = if (kind == FsReadoutKind.Stale) c.inkMuted else c.ink,
-                modifier = if (kind == FsReadoutKind.Predicted) Modifier.predictedUnderline(c.predicted) else Modifier,
-            )
-            Text(unit, style = FsType.label().copy(letterSpacing = 0.em), color = c.inkMuted, modifier = Modifier.padding(bottom = 4.dp))
+        FsFirstThatFits {
+            Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(6.dp)) { stale(); number(1f); unitText() }
+            Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(6.dp)) { stale(); number(0.85f); unitText() }
+            Column {
+                Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    stale()
+                    FsFirstThatFits { number(1f); number(0.85f); number(0.7f); number(0.6f) }
+                }
+                unitText()
+            }
         }
         qualifier?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = c.inkMuted) }
     }
@@ -245,11 +281,15 @@ fun FsSheetHeader(name: String, number: Int, total: Int, modifier: Modifier = Mo
     val c = LocalFsColors.current
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Box(Modifier.fillMaxWidth().height(2.dp).background(c.ink))
-        Row(verticalAlignment = Alignment.Bottom) {
-            Text(name.uppercase(), style = FsType.heading(), color = c.ink, modifier = Modifier.semantics { heading() })
-            Spacer(Modifier.weight(1f))
-            Text("SHEET $number / $total", style = FsType.label(), color = c.inkMuted,
+        val title = @Composable { Text(name.uppercase(), style = FsType.heading(), color = c.ink, modifier = Modifier.semantics { heading() }) }
+        val sheet = @Composable {
+            Text("SHEET $number / $total", style = FsType.label(), color = c.inkMuted, maxLines = 1, softWrap = false,
                 modifier = Modifier.clearAndSetSemantics { contentDescription = "Sheet $number of $total" })
+        }
+        // The name and the sheet number on one line, or the number under the name when the text is too large for both.
+        FsFirstThatFits {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) { title(); Spacer(Modifier.width(12.dp)); Spacer(Modifier.weight(1f)); sheet() }
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) { title(); sheet() }
         }
     }
 }
@@ -297,23 +337,139 @@ fun FsTitleBlock(cells: List<FsTitleCell>, modifier: Modifier = Modifier, mark: 
 @Composable
 fun FsCommandedConfirmed(commanded: String?, confirmed: String, age: String, modifier: Modifier = Modifier) {
     val c = LocalFsColors.current
-    Column(modifier.clearAndSetSemantics { contentDescription = "Commanded ${commanded ?: "nothing"}. Confirmed $confirmed, $age." },
-        verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        // The labels grow with the text size (a fixed width split them mid-word at 200%); the values wrap.
-        val label = Modifier.widthIn(min = 104.dp).padding(end = 8.dp)
-        Row { Text("COMMANDED", style = FsType.label(), color = c.inkMuted, modifier = label, maxLines = 1, softWrap = false); Text(commanded ?: "—", style = FsType.readout(15), color = c.ink) }
-        Row { Text("CONFIRMED", style = FsType.label(), color = c.inkMuted, modifier = label, maxLines = 1, softWrap = false); Text("$confirmed · $age", style = FsType.readout(15), color = c.ink) }
+    val label = @Composable { text: String, m: Modifier -> Text(text, style = FsType.label(), color = c.inkMuted, modifier = m, maxLines = 1, softWrap = false) }
+    val value = @Composable { text: String -> Text(text, style = FsType.readout(15), color = c.ink) }
+    // Each label beside its value while both fit on a line; with larger text, each label above its value, so no word breaks.
+    FsFirstThatFits(modifier.clearAndSetSemantics { contentDescription = "Commanded ${commanded ?: "nothing"}. Confirmed $confirmed, $age." }) {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            val beside = Modifier.widthIn(min = 104.dp).padding(end = 8.dp)
+            Row { label("COMMANDED", beside); value(commanded ?: "—") }
+            Row { label("CONFIRMED", beside); value("$confirmed · $age") }
+        }
+        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            label("COMMANDED", Modifier); value(commanded ?: "—")
+            label("CONFIRMED", Modifier.padding(top = 4.dp)); value("$confirmed · $age")
+        }
     }
 }
 
-/** The device's state as a box: SAFE outlined, ARMED inverted (product/embedded.md). Nothing else uses the inverted box. */
+/**
+ * A designation tag: a mono label in a 1 dp box with its top-right corner cut at 45° (`FS-VEGA-004 rev B`), like a
+ * drawing's tag. It wraps at very large text sizes rather than truncating.
+ */
+@Composable
+fun FsTag(text: String, modifier: Modifier = Modifier) {
+    val c = LocalFsColors.current
+    Text(
+        text, style = TextStyle(fontFamily = LocalFsMono.current, fontSize = 12.sp, lineHeight = 16.sp), color = c.ink,
+        modifier = modifier.border(1.dp, c.ruleStrong, FsChamfer(4.dp)).padding(start = 8.dp, end = 10.dp, top = 3.dp, bottom = 3.dp),
+    )
+}
+
+/** A rectangle with its top-right corner cut at 45° by [cut] (tags, sheet corners). */
+class FsChamfer(private val cut: Dp) : Shape {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+        val k = with(density) { cut.toPx() }.coerceAtMost(minOf(size.width, size.height))
+        return Outline.Generic(Path().apply {
+            moveTo(0f, 0f); lineTo(size.width - k, 0f); lineTo(size.width, k); lineTo(size.width, size.height); lineTo(0f, size.height); close()
+        })
+    }
+}
+
+/** The flight's phases, in order (product/mobile.md#screens). */
+val FsPhases = listOf("PAD", "BOOST", "COAST", "APOGEE", "DROGUE", "MAIN", "LANDED")
+
+/**
+ * The flight's phases: done in ink, now inverted, next muted (inkFaint is for disabled text; these must be read). When
+ * the seven names don't fit (a narrow screen, large text), it shows the current phase in words with its place,
+ * "MAIN · 6 of 7", and a tick per phase, rather than abbreviating the names. [current] is an index into [FsPhases].
+ */
+@Composable
+fun FsPhaseStrip(current: Int, modifier: Modifier = Modifier) {
+    val c = LocalFsColors.current
+    val mono = LocalFsMono.current
+    FsFirstThatFits(modifier.fillMaxWidth().clearAndSetSemantics {
+        contentDescription = "Phase: ${FsPhases[current].lowercase()}, ${current + 1} of ${FsPhases.size}"
+    }) {
+        Layout(
+            content = {
+                FsPhases.forEachIndexed { i, name ->
+                    Box(Modifier.background(if (i == current) c.ink else Color.Transparent), contentAlignment = Alignment.Center) {
+                        Text(
+                            name, maxLines = 1, softWrap = false, textAlign = TextAlign.Center,
+                            style = TextStyle(fontFamily = mono, fontSize = 10.sp, lineHeight = 14.sp, letterSpacing = 0.04.em,
+                                fontWeight = if (i == current) FontWeight.SemiBold else FontWeight.Normal),
+                            color = when { i < current -> c.ink; i == current -> c.canvas; else -> c.inkMuted },
+                            modifier = Modifier.padding(horizontal = 3.dp, vertical = 6.dp),
+                        )
+                    }
+                }
+            },
+            modifier = Modifier.fillMaxWidth().border(1.dp, c.ruleStrong),
+            measurePolicy = EqualCells,
+        )
+        Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text("${FsPhases[current]} · ${current + 1} of ${FsPhases.size}", color = c.ink,
+                style = TextStyle(fontFamily = mono, fontSize = 12.sp, lineHeight = 16.sp, fontWeight = FontWeight.SemiBold))
+            Row(Modifier.fillMaxWidth().height(10.dp), horizontalArrangement = Arrangement.spacedBy(3.dp), verticalAlignment = Alignment.CenterVertically) {
+                FsPhases.indices.forEach { i ->
+                    Box(Modifier.weight(1f).height(if (i == current) 10.dp else 6.dp).background(if (i <= current) c.ink else Color.Transparent)
+                        .border(1.dp, if (i <= current) c.ink else c.ruleStrong))
+                }
+            }
+        }
+    }
+}
+
+/** Cells of one width (the widest one's), filling the width they're given; as wide as all of them at their own size otherwise. */
+private object EqualCells : MeasurePolicy {
+    override fun MeasureScope.measure(measurables: List<Measurable>, constraints: Constraints): MeasureResult {
+        val n = measurables.size
+        val natural = measurables.maxOf { it.maxIntrinsicWidth(Constraints.Infinity) }
+        val total = if (constraints.hasBoundedWidth) constraints.maxWidth else natural * n
+        val widths = List(n) { i -> total / n + if (i < total % n) 1 else 0 }
+        val h = maxOf(constraints.minHeight, measurables.indices.maxOf { measurables[it].minIntrinsicHeight(widths[it]) })
+        val placeables = measurables.mapIndexed { i, m -> m.measure(Constraints.fixed(widths[i], h)) }
+        return layout(total, h) { var x = 0; placeables.forEach { it.place(x, 0); x += it.width } }
+    }
+    override fun IntrinsicMeasureScope.maxIntrinsicWidth(measurables: List<IntrinsicMeasurable>, height: Int) =
+        measurables.maxOf { it.maxIntrinsicWidth(height) } * measurables.size
+    override fun IntrinsicMeasureScope.minIntrinsicWidth(measurables: List<IntrinsicMeasurable>, height: Int) =
+        maxIntrinsicWidth(measurables, height)
+    override fun IntrinsicMeasureScope.minIntrinsicHeight(measurables: List<IntrinsicMeasurable>, width: Int) =
+        measurables.maxOf { it.minIntrinsicHeight(width / measurables.size) }
+    override fun IntrinsicMeasureScope.maxIntrinsicHeight(measurables: List<IntrinsicMeasurable>, width: Int) =
+        minIntrinsicHeight(measurables, width)
+}
+
+/**
+ * The first of its children that fits the width it's given at its own size, every text on one line (like SwiftUI's
+ * ViewThatFits): put the one-line arrangement first and the stacked one last. The last child is the fallback and gets
+ * the width as it is, so its texts may wrap, at spaces. Children that aren't chosen are neither measured nor drawn.
+ */
+@Composable
+fun FsFirstThatFits(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Layout(content, modifier) { measurables, constraints ->
+        val chosen = measurables.dropLast(1).firstOrNull {
+            !constraints.hasBoundedWidth || it.maxIntrinsicWidth(Constraints.Infinity) <= constraints.maxWidth
+        } ?: measurables.last()
+        val p = chosen.measure(constraints)
+        layout(p.width, p.height) { p.place(0, 0) }
+    }
+}
+
+/**
+ * The device's state as a box: SAFE outlined, ARMED inverted (product/embedded.md). Nothing else uses the inverted box.
+ * TalkBack hears "Device state: SAFE", not a bare "SAFE" that would sound like the SAFE button beside it.
+ */
 @Composable
 fun FsStateBox(armed: Boolean, modifier: Modifier = Modifier) {
     val c = LocalFsColors.current
+    val word = if (armed) "ARMED" else "SAFE"
     Text(
-        if (armed) "ARMED" else "SAFE", style = FsType.readout(28).copy(fontWeight = FontWeight.SemiBold),
+        word, style = FsType.readout(28).copy(fontWeight = FontWeight.SemiBold),
         color = if (armed) c.onDangerFill else c.ink,
-        modifier = modifier.background(if (armed) c.dangerFill else Color.Transparent)
+        modifier = modifier.clearAndSetSemantics { contentDescription = "Device state: $word" }.background(if (armed) c.dangerFill else Color.Transparent)
             .border(3.dp, if (armed) c.dangerFill else c.ink).padding(horizontal = 14.dp, vertical = 10.dp),
     )
 }
@@ -371,7 +527,7 @@ fun FsHoldToConfirm(
         // Clear of the 8 dp progress bar at the bottom, however large the text gets.
         Column(Modifier.align(Alignment.CenterStart).padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(title.uppercase(), style = FsType.heading().copy(fontSize = 18.sp), color = c.ink)
-            Text("$designation · ${holdMillis / 1000} s", style = FsType.readout(14), color = c.ink)
+            Text("$designation · ${holdMillis / 1000}\u00A0s", style = FsType.readout(14), color = c.ink)
             if (progress.value > 0f) Text("Keep holding", style = FsType.label().copy(fontWeight = FontWeight.SemiBold), color = c.danger)
         }
     }
@@ -397,7 +553,11 @@ fun FsArmConfirmation(action: String, designation: String, onConfirmed: () -> Un
 
 // ------------------------------------------------------------------ freshness
 
-/** How old a value may get before it shows as stale (product/data.md#live-telemetry), and the age every live value carries. */
+/**
+ * How old a value may get before it shows as stale (product/data.md#live-telemetry), and the age every live value carries.
+ * The number and its unit are joined by a non-breaking space ("0.3\u00A0s ago"), so a line never breaks between them; do
+ * the same wherever a value and its unit are written into one string.
+ */
 object FsFreshness {
     const val FLIGHT_MS = 2000L
     const val WEATHER_MS = 1800000L
@@ -405,10 +565,10 @@ object FsFreshness {
     fun age(ageMs: Long): String {
         val s = ageMs.coerceAtLeast(0) / 1000.0
         return when {
-            s < 10 -> "${"%.1f".format(s)} s ago"
-            s < 60 -> "${s.toInt()} s ago"
-            s < 3600 -> "${(s / 60).toInt()} min ago"
-            else -> "${(s / 3600).toInt()} h ago"
+            s < 10 -> "${"%.1f".format(s)}\u00A0s ago"
+            s < 60 -> "${s.toInt()}\u00A0s ago"
+            s < 3600 -> "${(s / 60).toInt()}\u00A0min ago"
+            else -> "${(s / 3600).toInt()}\u00A0h ago"
         }
     }
 }

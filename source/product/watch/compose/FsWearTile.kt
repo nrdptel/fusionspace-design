@@ -39,17 +39,20 @@ import com.google.common.util.concurrent.ListenableFuture
 data class FsFindSnapshot(val name: String, val phase: String, val distanceFt: Int, val bearingTrue: Int, val fixAge: String,
                           val altitudeFt: Int?, val apogeeFt: Int?)
 
-private val EXAMPLE = FsFindSnapshot("Vega", "LANDED", 1352, 62, "4 s ago", null, 5104)
+private val EXAMPLE = FsFindSnapshot("Vega", "LANDED", 1352, 62, "4\u00A0s ago", null, 5104)
 
 /** Find: title slot (rocket and phase), main slot (distance and bearing with the fix's age), edge button (open the app). */
 open class FsFindTileService : TileService() {
     open fun snapshot(): FsFindSnapshot = EXAMPLE
 
+    /** The activity the edge button opens, a class name in this app: by default `<package>.FindActivity`. */
+    open val findActivityClass: String get() = "$packageName.FindActivity"
+
     override fun onTileRequest(requestParams: RequestBuilders.TileRequest): ListenableFuture<TileBuilders.Tile> {
         val s = snapshot()
         val open = ModifiersBuilders.Clickable.Builder().setId("find").setOnClick(
             ActionBuilders.LaunchAction.Builder().setAndroidActivity(
-                ActionBuilders.AndroidActivity.Builder().setPackageName(packageName).setClassName("$packageName.FindActivity").build()
+                ActionBuilders.AndroidActivity.Builder().setPackageName(packageName).setClassName(findActivityClass).build()
             ).build()
         ).build()
         // The static FusionSpace scheme, not the watch's dynamic one: the colors mean something (product/watch.md).
@@ -66,7 +69,7 @@ open class FsFindTileService : TileService() {
                                 .addContent(text(" ft".layoutString, typography = Typography.LABEL_MEDIUM, color = colorScheme.onSurfaceVariant))
                                 .build(),
                         )
-                        .addContent(text("%03d° T · fix %s".format(s.bearingTrue, s.fixAge).layoutString,
+                        .addContent(text("%03d°\u00A0T · fix %s".format(s.bearingTrue, s.fixAge).layoutString,
                             typography = Typography.BODY_MEDIUM, color = colorScheme.onSurfaceVariant))
                         .build()
                 },
@@ -114,10 +117,10 @@ open class FsFindComplicationService : SuspendingComplicationDataSourceService()
         val spoken = PlainComplicationText.Builder("${s.name}: ${s.distanceFt} feet, bearing ${s.bearingTrue} degrees true, fix ${s.fixAge}").build()
         return when (type) {
             ComplicationType.SHORT_TEXT -> ShortTextComplicationData.Builder(
-                PlainComplicationText.Builder("%,d ft".format(s.distanceFt)).build(), spoken,
+                PlainComplicationText.Builder("%,d\u00A0ft".format(s.distanceFt)).build(), spoken,
             ).setTitle(PlainComplicationText.Builder("%03d°".format(s.bearingTrue)).build()).build()
             ComplicationType.LONG_TEXT -> LongTextComplicationData.Builder(
-                PlainComplicationText.Builder("${s.name} %,d ft at %03d° T".format(s.distanceFt, s.bearingTrue)).build(), spoken,
+                PlainComplicationText.Builder("${s.name} %,d\u00A0ft at %03d°\u00A0T".format(s.distanceFt, s.bearingTrue)).build(), spoken,
             ).build()
             ComplicationType.RANGED_VALUE -> if (s.altitudeFt != null && s.apogeeFt != null) RangedValueComplicationData.Builder(
                 s.altitudeFt.toFloat(), 0f, s.apogeeFt.toFloat(),

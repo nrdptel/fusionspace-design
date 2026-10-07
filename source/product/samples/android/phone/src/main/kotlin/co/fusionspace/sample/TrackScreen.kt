@@ -60,15 +60,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import co.fusionspace.design.FsFirstThatFits
+import co.fusionspace.design.FsPhaseStrip
 import co.fusionspace.design.FsReadout
 import co.fusionspace.design.FsSheetHeader
 import co.fusionspace.design.FsSignal
 import co.fusionspace.design.FsStatus
+import co.fusionspace.design.FsTag
 import co.fusionspace.design.LocalFsColors
 import co.fusionspace.design.LocalFsMono
 import kotlinx.coroutines.launch
-
-private val PHASES = listOf("Pad", "Boost", "Coast", "Apogee", "Drogue", "Main", "Landed")
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -90,23 +91,23 @@ fun TrackScreen(onBack: () -> Unit) {
                 .padding(horizontal = 16.dp).padding(bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Tag("FLIGHT 04 · FS-VEGA-004")
-                FsStatus("Link", FsSignal.Ok, detail = "0.4 s", icon = { StatusIcon(R.drawable.fs_telemetry) })
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp), itemVerticalAlignment = Alignment.CenterVertically) {
+                FsTag("FLIGHT 04 · FS-VEGA-004")
+                FsStatus("Link", FsSignal.Ok, detail = "0.4\u00A0s", icon = { StatusIcon(R.drawable.fs_telemetry) })
             }
             Text("Track", style = MaterialTheme.typography.headlineMedium, color = c.ink)
-            PhaseStrip(now = 5)
+            FsPhaseStrip(current = 5)
             FsSheetHeader("Now", 1, 2)
-            Row(Modifier.fillMaxWidth()) {
-                FsReadout("Altitude", "612", "ft AGL", Modifier.weight(1f), qualifier = "Barometer · 0.4 s ago", spokenUnit = "feet above ground level")
-                FsReadout("Descent", "18", "ft/s", Modifier.weight(1f), qualifier = "Under the main", spokenUnit = "feet per second")
-            }
+            Pair(
+                { FsReadout("Altitude", "612", "ft AGL", it, qualifier = "Barometer · 0.4\u00A0s ago", spokenUnit = "feet above ground level") },
+                { FsReadout("Descent", "18", "ft/s", it, qualifier = "Under the main", spokenUnit = "feet per second") },
+            )
             MapStandIn()
             FsSheetHeader("Find it", 2, 2)
-            Row(Modifier.fillMaxWidth()) {
-                FsReadout("Distance", "1,352", "ft", Modifier.weight(1f), qualifier = "From you", spokenUnit = "feet")
-                FsReadout("Bearing", "062°", "T", Modifier.weight(1f), qualifier = "Declination 13° E", spokenUnit = "true")
-            }
+            Pair(
+                { FsReadout("Distance", "1,352", "ft", it, qualifier = "From you", spokenUnit = "feet") },
+                { FsReadout("Bearing", "062°", "T", it, qualifier = "Declination 13° E", spokenUnit = "true") },
+            )
             Coordinates("40.86512, -119.06274")
         }
     }
@@ -116,35 +117,23 @@ fun TrackScreen(onBack: () -> Unit) {
 private fun mono(size: Int, weight: FontWeight = FontWeight.Normal) =
     TextStyle(fontFamily = LocalFsMono.current, fontSize = size.sp, fontWeight = weight, letterSpacing = 0.02.em)
 
-/**
- * Done in ink, now inverted, next faint (product/mobile.md#screens). Seven cells in a row; with large text, as many as
- * fit per row (whole words, never cut).
- */
-@OptIn(ExperimentalLayoutApi::class)
+/** Two readouts side by side, or one above the other when they don't both fit on a line at the text size. */
 @Composable
-private fun PhaseStrip(now: Int) {
-    val c = LocalFsColors.current
-    val perRow = when { LocalDensity.current.fontScale <= 1.15f -> 7; LocalDensity.current.fontScale <= 1.6f -> 4; else -> 3 }
-    FlowRow(
-        Modifier.fillMaxWidth().border(0.5.dp, c.ruleStrong)
-            .semantics { contentDescription = "Phase: ${PHASES[now]}, ${now} of ${PHASES.size - 1} done" },
-        maxItemsInEachRow = perRow,
-    ) {
-        PHASES.forEachIndexed { i, p ->
-            Text(
-                p.uppercase(), style = mono(11).copy(letterSpacing = 0.em), textAlign = TextAlign.Center, maxLines = 1, softWrap = false,
-                color = when { i < now -> c.ink; i == now -> c.canvas; else -> c.inkFaint },
-                modifier = Modifier.weight(1f).border(0.5.dp, c.ruleStrong).background(if (i == now) c.ink else c.canvas)
-                    .heightIn(min = 32.dp).padding(vertical = 8.dp),
-            )
-        }
+private fun Pair(first: @Composable (Modifier) -> Unit, second: @Composable (Modifier) -> Unit) {
+    FsFirstThatFits {
+        Row(Modifier.fillMaxWidth()) { first(Modifier.weight(1f)); second(Modifier.weight(1f)) }
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) { first(Modifier); second(Modifier) }
     }
 }
 
-/** A drawn stand-in for the offline map: the flight path, the pad, the rocket and the predicted landing (dashed, Nebula). */
+/**
+ * A drawn stand-in for the offline map: the flight path, the pad, the rocket and the predicted landing (dashed, Nebula).
+ * A drawing: its labels keep their size at every text size (they'd cover the map otherwise); the map has a description.
+ */
 @Composable
 private fun MapStandIn() {
     val c = LocalFsColors.current
+    val label = TextStyle(fontFamily = LocalFsMono.current, fontSize = with(LocalDensity.current) { 11.dp.toSp() }, letterSpacing = 0.02.em)
     Box(Modifier.fillMaxWidth().aspectRatio(1.6f).border(1.dp, c.ruleStrong).background(c.surface)
         .semantics { contentDescription = "Map: Vega 1,352 feet from you at 62 degrees true, predicted landing to the north-east" }) {
         Canvas(Modifier.fillMaxSize()) {
@@ -167,11 +156,11 @@ private fun MapStandIn() {
             drawRect(c.ink, Offset(pts.last().x - 7.dp.toPx(), pts.last().y - 7.dp.toPx()), Size(14.dp.toPx(), 14.dp.toPx()))
         }
         Row(Modifier.fillMaxWidth().padding(10.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text("GPS 11 sat · HDOP 0.9", style = mono(11), color = c.inkMuted, modifier = Modifier.weight(1f))
-            Text("PREDICTED LANDING", style = mono(11), color = c.predicted, textAlign = TextAlign.End, modifier = Modifier.weight(1f))
+            Text("GPS 11\u00A0sat · HDOP 0.9", style = label, color = c.inkMuted, modifier = Modifier.weight(1f))
+            Text("PREDICTED LANDING", style = label, color = c.predicted, textAlign = TextAlign.End, modifier = Modifier.weight(1f))
         }
-        Text("VEGA · 0.4 s", style = mono(11), color = c.ink, modifier = Modifier.align(Alignment.CenterEnd).padding(end = 64.dp, top = 40.dp))
-        Text("TILES 2026-10-03", style = mono(11), color = c.inkMuted, modifier = Modifier.align(Alignment.BottomEnd).padding(10.dp))
+        Text("VEGA · 0.4\u00A0s", style = label, color = c.ink, modifier = Modifier.align(Alignment.CenterEnd).padding(end = 64.dp, top = 40.dp))
+        Text("TILES 2026-10-03", style = label, color = c.inkMuted, modifier = Modifier.align(Alignment.BottomEnd).padding(10.dp))
     }
 }
 

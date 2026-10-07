@@ -25,9 +25,7 @@ abstract class FsResources : DefaultTask() {
         val font = root.resolve("font").apply { mkdirs() }
         val drawable = root.resolve("drawable").apply { mkdirs() }
         fonts.forEach { it.copyTo(font.resolve(it.name.replace("CascadiaMono", "cascadia_mono").replace('-', '_').lowercase()), true) }
-        // The icons tint with ?attr/colorControlNormal, which only exists with AppCompat; this app has none, so point
-        // them at the framework's attribute of the same name.
-        icons.forEach { drawable.resolve(it.name).writeText(it.readText().replace("?attr/colorControlNormal", "?android:attr/colorControlNormal")) }
+        icons.forEach { it.copyTo(drawable.resolve(it.name), true) }  // as published: they tint with the framework's colorControlNormal
         val kit = launcher.get().asFile
         kit.resolve("ic_launcher.xml").copyTo(root.resolve("mipmap-anydpi/ic_launcher.xml"), true)
         for (layer in listOf("background", "foreground", "monochrome"))

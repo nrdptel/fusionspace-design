@@ -13,7 +13,7 @@
    411,
    923
   ],
-  "captured": "2026-10-06"
+  "captured": "2026-10-07"
  },
  {
   "file": "phone-track.png",
@@ -29,7 +29,7 @@
    411,
    923
   ],
-  "captured": "2026-10-06"
+  "captured": "2026-10-07"
  },
  {
   "file": "phone-live-update.png",
@@ -45,7 +45,23 @@
    411,
    923
   ],
-  "captured": "2026-10-06"
+  "captured": "2026-10-07"
+ },
+ {
+  "file": "phone-live-update-android16.png",
+  "what": "Live Update in the notification shade on Android 16 (ProgressStyle: the phases as segments, apogee and main as points, the rocket as the tracker; promoted, with the 612 ft chip in the status bar)",
+  "device": "pixel_10 (AVD profile; display cutout emulation: hole)",
+  "os": "Android 16, API 36.1 (Google APIs arm64 system image r4, build BE4B.251210.005)",
+  "size_px": [
+   1080,
+   2424
+  ],
+  "density_dpi": 420,
+  "size_dp": [
+   411,
+   923
+  ],
+  "captured": "2026-10-07"
  },
  {
   "file": "wear-find.png",
@@ -61,7 +77,7 @@
    227,
    227
   ],
-  "captured": "2026-10-06"
+  "captured": "2026-10-07"
  },
  {
   "file": "wear-pad.png",
@@ -77,7 +93,7 @@
    227,
    227
   ],
-  "captured": "2026-10-06"
+  "captured": "2026-10-07"
  },
  {
   "file": "wear-unfired.png",
@@ -93,7 +109,7 @@
    227,
    227
   ],
-  "captured": "2026-10-06"
+  "captured": "2026-10-07"
  },
  {
   "file": "wear-find-ambient.png",
@@ -109,7 +125,7 @@
    227,
    227
   ],
-  "captured": "2026-10-06"
+  "captured": "2026-10-07"
  },
  {
   "file": "wear-tile-find.png",
@@ -125,7 +141,7 @@
    227,
    227
   ],
-  "captured": "2026-10-06"
+  "captured": "2026-10-07"
  },
  {
   "file": "wear-small-find.png",
@@ -141,6 +157,6 @@
    192,
    192
   ],
-  "captured": "2026-10-06"
+  "captured": "2026-10-07"
  }
 ]
