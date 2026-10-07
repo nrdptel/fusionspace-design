@@ -1600,9 +1600,12 @@ PRINCIPLES = [("Drawn, not decorated", "Every screen is a sheet from a drawing s
               ("Numbered like parts", "Every product has a designation and a revision, on screen and on the part."),
               ("Native where it counts", "The platform owns behavior; FusionSpace owns content.")]
 GUIDE_CSS = (".fsp-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;font-family:var(--mono);font-size:11px;font-weight:600;"
-             "letter-spacing:.06em;text-transform:uppercase}.fsp-row{display:flex;flex-wrap:wrap;gap:8px}.fsp-shot{display:block;border:1px solid var(--rule);width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;object-position:top}"
-             ".fsp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}@media (max-width:640px){.fsp-grid{grid-template-columns:1fr}}"
-             ".fsp-grid figure{margin:0}.fsp-grid figcaption{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:6px}")
+             "letter-spacing:.06em;text-transform:uppercase}.fsp-row{display:flex;flex-wrap:wrap;gap:8px}.fsp-shot{display:block;border:1px solid var(--rule);width:100%;height:auto}"
+             # Each preview whole, never cropped: a row's previews share one height, each as wide as its own proportions
+             # (flex-grow = width / height), so the captions line up; on a phone they stack at full width.
+             ".fsp-grid{display:grid;gap:16px}.fsp-line{display:flex;gap:12px;align-items:flex-start}.fsp-line figure{margin:0;flex-basis:0;min-width:0}"
+             "@media (max-width:640px){.fsp-line{flex-direction:column}.fsp-line figure{width:100%}}"
+             ".fsp-grid figcaption{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:6px}")
 def guide_sheet(n, total):
     chips = "".join(f'<span class="fsp-chip" style="background:{SIGNALS[k][2]};color:{SIGNALS[k][3]}">{w}</span>' for k, w in (("danger", "Armed"), ("caution", "Caution"), ("ok", "Continuity")))
     chips += f'<span class="fsp-chip" style="border:1px dashed {SIGNALS["predicted"][4]};color:var(--ink)">Predicted · Nebula</span>'
@@ -1615,11 +1618,18 @@ def guide_sheet(n, total):
         ("embedded.md · hardware.md · rockets.md", "Flight computers and devices; boards, enclosures and labels; airframes and livery."),
         ("review.md", "The FusionSpace test, template smells, release checklists, sources."),
         ("tokens/ · web/ · icons/ · cli/ · mobile/ · watch/ · embedded/ · hardware/ · rockets/ · desktop/", "Tokens for every platform and the reference parts.")))
-    shots = "".join(f'<figure><img class="fsp-shot" src="../product/{p}" alt="{a}" loading="lazy"><figcaption>{a}</figcaption></figure>' for p, a in (
-        ("web/previews/charge-light.png", "Charge, a tool page"), ("web/previews/flight-report-dark.png", "A flight report, dark theme"),
-        ("embedded/preview.png", "Device screens"), ("rockets/preview.png", "Livery wrap, 57 mm"),
-        ("mobile/preview.png", "Phones: four screens on iOS and Android"), ("mobile/glance/ios-live-activity.png", "A flight as a Live Activity"),
-        ("watch/preview.png", "Watches: Apple Watch and Wear OS"), ("watch/faces/watchos-complications.png", "Complications for finding a rocket")))
+    from PIL import Image
+    def shot(p, a):
+        with Image.open(os.path.join(build.OUT, "product", p)) as im: w, h = im.size
+        return (f'<figure style="flex-grow:{w / h:.4f}"><img class="fsp-shot" src="../product/{p}" alt="{a}" width="{w}" height="{h}" '
+                f'loading="lazy"><figcaption>{a}</figcaption></figure>')
+    lines = (   # rows of previews, paired so that a row isn't too short to read: wide previews get a row of their own
+        (("web/previews/charge-light.png", "Charge, a tool page"), ("web/previews/flight-report-dark.png", "A flight report, dark theme")),
+        (("embedded/preview.png", "Device screens"),),
+        (("mobile/preview.png", "Phones: four screens on iOS and Android"), ("mobile/glance/ios-live-activity.png", "A flight as a Live Activity")),
+        (("watch/preview.png", "Watches: Apple Watch and Wear OS"),),
+        (("watch/faces/watchos-complications.png", "Complications for finding a rocket"), ("rockets/preview.png", "Livery wrap, 57 mm")))
+    shots = "".join('<div class="fsp-line">' + "".join(shot(p, a) for p, a in line) + "</div>" for line in lines)
     return f'''
   <section class="sheet" id="products">
     <div class="sheet-head"><span class="sheet-no">SHEET {n} / {total}</span><h2>Products</h2><p class="muted" style="font-size:14px">How FusionSpace tools, apps, devices and rockets are designed. The rules are in <code>product/</code>.</p></div>
