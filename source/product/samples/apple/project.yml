@@ -120,3 +120,32 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: co.fusionspace.sample.watch.widgets
+  FusionSpaceSampleUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - UITests
+    dependencies:
+      - target: FusionSpaceSample
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: co.fusionspace.sample.uitests
+        TEST_TARGET_NAME: FusionSpaceSample
+        GENERATE_INFOPLIST_FILE: "YES"
+schemes:
+  FusionSpaceSample:
+    build:
+      targets:
+        FusionSpaceSample: all
+  FusionSpaceSampleWatch:
+    build:
+      targets:
+        FusionSpaceSampleWatch: all
+  FusionSpaceSampleUITests:
+    build:
+      targets:
+        FusionSpaceSample: all
+        FusionSpaceSampleUITests: [test]
+    test:
+      targets:
+        - FusionSpaceSampleUITests

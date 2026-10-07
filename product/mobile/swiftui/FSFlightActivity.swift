@@ -49,7 +49,7 @@ public struct FSFlightActivity: Widget {
                 }
                 DynamicIslandExpandedRegion(.bottom) {
                     VStack(spacing: 8) {
-                        FSPhaseStrip(phase: s.phase)
+                        FSActivityPhaseStrip(phase: s.phase)
                         Text("\(context.attributes.designation) · link \(FSFreshness.age(since: s.sampledAt))")
                             .font(.caption).foregroundStyle(d.inkMuted).frame(maxWidth: .infinity, alignment: .leading)
                     }
@@ -109,7 +109,7 @@ struct FSFlightLockScreen: View {
                     FSStateBox(armed: s.armed)
                 }
             } else {
-                FSPhaseStrip(phase: s.phase)
+                FSActivityPhaseStrip(phase: s.phase)
                 HStack(alignment: .bottom) {
                     FSIslandValue(label: "ALTITUDE", value: s.altitudeFt.map(fsNumber) ?? "—", unit: "ft AGL", big: true)
                     Spacer()
@@ -147,7 +147,7 @@ struct FSIslandValue: View {
 }
 
 /// PAD BOOST COAST APOGEE DROGUE MAIN LANDED: done in ink, now inverted, next faint.
-struct FSPhaseStrip: View {
+struct FSActivityPhaseStrip: View {
     let phase: FSFlightAttributes.ContentState.Phase
     var body: some View {
         let d = FS.darkPalette, all = FSFlightAttributes.ContentState.Phase.allCases, i = all.firstIndex(of: phase) ?? 0
@@ -156,7 +156,7 @@ struct FSPhaseStrip: View {
                 Text(p.rawValue.uppercased())
                     .font(.custom("CascadiaMono-Regular", size: 8.5)).lineLimit(1).minimumScaleFactor(0.7)
                     .frame(maxWidth: .infinity).padding(.vertical, 4)
-                    .foregroundStyle(j == i ? d.canvas : (j < i ? d.ink : d.inkFaint))
+                    .foregroundStyle(j == i ? d.canvas : (j < i ? d.ink : d.inkMuted))
                     .background(j == i ? d.ink : Color.clear)
             }
         }

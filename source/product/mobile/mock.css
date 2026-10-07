@@ -112,7 +112,7 @@ body { width: var(--w); height: var(--h); overflow: hidden; background: #000; }
 .m-phases li:last-child { border-right: 0; }
 .m-phases li[data-s="done"] { color: var(--fs-ink); }
 .m-phases li[data-s="now"] { background: var(--fs-ink); color: var(--fs-canvas); font-weight: 600; }
-.m-phases li[data-s="next"] { color: var(--fs-ink-faint); }
+.m-phases li[data-s="next"] { color: var(--fs-ink-muted); }
 .m-map, .m-chart { display: block; width: 100%; height: auto; }
 .m-coord { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 15px; }
 .m-copy { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 4px; color: var(--fs-action); font: 400 17px/22px var(--sys); }

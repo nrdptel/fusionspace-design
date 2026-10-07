@@ -164,10 +164,18 @@ public struct FSWatchState: View {
                 link
             }
             ForEach(channels) { ch in
-                HStack(spacing: 4) {
-                    Text("\(ch.id) \(ch.name)").font(FS.label()).lineLimit(1)
-                    Spacer(minLength: 4)
-                    FSStatus(ch.word, signal: ch.state, minHeight: 20)
+                // the channel and its state on one line, or the state under the name when both don't fit
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 4) {
+                        Text("\(ch.id) \(ch.name)").font(FS.label()).fixedSize()
+                        Spacer(minLength: 4)
+                        FSStatus(ch.word, signal: ch.state, minHeight: 20)
+                    }
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("\(ch.id) \(ch.name)").font(FS.label())
+                        FSStatus(ch.word, signal: ch.state, minHeight: 20)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
             Text(compact ? "Safe: switch or phone." : "Safe it with the switch or phone.").font(.caption2).foregroundStyle(d.inkMuted)

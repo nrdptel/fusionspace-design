@@ -37,7 +37,7 @@ def html_png(path, dest, w, h, subst=None):
             from playwright.sync_api import sync_playwright
             with sync_playwright() as p:
                 b = p.chromium.launch(); pg = b.new_page(viewport={"width": w, "height": h}, device_scale_factor=2)
-                pg.goto("file://" + os.path.abspath(tmp)); pg.wait_for_timeout(300); pg.screenshot(path=dest); b.close()
+                pg.goto("file://" + os.path.abspath(tmp)); pg.wait_for_timeout(300); pg.screenshot(path=dest, animations="disabled"); b.close()
             return True
         except Exception:
             pass

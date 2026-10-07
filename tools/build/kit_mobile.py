@@ -424,7 +424,7 @@ body { margin: 0; background: #fff; }
 .g-ph li:last-child { border-right: 0; }
 .g-ph li[data-s="done"] { color: var(--fs-ink); }
 .g-ph li[data-s="now"] { background: var(--fs-ink); color: var(--fs-canvas); font-weight: 600; }
-.g-ph li[data-s="next"] { color: var(--fs-ink-faint); }
+.g-ph li[data-s="next"] { color: var(--fs-ink-muted); }
 .fs-status { min-height: 22px; font-size: 11px; }
 
 /* Lock Screen Live Activity */
@@ -682,8 +682,8 @@ def shots(jobs):
             pg = b.new_page(viewport={"width": w, "height": h}, device_scale_factor=SCALE)
             pg.goto("file://" + out(rel)); pg.evaluate("document.fonts.ready"); pg.wait_for_timeout(250)
             os.makedirs(os.path.dirname(out(dest)), exist_ok=True)
-            if sel: pg.locator(sel).screenshot(path=out(dest))
-            else: pg.screenshot(path=out(dest), clip={"x": 0, "y": 0, "width": w, "height": h})
+            if sel: pg.locator(sel).screenshot(path=out(dest), animations="disabled")
+            else: pg.screenshot(path=out(dest), clip={"x": 0, "y": 0, "width": w, "height": h}, animations="disabled")
             if clip: problems += [f"{dest}: {x}" for x in kit_clip.check(pg, **clip)]
             pg.close()
         b.close()

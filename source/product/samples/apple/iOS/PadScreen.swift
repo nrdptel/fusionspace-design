@@ -4,6 +4,10 @@
 import SwiftUI
 
 struct PadScreen: View {
+    @Environment(\.dynamicTypeSize) private var typeSize
+    /// From xxxLarge up the controls scroll with everything else, and SAFE goes under Hold to arm: a fixed panel that
+    /// takes half the screen leaves too little for the checks above it.
+    private var inline: Bool { typeSize >= .xxxLarge }
     @State private var commanded: String? = nil
     @State private var armed = false
     @State private var confirmedAt = Date.now.addingTimeInterval(-0.3)
@@ -12,9 +16,9 @@ struct PadScreen: View {
         FSPaletteReader { p in
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
-                    HStack(spacing: 8) {
-                        SampleTag("\(Sample.designation) rev B")
-                        FSStatus("Link", signal: .ok, detail: "0.3 s", symbol: "link")
+                    ViewThatFits(in: .horizontal) {
+                        HStack(spacing: 8) { FSTag("\(Sample.designation) rev B"); FSStatus("Link", signal: .ok, detail: "0.3\u{00A0}s", symbol: "link") }
+                        VStack(alignment: .leading, spacing: 6) { FSTag("\(Sample.designation) rev B"); FSStatus("Link", signal: .ok, detail: "0.3\u{00A0}s", symbol: "link") }
                     }
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Pad 3 · Flight 04").font(FS.title()).foregroundStyle(p.ink)
@@ -23,29 +27,45 @@ struct PadScreen: View {
                     VStack(spacing: 8) {
                         FSSheetHeader("Checks", number: 1, of: 2)
                         PadRow(key: "SWITCH", value: "ON", status: FSStatus("On", signal: .ok))
-                        PadRow(key: "BATTERY", value: "8.1 V", status: FSStatus("OK", signal: .ok, symbol: "battery.100"))
+                        PadRow(key: "BATTERY", value: "8.1\u{00A0}V", status: FSStatus("OK", signal: .ok, symbol: "battery.100"))
                         PadRow(key: "GPS", value: "3D · 11 sat", status: FSStatus("Fix", signal: .ok, symbol: "location"))
                     }
                     VStack(spacing: 8) {
                         FSSheetHeader("Channels", number: 2, of: 2)
-                        PadRow(key: "1 · DROGUE", value: "Apogee + 0.4 s", status: FSStatus("Cont", signal: .ok, symbol: "waveform.path"))
-                        PadRow(key: "2 · MAIN", value: "700 ft desc.", status: FSStatus("Cont", signal: .ok, symbol: "waveform.path"))
+                        PadRow(key: "1 · DROGUE", value: "Apogee + 0.4\u{00A0}s", status: FSStatus("Cont", signal: .ok, symbol: "waveform.path"))
+                        PadRow(key: "2 · MAIN", value: "700\u{00A0}ft desc.", status: FSStatus("Cont", signal: .ok, symbol: "waveform.path"))
                         PadRow(key: "3 · —", value: "Not used", status: FSStatus("Not used", signal: .off), muted: true)
                     }
+                    // Large text: the controls scroll with everything else instead of a fixed panel that would leave no room.
+                    if inline { controls(p) }
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 16)
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
-                VStack(spacing: 12) {
+                if !inline { controls(p).padding(.horizontal, 16).padding(.top, 12).background(p.canvas) }
+            }
+            .background(p.canvas)
+            .toolbarBackground(p.canvas, for: .navigationBar)
+        }
+        .environment(\.fsTheme, .field)
+        .fsKeepsScreenOn()
+    }
+
+    /// The device's state above the two controls that change it. SAFE sits right of Hold to arm, or below it when the
+    /// text is too large for both side by side (product/embedded.md: SAFE is right of or below ARM).
+    private func controls(_ p: FSPalette) -> some View {
+                VStack(alignment: .leading, spacing: 12) {
                     Rectangle().fill(p.ink).frame(height: 2)
-                    HStack(spacing: 16) {
+                    let stateLayout = inline ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8)) : AnyLayout(HStackLayout(spacing: 16))
+                    stateLayout {
                         FSStateBox(armed: armed)
                         FSCommandedConfirmed(commanded: commanded, confirmed: armed ? "ARMED" : "SAFE",
                                              age: FSFreshness.age(since: confirmedAt))
                         Spacer(minLength: 0)
                     }
-                    HStack(spacing: 12) {
+                    let layout = inline ? AnyLayout(VStackLayout(spacing: 12)) : AnyLayout(HStackLayout(spacing: 12))
+                    layout {
                         FSHoldToConfirm("Hold to arm", designation: Sample.designation) {
                             commanded = "ARM"; armed = true; confirmedAt = .now
                         }
@@ -54,7 +74,8 @@ struct PadScreen: View {
                                 Image(systemName: "shield.lefthalf.filled").font(.title2)
                                 Text("SAFE").font(.custom("CascadiaMono-SemiBold", size: 22, relativeTo: .title2))
                             }
-                            .frame(width: 128, height: FS.gloveTarget)
+                            .frame(maxWidth: inline ? .infinity : 128, minHeight: FS.gloveTarget)
+                            .frame(width: inline ? nil : 128)
                             .foregroundStyle(p.ink)
                             .background(p.surface)
                             .overlay(Rectangle().strokeBorder(p.ink, lineWidth: 2))
@@ -63,17 +84,9 @@ struct PadScreen: View {
                         .accessibilityLabel("Safe \(Sample.designation)")
                     }
                     Button("Arm with a confirmation instead") {}
-                        .frame(minHeight: 44)
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                        .multilineTextAlignment(.center)
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 12)
-                .background(p.canvas)
-            }
-            .background(p.canvas)
-            .toolbarBackground(p.canvas, for: .navigationBar)
-        }
-        .environment(\.fsTheme, .field)
-        .fsKeepsScreenOn()
     }
 }
 
@@ -84,12 +97,22 @@ struct PadRow: View {
     var body: some View {
         FSPaletteReader { p in
             VStack(spacing: 0) {
-                HStack(spacing: 8) {
-                    Text(key).font(FS.label()).tracking(0.7).foregroundStyle(p.inkMuted).frame(width: 104, alignment: .leading)
-                    Text(value).font(FS.readout(15, relativeTo: .body)).foregroundStyle(muted ? p.inkMuted : p.ink)
-                        .lineLimit(1).minimumScaleFactor(0.8)
-                    Spacer(minLength: 4)
-                    status
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 8) {
+                        // fixedSize: a label that doesn't fit makes this layout not fit, instead of breaking the word
+                        Text(key).font(FS.label()).tracking(0.7).foregroundStyle(p.inkMuted).fixedSize().frame(minWidth: 104, alignment: .leading)
+                        Text(value).font(FS.readout(15, relativeTo: .body)).foregroundStyle(muted ? p.inkMuted : p.ink).fixedSize()
+                        Spacer(minLength: 4)
+                        status
+                    }
+                    // large text: the label above, then the value and the state
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(key).font(FS.label()).tracking(0.7).foregroundStyle(p.inkMuted)
+                        Text(value).font(FS.readout(15, relativeTo: .body)).foregroundStyle(muted ? p.inkMuted : p.ink)
+                        status
+                    }
+                    .padding(.vertical, 6)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .frame(minHeight: 36)
                 Rectangle().fill(p.rule).frame(height: 1)

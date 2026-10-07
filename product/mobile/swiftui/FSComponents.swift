@@ -45,19 +45,23 @@ public struct FSStatus: View {
     public init(_ word: String, signal: FSSignal, detail: String? = nil, symbol: String? = nil, minHeight: CGFloat = 24) {
         self.word = word; self.signal = signal; self.detail = detail; self.symbol = symbol; self.minHeight = minHeight
     }
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     public var body: some View {
         FSPaletteReader { p in
             HStack(spacing: 6) {
                 Image(systemName: symbol ?? signal.defaultSymbol).imageScale(.small)
-                HStack(spacing: 0) {
-                    Text(word.uppercased())
-                    if let detail { Text(" · \(detail)") }
-                }
-                .font(FS.label().weight(.semibold))
+                // One text: the state word in capitals, the detail as written. It wraps only between words, and only at
+                // accessibility sizes; at other sizes it keeps its full width ("CO / NT" and "0.3…" never happen).
+                Text(detail.map { "\(word.uppercased()) · \($0)" } ?? word.uppercased())
+                    .font(FS.labelStrong())
+                    .fixedSize(horizontal: !typeSize.isAccessibilitySize, vertical: true)
             }
-            .lineLimit(1)
+            // one line at ordinary sizes; at accessibility sizes the chip wraps rather than truncating to "…"
+            .lineLimit(typeSize.isAccessibilitySize ? 3 : 1)
+            .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, 8)
+            .padding(.vertical, typeSize.isAccessibilitySize ? 4 : 0)
             .frame(minHeight: minHeight)
             .foregroundStyle(foreground(p))
             .background(fill(p))
@@ -133,15 +137,10 @@ public struct FSReadout: View {
         FSPaletteReader { p in
             VStack(alignment: .leading, spacing: 4) {
                 Text(label.uppercased()).font(FS.label()).tracking(0.7).foregroundStyle(p.inkMuted)
-                HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    if kind == .stale {
-                        FSHatch(color: p.inkFaint).frame(width: 10).overlay(Rectangle().strokeBorder(p.ruleStrong, lineWidth: 1))
-                    }
-                    Text(value)
-                        .font(FS.readout(size))
-                        .underline(kind == .predicted, pattern: .dash, color: p.predicted)
-                        .foregroundStyle(kind == .stale ? p.inkMuted : p.ink)
-                    Text(unit).font(FS.label()).foregroundStyle(p.inkMuted)
+                // A number never breaks across lines: it scales down a little first, then the unit moves under it.
+                ViewThatFits(in: .horizontal) {
+                    HStack(alignment: .firstTextBaseline, spacing: 6) { stale(p); number(p); unitText(p) }
+                    VStack(alignment: .leading, spacing: 2) { HStack(spacing: 6) { stale(p); number(p) }; unitText(p) }
                 }
                 .fixedSize(horizontal: false, vertical: true)
                 if let qualifier { Text(qualifier).font(.custom("Archivo-Regular", size: 14, relativeTo: .footnote)).foregroundStyle(p.inkMuted) }
@@ -151,6 +150,18 @@ public struct FSReadout: View {
             .accessibilityValue(Text(spoken))
         }
     }
+
+    @ViewBuilder private func stale(_ p: FSPalette) -> some View {
+        if kind == .stale { FSHatch(color: p.inkFaint).frame(width: 10).overlay(Rectangle().strokeBorder(p.ruleStrong, lineWidth: 1)) }
+    }
+    private func number(_ p: FSPalette) -> some View {
+        Text(value)
+            .font(FS.readout(size))
+            .underline(kind == .predicted, pattern: .dash, color: p.predicted)
+            .foregroundStyle(kind == .stale ? p.inkMuted : p.ink)
+            .lineLimit(1).minimumScaleFactor(0.6)
+    }
+    private func unitText(_ p: FSPalette) -> some View { Text(unit).font(FS.label()).foregroundStyle(p.inkMuted) }
 
     private var spoken: String {
         var s = "\(value) \(spokenUnit ?? unit)"
@@ -167,15 +178,21 @@ public struct FSReadout: View {
 public struct FSSheetHeader: View {
     let name: String, number: Int, total: Int
     public init(_ name: String, number: Int, of total: Int) { self.name = name; self.number = number; self.total = total }
+    private var title: some View {
+        Text(name.uppercased()).font(FS.heading()).tracking(0.6).fixedSize().accessibilityAddTraits(.isHeader)
+    }
+    private func sheetNo(_ p: FSPalette) -> some View {
+        Text("SHEET \(number) / \(total)").font(FS.label()).tracking(0.7).foregroundStyle(p.inkMuted).fixedSize()
+            .accessibilityLabel(Text("Sheet \(number) of \(total)"))
+    }
     public var body: some View {
         FSPaletteReader { p in
             VStack(spacing: 8) {
                 Rectangle().fill(p.ink).frame(height: 2)
-                HStack(alignment: .firstTextBaseline) {
-                    Text(name.uppercased()).font(FS.heading()).tracking(0.6).accessibilityAddTraits(.isHeader)
-                    Spacer()
-                    Text("SHEET \(number) / \(total)").font(FS.label()).tracking(0.7).foregroundStyle(p.inkMuted)
-                        .accessibilityLabel(Text("Sheet \(number) of \(total)"))
+                // name and sheet number on one line, or the number under the name when the text is too large for both
+                ViewThatFits(in: .horizontal) {
+                    HStack(alignment: .firstTextBaseline) { title; Spacer(); sheetNo(p) }
+                    VStack(alignment: .leading, spacing: 2) { title; sheetNo(p) }.frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
             .foregroundStyle(p.ink)
@@ -241,22 +258,108 @@ public struct FSTitleBlock: View {
 /// What the app asked the hardware to do, and what the hardware says it is, side by side. The app never assumes.
 public struct FSCommandedConfirmed: View {
     let commanded: String?, confirmed: String, age: String
+    @Environment(\.dynamicTypeSize) private var typeSize
     public init(commanded: String?, confirmed: String, age: String) { self.commanded = commanded; self.confirmed = confirmed; self.age = age }
     public var body: some View {
         FSPaletteReader { p in
-            Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 4) {
-                GridRow {
-                    Text("COMMANDED").font(FS.label()).foregroundStyle(p.inkMuted)
-                    Text(commanded ?? "—").font(FS.readout(15, relativeTo: .body))
-                }
-                GridRow {
-                    Text("CONFIRMED").font(FS.label()).foregroundStyle(p.inkMuted)
-                    Text("\(confirmed) · \(age)").font(FS.readout(15, relativeTo: .body))
+            Group {
+                if typeSize.isAccessibilitySize {
+                    // large text: each label above its value, so neither word breaks
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("COMMANDED").font(FS.label()).foregroundStyle(p.inkMuted)
+                        Text(commanded ?? "—").font(FS.readout(15, relativeTo: .body))
+                        Text("CONFIRMED").font(FS.label()).foregroundStyle(p.inkMuted).padding(.top, 4)
+                        Text("\(confirmed) · \(age)").font(FS.readout(15, relativeTo: .body))
+                    }
+                } else {
+                    Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 4) {
+                        GridRow {
+                            Text("COMMANDED").font(FS.label()).foregroundStyle(p.inkMuted)
+                            Text(commanded ?? "—").font(FS.readout(15, relativeTo: .body))
+                        }
+                        GridRow {
+                            Text("CONFIRMED").font(FS.label()).foregroundStyle(p.inkMuted)
+                            Text("\(confirmed) · \(age)").font(FS.readout(15, relativeTo: .body))
+                        }
+                    }
                 }
             }
+            .lineLimit(nil)
+            .fixedSize(horizontal: false, vertical: true)
             .foregroundStyle(p.ink)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(Text("Commanded \(commanded ?? "nothing"). Confirmed \(confirmed), \(age)."))
+        }
+    }
+}
+
+/// A designation tag: a mono label in a 1 pt box with its top-right corner cut at 45°, like a drawing's tag
+/// (`FS-VEGA-004 rev B`). Wraps at accessibility text sizes rather than truncating.
+public struct FSTag: View {
+    let text: String
+    public init(_ text: String) { self.text = text }
+    public var body: some View {
+        FSPaletteReader { p in
+            Text(text)
+                .font(.custom("CascadiaMono-Regular", size: 12, relativeTo: .caption))
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.leading, 8).padding(.trailing, 10).padding(.vertical, 3)
+                .foregroundStyle(p.ink)
+                .overlay(FSChamfer(cut: 4).stroke(p.ruleStrong, lineWidth: 1))
+        }
+    }
+}
+
+/// A rectangle with its top-right corner cut at 45° (tags, sheet corners).
+public struct FSChamfer: Shape {
+    let cut: CGFloat
+    public init(cut: CGFloat) { self.cut = cut }
+    public func path(in r: CGRect) -> Path {
+        var p = Path()
+        p.move(to: CGPoint(x: r.minX, y: r.minY)); p.addLine(to: CGPoint(x: r.maxX - cut, y: r.minY))
+        p.addLine(to: CGPoint(x: r.maxX, y: r.minY + cut)); p.addLine(to: CGPoint(x: r.maxX, y: r.maxY))
+        p.addLine(to: CGPoint(x: r.minX, y: r.maxY)); p.closeSubpath()
+        return p
+    }
+}
+
+/// The flight's phases: done in ink, now inverted, next faint. When the seven names don't fit (narrow screens, large
+/// text), it shows the current phase in words with its place, and a tick per phase, rather than abbreviating them.
+public struct FSPhaseStrip: View {
+    public static let names = ["PAD", "BOOST", "COAST", "APOGEE", "DROGUE", "MAIN", "LANDED"]
+    let current: Int
+    public init(current: Int) { self.current = current }
+    public var body: some View {
+        FSPaletteReader { p in
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 0) {
+                    ForEach(Self.names.indices, id: \.self) { i in
+                        Text(Self.names[i])
+                            .font(.custom(i == current ? "CascadiaMono-SemiBold" : "CascadiaMono-Regular", size: 10, relativeTo: .caption2))
+                            .lineLimit(1).fixedSize()
+                            .padding(.horizontal, 3).padding(.vertical, 6)
+                            .frame(maxWidth: .infinity)
+                            .foregroundStyle(i == current ? p.canvas : (i < current ? p.ink : p.inkMuted))   // next is read: muted, not faint
+                            .background(i == current ? p.ink : Color.clear)
+                    }
+                }
+                .overlay(Rectangle().strokeBorder(p.ruleStrong, lineWidth: 1))
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("\(Self.names[current]) · \(current + 1) of \(Self.names.count)")
+                        .font(.custom("CascadiaMono-SemiBold", size: 12, relativeTo: .caption))
+                        .fixedSize(horizontal: false, vertical: true)
+                    HStack(spacing: 3) {
+                        ForEach(Self.names.indices, id: \.self) { i in
+                            Rectangle().fill(i <= current ? p.ink : Color.clear)
+                                .overlay(Rectangle().strokeBorder(i <= current ? p.ink : p.ruleStrong, lineWidth: 1))
+                                .frame(height: i == current ? 10 : 6)
+                        }
+                    }
+                }
+                .foregroundStyle(p.ink)
+            }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(Text("Phase: \(Self.names[current].lowercased()), \(current + 1) of \(Self.names.count)"))
         }
     }
 }
@@ -298,9 +401,11 @@ public struct FSHoldToConfirm: View {
     public var body: some View {
         FSPaletteReader { p in
             VStack(alignment: .leading, spacing: 6) {
-                Label(title.uppercased(), systemImage: "bolt.horizontal").font(FS.heading().weight(.semibold))
+                Label(title.uppercased(), systemImage: "bolt.horizontal").font(FS.heading())
+                    .fixedSize(horizontal: false, vertical: true)
                 Text("\(designation) · \(Int(duration)) s").font(FS.readout(14, relativeTo: .footnote))
-                Text("Keep holding").font(FS.label().weight(.semibold)).foregroundStyle(p.danger)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("Keep holding").font(FS.labelStrong()).foregroundStyle(p.danger)
                     .opacity(progress > 0 ? 1 : 0)      // reserved, so the label doesn't jump when it appears
             }
             .padding(.horizontal, 16)
@@ -351,10 +456,11 @@ public enum FSFreshness {
     /// "0.4 s ago", "4 min ago", "2 h ago": the qualifier every live value carries.
     public static func age(since date: Date, now: Date = .now) -> String {
         let s = max(0, now.timeIntervalSince(date))
-        if s < 10 { return String(format: "%.1f s ago", s) }
-        if s < 60 { return "\(Int(s)) s ago" }
-        if s < 3600 { return "\(Int(s / 60)) min ago" }
-        return "\(Int(s / 3600)) h ago"
+        // a non-breaking space between the number and its unit, so a line never breaks inside "0.3 s"
+        if s < 10 { return String(format: "%.1f\u{00A0}s ago", s) }
+        if s < 60 { return "\(Int(s))\u{00A0}s ago" }
+        if s < 3600 { return "\(Int(s / 60))\u{00A0}min ago" }
+        return "\(Int(s / 3600))\u{00A0}h ago"
     }
 }
 

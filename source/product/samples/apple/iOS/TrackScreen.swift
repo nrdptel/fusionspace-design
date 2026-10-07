@@ -4,32 +4,33 @@
 import SwiftUI
 
 struct TrackScreen: View {
+    @Environment(\.dynamicTypeSize) private var typeSize
     var body: some View {
         FSPaletteReader { p in
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
-                    HStack(spacing: 8) {
-                        SampleTag("FLIGHT 04 · \(Sample.designation)")
-                        FSStatus("Link", signal: .ok, detail: "0.4 s", symbol: "antenna.radiowaves.left.and.right")
+                    ViewThatFits(in: .horizontal) {
+                        HStack(spacing: 8) { FSTag("FLIGHT 04 · \(Sample.designation)"); FSStatus("Link", signal: .ok, detail: "0.4\u{00A0}s", symbol: "antenna.radiowaves.left.and.right") }
+                        VStack(alignment: .leading, spacing: 6) { FSTag("FLIGHT 04 · \(Sample.designation)"); FSStatus("Link", signal: .ok, detail: "0.4\u{00A0}s", symbol: "antenna.radiowaves.left.and.right") }
                     }
-                    PhaseStrip(current: 5)
+                    FSPhaseStrip(current: 5)
                     VStack(spacing: 8) {
                         FSSheetHeader("Now", number: 1, of: 2)
-                        HStack(alignment: .top) {
-                            FSReadout("Altitude", value: "612", unit: "ft AGL", qualifier: "Barometer · 0.4 s ago", spokenUnit: "feet above ground level")
-                            Spacer()
+                        pair {
+                            FSReadout("Altitude", value: "612", unit: "ft AGL", qualifier: "Barometer · 0.4\u{00A0}s ago", spokenUnit: "feet above ground level")
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             FSReadout("Descent", value: "18", unit: "ft/s", qualifier: "Under the main", spokenUnit: "feet per second")
-                            Spacer()
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
                     RecoveryMap().frame(height: 190)
                     VStack(spacing: 8) {
                         FSSheetHeader("Find it", number: 2, of: 2)
-                        HStack(alignment: .top) {
+                        pair {
                             FSReadout("Distance", value: "1,352", unit: "ft", qualifier: "From you", size: 26, spokenUnit: "feet")
-                            Spacer()
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             FSReadout("Bearing", value: "062°", unit: "T", qualifier: "Declination 13° E", size: 26, spokenUnit: "true")
-                            Spacer()
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
                 }
@@ -47,29 +48,11 @@ struct TrackScreen: View {
         }
         .fsKeepsScreenOn()          // follows the system appearance (captured in dark)
     }
-}
 
-/// PAD BOOST COAST APOGEE DROGUE MAIN LANDED: done in ink, now inverted, next faint.
-struct PhaseStrip: View {
-    let current: Int
-    let names = ["PAD", "BOOST", "COAST", "APOGEE", "DROGUE", "MAIN", "LANDED"]
-    var body: some View {
-        FSPaletteReader { p in
-            HStack(spacing: 0) {
-                ForEach(names.indices, id: \.self) { i in
-                    Text(names[i])
-                        .font(.custom("CascadiaMono-Regular", size: 9.5, relativeTo: .caption2))
-                        .fontWeight(i == current ? .semibold : .regular)
-                        .lineLimit(1).minimumScaleFactor(0.6)
-                        .frame(maxWidth: .infinity).padding(.vertical, 6)
-                        .foregroundStyle(i == current ? p.canvas : (i < current ? p.ink : p.inkFaint))
-                        .background(i == current ? p.ink : Color.clear)
-                }
-            }
-            .overlay(Rectangle().strokeBorder(p.ruleStrong, lineWidth: 1))
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel("Phase: \(names[current].lowercased())")
-        }
+    /// Two readouts side by side, or one above the other at accessibility text sizes.
+    private func pair<C: View>(@ViewBuilder _ content: () -> C) -> some View {
+        let layout = typeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12)) : AnyLayout(HStackLayout(alignment: .top))
+        return layout { content() }
     }
 }
 
@@ -101,8 +84,8 @@ struct RecoveryMap: View {
                 ctx.fill(diamond, with: .color(p.ink))
                 ctx.fill(Path(ellipseIn: CGRect(x: you.x - 11, y: you.y - 11, width: 22, height: 22)), with: .color(p.action.opacity(0.18)))
                 ctx.fill(Path(ellipseIn: CGRect(x: you.x - 6, y: you.y - 6, width: 12, height: 12)), with: .color(p.action))
-                let mono = Font.custom("CascadiaMono-Regular", size: 11)
-                ctx.draw(Text("VEGA · 0.4 s").font(mono).foregroundStyle(p.ink), at: CGPoint(x: rocket.x, y: rocket.y + 22))
+                let mono = Font.custom("CascadiaMono-Regular", fixedSize: 11)   // a drawing: its labels keep their size; the map has an accessibility label
+                ctx.draw(Text("VEGA · 0.4\u{00A0}s").font(mono).foregroundStyle(p.ink), at: CGPoint(x: rocket.x, y: rocket.y + 22))
                 ctx.draw(Text("PAD 3").font(mono).foregroundStyle(p.inkMuted), at: CGPoint(x: pad.x + 30, y: pad.y + 4))
                 ctx.draw(Text("PREDICTED").font(mono).foregroundStyle(p.predicted), at: CGPoint(x: landing.minX - 6, y: landing.midY), anchor: .trailing)
                 ctx.draw(Text("GPS 11 sat · HDOP 0.9").font(mono).foregroundStyle(p.inkMuted), at: CGPoint(x: 12, y: 14), anchor: .leading)
@@ -110,7 +93,7 @@ struct RecoveryMap: View {
                 var scale = Path(); scale.move(to: CGPoint(x: 12, y: h - 18)); scale.addLine(to: CGPoint(x: 12, y: h - 12))
                 scale.addLine(to: CGPoint(x: 92, y: h - 12)); scale.addLine(to: CGPoint(x: 92, y: h - 18))
                 ctx.stroke(scale, with: .color(p.ink), lineWidth: 1.5)
-                ctx.draw(Text("500 ft").font(mono).foregroundStyle(p.inkMuted), at: CGPoint(x: 100, y: h - 14), anchor: .leading)
+                ctx.draw(Text("500\u{00A0}ft").font(mono).foregroundStyle(p.inkMuted), at: CGPoint(x: 100, y: h - 14), anchor: .leading)
                 var north = Path(); north.move(to: CGPoint(x: w - 22, y: 10)); north.addLine(to: CGPoint(x: w - 16, y: 26))
                 north.addLine(to: CGPoint(x: w - 22, y: 22)); north.addLine(to: CGPoint(x: w - 28, y: 26)); north.closeSubpath()
                 ctx.fill(north, with: .color(p.ink))

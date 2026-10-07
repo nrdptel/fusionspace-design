@@ -2,6 +2,9 @@
 // Needs the npm packages pptxgenjs and docx (npm i -g pptxgenjs docx, or a local node_modules).
 // Writes documents/slides/fusionspace-slides.pptx and documents/letterhead/letterhead-{letter,a4}.docx.
 const fs = require("fs"), path = require("path");
+// One fixed date for everything the build writes (SOURCE_DATE_EPOCH, set by build.py): template dates and zip entries alike,
+// so two builds give the same bytes. US style, like every FusionSpace date.
+const FIXED = new Date(1000 * Number(process.env.SOURCE_DATE_EPOCH || 1790812800));
 const KIT = process.argv[2];
 const P = (...p) => path.join(KIT, ...p);
 const img = p => "image/png;base64," + fs.readFileSync(P(p)).toString("base64");
@@ -69,7 +72,7 @@ async function slides() {
   s.addText("FS-VEGA · DESIGN REVIEW · REV A", {x: M, y: 3.0, w: 10, h: 0.4, fontFace: HEAD, fontSize: 14, color: C.o, margin: 0, isTextBox: true, charSpacing: 2});
   s.addText("Presentation title", {x: M, y: 3.45, w: 11.5, h: 1.2, fontFace: HEAD, fontSize: 50, bold: true, color: C.paper, margin: 0, isTextBox: true, valign: "top"});
   s.addText("Subtitle or one-line summary", {x: M, y: 4.7, w: 11, h: 0.5, fontFace: BODY, fontSize: 20, color: C.haze, margin: 0, isTextBox: true});
-  s.addText("Neer Patel · " + new Date().toLocaleDateString("en-GB", {month: "long", year: "numeric"}), {x: M, y: H - 0.95, w: 6, h: 0.3, fontFace: HEAD, fontSize: 12, color: C.haze, margin: 0, isTextBox: true});
+  s.addText("Neer Patel · " + FIXED.toLocaleDateString("en-US", {month: "long", year: "numeric", timeZone: "UTC"}), {x: M, y: H - 0.95, w: 6, h: 0.3, fontFace: HEAD, fontSize: 12, color: C.haze, margin: 0, isTextBox: true});
   s.addImage({data: markC, x: W - 4.6, y: 1.4, w: 3.9, h: 3.9});
   s.addNotes("Title layout. Replace the designation, title, subtitle and date. The mark on the right is optional.");
   // agenda
@@ -183,7 +186,6 @@ async function slides() {
 
 // Reproducible Office files: fixed dates in docProps/core.xml and on every zip entry (SOURCE_DATE_EPOCH, set by build.py),
 // so a rebuild only changes a file when its content changes.
-const FIXED = new Date(1000 * Number(process.env.SOURCE_DATE_EPOCH || 1790812800));
 async function fixZip(buf) {
   const JSZip = require(require.resolve("jszip", {paths: [path.dirname(require.resolve("pptxgenjs"))]}));
   const zip = await JSZip.loadAsync(buf), out = new JSZip(), iso = FIXED.toISOString().replace(/\.\d+Z$/, "Z");
@@ -240,7 +242,7 @@ async function letterhead(page) {
         new d.Paragraph({children: [mono(`${EMAIL} · ${SITE} · ${GITHUB}`)]}),
       ]})},
       children: [
-        new d.Paragraph({children: [new d.TextRun(new Date().toLocaleDateString("en-GB", {day: "numeric", month: "long", year: "numeric"}))], spacing: {after: 240}}),
+        new d.Paragraph({children: [new d.TextRun(FIXED.toLocaleDateString("en-US", {day: "numeric", month: "long", year: "numeric", timeZone: "UTC"}))], spacing: {after: 240}}),
         new d.Paragraph({children: [new d.TextRun("Recipient name")]}),
         new d.Paragraph({children: [new d.TextRun("Organization")]}),
         new d.Paragraph({children: [new d.TextRun("Address")], spacing: {after: 360}}),
@@ -289,7 +291,7 @@ async function report(page) {
          new d.Paragraph({style: "Title", children: [new d.TextRun("Report title")]}),
          new d.Paragraph({children: [new d.TextRun({text: "A one-line subtitle for this document.", size: 26, color: C.slate})], spacing: {after: 2400}}),
          new d.Paragraph({children: [mono("NEER PATEL · " + ROLE.toUpperCase(), {size: 16, color: C.slate})]}),
-         new d.Paragraph({children: [mono(new Date().toLocaleDateString("en-GB", {day: "numeric", month: "long", year: "numeric"}).toUpperCase(), {size: 16, color: C.slate})]}),
+         new d.Paragraph({children: [mono(FIXED.toLocaleDateString("en-US", {day: "numeric", month: "long", year: "numeric", timeZone: "UTC"}).toUpperCase(), {size: 16, color: C.slate})]}),
        ]},
       {properties: {page: {size, margin: {top: 1600, bottom: 1400, left: 1134, right: 1134, header: 600, footer: 600}}},
        headers: {default: new d.Header({children: [new d.Paragraph({tabStops: [{type: d.TabStopType.RIGHT, position: contentW}],

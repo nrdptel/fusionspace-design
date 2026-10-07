@@ -7,7 +7,7 @@ will act on, so this is where the principles matter most: show the working, and 
 
 | Rule | Write | Not |
 |---|---|---|
-| A space between a number and its unit (NIST SP 811, the US guide to SI) | `21.5 °C`, `644 ft/s` | `21.5°C`, `644ft/s` |
+| A space between a number and its unit (NIST SP 811, the US guide to SI), and a non-breaking one, so a line never ends between them | `21.5 °C`, `644 ft/s` (U+00A0 between) | `21.5°C`, `644ft/s`, `0.3` at a line's end and `s` on the next |
 | Except plane angles and percent | `45°`, `270°`, `7.0%` | `45 °`, `7.0 %` |
 | Group digits in threes with a comma, from four digits (US style) | `5,104 ft`, `12,000 ft MSL` | `5 104 ft`, `5.104 ft` |
 | No grouping in drawing callouts, part numbers, terminal output or anything copied or exported | `FS-VEGA-001`, `Ø 98.0`, `1280 ft` | |

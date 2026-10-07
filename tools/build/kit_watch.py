@@ -420,8 +420,8 @@ def shots(jobs):
             pg = b.new_page(viewport={"width": w, "height": h}, device_scale_factor=SCALE)
             pg.goto("file://" + out(rel)); pg.evaluate("document.fonts.ready"); pg.wait_for_timeout(250)
             os.makedirs(os.path.dirname(out(dest)), exist_ok=True)
-            if sel: pg.locator(sel).screenshot(path=out(dest))
-            else: pg.screenshot(path=out(dest), clip={"x": 0, "y": 0, "width": w, "height": h})
+            if sel: pg.locator(sel).screenshot(path=out(dest), animations="disabled")
+            else: pg.screenshot(path=out(dest), clip={"x": 0, "y": 0, "width": w, "height": h}, animations="disabled")
             if clip: problems += [f"{dest}: {x}" for x in kit_clip.check(pg, **clip)]
             pg.close()
         b.close()

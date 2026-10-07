@@ -312,6 +312,9 @@ def swift_tokens():
           "    public static func title() -> Font { .custom(\"CascadiaMono-SemiBold\", size: 28, relativeTo: .title) }",
           "    public static func heading() -> Font { .custom(\"CascadiaMono-SemiBold\", size: 14, relativeTo: .headline) }   // with .textCase(.uppercase)",
           "    public static func label() -> Font { .custom(\"CascadiaMono-Regular\", size: 12, relativeTo: .caption) }      // with .textCase(.uppercase)",
+          "    /// The label in the real SemiBold face: never .weight(.semibold) on a custom font (that synthesizes a bold whose",
+          "    /// glyphs ink wider than their frame, which the accessibility audit reports as clipped text).",
+          "    public static func labelStrong() -> Font { .custom(\"CascadiaMono-SemiBold\", size: 12, relativeTo: .caption) }",
           "    public static func readout(_ size: CGFloat = 28, relativeTo style: Font.TextStyle = .title) -> Font { .custom(\"CascadiaMono-Regular\", size: size, relativeTo: style).monospacedDigit() }",
           "    public static func prose() -> Font { .custom(\"Archivo-Regular\", size: 17, relativeTo: .body) }",
           "",
@@ -1727,7 +1730,7 @@ def shoot(rel_html, dest, width=1280, scheme="light", full=True, height=900):
     with sync_playwright() as p_:
         b = p_.chromium.launch(); pg = b.new_page(viewport={"width": width, "height": height}, color_scheme=scheme, device_scale_factor=1)
         pg.goto("file://" + out(rel_html)); pg.wait_for_timeout(400)
-        os.makedirs(os.path.dirname(out(dest)), exist_ok=True); pg.screenshot(path=out(dest), full_page=full); b.close()
+        os.makedirs(os.path.dirname(out(dest)), exist_ok=True); pg.screenshot(path=out(dest), full_page=full, animations="disabled"); b.close()
     return True
 
 def build_icons():

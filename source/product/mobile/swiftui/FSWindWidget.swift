@@ -84,7 +84,7 @@ struct FSWindView: View {
         let word = entry.overLimit ? "OVER LIMIT" : "NEAR LIMIT"
         let full = mode == .fullColor
         return Label(word, systemImage: "exclamationmark.triangle")
-            .font(FS.label().weight(.semibold))
+            .font(FS.labelStrong())
             .padding(.horizontal, 6).padding(.vertical, 2)
             .foregroundStyle(full ? FS.onCautionFill : p.ink)
             .background(full ? FS.cautionFill : Color.clear)
