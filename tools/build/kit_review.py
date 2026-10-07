@@ -18,7 +18,7 @@ import build, kit
 Image.MAX_IMAGE_PIXELS = None
 SKIP = {"review.html", "verify.png"}; SKIP_DIRS = ("review-previews/",)
 TEXT_EXT = {".md", ".txt", ".json", ".h", ".c", ".py", ".rs", ".xbm", ".ans", ".sh", ".css", ".kicad_mod", ".toml", ".yml",
-            ".yaml", ".conf", ".itermcolors", ".webmanifest", ".xml", ".html", ".svg", ".js", ".ts", ".fcmacro", ""}
+            ".yaml", ".conf", ".itermcolors", ".webmanifest", ".xml", ".html", ".svg", ".js", ".ts", ".fcmacro", ".swift", ".kt", ""}
 NO_HASH = {".pdf", ".docx", ".pptx", ".dxf", ".stl", ".mp4", ".webm", ".gif", ".ico", ".zip"}
 PLACEHOLDER = re.compile(r"example\.com|your-name|LOGO_URL|Lorem ipsum|TODO|FIXME|name@")
 SIZE_SUFFIX = re.compile(r"(-preview(@\dx)?|@\dx|-cmyk|-lvgl|-1200dpi|-\d+w|-(16|32|48|64|96|128|150|152|167|180|192|256|310|384|400|500|512|800|1000|1024|2000|2048|4000))$")
@@ -391,6 +391,11 @@ REPS = [   # (representative, [items it covers], why it stands for them)
     ("product/rockets/preview", [r"^product/rockets/"], "the wraps for every airframe size (SVG, PDF) and their README"),
     ("product/cli/preview", [r"^product/cli/"], "the Rust and Python styles and the sample output"),
     ("product/desktop/linux/hicolor/256x256/apps/co.fusionspace.HprSim", [r"^product/desktop/"], "the Windows ICO and MSIX tiles, the Linux icons and the templates"),
+    # phones (October 6, 2026): the screens, the glanceable surfaces, and the code
+    ("product/mobile/preview", [r"^product/mobile/(screens/|fonts/|README)"], "every screen as HTML and a 2x PNG on both platforms, the mock-up stylesheet, the Roboto subset and the folder README"),
+    ("product/mobile/glance/ios-live-activity", [r"^product/mobile/glance/(index|ios-dynamic-island)"], "the Dynamic Island and Apple Watch Smart Stack, and the page they're drawn on"),
+    ("product/mobile/glance/ios-widgets", [r"^product/mobile/glance/android-widget"], "the Android (Glance) widget"),
+    ("product/mobile/swiftui/FSComponents", [r"^product/mobile/(swiftui|compose)/"], "the widget and Live Activity in SwiftUI, and the Compose parts and Live Update"),
 ]
 CORE = (r"^(guide/|product/|logo/|kit/web/|kit/apps/|kit/github/|kit/social/|kit/documents/|README\.md$|kit/projects/(hpr-motor-finder|charge|window|muster)/|kit/production/stickers/sticker-mark-50mm-dark$)")
            # focus items people will see from you first (identity, web, GitHub, social, documents) and the open options;

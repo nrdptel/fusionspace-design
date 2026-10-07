@@ -888,7 +888,8 @@ def table_type():
 def doc_context():
     import kit_icons as ki
     ctx = {k: v for k, v in globals().items() if not k.startswith("_")}
-    ctx.update({"ICONS": ki.ICONS, "M_ORANGE": M_ORANGE, "O_BLUE": O_BLUE, "VOID": VOID, "PAPER": PAPER, "ION": ION, "EMBER": EMBER})
+    import kit_mobile
+    ctx.update({"MOBILE": kit_mobile, "ICONS": ki.ICONS, "M_ORANGE": M_ORANGE, "O_BLUE": O_BLUE, "VOID": VOID, "PAPER": PAPER, "ION": ION, "EMBER": EMBER})
     return ctx
 def render_md(text, ctx):
     def sub(m):
@@ -1601,10 +1602,11 @@ def guide_sheet(n, total):
         ("web.md · cli.md · mobile.md · desktop.md", "Sites, tools and PWAs; command-line tools; iOS and Android; macOS, Windows and Linux."),
         ("embedded.md · hardware.md · rockets.md", "Flight computers and devices; boards, enclosures and labels; airframes and livery."),
         ("review.md", "The FusionSpace test, template smells, release checklists, sources."),
-        ("tokens/ · web/ · icons/ · cli/ · embedded/ · hardware/ · rockets/ · desktop/", "Tokens for every platform and the reference parts.")))
+        ("tokens/ · web/ · icons/ · cli/ · mobile/ · embedded/ · hardware/ · rockets/ · desktop/", "Tokens for every platform and the reference parts.")))
     shots = "".join(f'<figure><img class="fsp-shot" src="../product/{p}" alt="{a}" loading="lazy"><figcaption>{a}</figcaption></figure>' for p, a in (
         ("web/previews/charge-light.png", "Charge, a tool page"), ("web/previews/flight-report-dark.png", "A flight report, dark theme"),
-        ("embedded/preview.png", "Device screens"), ("rockets/preview.png", "Livery wrap, 57 mm")))
+        ("embedded/preview.png", "Device screens"), ("rockets/preview.png", "Livery wrap, 57 mm"),
+        ("mobile/preview.png", "Phones: four screens on iOS and Android"), ("mobile/glance/ios-live-activity.png", "A flight as a Live Activity")))
     return f'''
   <section class="sheet" id="products">
     <div class="sheet-head"><span class="sheet-no">SHEET {n} / {total}</span><h2>Products</h2><p class="muted" style="font-size:14px">How FusionSpace tools, apps, devices and rockets are designed. The rules are in <code>product/</code>.</p></div>
@@ -1781,7 +1783,8 @@ FOLDER_READMES = {
 
 def build_product():
     rows, cvd = build_tokens()
-    build_icons(); build_web(); build_cli(); build_embedded(); build_hardware(); build_rockets(); build_desktop(); build_docs()
+    import kit_mobile
+    build_icons(); build_web(); build_cli(); build_embedded(); build_hardware(); build_rockets(); build_desktop(); kit_mobile.build_mobile(); build_docs()
     for k, v in FOLDER_READMES.items(): wr(k, v)
     return {"contrast": rows, "cvd": cvd}
 

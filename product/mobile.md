@@ -6,20 +6,27 @@ content.** An iPhone app should feel like an iPhone app, and still be unmistakab
 what it shows.
 
 Tokens: [`tokens/FusionSpaceColors.swift`](tokens/FusionSpaceColors.swift) and
-[`tokens/FusionSpaceColors.kt`](tokens/FusionSpaceColors.kt). App icons: `kit/apps/` (iOS Icon Composer layers, Android
-adaptive layers with a monochrome layer, macOS, Google Play).
+[`tokens/FusionSpaceColors.kt`](tokens/FusionSpaceColors.kt). Reference parts: [`mobile/`](mobile/) (four screens on both
+platforms, the glanceable surfaces, and the content layer as SwiftUI and Compose code). App icons: `kit/apps/` (iOS Icon
+Composer layers, Android adaptive layers with a monochrome layer, macOS, Google Play).
+
+![Pad, Track, a flight report and a device, on iOS and Android](mobile/preview.png)
 
 ## What the platform owns
 
 - **Navigation and chrome.** Tab bars, toolbars, navigation bars, sheets, back, gestures, search, menus, alerts. On iOS 26 and
   27 these are Liquid Glass and stay standard (Apple's branding guidance: keep brand color in the content layer, beneath the
-  glass). On Android, Material 3 components with edge-to-edge layout and predictive back, which apps targeting Android 16
-  can't opt out of.
+  glass). iOS 27 ignores the old opt-out (`UIDesignRequiresCompatibility`), and people set the glass from clear to tinted
+  with a slider, so never put a meaning in what shows through it. On Android, Material 3 components with edge-to-edge
+  layout and predictive back, which apps targeting Android 16 can't opt out of; apps targeting Android 17 also can't refuse
+  resizing on large screens.
 - **Controls.** System switches, steppers, pickers, text fields, date pickers. Restyle color and type through the platform's
   theming, not by rebuilding the control.
 - **Text scaling.** Dynamic Type on iOS (test at the largest accessibility size) and font scaling to 200% on Android. Body
   text and controls use the system font (SF Pro, Roboto) so they scale and read like the rest of the phone.
-- **Accessibility.** VoiceOver and TalkBack labels, Bold Text, Reduce Motion, Increase Contrast, Smart Invert.
+- **Accessibility.** VoiceOver and TalkBack labels, Bold Text, Reduce Motion, Increase Contrast, Smart Invert, and Android
+  16's outline text (which replaced high-contrast text). A readout is one element: label, value, unit spoken in words
+  ("feet above ground level"), qualifier.
 - **Haptics.** The system patterns only (success, warning, error, selection), and only to confirm a physical-feeling action
   (arming, a value locked in).
 
@@ -40,6 +47,29 @@ adaptive layers with a monochrome layer, macOS, Google Play).
 - **Domain icons** from [`icons/`](icons/), as SF Symbols custom symbols (drawn on the SF Symbols template from the 24 px
   masters) and the Android vector drawables in `icons/android/`. System actions use SF Symbols and Material Symbols.
 
+## Screens
+
+The four reference screens in [`mobile/screens/`](mobile/screens/) show where the line between platform and content falls.
+Each is drawn on an iPhone 17 Pro (402 × 874 pt, iOS 27) and a Pixel 10
+(411 × 923 dp, Android 17) with the same content.
+
+- **Pad** (field theme): checks and channels as sheets, then, fixed at the bottom where a thumb reaches, the device's state
+  (`SAFE` in an outline box, commanded and confirmed) above the two controls that change it: **Hold to arm**, held for
+  2 s with the device's designation on it, its progress shown as a fill and a bar, and **SAFE**, one tap, to its
+  right. Both are 128 pt/dp tall. Below them, "Arm with a confirmation instead": the accessible alternative, still two
+  steps.
+- **Track** (dark): the phase strip (done in ink, now inverted, next faint), the two numbers that matter under the main,
+  the offline map (tiles dated, GPS fix shown, predicted landing dashed in Nebula), then distance, bearing in degrees true,
+  and the coordinates with a copy button.
+- **Flight report** (light): the same numbers as the web report, as readouts, an altitude chart with the prediction's band
+  and numbered events, and the channels.
+- **Device** (light): settings are system lists, with the platform's shapes and type, headed by FusionSpace labels;
+  nothing there can fire a channel. The About sheet is the title block.
+
+Titles, labels and readouts are Cascadia Mono on both platforms; list rows, buttons and prose are the system font. The large
+title is the platform's (a large navigation title on iOS, the top app bar's title on Android) set in Cascadia Mono through
+its theming, not a custom bar.
+
 ## Field use
 
 - **Theme.** Follow the system appearance. The field theme is an app-level theme: on iOS set `.environment(\.fsTheme, .field)`
@@ -56,7 +86,8 @@ adaptive layers with a monochrome layer, macOS, Google Play).
 - **Commanded and confirmed** state shown separately for anything sent to hardware ([`data.md`](data.md#live-telemetry)).
 - **Offline first.** Weather, map tiles, motor data and simulations are saved before the trip, each with its "as of" time.
   Nothing at the pad needs a connection.
-- **Screen awake** only on countdown and tracking screens (`isIdleTimerDisabled`, `FLAG_KEEP_SCREEN_ON`), released on leaving.
+- **Screen awake** only on countdown and tracking screens (`isIdleTimerDisabled`, `Modifier.keepScreenOn()` in Compose), released
+  on leaving: `fsKeepsScreenOn()` in [`mobile/swiftui/FSComponents.swift`](mobile/swiftui/FSComponents.swift) does it on iOS.
 - **Heat.** Phones dim or shut down in desert sun (iPhones are rated to 35 °C ambient). Dark-on-light field theme, no
   needless GPU work, and a warning when the system reports thermal throttling.
 
@@ -69,11 +100,31 @@ strength and link age at all times.
 
 ## Glanceable surfaces
 
-- **Live Activities** (iOS) and **Live Updates** (Android 16) carry a launch countdown and flight tracking: T-minus, then
-  altitude and phase (pad, boost, coast, apogee, drogue, main, landed), then distance and bearing to the rocket. The Dynamic
-  Island is always black: use the dark roles there. Activities run up to 8 hours; updates are small (4 KB on iOS).
-- **Widgets** show one readout (next launch window, surface wind with its age), and must read in tinted, clear and monochrome
-  modes: the readout and its unit are text, never color.
+Drawn in [`mobile/glance/`](mobile/glance/); worked through in code in `FSFlightActivity.swift`, `FSWindWidget.swift` and
+`FsLiveUpdate.kt`.
+
+- **Live Activities** (iOS) and **Live Updates** (Android) carry a launch countdown and flight tracking: T-minus to the time
+  the flier set (and saying so), then altitude and phase (pad, boost, coast, apogee, drogue, main, landed), then distance and
+  bearing to the rocket, and after landing whether every charge fired. Every value carries its age; past its stale limit it
+  says so.
+- **iOS sizes.** Lock Screen 374 pt wide (14 pt margins) and 84 to 160 pt tall;
+  Dynamic Island 230 pt across in compact and 371 pt expanded on iPhone 17 Pro. The island is
+  always black: use the dark roles there. Compact: the countdown or the phase on the left (`T−4:45`, `MAIN`), and on the
+  right one number with its unit, or at the pad the state in its box (`SAFE` outlined, `ARMED` inverted). Minimal: live data with its unit, not a logo. Activities run up to 8 hours and stay
+  4 more on the Lock Screen; attributes and state together stay under 4 KB. The same activity appears on its own in the
+  Apple Watch Smart Stack, CarPlay and the Mac menu bar; give the Watch a `.small` layout.
+- **Android Live Updates** are promoted ongoing notifications: `POST_PROMOTED_NOTIFICATIONS` in the manifest,
+  `setRequestPromotedOngoing(true)` (API 36.1, Android 16 QPR2; the extra on 36.0), a title, no custom views and no
+  colorized background. The status-bar chip takes 7 characters at most (`612 ft`). On Android 16 use
+  `ProgressStyle` with the flight's phases as segments, apogee and main as points and the rocket as the tracker; on
+  Android 17 use `MetricStyle` (up to three values with units) and its semantic styles, which match the signal colors:
+  `SAFE` for Aurora, `CAUTION` for Sodium, `DANGER` for Flare, `INFO` for the action color. Wear OS 7 bridges Live Updates
+  to the watch.
+- **Widgets** show one readout (next launch window, surface wind with its age), and must read in tinted, clear and vibrant
+  modes, where the system draws everything in one tint: the readout and its unit are text, the value is the accent group
+  (`widgetAccentable()`), and a caution is a word and a triangle in an outline, never only a Sodium fill. Android widgets
+  use the static FusionSpace scheme inside the launcher's container, not wallpaper color, because the caution means
+  something; Google's widget guidance prefers dynamic color, and that is the one place this system departs from it.
 
 ## App icons
 
@@ -91,3 +142,4 @@ Android's automatic theming doesn't draw one. Per-tool apps add nothing to the m
 - [ ] Two actions for anything that arms, fires or erases; commanded vs confirmed shown.
 - [ ] Works in airplane mode after the pre-trip sync.
 - [ ] About screen is a title block with designation, version, build and data versions.
+- [ ] Live Activity / Live Update and widgets read in every rendering mode, with units and ages, and say when they're stale.
