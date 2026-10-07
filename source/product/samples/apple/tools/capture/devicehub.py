@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0 · Copyright 2026 Neer Patel
-# Keeps one connection to Xcode's MCP tools (`xcrun mcpbridge`) open, so Device Hub sessions live between calls, and serves
+# Keeps one connection to Xcode's device tools (`xcrun mcpbridge`) open, so Device Hub sessions live between calls, and serves
 # one request per TCP connection on 127.0.0.1:47123: a JSON line {"tool", "args", "timeout"}, answered with the JSON-RPC
 # result. Start it once, in the background: `python3 devicehub.py &`. xc.py and ds are its clients. (An editor's own
 # Xcode tools do the same; this is for scripts, and for when that connection has dropped.)

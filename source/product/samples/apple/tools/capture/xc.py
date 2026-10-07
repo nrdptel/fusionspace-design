@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0 · Copyright 2026 Neer Patel
-# xc.py <Tool> '<json args>' [timeout]: one call to an Xcode MCP tool through devicehub.py; prints the text it returns.
+# xc.py <Tool> '<json args>' [timeout]: one call to an Xcode device tool through devicehub.py; prints the text it returns.
 import socket, json, sys, os
 s = socket.socket(socket.AF_INET); s.connect(("127.0.0.1", 47123)); f = s.makefile("rw")
 f.write(json.dumps({"tool": sys.argv[1], "args": json.loads(sys.argv[2]) if len(sys.argv) > 2 else {}, "timeout": float(sys.argv[3]) if len(sys.argv) > 3 else 600}) + "\n"); f.flush()

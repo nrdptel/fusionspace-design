@@ -104,7 +104,7 @@ The sample apps are in `source/product/samples/` (their READMEs list what runnin
 """
 
 # ------------------------------------------------------------------ element frames, for the clipping check
-# Device Hub (Xcode 27's simulator UI, through Xcode's MCP tools) writes the element tree of what's on screen with each
+# Device Hub (Xcode 27's simulator UI, through Xcode's device tools) writes the element tree of what's on screen with each
 # interaction. `python tools/build/kit_devices.py elements <capture.png> <tree.txt> <app|home|lock>` keeps the frames of
 # our elements (in points) in source/product/devices/<platform>/elements.json, and kit_clip.check_captures tests each one
 # against the capture's own screen outline. Watch faces aren't recorded: the tree doesn't place corner complications

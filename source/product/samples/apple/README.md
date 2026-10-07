@@ -70,14 +70,14 @@ run it again.
 
 ## Captures, through Device Hub
 
-Xcode 27 has no Simulator.app: its simulators run in **Device Hub**, which Xcode's MCP tools drive (taps, long presses,
+Xcode 27 has no Simulator.app: its simulators run in **Device Hub**, which Xcode's device tools drive (taps, long presses,
 swipes, the power and Home buttons, the watch's crown, and the element tree of what's on screen). `tools/capture/` holds
 the scripts that made the captures in `source/product/devices/apple/` (Xcode 27.0, iOS 27.0 and watchOS 27.0 simulators
 named "FS iPhone 17 Pro", "FS Ultra 4" and "FS SE 3 40", or Apple's default names); `devices.json` there says which is which.
 
 ```
 cd tools/capture
-python3 devicehub.py &          # one lasting connection to Xcode's MCP tools (xcrun mcpbridge), for ds and xc.py
+python3 devicehub.py &          # one lasting connection to Xcode's device tools (xcrun mcpbridge), for ds and xc.py
 CLOCK=9:41 ./build.sh           # XcodeGen, build both apps with the capture clock, install on the three simulators
 ./app.sh                        # Pad and Track, opened from the Home Screen icon (no "◂ Calendar" back-link)
 ./home.sh                       # the wind widgets on the Home Screen, dark and light
