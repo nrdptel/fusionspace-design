@@ -72,6 +72,10 @@ here they are confined to the places a drawing uses them (labels, title blocks, 
 
 - [ ] The checklist in [`mobile.md`](mobile.md#checklist).
 
+### Apple Watch and Wear OS
+
+- [ ] The checklist in [`watch.md`](watch.md#checklist).
+
 ### macOS, Windows and Linux
 
 - [ ] The checklist in [`desktop.md`](desktop.md#checklist).

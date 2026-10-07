@@ -118,8 +118,8 @@ Drawn in [`mobile/glance/`](mobile/glance/); worked through in code in `FSFlight
   colorized background. The status-bar chip takes {{MOBILE.GLANCE['chip_chars']}} characters at most (`612 ft`). On Android 16 use
   `ProgressStyle` with the flight's phases as segments, apogee and main as points and the rocket as the tracker; on
   Android 17 use `MetricStyle` (up to three values with units) and its semantic styles, which match the signal colors:
-  `SAFE` for Aurora, `CAUTION` for Sodium, `DANGER` for Flare, `INFO` for the action color. Wear OS 7 bridges Live Updates
-  to the watch.
+  `SAFE` for Aurora, `CAUTION` for Sodium, `DANGER` for Flare, `INFO` for the action color. Wear OS 7 can bridge Live Updates
+  to the watch (not on every watch, and without `MetricStyle`): see [`watch.md`](watch.md).
 - **Widgets** show one readout (next launch window, surface wind with its age), and must read in tinted, clear and vibrant
   modes, where the system draws everything in one tint: the readout and its unit are text, the value is the accent group
   (`widgetAccentable()`), and a caution is a word and a triangle in an outline, never only a Sodium fill. Android widgets

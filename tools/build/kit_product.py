@@ -888,8 +888,8 @@ def table_type():
 def doc_context():
     import kit_icons as ki
     ctx = {k: v for k, v in globals().items() if not k.startswith("_")}
-    import kit_mobile
-    ctx.update({"MOBILE": kit_mobile, "ICONS": ki.ICONS, "M_ORANGE": M_ORANGE, "O_BLUE": O_BLUE, "VOID": VOID, "PAPER": PAPER, "ION": ION, "EMBER": EMBER})
+    import kit_mobile, kit_watch
+    ctx.update({"MOBILE": kit_mobile, "WATCH": kit_watch, "ICONS": ki.ICONS, "M_ORANGE": M_ORANGE, "O_BLUE": O_BLUE, "VOID": VOID, "PAPER": PAPER, "ION": ION, "EMBER": EMBER})
     return ctx
 def render_md(text, ctx):
     def sub(m):
@@ -1599,14 +1599,15 @@ def guide_sheet(n, total):
         ("README.md", "Start here: the reading order, the idea in one paragraph, how a project points here."),
         ("principles.md · foundations.md", "The eight principles; color roles, signals, themes, type, space, lines, motion, icons."),
         ("data.md · writing.md", "Numbers, units, readouts, charts, maps, telemetry; voice, errors, signal words."),
-        ("web.md · cli.md · mobile.md · desktop.md", "Sites, tools and PWAs; command-line tools; iOS and Android; macOS, Windows and Linux."),
+        ("web.md · cli.md · mobile.md · watch.md · desktop.md", "Sites, tools and PWAs; command-line tools; iOS and Android; Apple Watch and Wear OS; macOS, Windows and Linux."),
         ("embedded.md · hardware.md · rockets.md", "Flight computers and devices; boards, enclosures and labels; airframes and livery."),
         ("review.md", "The FusionSpace test, template smells, release checklists, sources."),
-        ("tokens/ · web/ · icons/ · cli/ · mobile/ · embedded/ · hardware/ · rockets/ · desktop/", "Tokens for every platform and the reference parts.")))
+        ("tokens/ · web/ · icons/ · cli/ · mobile/ · watch/ · embedded/ · hardware/ · rockets/ · desktop/", "Tokens for every platform and the reference parts.")))
     shots = "".join(f'<figure><img class="fsp-shot" src="../product/{p}" alt="{a}" loading="lazy"><figcaption>{a}</figcaption></figure>' for p, a in (
         ("web/previews/charge-light.png", "Charge, a tool page"), ("web/previews/flight-report-dark.png", "A flight report, dark theme"),
         ("embedded/preview.png", "Device screens"), ("rockets/preview.png", "Livery wrap, 57 mm"),
-        ("mobile/preview.png", "Phones: four screens on iOS and Android"), ("mobile/glance/ios-live-activity.png", "A flight as a Live Activity")))
+        ("mobile/preview.png", "Phones: four screens on iOS and Android"), ("mobile/glance/ios-live-activity.png", "A flight as a Live Activity"),
+        ("watch/preview.png", "Watches: Apple Watch and Wear OS"), ("watch/faces/watchos-complications.png", "Complications for finding a rocket")))
     return f'''
   <section class="sheet" id="products">
     <div class="sheet-head"><span class="sheet-no">SHEET {n} / {total}</span><h2>Products</h2><p class="muted" style="font-size:14px">How FusionSpace tools, apps, devices and rockets are designed. The rules are in <code>product/</code>.</p></div>
@@ -1783,8 +1784,9 @@ FOLDER_READMES = {
 
 def build_product():
     rows, cvd = build_tokens()
-    import kit_mobile
-    build_icons(); build_web(); build_cli(); build_embedded(); build_hardware(); build_rockets(); build_desktop(); kit_mobile.build_mobile(); build_docs()
+    import kit_mobile, kit_watch
+    build_icons(); build_web(); build_cli(); build_embedded(); build_hardware(); build_rockets(); build_desktop(); kit_mobile.build_mobile()
+    kit_watch.build_watch(); build_docs()
     for k, v in FOLDER_READMES.items(): wr(k, v)
     return {"contrast": rows, "cvd": cvd}
 

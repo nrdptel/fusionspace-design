@@ -396,13 +396,17 @@ REPS = [   # (representative, [items it covers], why it stands for them)
     ("product/mobile/glance/ios-live-activity", [r"^product/mobile/glance/(index|ios-dynamic-island)"], "the Dynamic Island and Apple Watch Smart Stack, and the page they're drawn on"),
     ("product/mobile/glance/ios-widgets", [r"^product/mobile/glance/android-widget"], "the Android (Glance) widget"),
     ("product/mobile/swiftui/FSComponents", [r"^product/mobile/(swiftui|compose)/"], "the widget and Live Activity in SwiftUI, and the Compose parts and Live Update"),
+    # watches (October 6, 2026)
+    ("product/watch/preview", [r"^product/watch/(screens/|README)"], "every screen as HTML and a 2x PNG on both platforms, and the mock-up stylesheet"),
+    ("product/watch/faces/watchos-complications", [r"^product/watch/faces/"], "the Smart Stack, the Wear OS tiles and face, and the page they're drawn on"),
+    ("product/watch/swiftui/FSWatch", [r"^product/watch/(swiftui|compose)/"], "the complications in SwiftUI, and the Wear OS screens, tile and complications in Compose"),
 ]
 CORE = (r"^(guide/|product/|logo/|kit/web/|kit/apps/|kit/github/|kit/social/|kit/documents/|README\.md$|kit/projects/(hpr-motor-finder|charge|window|muster)/|kit/production/stickers/sticker-mark-50mm-dark$)")
            # focus items people will see from you first (identity, web, GitHub, social, documents) and the open options;
            # the rest of focus is the discipline kits (screens, PCB, software, games, video, wallpapers, merch, production)
 FOCUS_TEXT = {"README.md", "kit/github/profile-README.md", "kit/documents/email-signature/signature.html", "kit/web/site/metadata.ts",
               "kit/3d-print/README.md", "kit/3d-print/parametric/FusionSpace_Badge.FCMacro",
-              *(f"product/{d}.md" for d in ("README", "principles", "foundations", "data", "writing", "web", "cli", "mobile", "desktop", "embedded",
+              *(f"product/{d}.md" for d in ("README", "principles", "foundations", "data", "writing", "web", "cli", "mobile", "watch", "desktop", "embedded",
                                              "hardware", "rockets", "review"))}   # text people read: always in focus
 KNOWN_FLAGS = ()                    # expected audit flags; others pull an item into focus
 
