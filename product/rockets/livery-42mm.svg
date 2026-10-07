@@ -43,5 +43,6 @@
 <text x="137.37" y="258.30" font-family="Cascadia Mono" font-size="2.00" font-weight="400" fill="#566079" text-anchor="start">UNITS</text><text x="137.37" y="263.40" font-family="Cascadia Mono" font-size="3.00" font-weight="400" fill="#0B0F1C" text-anchor="start">mm</text>
 <rect x="155.87" y="255.00" width="75" height="11" fill="none" stroke="#0B0F1C" stroke-width="0.2"/>
 <text x="157.37" y="258.30" font-family="Cascadia Mono" font-size="2.00" font-weight="400" fill="#566079" text-anchor="start">COLORS</text><text x="157.37" y="263.40" font-family="Cascadia Mono" font-size="3.00" font-weight="400" fill="#0B0F1C" text-anchor="start">Void · white · fluo orange</text>
-<text x="12.00" y="264.00" font-family="Cascadia Mono" font-size="2.80" font-weight="400" fill="#566079" text-anchor="start">Print at 100 %. Measure the tube: wrap width = π × OD + overlap.</text>
+<text x="12.00" y="260.20" font-family="Cascadia Mono" font-size="2.80" font-weight="400" fill="#566079" text-anchor="start">Print at 100 %.</text>
+<text x="12.00" y="264.00" font-family="Cascadia Mono" font-size="2.80" font-weight="400" fill="#566079" text-anchor="start">Measure the tube: wrap width = π × OD + overlap.</text>
 </svg>

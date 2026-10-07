@@ -45,7 +45,7 @@ public struct FSFlightActivity: Widget {
                 }
                 DynamicIslandExpandedRegion(.trailing) {
                     FSIslandValue(label: "FROM YOU", value: s.distanceFt.map(fsNumber) ?? "—", unit: "ft",
-                                  note: s.bearingTrue.map { String(format: "%03d° T", $0) })
+                                  note: s.bearingTrue.map { String(format: "%03d°\u{00A0}T", $0) })
                 }
                 DynamicIslandExpandedRegion(.bottom) {
                     VStack(spacing: 8) {
@@ -72,7 +72,7 @@ public struct FSFlightActivity: Widget {
             } compactTrailing: {
                 // inset from the island's rounded end, so the box's border is never cut by the curve
                 if s.phase == .pad { FSIslandState(armed: s.armed).padding(.trailing, 4) }
-                else { Text("\(s.altitudeFt.map(fsNumber) ?? "—") ft").font(.custom("CascadiaMono-SemiBold", size: 15)).foregroundStyle(d.ink) }
+                else { Text("\(s.altitudeFt.map(fsNumber) ?? "—")\u{00A0}ft").font(.custom("CascadiaMono-SemiBold", size: 15)).foregroundStyle(d.ink) }
             } minimal: {
                 VStack(spacing: 0) {
                     Text(s.altitudeFt.map { $0 >= 1000 ? String(format: "%.1fk", Double($0) / 1000) : "\($0)" } ?? "—")
@@ -110,11 +110,11 @@ struct FSFlightLockScreen: View {
                 }
             } else {
                 FSActivityPhaseStrip(phase: s.phase)
-                HStack(alignment: .bottom) {
+                HStack(alignment: .top) {                                   // the two labels on one line
                     FSIslandValue(label: "ALTITUDE", value: s.altitudeFt.map(fsNumber) ?? "—", unit: "ft AGL", big: true)
                     Spacer()
                     FSIslandValue(label: "FROM YOU", value: s.distanceFt.map(fsNumber) ?? "—", unit: "ft",
-                                  note: s.bearingTrue.map { String(format: "%03d° T", $0) })
+                                  note: s.bearingTrue.map { String(format: "%03d°\u{00A0}T", $0) })
                 }
             }
         }
@@ -122,7 +122,7 @@ struct FSFlightLockScreen: View {
         .padding(14)
     }
     private func header(_ s: FSFlightAttributes.ContentState, _ a: FSFlightAttributes) -> String {
-        if let l = s.liftoff, s.phase != .pad, s.phase != .landed { return "\(a.flight) · T+\(Int(Date.now.timeIntervalSince(l))) s" }
+        if let l = s.liftoff, s.phase != .pad, s.phase != .landed { return "\(a.flight) · T+\(Int(Date.now.timeIntervalSince(l)))\u{00A0}s" }
         return "\(a.flight) · \(a.motor)"
     }
 }

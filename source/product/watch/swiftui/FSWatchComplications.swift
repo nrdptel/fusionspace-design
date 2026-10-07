@@ -42,7 +42,7 @@ struct FSFindComplication: View {
     @Environment(\.widgetRenderingMode) private var mode
     private var d: FSPalette { FS.darkPalette }
     private var stale: Bool { FSFreshness.isStale(since: entry.fixedAt, limit: {{FIND_STALE_S}}, now: entry.date) }
-    private var bearing: String { String(format: "%03d° T", entry.bearingTrue) }
+    private var bearing: String { String(format: "%03d°\u{00A0}T", entry.bearingTrue) }
 
     var body: some View {
         switch family {
@@ -54,9 +54,9 @@ struct FSFindComplication: View {
                 Text("ft").font(.system(size: 8))
             }
         case .accessoryCorner:
-            FSBearingArrow(relativeDegrees: Double(entry.bearingTrue)).widgetLabel { Text("\(entry.distanceFt.formatted()) ft · \(bearing)") }
+            FSBearingArrow(relativeDegrees: Double(entry.bearingTrue)).widgetLabel { Text("\(entry.distanceFt.formatted())\u{00A0}ft · \(bearing)") }
         case .accessoryInline:
-            Text("\(entry.name) \(entry.distanceFt.formatted()) ft \(bearing)")
+            Text("\(entry.name) \(entry.distanceFt.formatted())\u{00A0}ft \(bearing)")
         default:
             VStack(alignment: .leading, spacing: 1) {
                 HStack {

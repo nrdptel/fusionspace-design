@@ -22,7 +22,8 @@ def _load(platform):
         r["device"] = r["device"].split(" (")[0].replace("pixel_10", "Pixel 10").replace("wearos_large_round", "Wear OS large round").replace("wearos_small_round", "Wear OS small round")
     return [r for r in rows if os.path.exists(os.path.join(SRC, platform, r["file"]))]
 
-ORDER = ["ios-pad", "ios-track", "ios-island-pad", "ios-island-flight", "phone-pad", "phone-track", "phone-live-update", "phone-live-update-chip",
+ORDER = ["ios-pad", "ios-track", "ios-island-pad", "ios-island-flight", "ios-lock-pad", "ios-lock-flight",
+         "phone-pad", "phone-track", "phone-live-update", "phone-live-update-android16",
          "watch-ultra-find", "watch-ultra-find-aod", "watch-ultra-pad", "watch-ultra-unfired",
          "watch-se40-find", "watch-se40-find-aod", "watch-se40-pad", "watch-se40-unfired",
          "wear-find", "wear-find-ambient", "wear-pad", "wear-unfired", "wear-tile-find", "wear-small-find"]
@@ -64,7 +65,8 @@ def _sheet(rows, dest, h, title):
     from PIL import Image, ImageDraw
     groups = {}
     for r in sorted(rows, key=_rank):
-        key = r["device"] + (" · Dynamic Island" if r["file"].startswith("ios-island") else "")
+        key = r["device"] + (" · Dynamic Island" if r["file"].startswith("ios-island") else " · Lock Screen" if r["file"].startswith("ios-lock")
+                             else " · Android 16" if "android16" in r["file"] else "")
         groups.setdefault(key, []).append(r)
     f1, f2 = km._font(15, True), km._font(12)
     margin, gap, lab = 28, 22, 40

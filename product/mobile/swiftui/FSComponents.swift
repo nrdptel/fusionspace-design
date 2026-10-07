@@ -411,7 +411,7 @@ public struct FSHoldToConfirm: View {
             VStack(alignment: .leading, spacing: 6) {
                 Label(title.uppercased(), systemImage: "bolt.horizontal").font(FS.heading())
                     .fixedSize(horizontal: false, vertical: true)
-                Text("\(designation) · \(Int(duration)) s").font(FS.readout(14, relativeTo: .footnote))
+                Text("\(designation) · \(Int(duration))\u{00A0}s").font(FS.readout(14, relativeTo: .footnote))
                     .fixedSize(horizontal: false, vertical: true)
                 Text("Keep holding").font(FS.labelStrong()).foregroundStyle(p.danger)
                     .opacity(progress > 0 ? 1 : 0)      // reserved, so the label doesn't jump when it appears

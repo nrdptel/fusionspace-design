@@ -110,7 +110,7 @@ public struct FSWatchFind: View {
     }
 
     private func qualifier(now: Date) -> String {
-        let bearing = String(format: "%03d° T", Int(bearingTrue.rounded()) % 360)
+        let bearing = String(format: "%03d°\u{00A0}T", Int(bearingTrue.rounded()) % 360)
         // Two short lines rather than one long one: the smallest watch is 162 pt wide.
         if dimmed { return "\(bearing)\nas of \(fixedAt.formatted(date: .omitted, time: .shortened))" }
         return "\(bearing)" + (headingTrue == nil ? " · from north" : "") + "\nfix \(FSFreshness.age(since: fixedAt, now: now))"

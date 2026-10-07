@@ -51,7 +51,7 @@ struct FSWindView: View {
         switch family {
         #if os(iOS)
         case .accessoryRectangular: rectangular
-        case .accessoryInline: Text("Wind \(entry.windMph) mph\(gust) · \(age)")
+        case .accessoryInline: Text("Wind \(entry.windMph)\u{00A0}mph\(gust) · \(age)")
         #endif
         case .systemMedium: HStack(alignment: .top, spacing: 12) { main; Spacer(minLength: 0) }
         default: main
@@ -95,8 +95,8 @@ struct FSWindView: View {
     private var rectangular: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("WIND · \(age)").font(FS.label())
-            Text("\(entry.windMph) mph\(gust)").font(FS.readout(20, relativeTo: .headline)).widgetAccentable()
-            if entry.nearLimit { Label("near the \(entry.limitMph) mph limit", systemImage: "exclamationmark.triangle").font(.caption2) }
+            Text("\(entry.windMph)\u{00A0}mph\(gust)").font(FS.readout(20, relativeTo: .headline)).widgetAccentable()
+            if entry.nearLimit { Label("near the \(entry.limitMph)\u{00A0}mph limit", systemImage: "exclamationmark.triangle").font(.caption2) }
         }
     }
     #endif

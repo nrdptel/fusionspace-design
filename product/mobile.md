@@ -44,8 +44,10 @@ Composer layers, Android adaptive layers with a monochrome layer, macOS, Google 
   Compose Canvas/Vico, styled to the chart rules, with an audio graph (iOS) or a semantics summary (Android).
 - **The sheet and the title block** inside scrolling content: 2 px top rules on sections, `SHEET n / N` labels, the title block
   as the About screen (designation, version, build, data versions, licenses).
-- **Domain icons** from [`icons/`](icons/), as SF Symbols custom symbols (drawn on the SF Symbols template from the 24 px
-  masters) and the Android vector drawables in `icons/android/`. System actions use SF Symbols and Material Symbols.
+- **Domain icons** from [`icons/`](icons/): on iOS and watchOS the ready-made SF Symbols custom symbols in
+  [`icons/sf-symbols/FusionSpaceSymbols.xcassets`](icons/sf-symbols/) (`Image("fs.rocket")`, `Tab("Pad", image:
+  "fs.launch-rail", …)`, `FS.icon(_:)`, small, medium and large scales); on Android the vector drawables in `icons/android/`.
+  System actions use SF Symbols and Material Symbols.
 
 ## Screens
 
@@ -141,7 +143,11 @@ captures are in [`mobile/devices/`](mobile/devices/):
 
 ![The reference code running](mobile/devices/preview.png)
 
-Run them after changing anything in `product/mobile/` or `product/tokens/`: compiling is not enough. On October 6, 2026
+The captures include the Live Activity on the Lock Screen and in the Dynamic Island, and the Live Update on Android 17
+(MetricStyle) and Android 16 (ProgressStyle, with its status-bar chip). The apps also carry the platforms' accessibility
+checks as tests (Apple's audit as UI tests; on Android, the Accessibility Test Framework in instrumented tests, at 100% and
+200% text), and the screens are checked by eye at xxxLarge and Accessibility XXXL (on Android at font scale 2.0): nothing
+may be cut, truncated or split, and at the largest sizes the screens scroll instead. Run them after changing anything in `product/mobile/` or `product/tokens/`: compiling is not enough. On October 6, 2026
 running them found layout bugs that every compile check had passed (a control taking the whole screen, text under a
 button, a border cut by a rounded end, units in capitals), all fixed in the files here.
 

@@ -15,7 +15,7 @@
 .t-island{--fs-canvas:#0B0F1C;--fs-surface:#141A2B;--fs-rule:#2A3248;--fs-rule-strong:#6D7790;--fs-ink:#F3F4F7;--fs-ink-muted:#98A1B8;--fs-ink-faint:#566079;--fs-action:#768DF5;--fs-on-action:#0B0F1C;--fs-focus:#768DF5;--fs-danger:#FB8083;--fs-caution:#F5AF20;--fs-ok:#6AD5B6;--fs-predicted:#ED89D2;--fs-canvas:#000;--fs-surface:#000;color:var(--fs-ink)}
 
 body { margin: 0; background: #fff; }
-.fig { display: inline-block; padding: 24px; background: var(--paper); }
+.fig { max-width: 100%; overflow-x: auto; box-sizing: border-box; display: inline-block; padding: 24px; background: var(--paper); }
 .fig > h2 { font: 600 15px/20px 'Cascadia Mono', monospace; margin: 0 0 4px; color: #0B0F1C; }
 .fig > p.cap { font: 400 13px/18px 'Cascadia Mono', monospace; color: #566079; margin: 0 0 16px; max-width: 780px; }
 .row { display: flex; gap: 20px; align-items: flex-start; flex-wrap: nowrap; }
@@ -36,7 +36,7 @@ body { margin: 0; background: #fff; }
 .g-ph li:last-child { border-right: 0; }
 .g-ph li[data-s="done"] { color: var(--fs-ink); }
 .g-ph li[data-s="now"] { background: var(--fs-ink); color: var(--fs-canvas); font-weight: 600; }
-.g-ph li[data-s="next"] { color: var(--fs-ink-faint); }
+.g-ph li[data-s="next"] { color: var(--fs-ink-muted); }
 .fs-status { min-height: 22px; font-size: 11px; }
 
 /* Lock Screen Live Activity */

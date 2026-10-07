@@ -22,6 +22,6 @@
 <g inkscape:groupmode="layer" id="layer-text-edit-me" inkscape:label="Text (edit me)">
 <text inkscape:label="Designation" x="80" y="118" text-anchor="start" fill="#768DF5" style="font-family:'Cascadia Mono',monospace;font-weight:400;font-size:18px;letter-spacing:1.2px">FS-VEGA · EMB · PRODUCT 001</text>
 <text inkscape:label="Project name" x="76" y="213.6" text-anchor="start" fill="#F3F4F7" style="font-family:'Cascadia Mono',monospace;font-weight:600;font-size:92px">Vega</text>
-<text inkscape:label="Description" x="80" y="257.6" text-anchor="start" fill="#98A1B8" style="font-family:Archivo,sans-serif;font-weight:400;font-size:21px">Example product: flight software for a two-stage sounding rocket.</text>
+<text inkscape:label="Description line 1" x="80" y="257.6" text-anchor="start" fill="#98A1B8" style="font-family:Archivo,sans-serif;font-weight:400;font-size:21px">Example product: flight software for a two-stage sounding rocket.</text>
 </g>
 </svg>

@@ -214,5 +214,41 @@
   "simulator": "Xcode 27.0 (27A266a)",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
   "captured": "2026-10-07"
+ },
+ {
+  "file": "ios-lock-flight.png",
+  "device": "iPhone 17 Pro",
+  "os": "iOS 27.0 (24A434)",
+  "size_px": [
+   1206,
+   2622
+  ],
+  "scale": 3,
+  "size_pt": [
+   402,
+   874
+  ],
+  "simulator": "Xcode 27.0 (27A266a)",
+  "mask": "alpha (simctl io screenshot --mask=alpha)",
+  "shows": "Live Activity on the Lock Screen in flight (phase strip, altitude, distance and bearing), -activity flight, locked by LockScreenTests; dark",
+  "captured": "2026-10-07"
+ },
+ {
+  "file": "ios-lock-pad.png",
+  "device": "iPhone 17 Pro",
+  "os": "iOS 27.0 (24A434)",
+  "size_px": [
+   1206,
+   2622
+  ],
+  "scale": 3,
+  "size_pt": [
+   402,
+   874
+  ],
+  "simulator": "Xcode 27.0 (27A266a)",
+  "mask": "alpha (simctl io screenshot --mask=alpha)",
+  "shows": "Live Activity on the Lock Screen at the pad (countdown and the device's SAFE state), -activity pad, locked by LockScreenTests; dark. The pad time is the simulator's real clock, not the 9:41 of the status bar",
+  "captured": "2026-10-07"
  }
 ]

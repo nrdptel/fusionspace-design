@@ -22,6 +22,6 @@
 <g inkscape:groupmode="layer" id="layer-text-edit-me" inkscape:label="Text (edit me)">
 <text inkscape:label="Designation" x="80" y="118" text-anchor="start" fill="#3350D6" style="font-family:'Cascadia Mono',monospace;font-weight:400;font-size:18px;letter-spacing:1.2px">FS · SW · TOOL 003</text>
 <text inkscape:label="Project name" x="76" y="213.6" text-anchor="start" fill="#0B0F1C" style="font-family:'Cascadia Mono',monospace;font-weight:600;font-size:92px">Window</text>
-<text inkscape:label="Description" x="80" y="257.6" text-anchor="start" fill="#566079" style="font-family:Archivo,sans-serif;font-weight:400;font-size:21px">Launch-weather board for US high-power and model rocketry.</text>
+<text inkscape:label="Description line 1" x="80" y="257.6" text-anchor="start" fill="#566079" style="font-family:Archivo,sans-serif;font-weight:400;font-size:21px">Launch-weather board for US high-power and model rocketry.</text>
 </g>
 </svg>

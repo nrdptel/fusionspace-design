@@ -1,6 +1,6 @@
 # Real screens
 
-Screenshots of the reference code running in the sample apps on simulators and emulators, captured 2026-10-06. The drawn
+Screenshots of the reference code running in the sample apps on simulators and emulators, captured 2026-10-07. The drawn
 mock-ups next to this folder show the intent; these show what the code actually does. Built by `tools/build/kit_devices.py`
 from `source/product/devices/`, where `devices.json` records each capture's device, OS, size and what it shows.
 

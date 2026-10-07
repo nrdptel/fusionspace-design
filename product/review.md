@@ -71,10 +71,16 @@ here they are confined to the places a drawing uses them (labels, title blocks, 
 ### iOS and Android
 
 - [ ] The checklist in [`mobile.md`](mobile.md#checklist).
+- [ ] Apple's accessibility audit (`performAccessibilityAudit` in a UI test) passes on every screen; on Android, the
+      Accessibility Scanner or Compose's accessibility checks.
+- [ ] Every screen looked at, on the smallest supported device, at the default text size, the largest non-accessibility
+      size and the largest accessibility size (Android: font scale 2.0): nothing cut, truncated ("…"), split mid-word, or
+      separated from its unit; at the largest sizes it scrolls instead.
 
 ### Apple Watch and Wear OS
 
 - [ ] The checklist in [`watch.md`](watch.md#checklist).
+- [ ] The accessibility audit on the watch app, on the smallest watch (SE 40 mm, Wear OS small round).
 
 ### macOS, Windows and Linux
 

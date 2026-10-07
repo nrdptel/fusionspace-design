@@ -9,7 +9,7 @@ They compile the files in `product/` directly (nothing is copied), so a change t
 | `FusionSpaceWidgets` (iOS widget extension) | The flight's Live Activity and Window's wind widget | the above plus `FSWindWidget.swift` |
 | `FusionSpaceSampleWatch` (watchOS 26+, watch only) | Find, Find in Always On, Pad and Unfired | the above plus `product/watch/swiftui/FSWatch.swift` |
 | `FusionSpaceWatchWidgets` (watchOS widget extension) | Find on every complication family | the above plus `FSWatchComplications.swift` |
-| `FusionSpaceSampleUITests`, `FusionSpaceSampleWatchUITests` | Apple's accessibility audit (`performAccessibilityAudit`) on Pad and Track, and on Find, Pad and Unfired | |
+| `FusionSpaceSampleUITests`, `FusionSpaceSampleWatchUITests` | Apple's accessibility audit (`performAccessibilityAudit`) on Pad and Track, and on Find, Pad and Unfired; `LockScreenTests` locks the iPhone to show the Live Activity on the Lock Screen | |
 
 The apps also use the FusionSpace SF Symbols (`product/icons/sf-symbols/`) in the tab bar and the status chips.
 
@@ -46,6 +46,19 @@ xcrun simctl install <watch> build/Build/Products/Debug-watchsimulator/FusionSpa
 xcrun simctl launch <watch> co.fusionspace.sample.watch -screen find    # find, find-aod, pad, unfired
 xcrun simctl io <device> screenshot --mask=alpha shot.png
 ```
+
+The Lock Screen (only a locked iPhone shows the Live Activity there, and without Simulator.app nothing else can lock it):
+`LockScreenTests` starts the activity, presses the lock button through `XCUIDevice`, wakes the screen, allows Live
+Activities if iOS asks, and holds the Lock Screen for `TEST_RUNNER_FS_HOLD` seconds, while `simctl io screenshot` captures it:
+
+```
+TEST_RUNNER_FS_HOLD=40 xcodebuild test -project FusionSpaceSample.xcodeproj -scheme FusionSpaceSampleUITests \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -only-testing:FusionSpaceSampleUITests/LockScreenTests/testFlight &
+sleep 75; xcrun simctl io <iphone> screenshot --mask=alpha lock.png    # once the test has started and locked
+```
+
+Now and then the card is missing from the Lock Screen (SpringBoard logs `sceneNotReady` for the activity's snapshot):
+run it again.
 
 The captures in `source/product/devices/apple/` were made this way on Xcode 27.0 with the iOS 27.0 and watchOS 27.0
 simulators (iPhone 17 Pro, Apple Watch Ultra 4 49 mm, Apple Watch SE 3 40 mm); `devices.json` there says which is which.
@@ -84,3 +97,6 @@ Everything below compiled before; it broke or looked wrong only when it ran:
 - SF Symbols: Xcode ignored the transform on the symbol group (icons came out tiny), the icons were drawn at half an SF
   Symbol's size, and with only the medium scale a symbol asked for small drew nothing. `tools/build/kit_symbols.py` fixes
   all three.
+- The Lock Screen (October 7): the Live Activity runs clean at the edges, but its two readouts' labels sat at different
+  heights (ALTITUDE under FROM YOU, aligned by their last lines); they are top-aligned now. "T+62 s", "612 ft", "062° T"
+  and the wind widget's "mph" now keep their number and unit together with a non-breaking space.
