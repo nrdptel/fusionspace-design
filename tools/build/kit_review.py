@@ -450,14 +450,19 @@ def session_notes():
         with open(NOTES_FILE, encoding="utf-8") as fh: d = json.load(fh)
     except (OSError, ValueError): return {}, ""
     label = d.pop("_session", "") if isinstance(d.get("_session"), str) else ""
-    global NOTES_BASE, ROUND
+    global NOTES_BASE, ROUND, START, SUMMARY
     NOTES_BASE = d.get("_base", "") if isinstance(d.get("_base"), str) else ""
     ROUND = d.get("_round", "") if isinstance(d.get("_round"), str) else ""
+    START = d.get("_start", []) if isinstance(d.get("_start"), list) else []
+    SUMMARY = d.get("_summary", {}) if isinstance(d.get("_summary"), dict) else {}
     return {k: v for k, v in d.items() if isinstance(v, str) and not k.startswith("_")}, label
 
 NOTES = {}           # this build's session notes (review_scope reads them)
 ROUND = ""           # "_round" in session-notes.json, e.g. "review round 2": this round's notes are tagged "CHANGED (review round 2): …";
                      # everything older was in front of Neer in an earlier review and folds away
+SUMMARY = {}         # "_summary" in session-notes.json: {id: this round's change in a line or two}; the full notes fold under it
+START = []           # "_start" in session-notes.json: this round's changed items in the order to look at them, grouped by
+                     # what you're deciding: [{"title", "why", "items": [id or [id, label]]}]; shown first, as links
 NOTES_BASE = ""      # git commit the session started from ("_base" in session-notes.json): "before" previews come from it
 _OLD_META = {}
 def before_preview(id_, cur):
@@ -547,9 +552,14 @@ def build_review():
         for c in SC[id_].get("covers", []):
             for x in split_note(notes.get(c, ""))[0]: sib.setdefault(x, []).append(c.split("/")[-1])
         sn = "".join(f'<p>{note_html(x)} <span class="on">({", ".join(html.escape(v) for v in vs[:4])}{" …" if len(vs) > 4 else ""})</span></p>' for x, vs in sib.items())
+        who = "Changed this round on those items" if ROUND else "Changed without you on those items"
+        if sn and id_ in SUMMARY:                  # summed up in the item's own box: the details fold away
+            sib_html = f'<details class="sibn"><summary>{who} ({len(sib)} note{"s" if len(sib) != 1 else ""})</summary>{sn}</details>'
+        else: sib_html = f'<div class="sibn"><span class="who">{who}:</span>{sn}</div>' if sn else ""
         return (f'<div class="cov"><span class="who">This decision also covers {len(out)} item{"s" if len(out) != 1 else ""}: '
-                f'{html.escape(SC[id_]["covers_why"])}</span><div class="thumbs">{"".join(out)}</div>'
-                + (f'<div class="sibn"><span class="who">{"Changed this round on those items:" if ROUND else "Changed without you on those items:"}</span>{sn}</div>' if sn else "") + '</div>')
+                f'{html.escape(SC[id_]["covers_why"])}</span>'
+                + (f'<details><summary>Show them</summary><div class="thumbs">{"".join(out)}</div></details>' if len(out) > 24   # a wall of 200 tiles says nothing
+                   else f'<div class="thumbs">{"".join(out)}</div>') + sib_html + '</div>')
     def today(id_):
         return bool(split_note(notes.get(id_, ""))[0]) or any(split_note(notes.get(c, ""))[0] for c in SC[id_].get("covers", []))
     secs, cur = [], None
@@ -559,8 +569,12 @@ def build_review():
         kind = "opt" if is_opt(n) else "rem" if n.startswith("REMOVED") or id_ in removed else "chg"
         todo, done = split_note(n)
         out = ""
-        who = f"Changed this round ({ROUND}), from your notes" if ROUND else "Changed without you, worth a look"
-        if todo: out += f'<div class="cn {kind}"><span class="who">{who}</span>{"<br>".join(note_html(x) for x in todo)}</div>'
+        who = "Changed this round" if ROUND else "Changed without you, worth a look"
+        if id_ in SUMMARY:
+            out += f'<div class="cn {kind}"><span class="who">{who}, in short</span>{note_html(SUMMARY[id_])}</div>'
+            if todo: out += (f'<details class="cn done"><summary>The details: this round\u2019s {len(todo)} note{"s" if len(todo) != 1 else ""}</summary>'
+                             + "".join(f"<p>{note_html(x)}</p>" for x in todo) + "</details>")
+        elif todo: out += f'<div class="cn {kind}"><span class="who">{who}</span>{"<br>".join(note_html(x) for x in todo)}</div>'
         dsum = (f'{len(done)} earlier note{"s" if len(done) != 1 else ""}, already reviewed' if ROUND
                 else f'{len(done)} change{"s" if len(done) != 1 else ""} you already approved')
         if done: out += (f'<details class="cn done"><summary>{dsum}</summary>'
@@ -614,11 +628,26 @@ def build_review():
                                   **({"note": notes[it["id"]]} if it["id"] in notes else {})} for it in all_items})
     nfocus = sum(1 for v in SC.values() if v["scope"] == "focus"); ncov = len(SC) - nfocus; ncore = sum(1 for v in SC.values() if v.get("tier") == "core")
     nt_focus = sum(1 for k, v in SC.items() if v["scope"] == "focus" and (split_note(notes.get(k, ""))[0] or any(split_note(notes.get(c, ""))[0] for c in v.get("covers", []))))
+    start = ""
+    if START:
+        groups, n = [], 0
+        for g in START:
+            links = []
+            for x in g.get("items", []):
+                id_, label = (x, x.split("/")[-1]) if isinstance(x, str) else (x[0], x[1])
+                if id_ not in BYID: print(f"WARN review: start item {id_!r} is not in the build"); continue
+                n += 1; links.append(f'<a href="#i-{html.escape(id_)}" data-go="{html.escape(id_)}">{html.escape(label)}</a>')
+            groups.append(f'<li><b>{html.escape(g.get("title", ""))}</b> <span class="why">{html.escape(g.get("why", ""))}</span><div class="go">{" · ".join(links)}</div></li>')
+        start = (f'<section class="start"><h2>Start here: {n} items, most important first</h2><p class="intro">Everything that changed this '
+                 f'round, grouped by what you\u2019re deciding. The page opens on <b>Changed this round</b>, which shows the same items in page '
+                 f'order. Each item starts with a short summary; the full notes fold under <b>The details</b>. The other {nfocus - n} focus '
+                 f'items didn\u2019t change this round (they\u2019re under <b>Focus</b>).</p><ol>{"".join(groups)}</ol></section>')
     page = PAGE.replace("%TODAYBTN%", TODAY_BTN[bool(ROUND)]).replace("%NOTESINTRO%", NOTES_INTRO[bool(ROUND)].replace("%ROUND%", html.escape(ROUND.replace(" ·", "").replace("|", "; ")))) \
                .replace("%NCORE%", str(ncore)).replace("%NKIT%", str(nfocus - ncore)).replace("%NFOCUS%", str(nfocus)).replace("%NCOV%", str(ncov)).replace("%NTF%", str(nt_focus)).replace("%STAMP%", stamp).replace("%N%", str(len(items))).replace("%NF%", str(sum(len(it["files"]) for it in items))) \
                .replace("%SIGTOL%", str(SIG_TOL)).replace("%RV%", renderer_id()).replace("%NT%", str(len(notes))) \
                .replace("%NO%", str(sum(1 for k, v in notes.items() if is_opt(v) and SC.get(k, {}).get("scope") == "focus"))) \
-               .replace("%SESSION%", html.escape(session or "the last session")) \
+               .replace("%SESSION%", html.escape(session or "the last session")).replace("%START%", start) \
+               .replace("%DEFAULTF%", "today" if START and nt_focus else "focus") \
                .replace("%OPTS%", opts).replace("%BODY%", "\n".join(secs)).replace("%META%", meta.replace("</", "<\\/"))
     build.wr("review.html", page)
     nflag = sum(1 for it in items if it["flags"])
@@ -677,6 +706,7 @@ dialog{background:var(--card);color:var(--fg);border:1px solid var(--rule);borde
 .cn code,.desc code{font:12px 'Cascadia Mono',ui-monospace,monospace;background:var(--bg);padding:0 3px;border-radius:3px}
 .it[data-today="1"] h3::after{content:" ●";color:var(--ion)}.it[data-opt="1"] h3::after{color:var(--change)}
 .filters .n{opacity:.7;font-size:11px;margin-left:3px}
+.cov details>summary{font-size:12px;color:var(--mut);cursor:pointer}.start{margin:14px 0;padding:12px 16px;border:1px solid var(--ion);border-radius:8px;background:var(--card);max-width:100%}.start h2{margin:0 0 4px;font-size:17px}.start ol{margin:8px 0 0;padding-left:22px}.start li{margin:0 0 10px}.start .why{color:var(--mut)}.start .go{margin-top:3px;overflow-wrap:anywhere}.start .go a{color:var(--ion)}
 .cov{margin:2px 0 8px;padding:6px 8px;border:1px dashed var(--rule);border-radius:6px}.cov .who{display:block;font-size:12px;color:var(--mut);margin-bottom:4px}
 .thumbs{display:flex;flex-wrap:wrap;gap:4px}.thumbs a{display:block;background:repeating-conic-gradient(var(--chk) 0 25%,transparent 0 50%) 0 0/10px 10px;border:1px solid var(--rule);border-radius:3px}
 .thumbs img{display:block;height:46px;max-width:110px;object-fit:contain}.thumbs a.tn{font:11px 'Cascadia Mono',ui-monospace,monospace;padding:3px 5px;color:var(--fg);text-decoration:none;height:auto}
@@ -709,6 +739,7 @@ body.grid .it.cur textarea{display:block}
 <p class="intro"><b>Core</b> (%NCORE%) is the part to do first: the brand identity, website and app icons, GitHub, social images, documents, and the open options. The other %NKIT% focus items are the discipline kits (screens, PCB, software, games, video, wallpapers, merch, production, 3D print), worth a pass before you use them.</p>
 <p class="intro">Built %STAMP%. Each item is one piece of artwork in all its formats. Pick <b>Keep</b>, <b>Change</b> or <b>Remove</b>, and write what you want in the box (a note on its own counts as Change). Progress saves in this browser as you go. When you're done, click <b>Export review</b> and keep the downloaded file with your notes. Items with a dashed edge changed since you reviewed them. Click a preview to open it full size.</p>
 %NOTESINTRO%
+%START%
 <h2 style="margin-top:16px">Overall notes</h2><textarea id="overall" placeholder="Anything that applies to the whole kit (tone, colors, naming, things that are missing)…"></textarea>
 %BODY%
 </main>
@@ -756,7 +787,13 @@ function stats() {
   document.querySelectorAll('[data-cnt]').forEach(el => { const sec = el.dataset.cnt, list = focusArts().filter(a => META[a.dataset.id].section === sec);
     const left = list.filter(a => ['todo', 'recheck'].includes(status(a.dataset.id))).length; el.textContent = `${list.length} items` + (left ? ` · ${left} to review` : ' · done'); });
 }
-let filter = 'focus';
+let filter = '%DEFAULTF%';
+document.querySelectorAll('#filters button').forEach(x => x.classList.toggle('on', x.dataset.f === filter));
+// Start here: a link shows its item even when the current filter hides it, then puts it in the middle of the screen
+document.querySelectorAll('.start a[data-go]').forEach(l => l.onclick = e => { e.preventDefault();
+  const a = document.getElementById('i-' + l.dataset.go); if (!a) return;
+  if (a.classList.contains('hidden')) { filter = 'all'; document.querySelectorAll('#filters button').forEach(x => x.classList.toggle('on', x.dataset.f === 'all')); applyFilter(); }
+  setCur(a); a.scrollIntoView({block: 'center'}); });
 function applyFilter() {
   arts.forEach(a => { const st = status(a.dataset.id), foc = a.dataset.scope !== 'covered'; let show = filter === 'all' || filter === 'focus' && foc || filter === 'core' && a.dataset.tier === 'core' || filter === 'covered' && !foc || filter === 'flag' && a.dataset.flag === '1' || filter === 'todo' && foc && (st === 'todo' || st === 'recheck') || filter === 'today' && foc && a.dataset.today === '1' || filter === 'opt' && foc && a.dataset.opt === '1' || filter === st;
     a.classList.toggle('hidden', !show); });
