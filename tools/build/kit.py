@@ -6,7 +6,7 @@ Writes into <OUT>/kit (and the color-mode matrix of the logos into <OUT>/kit/log
 MANIFEST, which also becomes kit/README.md and the guide's Kit sheet. Office files (slides .pptx, letterhead
 .docx) come from kit_office.js and need node with the `pptxgenjs` and `docx` packages; without them they are
 skipped with a warning. CMYK PDFs need Ghostscript (`gs`); without it they are skipped with a warning."""
-import os, re, json, math, shutil, subprocess
+import os, re, json, math, shutil, subprocess, textwrap, datetime
 import geo, build
 from build import f, VOID, PAPER, WHITE, STOPS, MODES, ION, EMBER, M_ORANGE, O_BLUE, WARM, COOL
 
@@ -375,7 +375,8 @@ def letterhead_svg(page):
     s += layer("Rule", f'<path d="M20,{f(h - 20)}H{f(w - 20)}" stroke="{MIST}" stroke-width="0.25"/>\n')
     return s + "</svg>\n"
 
-def cover_svg(page, dark, designation="FS-VEGA · REPORT 001 · REV A", title="Report title", subtitle="A one-line subtitle for this document."):
+def cover_svg(page, dark, designation="FS-VEGA · REPORT 001 · REV A", title="Report title", subtitle="A one-line subtitle for this document.", when=None):
+    """when: the date printed under the title (a datetime.date); default the build's fixed date (SOURCE_DATE_EPOCH)."""
     E = lambda x: x.replace("&", "&amp;").replace("<", "&lt;")
     w, h = PAGES[page]; t = theme(dark)
     bdefs, bg = background(w, h, dark, "cv", cell=w / 12, strip="bottom", strip_h=4)
@@ -387,11 +388,18 @@ def cover_svg(page, dark, designation="FS-VEGA · REPORT 001 · REV A", title="R
     s += f'<defs id="defs">{bdefs}{ldefs}{mdefs}</defs>\n' + bg
     s += layer("Brand", lg + f'<g inkscape:label="Watermark" opacity="{0.05 if dark else 0.045}">{mg}</g>\n')
     tsz = min(15.0, (w - 40) / max(1, len(title) * 0.586))
-    sub = subtitle if len(subtitle) <= 64 else subtitle[:61].rsplit(" ", 1)[0] + "…"
+    # the subtitle wraps, at a smaller size if it must; it is never cut off with "…"
+    for ssz in (5.4, 4.8, 4.2):
+        lines = textwrap.wrap(subtitle, max(8, int((w - 40) / (0.485 * ssz))), break_long_words=False, break_on_hyphens=False)
+        if len(lines) <= 3: break
+    else:
+        raise SystemExit(f"report cover: the subtitle doesn't fit in three lines ({len(subtitle)} characters); shorten it")
+    if when is None:
+        when = datetime.datetime.fromtimestamp(int(os.environ.get("SOURCE_DATE_EPOCH", "1790812800")), datetime.timezone.utc).date()
     tx = (text(20, h * 0.52, E(designation), 4.2, t["label"], label="Designation (edit me)", spacing=0.2)
           + text(19, h * 0.52 + 18, E(title), tsz, t["text"], weight=600, label="Title (edit me)")
-          + text(20, h * 0.52 + 29, E(sub), 5.4, t["muted"], family="sans", label="Subtitle (edit me)")
-          + text(20, h - 16, f"NEER PATEL · {__import__('datetime').date.today().strftime('%B %Y').upper()}", 3.4, t["muted"], label="Author and date (edit me)", spacing=0.15))
+          + "".join(text(20, h * 0.52 + 29 + i * ssz * 1.3, E(ln), ssz, t["muted"], family="sans", label="Subtitle (edit me)") for i, ln in enumerate(lines))
+          + text(20, h - 16, f"NEER PATEL · {when.strftime('%B %Y').upper()}", 3.4, t["muted"], label="Author and date (edit me)", spacing=0.15))
     s += layer("Text (edit me)", tx)
     return s + "</svg>\n"
 

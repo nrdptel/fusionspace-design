@@ -8,7 +8,7 @@ Options: --star (the internal name: an IAU star name, see tools/callsign; its co
 external name, default the star's), --code (default FS-<STAR>), --tag (discipline tag, see kit.DISCIPLINES), --kind (the
 noun after the code, default Product), --number (default 001), --desc (one line), --out (default projects/<star>).
 Needs the same tools as the build (rsvg-convert, fonts)."""
-import argparse, os, re, json, subprocess, sys, importlib.util
+import argparse, os, re, json, subprocess, sys, importlib.util, datetime
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 import build, kit
 from kit import theme, background, text, layer, svg_open, art_horizontal, art_mark, gradient, f, TAGLINE
@@ -145,7 +145,8 @@ def make(p, outdir):
         for dark in (True, False):
             tone = "dark" if dark else "light"
             fp = os.path.join(outdir, f"report-cover-{page}-{tone}.svg")
-            open(fp, "w", encoding="utf-8").write(kit.cover_svg(page, dark, designation=p.designation, title=p.name, subtitle=p.desc or p.discipline))
+            open(fp, "w", encoding="utf-8").write(kit.cover_svg(page, dark, designation=p.designation, title=p.name, subtitle=p.desc or p.discipline,
+                                                                   when=datetime.date.today()))
             subprocess.run(["rsvg-convert", "-f", "pdf", fp, "-o", fp[:-4] + ".pdf"], check=True)
     names = ""
     if p.star:
