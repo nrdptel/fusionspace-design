@@ -13,6 +13,16 @@ Callsign draws a constellation for a new project, with room for the products to 
 the next product in a project. Either draw can be narrowed by brightness (vmag) or name length, and it skips names already
 in use.
 
+## Names in use
+
+| Project | Code | Stars in use |
+|---|---|---|
+| Ara | `FS-ARA` | Cervantes (Callsign), Inquill (the Mark Tuner); Ara has no more named stars |
+| Eridanus | `FS-ERI` | Achernar (FusionSpace HPR · Sim), Zaurak (the app), Angetenar (the analyzer), Sceptrum (avionics), Acamar (the competition kit), Rana (the motor designer), Cursa (the recovery designer) |
+
+Pass them to a draw: `callsign project --taken Ara,Eridanus` for a new project, or
+`callsign -c Eridanus --skip Achernar,Zaurak,Angetenar,Sceptrum,Acamar,Rana,Cursa` for Eridanus's next product.
+
 ## Use it
 
 | Where | How |
