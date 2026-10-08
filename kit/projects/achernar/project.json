@@ -1,0 +1,15 @@
+{
+  "star": "Achernar",
+  "constellation": "Eridanus",
+  "project": "Eri",
+  "project_code": "FS-ERI",
+  "name": "FusionSpace HPR",
+  "code": "FS-ACHERNAR",
+  "tag": "SW",
+  "number": "001",
+  "desc": "Open-source flight simulator for hobby and high-power rockets.",
+  "kind": "Tool",
+  "discipline": "Software",
+  "designation": "FS-ACHERNAR \u00b7 SW \u00b7 TOOL 001",
+  "slug": "achernar"
+}
