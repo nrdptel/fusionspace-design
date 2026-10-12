@@ -157,8 +157,11 @@ Every tool page prints usefully: a charge card, a flight card, a weather sheet f
 `kit/software/docs-theme/` has MkDocs Material and Docusaurus themes, and `product/web/mdbook/` an mdBook theme (hpr-sim's docs
 use mdBook). The mdBook theme sets the colors, the fonts and the page's frame: the type scale on mdBook's elements, growing with
 the window on the book's pages (a docs page is a reading page), the measure, and the column flush left beside the sidebar up to
-1120 px, with mdBook's page arrows under the page instead of over the column. Keep the writing rules from
-[`writing.md`](writing.md). Every docs page starts with what works and how far to trust it, as hpr-sim's does.
+1120 px, with mdBook's page arrows under the page instead of over the column. It also fixes mdBook's own defaults
+where they break these rules, with scripts on or off: code in ink, square corners and no shadows, the system's motion,
+selection and focus ring, borders where forced colors drop a fill, the fonts' fallbacks, nothing cut off on a phone, and
+print in the light theme with link addresses. It sets each role as `--fs-<role>` on every mdBook theme, for a site's own
+rules. Keep the writing rules from [`writing.md`](writing.md). Every docs page starts with what works and how far to trust it, as hpr-sim's does.
 
 **Check a site with the system's own check.** `web/check/fusionspace-check.js` holds the numbers the rules set (the type
 scale, the reading scale, the measure, the widths) and the code that measures them: it counts the characters of each line of

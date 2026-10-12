@@ -78,7 +78,7 @@ there (note the system's revision when you copy).
 Rev B, October 12, 2026: the measure is the median line 60 to 75 characters and none over 80, set as
 29.5 em of the text (Rev A's 68 characters read two ways: 68ch drew 87 characters a line, and a site held to 68 at most drew
 52); a reading page's type scale grows with the window (×1 to ×1.125); beside a sidebar the column sits flush left up to
-1120 px; the mdBook theme sets the page's frame; and `web/check/fusionspace-check.js` holds the web rules' numbers and the
+1120 px; the mdBook theme sets the page's frame and fixes mdBook's own defaults; and `web/check/fusionspace-check.js` holds the web rules' numbers and the
 code that measures them, which this build runs from 320 to 1920 px. These came from the first review of a site built on
 the system (hpr-sim's documentation, October 12, 2026).
 

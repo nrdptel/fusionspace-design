@@ -1,0 +1,118 @@
+/* mdBook's own defaults, where the colors and fonts above don't reach (foundations.md, Color, Lines and
+   shape, Motion; web.md, Accessibility). Found by the first site built on the system, hpr-sim's
+   documentation, whose page check reads every element's computed style in the light theme and the
+   navy one, with scripts off and with reduced motion, and fails a color off the system's roles, a
+   rounded corner, a shadow, or motion off its durations. --fs-ink and the other roles are set for each
+   of mdBook's themes above. */
+
+/* Nothing cut off on a phone. The menu bar's title: between the buttons, mdBook cuts it short with an
+   ellipsis on a window narrower than about 500 px; there it takes a row of its own under the buttons,
+   which mdBook's menu bar already wraps to, and a heading jumped to clears the taller bar. */
+@media only screen and (max-width: 519px) {
+    #mdbook-menu-bar .menu-title { order: 1; flex: 1 0 100%; white-space: normal; overflow: visible; line-height: var(--fs-24); padding-block-end: 0.3em; }
+    #mdbook-menu-bar .right-buttons { margin-inline-start: auto; }
+    :target { scroll-margin-top: calc(var(--menu-bar-height) + 45px); }
+}
+/* The sidebar's frame for readers without scripts: a frame is 300 px wide unless told otherwise, so in
+   mdBook's sidebar, 80% of a narrow window, part of it stayed over the page with the sidebar put away. */
+.sidebar-iframe-outer { width: 100%; }
+/* A search result's long identifier wraps instead of running past a narrow window. */
+#mdbook-searchresults li, #mdbook-searchresults .teaser { overflow-wrap: anywhere; }
+
+/* Figures at their size. A figure's text is drawn at its size, so a figure shown smaller reads smaller.
+   A figure takes the column, flush left, past the measure the prose stops at, so it is shown at its
+   size wherever the window holds it; on a narrower page it shrinks to fit, and mdBook's zoom (click it)
+   shows it at its size. */
+.content .checkbox-label { display: flex; justify-content: flex-start; max-width: none; margin-inline: 0; }
+
+/* Code in ink on the surface: mdBook's highlighters color each kind of token with colors of their own
+   and never read the theme's --code-bg. Comments are secondary text; a diff's deletions are in danger
+   and its additions in ok. */
+.hljs { color: var(--fs-ink); background: var(--code-bg); }
+.hljs [class^="hljs-"], .hljs [class*=" hljs-"] { color: inherit; background: transparent; }
+.hljs .hljs-comment, .hljs .hljs-quote, .hljs .hljs-meta { color: var(--fs-ink-muted); }
+.hljs .hljs-keyword, .hljs .hljs-title, .hljs .hljs-section, .hljs .hljs-strong { font-weight: 600; }
+.hljs .hljs-deletion { color: var(--fs-danger); }
+.hljs .hljs-addition { color: var(--fs-ok); }
+/* The copy tooltip: canvas on ink, not white on mdBook's #333. A search hit: the action fill, as a
+   selection, not the caution fill, which means a state. */
+.tooltiptext { color: var(--fs-canvas); background-color: var(--fs-ink); }
+mark { color: var(--fs-on-action); }
+/* mdBook's hidden sidebar switch, a checkbox, keeps the browser's own text color otherwise. */
+input[type="checkbox"] { color: inherit; }
+/* The menu bar's links hold only their icons, which take the icons' color; the links take it too. */
+.menu-bar a { color: var(--icons); }
+/* Selection: the action role at 22 %, as fusionspace.css sets it. */
+::selection { background-color: var(--fs-selection); }
+
+/* Lines and shape: square corners, no shadows. Layers are separated by rules: the help popup has the
+   system's 2 px ink border, a key a 1 px rule. The current chapter is underlined 2 px, as web.md's site
+   nav marks the current page; the headings of the page listed under it hang from a 1 px rule, not
+   mdBook's 4 px colored bar. */
+*, *::before, *::after { border-radius: 0 !important; box-shadow: none !important; text-shadow: none !important; }
+kbd { background-color: var(--fs-surface); border-color: var(--fs-rule-strong); }
+/* The help popup: a dialog, with a 2 px ink border over the canvas dimmed by Void at 40%, kept 16 px from
+   the window's edges on a phone, and scrolling in a window too short for it. */
+#mdbook-help-container { background-color: rgba(11, 15, 28, 0.4); }
+#mdbook-help-popup { border: 2px solid var(--fs-ink); min-width: 0; max-width: min(500px, calc(100% - 32px)); max-height: calc(100% - 32px); overflow-y: auto; }
+.sidebar .chapter li.chapter-item a.active { text-decoration: underline 2px; text-underline-offset: 4px; }
+.on-this-page { border-inline-start-width: 1px; }
+
+/* Motion: quick 100 ms, base 160 ms, slow 240 ms, with the standard easing. The sidebar slides at the slow
+   step; colors change at the quick one. No spinner: the search's busy sign stands still. With reduced
+   motion set, everything snaps. */
+.js:not(.sidebar-resizing) .page-wrapper,
+[dir=rtl].js:not(.sidebar-resizing) .page-wrapper,
+html:not(.js) .page-wrapper,
+[dir=rtl]:not(.js) .page-wrapper,
+html:not(.sidebar-resizing) .sidebar { transition-duration: 240ms; transition-timing-function: cubic-bezier(0.2, 0, 0, 1); }
+/* On a phone the page moves over at once when the menu opens, and only the sidebar slides in: mdBook also
+   slides the page (transform), and Chrome redraws all of a sliding page each frame, so a tap on the menu
+   button of a long page took 0.3 s on a slowed phone (INP). Its margin is still animated. */
+.js:not(.sidebar-resizing) .page-wrapper,
+[dir=rtl].js:not(.sidebar-resizing) .page-wrapper,
+html:not(.js) .page-wrapper,
+[dir=rtl]:not(.js) .page-wrapper { transition-property: margin-left, margin-right; }
+/* And the page is drawn on a layer of its own there, so moving it over is the compositor's work and
+   Chrome doesn't draw the page again (on the long pages, a tap took 96 to 352 ms at a 16 times slowdown
+   without it, 64 to 72 ms with it). Something fixed to the window inside the page would move with the
+   layer, so a page in this theme fixes nothing inside .page-wrapper. */
+@media only screen and (max-width: 619px) { .page-wrapper { will-change: transform; } }
+#mdbook-menu-bar .fa-svg, #mdbook-menu-bar .icon-button,
+.nav-chapters, .nav-chapters:hover,
+pre > .buttons, pre > .buttons button,
+mark, #mdbook-searchbar { transition-duration: 100ms; transition-timing-function: cubic-bezier(0.2, 0, 0, 1); }
+.chapter-fold-toggle div { transition-duration: 160ms; transition-timing-function: cubic-bezier(0.2, 0, 0, 1); }
+#fa-spin { animation: none; }
+.footnote-reference:target { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; scroll-behavior: auto !important; }
+}
+
+/* What a keyboard, forced colors and a sticky bar need. The focus ring: a 2 px outline in the action role,
+   2 px off, on everything, for the keyboard only; the zoom's hidden checkbox draws it on its picture,
+   where mdBook draws the browser's own ring on any focus. */
+:focus-visible { outline: 2px solid var(--fs-action) !important; outline-offset: 2px !important; }
+.content .checkbox-img:focus + img { outline: none; }
+.content .checkbox-img:focus-visible + img { outline: 2px solid var(--fs-action); outline-offset: 2px; }
+/* The menu bar sticks to the window's top: what is scrolled to or focused stops below it and its 1 px
+   rule (WCAG 2.4.11), on a phone below its second row too. */
+html { scroll-padding-top: calc(var(--menu-bar-height) + 1px); }
+@media only screen and (max-width: 519px) { html { scroll-padding-top: calc(var(--menu-bar-height) + 45px); } }
+/* Forced colors (Windows' high-contrast mode) paint every color in the reader's own few and drop
+   backgrounds' tints: a box set apart only by its fill (the sidebar, a code block, the copy tooltip, a
+   phone's chapter buttons) gets a border, and a search hit keeps the system's highlight. */
+@media (forced-colors: active) {
+    .sidebar { border-inline-end: 1px solid CanvasText; }
+    pre > code, .tooltiptext, .mobile-nav-chapters { border: 1px solid CanvasText; }
+    mark { forced-color-adjust: none; color: MarkText; background-color: Mark; }
+}
+/* The fonts' metric-matched fallbacks (fonts.css), second in every stack, so text drawn before a face
+   arrives takes the same room. fonts.css matches Archivo with Arial, which Linux and ChromeOS lack; they
+   carry Liberation Sans and Arimo, metric-compatible with Arial (the same advance widths, the Liberation
+   and Croscore fonts' stated aim), so the same 101% matches them. Without them a page whose italic
+   arrived after the first paint measured CLS 0.179 on Linux. */
+@font-face { font-family: 'Archivo Clone Fallback'; src: local('Liberation Sans'), local('LiberationSans'), local('Arimo'); size-adjust: 101%; }
+html, h4, h5, h6, #mdbook-searchbar { font-family: 'Archivo', 'Archivo Fallback', 'Archivo Clone Fallback', system-ui, -apple-system, 'Segoe UI', sans-serif; }
+code, pre, kbd, .hljs { font-family: 'Cascadia Mono', 'Cascadia Mono Fallback', ui-monospace, 'SF Mono', Menlo, Consolas, monospace !important; }
+h1, h2, h3, .menu-title, table thead th, .sidebar, .chapter { font-family: 'Cascadia Mono', 'Cascadia Mono Fallback', ui-monospace, Menlo, Consolas, monospace; }
