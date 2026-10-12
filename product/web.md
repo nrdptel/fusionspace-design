@@ -39,6 +39,10 @@ template look (indigo buttons, `rounded-xl`, `shadow-lg`) can't creep in.
 - **Intro.** The designation tag (chamfered), a status chip, the title (Cascadia Mono 28) and one sentence in `lead`. No hero
   image, no background art, no gradient text.
 - **Sheets.** Each section is a sheet with its number and name in the rail. Two to six sheets per page.
+- **Page arrows.** On a page of a set read in order (docs), links to the previous and the next page end its text, above the
+  title block and inside the column: the previous at the column's left edge, the next at its right, each a bordered button
+  at least 44 px tall that names its page ("Previous" or "Next" in `label`, then the page's title). Never only an arrow at
+  the window's side, where a reader on a wide window doesn't look.
 - **Title block.** Every page ends with one. Fields from ISO 7200: owner (FusionSpace, with the mark), title, designation,
   revision or version, date of issue, units, data source and its date, status. On a tool it doubles as the about box.
 
@@ -52,7 +56,10 @@ template look (indigo buttons, `rounded-xl`, `shadow-lg`) can't creep in.
 - **An analysis page** (a flight report) leads with readouts, then the stacked chart, then the event and channel tables, then a Source
   sheet with the file, its hash and every setting used.
 - **A board** (Window) is readouts plus a table, with every value's source and age, and a Print button.
-- **Docs** are sheets of prose with a left table of contents; code blocks in Cascadia Mono on the surface color.
+- **Docs** are sheets of prose with a left table of contents; code blocks in Cascadia Mono on the surface color. The reader
+  can put the table of contents away and bring it back at every width: a menu button in the header, or its edge dragged to
+  the window's side. Put away, the page's column re-centers in the whole window. The choice is kept from page to page; a
+  first visit shows it from 720 px.
 - **First run.** No splash screen, no tour, no sign-up. A tool opens ready to use, with a worked example filled in and
   labeled as one ("Example: 4 in airframe, 12 in bay"), so the first thing anyone sees is a real result and how it was made.
 - **Privacy.** No accounts, no ads, no third-party tracking or fonts. If a tool counts visits, it uses a cookieless,
@@ -157,7 +164,8 @@ Every tool page prints usefully: a charge card, a flight card, a weather sheet f
 `kit/software/docs-theme/` has MkDocs Material and Docusaurus themes, and `product/web/mdbook/` an mdBook theme (hpr-sim's docs
 use mdBook). The mdBook theme sets the colors, the fonts and the page's frame: the type scale on mdBook's elements, growing with
 the window on the book's pages (a docs page is a reading page), and the column, centered beside the sidebar up to 1120 px
-with the prose filling it, with mdBook's page arrows under the page instead of over the column. It also fixes mdBook's own defaults
+with the prose filling it, with mdBook's page arrows as bordered buttons under the text, inside the column, instead of over
+its sides. mdBook's menu button and its sidebar's drag handle put the sidebar away; keep both. It also fixes mdBook's own defaults
 where they break these rules, with scripts on or off: code in ink, square corners and no shadows, the system's motion,
 selection and focus ring, borders where forced colors drop a fill, the fonts' fallbacks, nothing cut off on a phone, and
 print in the light theme with link addresses. It sets each role as `--fs-<role>` on every mdBook theme, for a site's own

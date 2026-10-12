@@ -901,7 +901,7 @@ def ex_window():
 
 
 # ================================================================ 6. documents (source/product/*.md -> product/*.md)
-REV = "C"
+REV = "D"
 SILK = {"text_mm": 1.2, "line_mm": 0.15, "label_mm": 2.3}   # dense silkscreen text and stroke; labels read while handling
 def _md_hex(h): return f"`{h}`"
 def table_signals():
@@ -1099,7 +1099,6 @@ button {{ font: inherit; }}
 .content main {{ margin-inline: auto; }}
 .content table {{ margin-inline: 0; }}
 .page-wrapper .nav-wide-wrapper {{ display: none; }}
-.page-wrapper .nav-wrapper {{ display: block; }}
 
 {extra}
 /* Print: the light values whatever theme the page is read in; links keep the action role and show their

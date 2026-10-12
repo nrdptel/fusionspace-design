@@ -15,7 +15,7 @@
 'use strict';
 
 (function (global) {
-  const RULES = {"rev": "C", "type": {"scale": [["label", 12, 16, "Cascadia Mono"], ["small", 14, 20, "Archivo"], ["body", 16, 24, "Archivo"], ["lead", 20, 28, "Archivo"], ["subtitle", 20, 24, "Cascadia Mono"], ["heading", 14, 20, "Cascadia Mono"], ["title", 28, 32, "Cascadia Mono"], ["display", 40, 44, "Cascadia Mono"], ["hero", 56, 60, "Cascadia Mono"], ["readout", 28, 32, "Cascadia Mono"], ["readout-l", 40, 44, "Cascadia Mono"], ["code", 14, 20, "Cascadia Mono"]], "capitals": [["label", 12, 16, "Cascadia Mono"], ["heading", 14, 20, "Cascadia Mono"]], "smallest_px": 12}, "fluid": {"from_px": 1024, "to_px": 1600, "max": 1.125, "scope": ".fs-read"}, "width": {"content_px": 1120, "gutter_px": 16, "gutter_wide_px": 32, "gutter_wide_from_px": 720}};
+  const RULES = {"rev": "D", "type": {"scale": [["label", 12, 16, "Cascadia Mono"], ["small", 14, 20, "Archivo"], ["body", 16, 24, "Archivo"], ["lead", 20, 28, "Archivo"], ["subtitle", 20, 24, "Cascadia Mono"], ["heading", 14, 20, "Cascadia Mono"], ["title", 28, 32, "Cascadia Mono"], ["display", 40, 44, "Cascadia Mono"], ["hero", 56, 60, "Cascadia Mono"], ["readout", 28, 32, "Cascadia Mono"], ["readout-l", 40, 44, "Cascadia Mono"], ["code", 14, 20, "Cascadia Mono"]], "capitals": [["label", 12, 16, "Cascadia Mono"], ["heading", 14, 20, "Cascadia Mono"]], "smallest_px": 12}, "fluid": {"from_px": 1024, "to_px": 1600, "max": 1.125, "scope": ".fs-read"}, "width": {"content_px": 1120, "gutter_px": 16, "gutter_wide_px": 32, "gutter_wide_from_px": 720}};
 
   // The tags of prose.
   const PROSE = ['P', 'LI', 'DD', 'DT', 'BLOCKQUOTE', 'FIGCAPTION'];

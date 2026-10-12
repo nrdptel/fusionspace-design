@@ -24,6 +24,17 @@
    holds it; on a narrower page it shrinks to fit, and mdBook's zoom (click it) shows it at its size. */
 .content .checkbox-label { display: flex; justify-content: flex-start; max-width: none; margin-inline: 0; }
 
+/* The page arrows (web.md, Page anatomy): under the text, inside the column, the previous at its left edge and the next at
+   its right, each a bordered button at least 44 px tall, in place of mdBook's arrows at the window's sides, which a
+   reader on a wide window doesn't see. mdBook's arrows hold only an icon; a site that names the pages in them (as
+   hpr-sim's does) styles the names. */
+.page-wrapper .nav-wrapper { display: flex; justify-content: space-between; align-items: stretch; gap: 16px; box-sizing: border-box; max-width: var(--content-max-width); margin: 48px auto 0; }
+.page-wrapper .nav-wrapper > :not(a) { display: none; }
+.page-wrapper .nav-wrapper .mobile-nav-chapters { float: none; box-sizing: border-box; display: flex; align-items: center; gap: 8px; width: auto; min-width: 0; max-width: calc(50% - 8px); min-height: 44px; margin: 0; padding: 8px 12px; font-size: var(--fs-16); line-height: var(--fs-24); text-align: start; text-decoration: none; color: var(--links); background: transparent; border: 1px solid var(--fs-rule-strong); }
+.page-wrapper .nav-wrapper .mobile-nav-chapters:hover { border-color: var(--links); }
+.page-wrapper .nav-wrapper .mobile-nav-chapters.next { margin-inline-start: auto; flex-direction: row-reverse; text-align: end; }
+@media print { .page-wrapper .nav-wrapper { display: none; } }
+
 /* Code in ink on the surface: mdBook's highlighters color each kind of token with colors of their own
    and never read the theme's --code-bg. Comments are secondary text; a diff's deletions are in danger
    and its additions in ok. */
