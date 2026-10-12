@@ -12,7 +12,7 @@ body {
 h1 { font: var(--fs-type-title); letter-spacing: -0.005em; }
 h2 { font: var(--fs-type-subtitle); }
 h3 { font: var(--fs-type-heading); text-transform: uppercase; letter-spacing: 0.04em; }
-p, li { max-width: var(--fs-measure); text-wrap: pretty; }
+p, li { text-wrap: pretty; }
 a { color: var(--fs-action); text-decoration-thickness: 1px; text-underline-offset: 3px; }
 a:hover { text-decoration-thickness: 2px; }
 :focus-visible { outline: 2px solid var(--fs-focus); outline-offset: 2px; }

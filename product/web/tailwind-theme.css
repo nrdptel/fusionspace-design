@@ -70,7 +70,6 @@
   --text-readout-l--line-height: calc(var(--fs-text) * 2.75);
   --text-code: calc(var(--fs-text) * 0.875);
   --text-code--line-height: calc(var(--fs-text) * 1.25);
-  --container-measure: 29.5em;
   --container-content: 1120px;
   --radius-chamfer-s: 4px;
   --radius-chamfer-m: 8px;

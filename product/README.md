@@ -4,7 +4,7 @@ How FusionSpace things are designed: websites, in-browser tools and PWAs, comman
 Windows and Linux apps, flight computers and other devices, PCBs and enclosures, and rockets. The rest of this repository says what the brand looks like;
 this folder says how a product made under it looks, reads and behaves.
 
-Every FusionSpace project points here for its design rules. Rev B, October 12, 2026.
+Every FusionSpace project points here for its design rules. Rev C, October 12, 2026.
 
 ![The product system specimen](web/previews/specimen-light.png)
 
@@ -75,12 +75,14 @@ there (note the system's revision when you copy).
 
 ## Status
 
-Rev B, October 12, 2026: the measure is the median line 60 to 75 characters and none over 80, set as
-29.5 em of the text (Rev A's 68 characters read two ways: 68ch drew 87 characters a line, and a site held to 68 at most drew
-52); a reading page's type scale grows with the window (×1 to ×1.125); beside a sidebar the column sits flush left up to
-1120 px; the mdBook theme sets the page's frame and fixes mdBook's own defaults; and `web/check/fusionspace-check.js` holds the web rules' numbers and the
-code that measures them, which this build runs from 320 to 1920 px. These came from the first review of a site built on
-the system (hpr-sim's documentation, October 12, 2026).
+Rev C, October 12, 2026: prose takes its column's whole width, up to 1120 px, and beside a sidebar the column is centered. Rev B's
+measure (a median line of 60 to 75 characters, 29.5 em of the text) left most of a desktop window empty beside a narrow strip
+of text; the page check now fails prose held narrower than its column instead of counting characters.
+
+Rev B, the same day: a reading page's type scale grows with the window (×1 to ×1.125); the mdBook theme sets the page's frame
+and fixes mdBook's own defaults; and `web/check/fusionspace-check.js` holds the web rules' numbers and the code that
+measures them, which this build runs from 320 to 1920 px. Rev B and Rev C came from the first review of a site built on the
+system (hpr-sim's documentation, October 12, 2026).
 
 Rev A, approved in review on October 5, 2026: the four signal colors (Flare, Sodium, Aurora, Nebula) and Steel
 with their names, the beep language in [`embedded.md`](embedded.md#beeps), the rocket scheme in [`rockets.md`](rockets.md#color),

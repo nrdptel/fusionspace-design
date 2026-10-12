@@ -86,7 +86,6 @@ blockquote { border-left: 0; border: 1px solid var(--quote-border); padding: 0.6
   --fs-12: calc(var(--fs-text) * 0.75); --fs-14: calc(var(--fs-text) * 0.875); --fs-16: var(--fs-text); --fs-20: calc(var(--fs-text) * 1.25); --fs-24: calc(var(--fs-text) * 1.5);
   --fs-28: calc(var(--fs-text) * 1.75); --fs-32: calc(var(--fs-text) * 2); --fs-40: calc(var(--fs-text) * 2.5); --fs-44: calc(var(--fs-text) * 2.75); --fs-56: calc(var(--fs-text) * 3.5);
   --fs-60: calc(var(--fs-text) * 3.75);
-  --fs-measure: 29.5em; --fs-prose-width: calc(var(--fs-text) * 29.5);
 }
 body { font-size: var(--fs-16); line-height: var(--fs-24); font-variant-numeric: tabular-nums; }
 .content { font-size: var(--fs-16); line-height: var(--fs-24); }
@@ -116,19 +115,15 @@ h4 code, h5 code, h6 code { font-size: var(--fs-14); line-height: var(--fs-20); 
 button { font: inherit; }
 .menu-title { font-size: var(--fs-20); line-height: var(--fs-24); font-weight: 600; align-self: center; }
 #mdbook-searchbar { font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: var(--fs-16); line-height: var(--fs-24); font-variant-numeric: tabular-nums; }
-/* The measure: prose stops at 29.5 em of its own text, a median line of about 65 characters in Archivo and none over
-   80. An item or quote that holds a code block, a table or a figure keeps the column; its text sits in paragraphs, which
-   stop at the measure. */
-.content main :is(p, li, dd, dt, blockquote, figcaption):not(:has(pre, table, .checkbox-label)) { max-width: var(--fs-measure); }
-/* The column: flush left beside the sidebar, up to 1120 px, gutters 16 px on a phone and 32 px from 720 px (mdBook pads
-   the page with its own --page-padding). Tables, code and figures take the column's width, prose the measure; a code
-   block is at least as wide as the prose, and a wider one grows to the column before it scrolls. mdBook's page arrows
-   beside the column would sit over it, so the arrows go under the page at every width. */
+/* The column: centered in the space beside the sidebar, up to 1120 px, gutters 16 px on a phone and 32 px from
+   720 px (mdBook pads the page with its own --page-padding). Prose takes the column's whole width, as tables, code and
+   figures do, so nothing leaves a strip of text in a wide window; the column's 1120 px is the longest line. Text and
+   tables sit flush left inside it. mdBook's page arrows beside the column would sit over it, so the arrows go under the
+   page at every width. */
 .content { padding-inline: calc(16px - var(--page-padding)); }
 @media only screen and (min-width: 720px) { .content { padding-inline: calc(32px - var(--page-padding)); } }
-.content main { margin-inline: 0; }
+.content main { margin-inline: auto; }
 .content table { margin-inline: 0; }
-.content main pre { box-sizing: border-box; width: fit-content; min-width: min(100%, var(--fs-prose-width)); max-width: 100%; }
 .page-wrapper .nav-wide-wrapper { display: none; }
 .page-wrapper .nav-wrapper { display: block; }
 
@@ -154,9 +149,8 @@ button { font: inherit; }
 #mdbook-searchresults li, #mdbook-searchresults .teaser { overflow-wrap: anywhere; }
 
 /* Figures at their size. A figure's text is drawn at its size, so a figure shown smaller reads smaller.
-   A figure takes the column, flush left, past the measure the prose stops at, so it is shown at its
-   size wherever the window holds it; on a narrower page it shrinks to fit, and mdBook's zoom (click it)
-   shows it at its size. */
+   A figure takes the column, flush left with the prose, so it is shown at its size wherever the window
+   holds it; on a narrower page it shrinks to fit, and mdBook's zoom (click it) shows it at its size. */
 .content .checkbox-label { display: flex; justify-content: flex-start; max-width: none; margin-inline: 0; }
 
 /* Code in ink on the surface: mdBook's highlighters color each kind of token with colors of their own

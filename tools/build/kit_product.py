@@ -175,17 +175,18 @@ EASE = {"standard": "cubic-bezier(0.2, 0, 0, 1)", "exit": "cubic-bezier(0.3, 0, 
 TARGET = {"web": 24, "touch": 44, "field": 96, "glove": 128, "field-pointer": 64}
 # minimum targets: CSS px (WCAG 2.5.8) / pt or dp (Apple, Material) / pt for pad controls on a touch screen (about 15 mm,
 # MIL-STD-1472H) / pt for the one critical control used with gloves (about 20 mm) / px for pad controls with a mouse
-# The measure, for prose on screen: the median line 60 to 75 characters and none over 80, spaces counted (Bringhurst 45-75,
-# 66 ideal; USWDS 45-90, target 66; GOV.UK at most 75; WCAG 2.2 SC 1.4.8 at most 80). It is set in em of the text: 29.5 em
-# of Archivo gave a median of 65 and a longest line of 75 over 1,088 lines of eight hpr-sim pages (2026-10-12; about 2.2
-# characters an em). `ch` is the width of a "0", which in Archivo is wide: 68ch drew a median of 87 characters there.
-MEASURE = {"em": 29.5, "median": (60, 75), "max": 80, "min_lines": 20}
+# Line length, for prose on screen (Rev C): prose takes its column's whole width, and the column stops at CONTENT px. On
+# eight hpr-sim pages (2026-10-12) that gave a median line of 86 characters at a 1,024 px window, 88 at 1,280 and 110 from
+# 1,512 px, where the column is at its widest. Past print's 45-75 (Bringhurst) and USWDS's 90, on purpose: on screen, long
+# lines read faster with comprehension unchanged (100 characters against 25, Dyson and Kipping 1998, Visible Language 32;
+# 95 the fastest of 35 to 95, Shaikh and Chaparro 2005, HFES 49th Annual Meeting), and Rev B's 65-character measure left
+# most of a desktop window empty beside a narrow strip of text.
 # A reading page (documentation, a report, an article) grows the whole type scale with the window: x1 up to FLUID["from"]
 # px wide, x FLUID["max"] from FLUID["to"] px, linear between, so body text goes from 16 to 18 px. Set in rem plus vw, so
 # browser zoom and the reader's font setting still enlarge it (WCAG 1.4.4; ratio 1.125, far under the 2.5 that keeps 200%
 # text reachable). Every step scales together, so the root-2 ratios hold. Apps, tools and device screens stay at 1.
 FLUID = {"from": 1024, "to": 1600, "max": 1.125}
-CONTENT = 1120                                               # px, the widest content column
+CONTENT = 1120                                               # px, the widest content column, and so the longest line
 GUTTER = {"phone": 16, "wide": 32, "wide_from": 720}         # px
 FLASH = {"warning": (3.0, 0.5), "advisory": (0.8, 0.7)}      # Hz, duty: NASA-STD-3001 Vol 2 rates, the only two allowed
 
@@ -284,7 +285,7 @@ def css_tokens():
     static += [f"  --fs-chamfer-{k}: {v}px;" for k, v in CHAMFER.items()]
     static += [f"  --fs-dur-{k}: {v}ms;" for k, v in MOTION.items()] + [f"  --fs-ease-{k}: {v};" for k, v in EASE.items()]
     static += [f"  --fs-target-{k}: {v}px;" for k, v in TARGET.items()]
-    static += [f"  --fs-measure: {MEASURE['em']:g}em;", f"  --fs-content: {CONTENT}px;", f"  --fs-gradient: {build.css_gradient()};",
+    static += [f"  --fs-content: {CONTENT}px;", f"  --fs-gradient: {build.css_gradient()};",
                "  --fs-hatch: repeating-linear-gradient(-45deg, var(--fs-ink-faint) 0 1px, transparent 1px 6px);", "}"]
     # The type tokens, in terms of --fs-text, on the root and on a reading page, so each resolves with that element's
     # --fs-text: the scale's sizes on the root, growing with the window on a reading page (FLUID).
@@ -820,7 +821,7 @@ def ex_home():
             f'<div class="fs-row"><a class="fs-btn" href="#register">See the tools</a><a class="fs-btn" data-variant="secondary" href="#">Source on GitHub {ico("external", "")}</a></div></section>'
             + sheet(1, 2, "Register", f'<div class="fs-table-wrap" id="register"><table class="fs-table"><caption>Every tool, numbered like a drawing. Released tools are maintained; in preparation means usable but changing.</caption>'
                     f'<thead><tr><th>No.</th><th>Title</th><th>Status</th><th>Where</th></tr></thead><tbody>{rows}</tbody></table></div>')
-            + sheet(2, 2, "Principles", '<dl class="fs-stack" style="max-width:var(--fs-measure)">'
+            + sheet(2, 2, "Principles", '<dl class="fs-stack">'
                     + "".join(f'<div style="border-top:1px solid var(--fs-rule);padding-top:12px;display:grid;gap:4px"><dt><h3>{h}</h3></dt><dd style="margin:0">{t}</dd></div>' for h, t in (
                         ("Shows its working", "Every formula, constant and source is one click away. No black boxes."),
                         ("Says how far to trust it", "Estimates are labeled as estimates, with their spread. Never a go/no-go verdict."),
@@ -900,7 +901,7 @@ def ex_window():
 
 
 # ================================================================ 6. documents (source/product/*.md -> product/*.md)
-REV = "B"
+REV = "C"
 SILK = {"text_mm": 1.2, "line_mm": 0.15, "label_mm": 2.3}   # dense silkscreen text and stroke; labels read while handling
 def _md_hex(h): return f"`{h}`"
 def table_signals():
@@ -972,21 +973,20 @@ def tailwind_theme():
     L += [f"  --spacing: 4px;"]
     for n, sz, lh, fam, w, case, tr, use in TYPE:
         L.append(f"  --text-{n}: {type_size(sz)};"); L.append(f"  --text-{n}--line-height: {type_size(lh)};")
-    L += [f"  --container-measure: {MEASURE['em']:g}em;", f"  --container-content: {CONTENT}px;"]
+    L += [f"  --container-content: {CONTENT}px;"]
     L += [f"  --radius-chamfer-{k}: {v}px;" for k, v in CHAMFER.items()]
     L += [f"  --ease-standard: {EASE['standard']};", f"  --ease-exit: {EASE['exit']};", "}"]
     return "\n".join(L) + "\n"
 
 def check_rules():
-    """The numbers a page check tests (product/web/check/fusionspace-check.js): the type scale, the reading scale, the measure,
-    the widths. One source, so the design repo's checks and a site's read the same rule."""
+    """The numbers a page check tests (product/web/check/fusionspace-check.js): the type scale, the reading scale and the
+    widths. One source, so the design repo's checks and a site's read the same rule."""
     fam = {"display": "Cascadia Mono", "mono": "Cascadia Mono", "text": "Archivo"}
     return {"rev": REV,
             "type": {"scale": [[n, sz, lh, fam[f]] for n, sz, lh, f, *_ in TYPE],
                      "capitals": [[n, sz, lh, fam[f]] for n, sz, lh, f, w, case, *_ in TYPE if case == "upper"],
                      "smallest_px": 12},
             "fluid": {"from_px": FLUID["from"], "to_px": FLUID["to"], "max": FLUID["max"], "scope": ".fs-read"},
-            "measure": {"em": MEASURE["em"], "median": list(MEASURE["median"]), "max": MEASURE["max"], "min_lines": MEASURE["min_lines"]},
             "width": {"content_px": CONTENT, "gutter_px": GUTTER["phone"], "gutter_wide_px": GUTTER["wide"], "gutter_wide_from_px": GUTTER["wide_from"]}}
 
 def check_js():
@@ -1000,7 +1000,7 @@ MDBOOK_ROLES = ["ink", "ink-muted", "canvas", "surface", "rule", "rule-strong", 
 
 def mdbook_css():
     """mdBook (hpr-sim's docs): override the theme variables of mdBook's light and dark themes, add the fonts and the strip,
-    and set the page's frame: the type scale, growing with the window on the book's pages, the measure and the column."""
+    and set the page's frame: the type scale, growing with the window on the book's pages, and the column."""
     steps = sorted({px for _, sz, lh, *_ in TYPE for px in (sz, lh)})
     extra = open(os.path.join(SRC, "web", "mdbook.css"), encoding="utf-8").read()
     sizes = "\n".join("  " + " ".join(f"--fs-{px}: {type_size(px)};" for px in steps[i:i + 5]) for i in range(0, len(steps), 5))
@@ -1060,7 +1060,6 @@ blockquote {{ border-left: 0; border: 1px solid var(--quote-border); padding: 0.
 .content {{ --fs-text: {fluid_text(10)}; }}
 :root, .content {{
 {sizes}
-  --fs-measure: {MEASURE['em']:g}em; --fs-prose-width: calc(var(--fs-text) * {MEASURE['em']:g});
 }}
 body {{ font-size: var(--fs-16); line-height: var(--fs-24); font-variant-numeric: tabular-nums; }}
 .content {{ font-size: var(--fs-16); line-height: var(--fs-24); }}
@@ -1090,19 +1089,15 @@ h4 code, h5 code, h6 code {{ font-size: var(--fs-14); line-height: var(--fs-20);
 button {{ font: inherit; }}
 .menu-title {{ font-size: var(--fs-20); line-height: var(--fs-24); font-weight: 600; align-self: center; }}
 #mdbook-searchbar {{ font-family: {FONTS['text']}; font-size: var(--fs-16); line-height: var(--fs-24); font-variant-numeric: tabular-nums; }}
-/* The measure: prose stops at {MEASURE['em']:g} em of its own text, a median line of about 65 characters in Archivo and none over
-   {MEASURE['max']}. An item or quote that holds a code block, a table or a figure keeps the column; its text sits in paragraphs, which
-   stop at the measure. */
-.content main :is(p, li, dd, dt, blockquote, figcaption):not(:has(pre, table, .checkbox-label)) {{ max-width: var(--fs-measure); }}
-/* The column: flush left beside the sidebar, up to {CONTENT} px, gutters {GUTTER['phone']} px on a phone and {GUTTER['wide']} px from {GUTTER['wide_from']} px (mdBook pads
-   the page with its own --page-padding). Tables, code and figures take the column's width, prose the measure; a code
-   block is at least as wide as the prose, and a wider one grows to the column before it scrolls. mdBook's page arrows
-   beside the column would sit over it, so the arrows go under the page at every width. */
+/* The column: centered in the space beside the sidebar, up to {CONTENT} px, gutters {GUTTER['phone']} px on a phone and {GUTTER['wide']} px from
+   {GUTTER['wide_from']} px (mdBook pads the page with its own --page-padding). Prose takes the column's whole width, as tables, code and
+   figures do, so nothing leaves a strip of text in a wide window; the column's {CONTENT} px is the longest line. Text and
+   tables sit flush left inside it. mdBook's page arrows beside the column would sit over it, so the arrows go under the
+   page at every width. */
 .content {{ padding-inline: calc({GUTTER['phone']}px - var(--page-padding)); }}
 @media only screen and (min-width: {GUTTER['wide_from']}px) {{ .content {{ padding-inline: calc({GUTTER['wide']}px - var(--page-padding)); }} }}
-.content main {{ margin-inline: 0; }}
+.content main {{ margin-inline: auto; }}
 .content table {{ margin-inline: 0; }}
-.content main pre {{ box-sizing: border-box; width: fit-content; min-width: min(100%, var(--fs-prose-width)); max-width: 100%; }}
 .page-wrapper .nav-wide-wrapper {{ display: none; }}
 .page-wrapper .nav-wrapper {{ display: block; }}
 

@@ -156,16 +156,16 @@ Every tool page prints usefully: a charge card, a flight card, a weather sheet f
 
 `kit/software/docs-theme/` has MkDocs Material and Docusaurus themes, and `product/web/mdbook/` an mdBook theme (hpr-sim's docs
 use mdBook). The mdBook theme sets the colors, the fonts and the page's frame: the type scale on mdBook's elements, growing with
-the window on the book's pages (a docs page is a reading page), the measure, and the column flush left beside the sidebar up to
-1120 px, with mdBook's page arrows under the page instead of over the column. It also fixes mdBook's own defaults
+the window on the book's pages (a docs page is a reading page), and the column, centered beside the sidebar up to 1120 px
+with the prose filling it, with mdBook's page arrows under the page instead of over the column. It also fixes mdBook's own defaults
 where they break these rules, with scripts on or off: code in ink, square corners and no shadows, the system's motion,
 selection and focus ring, borders where forced colors drop a fill, the fonts' fallbacks, nothing cut off on a phone, and
 print in the light theme with link addresses. It sets each role as `--fs-<role>` on every mdBook theme, for a site's own
 rules. Keep the writing rules from [`writing.md`](writing.md). Every docs page starts with what works and how far to trust it, as hpr-sim's does.
 
 **Check a site with the system's own check.** `web/check/fusionspace-check.js` holds the numbers the rules set (the type
-scale, the reading scale, the measure, the widths) and the code that measures them: it counts the characters of each line of
-prose as drawn. This repository's build runs it on its own pages from 320 to 1920 px; a site built on the system copies it
+scale, the reading scale, the widths) and the code that measures them: it finds prose held narrower than the box that holds
+it. This repository's build runs it on its own pages from 320 to 1920 px; a site built on the system copies it
 into its page check and runs the same file, so a rule changed here reaches every check that copies it. Copy it with the
 revision it came from.
 

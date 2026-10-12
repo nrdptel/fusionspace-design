@@ -216,19 +216,20 @@ PAGE_JS = r"""
 }
 """
 
-# The system's own rules on a page built with it (one that defines --fs-measure), through the shared check that a site runs
-# too (product/web/check/fusionspace-check.js): no line of prose over the measure's maximum, the median line at the full
-# measure inside its range, and on a reading page (.fs-read) the body size the reading scale gives at this width.
+# The system's own rules on a page built with it (one that defines --fs-content), through the shared check that a site runs
+# too (product/web/check/fusionspace-check.js): no prose held narrower than the box that holds it, and on a reading page
+# (.fs-read) the body size the reading scale gives at this width.
 SYSTEM_JS = r"""
 () => {
   const out = [];
   const C = window.FusionSpaceCheck;
-  if (!C || !getComputedStyle(document.documentElement).getPropertyValue('--fs-measure').trim()) return out;
+  if (!C || !getComputedStyle(document.documentElement).getPropertyValue('--fs-content').trim()) return out;
   const R = C.RULES;
   const root = document.querySelector('main') || document.querySelector('.fs-page') || document.body;
-  const m = C.measure(window, root);
-  for (const o of m.over.slice(0, 3)) out.push(`a line of ${o.chars} characters, over ${R.measure.max}: "${o.text.slice(0, 40)}"`);
-  if (!m.median_ok) out.push(`the median line at the measure is ${m.median} characters, outside ${R.measure.median[0]} to ${R.measure.median[1]} (${m.counted} lines)`);
+  for (const n of C.narrow(window, root).slice(0, 3)) {
+    const t = (n.block.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 40);
+    out.push(`prose held to ${Math.round(n.width)} px in a box of ${Math.round(n.room)} px: "${t}"`);
+  }
   for (const el of document.querySelectorAll(R.fluid.scope)) {
     const probe = document.createElement('span'); probe.style.fontSize = 'var(--fs-text)'; el.appendChild(probe);
     const got = parseFloat(getComputedStyle(probe).fontSize); probe.remove();
@@ -241,7 +242,7 @@ SYSTEM_JS = r"""
 
 def check_page(page):
     """A web page: no sideways scrolling, no text cut by a box that hides overflow, no text on text; on a page built with the
-    system, its measure and reading scale (SYSTEM_JS)."""
+    system, prose the width of its column and the reading scale (SYSTEM_JS)."""
     return page.evaluate(PAGE_JS) + page.evaluate(SYSTEM_JS)
 
 # Phones (320 is WCAG's reflow width), a tablet, and laptop and desktop windows: 1024 is where the reading scale starts to

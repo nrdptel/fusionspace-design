@@ -34,7 +34,6 @@
   --fs-target-field: 96px;
   --fs-target-glove: 128px;
   --fs-target-field-pointer: 64px;
-  --fs-measure: 29.5em;
   --fs-content: 1120px;
   --fs-gradient: linear-gradient(90deg,#DA7C30 0%,#D07D7A 35%,#A188CB 65%,#768DF5 100%);
   --fs-hatch: repeating-linear-gradient(-45deg, var(--fs-ink-faint) 0 1px, transparent 1px 6px);

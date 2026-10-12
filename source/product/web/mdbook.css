@@ -20,9 +20,8 @@
 #mdbook-searchresults li, #mdbook-searchresults .teaser { overflow-wrap: anywhere; }
 
 /* Figures at their size. A figure's text is drawn at its size, so a figure shown smaller reads smaller.
-   A figure takes the column, flush left, past the measure the prose stops at, so it is shown at its
-   size wherever the window holds it; on a narrower page it shrinks to fit, and mdBook's zoom (click it)
-   shows it at its size. */
+   A figure takes the column, flush left with the prose, so it is shown at its size wherever the window
+   holds it; on a narrower page it shrinks to fit, and mdBook's zoom (click it) shows it at its size. */
 .content .checkbox-label { display: flex; justify-content: flex-start; max-width: none; margin-inline: 0; }
 
 /* Code in ink on the surface: mdBook's highlighters color each kind of token with colors of their own

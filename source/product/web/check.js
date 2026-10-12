@@ -6,16 +6,17 @@
 // check (MIT OR Apache-2.0).
 //
 // Use: load it in the page, or in a harness page that measures pages in same-origin frames, then
-//   FusionSpaceCheck.measure(win, root)   the prose under root, line by line, and the verdict
+//   FusionSpaceCheck.narrow(win, root)    prose under root held narrower than what holds it
+//   FusionSpaceCheck.lineStats(win, root) the median and longest line of that prose, to report
 //   FusionSpaceCheck.scaleAt(widthPx)     the reading scale's factor at a window width
-//   FusionSpaceCheck.RULES                the numbers: type scale, reading scale, measure, widths
+//   FusionSpaceCheck.RULES                the numbers: type scale, reading scale, widths
 
 'use strict';
 
 (function (global) {
   const RULES = /*RULES*/;
 
-  // The tags whose lines are held to the measure.
+  // The tags of prose.
   const PROSE = ['P', 'LI', 'DD', 'DT', 'BLOCKQUOTE', 'FIGCAPTION'];
 
   // The reading scale's factor at a window `widthPx` wide (`foundations.md`, *Type*): 1 up to
@@ -122,52 +123,70 @@
     return out;
   }
 
-  // Whether a block is set at the full measure: its content box as wide as its own max-width,
-  // not narrowed by the window or by what holds it. Only those lines say what the measure gives.
-  function atMeasure(win, block) {
-    const s = win.getComputedStyle(block);
-    const most = parseFloat(s.maxWidth);
-    if (!Number.isFinite(most)) return false;
-    const inner = block.getBoundingClientRect().width - parseFloat(s.paddingLeft)
-      - parseFloat(s.paddingRight) - parseFloat(s.borderLeftWidth) - parseFloat(s.borderRightWidth);
-    const box = s.boxSizing === 'border-box' ? block.getBoundingClientRect().width : inner;
-    return box >= most - 1;
-  }
-
-  // The measure under `root` (`foundations.md`, *Type*): no line of prose longer than
-  // RULES.measure.max characters, and, where blocks are set at the full measure, the median of
-  // their lines, last lines left out, from RULES.measure.median[0] to [1]. The median is judged
-  // only on RULES.measure.min_lines such lines or more. Returns
-  //   { blocks: [{ block, lines, longest, at_measure }], over: [{ block, chars, text }],
-  //     median, counted, median_ok }
-  // with `median` null when too few lines count.
-  function measure(win, root) {
-    const M = RULES.measure;
-    const result = { blocks: [], over: [], median: null, counted: 0, median_ok: true };
+  // What the lines of prose under `root` come to, as a report, not a rule (`foundations.md`,
+  // *Type*: a line is as long as its column): the median line, each block's last left out, over
+  // 20 such lines or more (null under that), and the longest line. Returns { median, counted,
+  // longest } in characters.
+  function lineStats(win, root) {
     const full = [];
+    let longest = 0;
     for (const [block, nodes] of proseBlocks(win, root)) {
       const ls = lines(win, block, nodes);
-      let longest = null;
-      for (const l of ls) if (!longest || l.chars > longest.chars) longest = l;
-      const at = atMeasure(win, block);
-      result.blocks.push({ block: block, lines: ls, longest: longest, at_measure: at });
-      if (longest && longest.chars > M.max) {
-        result.over.push({ block: block, chars: longest.chars, text: longest.text });
-      }
-      if (at) for (const l of ls.slice(0, -1)) full.push(l.chars);
+      for (const l of ls) longest = Math.max(longest, l.chars);
+      for (const l of ls.slice(0, -1)) full.push(l.chars);
     }
-    result.counted = full.length;
-    if (full.length >= M.min_lines) {
-      full.sort(function (a, b) { return a - b; });
+    let median = null;
+    if (full.length >= 20) {
+      full.sort(function (x, y) { return x - y; });
       const mid = full.length >> 1;
-      result.median = full.length % 2 ? full[mid] : (full[mid - 1] + full[mid]) / 2;
-      result.median_ok = result.median >= M.median[0] && result.median <= M.median[1];
+      median = full.length % 2 ? full[mid] : (full[mid - 1] + full[mid]) / 2;
     }
-    return result;
+    return { median: median, counted: full.length, longest: longest };
+  }
+
+  // Prose held narrower than what holds it (`foundations.md`, *Type*: prose takes its column's
+  // whole width). Each prose block under `root`, and each box around one up to `root`, must be as
+  // wide as the box that holds it allows: one that is narrower is drawn again with no max-width
+  // and no width of its own, and if it grows, something held it, a max-width, a width, or margins
+  // set to auto. A box laid out by its parent (a flex or grid item, a table's part), a float, a
+  // box taken out of the flow and one that isn't a block are sized on purpose, and one not drawn
+  // has no width to read: each is skipped, but the boxes around it are still read. Returns [{ block, width, room }] in px, one per box
+  // held, the innermost.
+  function narrow(win, root) {
+    const out = [];
+    const seen = new Set();
+    const num = function (v) { return parseFloat(v) || 0; };
+    for (const block of proseBlocks(win, root).keys()) {
+      for (let e = block; e && e !== root && !seen.has(e); e = e.parentElement) {
+        seen.add(e);
+        const p = e.parentElement;
+        if (!p) break;
+        const s = win.getComputedStyle(e);
+        const ps = win.getComputedStyle(p);
+        if (!/^(block|flow-root|list-item)$/.test(s.display) || s.float !== 'none'
+          || /^(absolute|fixed)$/.test(s.position)
+          || !/^(block|flow-root|list-item)$/.test(ps.display)) continue;
+        // Not drawn now (in a closed <details>, say): nothing to read.
+        if (!e.getClientRects().length) continue;
+        const width = e.getBoundingClientRect().width;
+        const room = p.clientWidth - num(ps.paddingLeft) - num(ps.paddingRight);
+        if (width >= room - 1) continue;
+        const was = e.getAttribute('style');
+        e.style.setProperty('max-width', 'none', 'important');
+        e.style.setProperty('width', 'auto', 'important');
+        const free = e.getBoundingClientRect().width;
+        if (was === null) e.removeAttribute('style'); else e.setAttribute('style', was);
+        if (free > width + 1) {
+          out.push({ block: e, width: width, room: room });
+          break;
+        }
+      }
+    }
+    return out;
   }
 
   global.FusionSpaceCheck = {
     RULES: RULES, PROSE: PROSE, scaleAt: scaleAt, proseBlocks: proseBlocks, lines: lines,
-    atMeasure: atMeasure, measure: measure,
+    lineStats: lineStats, narrow: narrow,
   };
 })(typeof window !== 'undefined' ? window : globalThis);
