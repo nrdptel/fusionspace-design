@@ -937,8 +937,9 @@ See `LICENSE` for the full terms.
 """
 
 def check_web_pages():
-    """Every page a person opens: at 320 (WCAG reflow), 360, 390, 768 and 1280 px, in light and dark, nothing may scroll the page sideways,
-    be cut by a box that hides overflow, or overlap other text (tools/build/kit_clip.py). Skipped without Playwright."""
+    """Every page a person opens: from 320 (WCAG reflow) to 1920 px (kit_clip.WIDTHS), in light and dark, nothing may scroll the page
+    sideways, be cut by a box that hides overflow, or overlap other text; on a page built with the product system, no line of
+    prose past the measure and a reading page's text at the reading scale (tools/build/kit_clip.py). Skipped without Playwright."""
     try:
         import playwright  # noqa: F401
     except ImportError:

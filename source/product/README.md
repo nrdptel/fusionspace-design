@@ -75,7 +75,14 @@ there (note the system's revision when you copy).
 
 ## Status
 
-Rev {{REV}}, {{DATE}}, approved in review on October 5, 2026: the four signal colors (Flare, Sodium, Aurora, Nebula) and Steel
+Rev {{REV}}, {{DATE}}: the measure is the median line {{MEASURE['median'][0]}} to {{MEASURE['median'][1]}} characters and none over {{MEASURE['max']}}, set as
+{{MEASURE['em']:g}} em of the text (Rev A's 68 characters read two ways: 68ch drew 87 characters a line, and a site held to 68 at most drew
+52); a reading page's type scale grows with the window (×1 to ×{{FLUID['max']:g}}); beside a sidebar the column sits flush left up to
+{{CONTENT}} px; the mdBook theme sets the page's frame; and `web/check/fusionspace-check.js` holds the web rules' numbers and the
+code that measures them, which this build runs from 320 to 1920 px. These came from the first review of a site built on
+the system (hpr-sim's documentation, October 12, 2026).
+
+Rev A, approved in review on October 5, 2026: the four signal colors (Flare, Sodium, Aurora, Nebula) and Steel
 with their names, the beep language in [`embedded.md`](embedded.md#beeps), the rocket scheme in [`rockets.md`](rockets.md#color),
 US spelling, dates and number style everywhere, the terminal theme retuned to the signal colors, and the license below
 (Apache-2.0 for the code-like files). The beep language stays a draft until it is tested by ear on the first flight computer. Change any of these through `tools/build/kit_product.py` and

@@ -108,7 +108,15 @@ Two families, both open source (SIL OFL), in `type/fonts`:
   WARNING) and single-word states (ARMED, SAFE). Never for sentences, and never as a floating label above a heading.
 - No weight lighter than 400 anywhere; no text smaller than 12 px on screen, or 2.5 mm (about 7 pt) in print. Device screens
   are the exception: bitmap fonts at their native sizes, from 5 × 8 px.
-- Line length at most {{MEASURE}} characters.
+- **The measure, for prose on screen:** the median line {{MEASURE['median'][0]}} to {{MEASURE['median'][1]}} characters, and no line over
+  {{MEASURE['max']}}, spaces counted. That is Bringhurst's 45 to 75 (66 ideal), the US Web Design System's target of 66,
+  GOV.UK's 75 and WCAG 2.2's 80 (SC 1.4.8). Set it in em of the text, measured for the font: {{MEASURE['em']:g}} em of Archivo
+  (`--fs-measure`) gives a median of about 65 and a longest line of about 75. Not `ch`: it is the width of a "0", and 68ch of
+  Archivo draws a median of 87 characters. Tables, code and figures are not prose: they take the content width.
+- **A reading page grows with the window.** Documentation, a report or an article on the web scales the whole type scale
+  together: ×1 up to {{FLUID['from']}} px wide, ×{{FLUID['max']:g}} from {{FLUID['to']}} px, linear between (body {{16}} to {{16 * FLUID['max']:g}} px), set in rem
+  plus vw so zoom and the reader's font setting still enlarge it (`.fs-read`). The √2 steps keep their ratios and the measure
+  its characters. Apps, tools and device screens keep the sizes above.
 
 ## Space and layout
 
@@ -117,7 +125,10 @@ Two families, both open source (SIL OFL), in `type/fonts`:
   name, and its content. On narrow screens the rail sits above the content.
 - **Results next to inputs.** Tools put inputs on the left and the result on the right, with the result kept in view as the
   inputs scroll; on a phone the result comes straight after the inputs.
-- **Width.** Content up to 1120 px; prose up to {{MEASURE}} characters; gutters 16 px on phones, 32 px from 720 px.
+- **Width.** Content up to {{CONTENT}} px; prose to the measure; gutters {{GUTTER['phone']}} px on phones, {{GUTTER['wide']}} px from {{GUTTER['wide_from']}} px. Beside a
+  navigation sidebar the column starts at the gutter, flush left, and runs up to {{CONTENT}} px: prose stops at the measure,
+  and tables, code and figures may take the column's whole width (a code block at least as wide as the prose). The space
+  right of the prose stays empty; filling it with longer lines would break the measure.
 - **Alignment.** Flush left, ragged right. Numbers align right in columns. Nothing is centered except a value inside its own
   cell, a balloon number, or an icon.
 

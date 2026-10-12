@@ -41,3 +41,59 @@ table td, table th { border-left: 0; border-right: 0; }
 blockquote { border-left: 0; border: 1px solid var(--quote-border); padding: 0.6em 1em; }
 .sidebar .chapter li.chapter-item a.active { box-shadow: inset 2px 0 0 var(--links); }
 pre, code, .theme-popup, .searchbar { border-radius: 0 !important; }
+
+/* The page's frame (foundations.md, Type and Space and layout; web.md, Documentation sites). mdBook's root is 62.5%, so
+   1 rem is 10 px here. The book's text is a reading page: inside `.content` the type scale grows with the window, x1 up to
+   1024 px and x1.125 from 1600 px; the sidebar and the menu bar keep the scale's sizes. --fs-12 to --fs-44 are the
+   scale's sizes at the factor that applies. */
+:root { --fs-text: 1.6rem; --content-max-width: 1120px; }
+.content { --fs-text: clamp(1.6rem, 1.24444rem + 0.347222vw, 1.8rem); }
+:root, .content {
+  --fs-12: calc(var(--fs-text) * 0.75); --fs-14: calc(var(--fs-text) * 0.875); --fs-16: var(--fs-text); --fs-20: calc(var(--fs-text) * 1.25); --fs-24: calc(var(--fs-text) * 1.5);
+  --fs-28: calc(var(--fs-text) * 1.75); --fs-32: calc(var(--fs-text) * 2); --fs-40: calc(var(--fs-text) * 2.5); --fs-44: calc(var(--fs-text) * 2.75); --fs-56: calc(var(--fs-text) * 3.5);
+  --fs-60: calc(var(--fs-text) * 3.75);
+  --fs-measure: 29.5em; --fs-prose-width: calc(var(--fs-text) * 29.5);
+}
+body { font-size: var(--fs-16); line-height: var(--fs-24); font-variant-numeric: tabular-nums; }
+.content { font-size: var(--fs-16); line-height: var(--fs-24); }
+.content p, .content ol, .content ul, .content td, .content tbody th { line-height: var(--fs-24); }
+/* title 28/32 for the page, subtitle 20/24 for a sheet's name, heading 14/20 in capitals for a section head inside one;
+   below that, a run-in head in body type, semibold. */
+h1 { font-size: var(--fs-28); line-height: var(--fs-32); }
+h2 { font-size: var(--fs-20); line-height: var(--fs-24); }
+h3 { font-size: var(--fs-14); line-height: var(--fs-20); text-transform: uppercase; letter-spacing: 0.06em; }
+h4, h5, h6 { font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: var(--fs-16); line-height: var(--fs-24); font-weight: 600; }
+/* code 14/20; in a Cascadia Mono heading or column head, the head's own size, as written (a command or a symbol means
+   something else in capitals). Inline code has its padding from the first paint, not only once mdBook's script marks it. */
+code, pre, kbd { font-size: var(--fs-14); line-height: var(--fs-20); }
+:not(pre) > code { padding: 0.1em 0.3em; }
+h1 code, h2 code, h3 code, thead th code { font-size: inherit; line-height: inherit; }
+h3 code, thead th code { text-transform: none; letter-spacing: 0; }
+h4 code, h5 code, h6 code { font-size: var(--fs-14); line-height: var(--fs-20); }
+/* Column heads in label, 12/16 in capitals; footnotes and the copy tooltip in small, 14/20. */
+.content thead th { font-size: var(--fs-12); line-height: var(--fs-16); }
+.content .footnote-definition, .content .footnote-definition :is(li, p), .tooltiptext { font-size: var(--fs-14); line-height: var(--fs-20); }
+/* Navigation in Cascadia Mono 14 (web.md, Page anatomy), a part's title as a section head; the menu bar's title in
+   subtitle; the search field and buttons in body type. */
+.sidebar, .chapter { font-family: 'Cascadia Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: var(--fs-14); line-height: var(--fs-20); }
+.chapter li, .chapter a, .chapter code { font-size: var(--fs-14); line-height: var(--fs-20); }
+.chapter li a strong { font-weight: 400; }
+.chapter li.part-title { font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+button { font: inherit; }
+.menu-title { font-size: var(--fs-20); line-height: var(--fs-24); font-weight: 600; align-self: center; }
+#mdbook-searchbar { font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: var(--fs-16); line-height: var(--fs-24); font-variant-numeric: tabular-nums; }
+/* The measure: prose stops at 29.5 em of its own text, a median line of about 65 characters in Archivo and none over
+   80. An item or quote that holds a code block, a table or a figure keeps the column; its text sits in paragraphs, which
+   stop at the measure. */
+.content main :is(p, li, dd, dt, blockquote, figcaption):not(:has(pre, table, .checkbox-label)) { max-width: var(--fs-measure); }
+/* The column: flush left beside the sidebar, up to 1120 px, gutters 16 px on a phone and 32 px from 720 px (mdBook pads
+   the page with its own --page-padding). Tables, code and figures take the column's width, prose the measure; a code
+   block is at least as wide as the prose, and a wider one grows to the column before it scrolls. mdBook's page arrows
+   beside the column would sit over it, so the arrows go under the page at every width. */
+.content { padding-inline: calc(16px - var(--page-padding)); }
+@media only screen and (min-width: 720px) { .content { padding-inline: calc(32px - var(--page-padding)); } }
+.content main { margin-inline: 0; }
+.content table { margin-inline: 0; }
+.content main pre { box-sizing: border-box; width: fit-content; min-width: min(100%, var(--fs-prose-width)); max-width: 100%; }
+.page-wrapper .nav-wide-wrapper { display: none; }
+.page-wrapper .nav-wrapper { display: block; }

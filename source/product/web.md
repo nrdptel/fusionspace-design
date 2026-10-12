@@ -104,6 +104,8 @@ WCAG 2.2 AA, with these as the ones that change the design:
 - A visible focus ring on everything: 2 px Ion outline, 2 px offset (meets the 2.4.13 AAA appearance rule too). Sticky headers
   set `scroll-padding-top` so focus is never hidden (2.4.11).
 - Works at 320 px wide without sideways scrolling, except data tables and charts in their own scrolling region (1.4.10).
+- Text in rem, so the reader's font setting and zoom enlarge it (1.4.4); a reading page's scale grows with the window in rem
+  plus vw, never vw alone.
 - Status never by color alone; charts with a text summary and their data as a table.
 - Live values: announce changes of state (`role="status"`, polite), never every new reading; only DANGER and WARNING states
   are announced assertively.
@@ -153,8 +155,16 @@ Every tool page prints usefully: a charge card, a flight card, a weather sheet f
 ## Documentation sites
 
 `kit/software/docs-theme/` has MkDocs Material and Docusaurus themes, and `product/web/mdbook/` an mdBook theme (hpr-sim's docs
-use mdBook). They apply the colors and fonts; keep the writing rules from [`writing.md`](writing.md). Every docs page starts
-with what works and how far to trust it, as hpr-sim's does.
+use mdBook). The mdBook theme sets the colors, the fonts and the page's frame: the type scale on mdBook's elements, growing with
+the window on the book's pages (a docs page is a reading page), the measure, and the column flush left beside the sidebar up to
+{{CONTENT}} px, with mdBook's page arrows under the page instead of over the column. Keep the writing rules from
+[`writing.md`](writing.md). Every docs page starts with what works and how far to trust it, as hpr-sim's does.
+
+**Check a site with the system's own check.** `web/check/fusionspace-check.js` holds the numbers the rules set (the type
+scale, the reading scale, the measure, the widths) and the code that measures them: it counts the characters of each line of
+prose as drawn. This repository's build runs it on its own pages from 320 to 1920 px; a site built on the system copies it
+into its page check and runs the same file, so a rule changed here reaches every check that copies it. Copy it with the
+revision it came from.
 
 ## fusionspace.co
 

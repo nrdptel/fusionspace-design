@@ -16,7 +16,7 @@ from build import VOID, PAPER, WHITE, ION, EMBER, M_ORANGE, O_BLUE, contrast
 P = "product"
 SPDX = "SPDX-License-Identifier: Apache-2.0"
 COPY = "Copyright 2026 Neer Patel"
-DATE = "October 4, 2026"
+DATE = "October 12, 2026"
 SRC = os.path.join(build.SRC, "product")
 
 def out(p): return os.path.join(build.OUT, P, p)
@@ -175,7 +175,18 @@ EASE = {"standard": "cubic-bezier(0.2, 0, 0, 1)", "exit": "cubic-bezier(0.3, 0, 
 TARGET = {"web": 24, "touch": 44, "field": 96, "glove": 128, "field-pointer": 64}
 # minimum targets: CSS px (WCAG 2.5.8) / pt or dp (Apple, Material) / pt for pad controls on a touch screen (about 15 mm,
 # MIL-STD-1472H) / pt for the one critical control used with gloves (about 20 mm) / px for pad controls with a mouse
-MEASURE = 68                                                 # max line length, characters
+# The measure, for prose on screen: the median line 60 to 75 characters and none over 80, spaces counted (Bringhurst 45-75,
+# 66 ideal; USWDS 45-90, target 66; GOV.UK at most 75; WCAG 2.2 SC 1.4.8 at most 80). It is set in em of the text: 29.5 em
+# of Archivo gave a median of 65 and a longest line of 75 over 1,088 lines of eight hpr-sim pages (2026-10-12; about 2.2
+# characters an em). `ch` is the width of a "0", which in Archivo is wide: 68ch drew a median of 87 characters there.
+MEASURE = {"em": 29.5, "median": (60, 75), "max": 80, "min_lines": 20}
+# A reading page (documentation, a report, an article) grows the whole type scale with the window: x1 up to FLUID["from"]
+# px wide, x FLUID["max"] from FLUID["to"] px, linear between, so body text goes from 16 to 18 px. Set in rem plus vw, so
+# browser zoom and the reader's font setting still enlarge it (WCAG 1.4.4; ratio 1.125, far under the 2.5 that keeps 200%
+# text reachable). Every step scales together, so the root-2 ratios hold. Apps, tools and device screens stay at 1.
+FLUID = {"from": 1024, "to": 1600, "max": 1.125}
+CONTENT = 1120                                               # px, the widest content column
+GUTTER = {"phone": 16, "wide": 32, "wide_from": 720}         # px
 FLASH = {"warning": (3.0, 0.5), "advisory": (0.8, 0.7)}      # Hz, duty: NASA-STD-3001 Vol 2 rates, the only two allowed
 
 def _hex_rgb(h): return [int(h[i:i + 2], 16) for i in (1, 3, 5)]
@@ -242,6 +253,19 @@ def tokens_theme(theme):
     t["color"]["series"] = {str(i + 1): {"$type": "color", "$value": _ref(c) or dtcg_color(c)} for i, c in enumerate(SERIES[theme])}
     return t
 
+def fluid_text(root_px=16):
+    """The reading scale's body size as a CSS clamp(): 1 rem-equivalent of 16 px up to FLUID["from"], FLUID["max"] times it
+    from FLUID["to"], in rem plus vw. `root_px` is what 1 rem is on the page: 16 by default, 10 under mdBook's 62.5% root."""
+    lo, hi = 16.0, 16.0 * FLUID["max"]
+    slope = (hi - lo) / (FLUID["to"] - FLUID["from"])           # px of text per px of window
+    icpt = lo - slope * FLUID["from"]
+    r = lambda px: f"{px / root_px:.6g}rem"
+    return f"clamp({r(lo)}, {r(icpt)} + {slope * 100:.6g}vw, {r(hi)})"
+
+def type_size(px):
+    """A size on the type scale as a multiple of --fs-text, the body size (16 px at the scale's 1)."""
+    return "var(--fs-text)" if px == 16 else f"calc(var(--fs-text) * {px / 16:g})"
+
 def css_tokens():
     """product/tokens/fusionspace-ui.css: semantic custom properties for light, dark (system or data-theme) and field."""
     def block(theme):
@@ -254,15 +278,22 @@ def css_tokens():
             "/* Use: <html data-theme=\"light|dark|field\"> to force one; no attribute follows prefers-color-scheme. */", ""]
     static = [":root {", "  color-scheme: light dark;"]
     static += [f"  --fs-font-{k}: {v};" for k, v in FONTS.items()]
-    for name, size, lh, fam, w, case, tr, use in TYPE:
-        static.append(f"  --fs-type-{name}: {w} {size}px/{lh}px var(--fs-font-{fam});" + (f"  /* + uppercase, {tr}em tracking */" if case == "upper" else ""))
+    static.append("  --fs-text: 1rem;")
     static += [f"  --fs-space-{v}: {v}px;" for v in SPACE if v]
     static += [f"  --fs-line-{k}: {v}px;" for k, v in LINES.items()]
     static += [f"  --fs-chamfer-{k}: {v}px;" for k, v in CHAMFER.items()]
     static += [f"  --fs-dur-{k}: {v}ms;" for k, v in MOTION.items()] + [f"  --fs-ease-{k}: {v};" for k, v in EASE.items()]
     static += [f"  --fs-target-{k}: {v}px;" for k, v in TARGET.items()]
-    static += [f"  --fs-measure: {MEASURE}ch;", f"  --fs-gradient: {build.css_gradient()};",
+    static += [f"  --fs-measure: {MEASURE['em']:g}em;", f"  --fs-content: {CONTENT}px;", f"  --fs-gradient: {build.css_gradient()};",
                "  --fs-hatch: repeating-linear-gradient(-45deg, var(--fs-ink-faint) 0 1px, transparent 1px 6px);", "}"]
+    # The type tokens, in terms of --fs-text, on the root and on a reading page, so each resolves with that element's
+    # --fs-text: the scale's sizes on the root, growing with the window on a reading page (FLUID).
+    static += ["", f"/* A reading page (documentation, a report, an article): the type scale grows with the window, x1 up to {FLUID['from']} px",
+               f"   and x{FLUID['max']:g} from {FLUID['to']} px (body 16 to {16 * FLUID['max']:g} px). Apps, tools and device screens keep the root's sizes. */",
+               f".fs-read {{ --fs-text: {fluid_text()}; }}", ":root, .fs-read {"]
+    for name, size, lh, fam, w, case, tr, use in TYPE:
+        static.append(f"  --fs-type-{name}: {w} {type_size(size)}/{type_size(lh)} var(--fs-font-{fam});" + (f"  /* + uppercase, {tr}em tracking */" if case == "upper" else ""))
+    static += ["}"]
     body = (head + static + ["", ":root, :root[data-theme=\"light\"] {", block("light"), "}",
             "@media (prefers-color-scheme: dark) {", "  :root:not([data-theme]) {", "\n".join("  " + x for x in block("dark").split("\n")), "  }", "}",
             ":root[data-theme=\"dark\"] {", "  color-scheme: dark;", block("dark"), "}",
@@ -602,7 +633,7 @@ def _units(body):
     # on a phone, say that a wide table scrolls (the hint is hidden above 640 px)
     return body.replace('<div class="fs-table-wrap"', '<p class="fs-scroll-hint" aria-hidden="true">Wide table: scroll it sideways.</p><div class="fs-table-wrap"')
 
-def page(title, body, rel="", desc="", nav=None, theme_attr="", example=False):
+def page(title, body, rel="", desc="", nav=None, theme_attr="", example=False, read=False):
     nav = nav or [("index.html", "Specimen"), ("examples/home.html", "Home"), ("examples/charge.html", "Charge"),
                   ("examples/flight-report.html", "Flight report"), ("examples/window.html", "Window")]
     links = "".join(f'<a href="{rel}{h}"{" aria-current=\"page\"" if t == title.split(" · ")[0] else ""}>{t}</a>' for h, t in nav)
@@ -622,7 +653,7 @@ def page(title, body, rel="", desc="", nav=None, theme_attr="", example=False):
 </head>
 <body>
 <div class="fs-strip"></div>
-<div class="fs-page">
+<div class="fs-page{" fs-read" if read else ""}">
 <header class="fs-header">
   <a class="fs-logo" href="{rel}index.html" aria-label="FusionSpace product system">{_logo("hdr")}</a>
   <nav class="fs-nav" aria-label="Pages">{links}</nav>
@@ -765,7 +796,7 @@ def specimen(contrast_rows):
           f'Files in <code>product/icons/</code>: one SVG each, <code>sprite.svg</code>, and Android vector drawables.</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px">{icons}</div>')
     s8 = ("<p>The title block closes every page, report, printout and about screen. It answers: what is this, which version, from whom, when, "
           "in which units, from what data, and how finished it is.</p>"
-          + titleblock([("Title", "Product system specimen"), ("Designation", "FS · SPEC 001"), ("Rev", "A"), ("Date", "2026-10-04"),
+          + titleblock([("Title", "Product system specimen"), ("Designation", "FS · SPEC 001"), ("Rev", REV), ("Date", "2026-10-12"),
                         ("Units", "px, ms"), ("Status", "IN PREPARATION"), ("Sheet", f"{T} / {T}")]))
     body = (f'<section style="padding:48px 0 32px;display:grid;gap:16px"><span class="fs-tag">FS · SPEC 001</span><h1 style="font:var(--fs-type-display)">Product system</h1>'
             f'<p class="fs-lead">How FusionSpace tools, apps and boards look and behave. The rules are in <code>product/</code>; this page shows each part working, '
@@ -848,7 +879,7 @@ def ex_flight_report():
                 ("File", "vega-flight-03.csv"), ("Logger", "Barometer 20 Hz, accelerometer 100 Hz"), ("Filter", "None; raw samples"), ("Pad elevation", "4,000 ft MSL"),
                 ("Imported", "2026-10-04 14:22"), ("Hash", "sha256 9f3c…b21e"))) + "</dl>")
             + titleblock([("Title", "Flight 03 report"), ("Designation", "FS-VEGA · REPORT 003"), ("Rev", "A"), ("Date", "2026-10-04"), ("Units", "ft, ft/s, g, s"), ("Status", "RELEASED")]))
-    return page("Flight report · example", body, rel="../", example=True, desc="Example: a flight report from a flight computer's log, in the FusionSpace product system.")
+    return page("Flight report · example", body, rel="../", example=True, read=True, desc="Example: a flight report from a flight computer's log, in the FusionSpace product system.")
 
 def ex_window():
     aloft = [(0, 12, 19, 270), (1000, 16, None, 275), (3000, 22, None, 280), (6000, 31, None, 285), (9000, 38, None, 290)]
@@ -869,7 +900,7 @@ def ex_window():
 
 
 # ================================================================ 6. documents (source/product/*.md -> product/*.md)
-REV = "A"
+REV = "B"
 SILK = {"text_mm": 1.2, "line_mm": 0.15, "label_mm": 2.3}   # dense silkscreen text and stroke; labels read while handling
 def _md_hex(h): return f"`{h}`"
 def table_signals():
@@ -940,13 +971,35 @@ def tailwind_theme():
           "  --font-sans: var(--fs-font-text);"]
     L += [f"  --spacing: 4px;"]
     for n, sz, lh, fam, w, case, tr, use in TYPE:
-        L.append(f"  --text-{n}: {sz}px;"); L.append(f"  --text-{n}--line-height: {lh}px;")
+        L.append(f"  --text-{n}: {type_size(sz)};"); L.append(f"  --text-{n}--line-height: {type_size(lh)};")
+    L += [f"  --container-measure: {MEASURE['em']:g}em;", f"  --container-content: {CONTENT}px;"]
     L += [f"  --radius-chamfer-{k}: {v}px;" for k, v in CHAMFER.items()]
     L += [f"  --ease-standard: {EASE['standard']};", f"  --ease-exit: {EASE['exit']};", "}"]
     return "\n".join(L) + "\n"
 
+def check_rules():
+    """The numbers a page check tests (product/web/check/fusionspace-check.js): the type scale, the reading scale, the measure,
+    the widths. One source, so the design repo's checks and a site's read the same rule."""
+    fam = {"display": "Cascadia Mono", "mono": "Cascadia Mono", "text": "Archivo"}
+    return {"rev": REV,
+            "type": {"scale": [[n, sz, lh, fam[f]] for n, sz, lh, f, *_ in TYPE],
+                     "capitals": [[n, sz, lh, fam[f]] for n, sz, lh, f, w, case, *_ in TYPE if case == "upper"],
+                     "smallest_px": 12},
+            "fluid": {"from_px": FLUID["from"], "to_px": FLUID["to"], "max": FLUID["max"], "scope": ".fs-read"},
+            "measure": {"em": MEASURE["em"], "median": list(MEASURE["median"]), "max": MEASURE["max"], "min_lines": MEASURE["min_lines"]},
+            "width": {"content_px": CONTENT, "gutter_px": GUTTER["phone"], "gutter_wide_px": GUTTER["wide"], "gutter_wide_from_px": GUTTER["wide_from"]}}
+
+def check_js():
+    src = open(os.path.join(SRC, "web", "check.js"), encoding="utf-8").read()
+    assert src.count("/*RULES*/") == 1
+    head = f"// {SPDX} · {COPY}\n"
+    return head + src.replace("/*RULES*/", json.dumps(check_rules(), separators=(", ", ": ")))
+
 def mdbook_css():
-    """mdBook (hpr-sim's docs): override the theme variables of mdBook's light and dark themes, add the fonts and the strip."""
+    """mdBook (hpr-sim's docs): override the theme variables of mdBook's light and dark themes, add the fonts and the strip,
+    and set the page's frame: the type scale, growing with the window on the book's pages, the measure and the column."""
+    steps = sorted({px for _, sz, lh, *_ in TYPE for px in (sz, lh)})
+    sizes = "\n".join("  " + " ".join(f"--fs-{px}: {type_size(px)};" for px in steps[i:i + 5]) for i in range(0, len(steps), 5))
     def vars_(t):
         r = lambda n: role(n, t)
         return (f"  --bg: {r('canvas')}; --fg: {r('ink')}; --sidebar-bg: {r('surface')}; --sidebar-fg: {r('ink')};\n"
@@ -984,6 +1037,60 @@ table td, table th {{ border-left: 0; border-right: 0; }}
 blockquote {{ border-left: 0; border: 1px solid var(--quote-border); padding: 0.6em 1em; }}
 .sidebar .chapter li.chapter-item a.active {{ box-shadow: inset 2px 0 0 var(--links); }}
 pre, code, .theme-popup, .searchbar {{ border-radius: 0 !important; }}
+
+/* The page's frame (foundations.md, Type and Space and layout; web.md, Documentation sites). mdBook's root is 62.5%, so
+   1 rem is 10 px here. The book's text is a reading page: inside `.content` the type scale grows with the window, x1 up to
+   {FLUID['from']} px and x{FLUID['max']:g} from {FLUID['to']} px; the sidebar and the menu bar keep the scale's sizes. --fs-12 to --fs-44 are the
+   scale's sizes at the factor that applies. */
+:root {{ --fs-text: 1.6rem; --content-max-width: {CONTENT}px; }}
+.content {{ --fs-text: {fluid_text(10)}; }}
+:root, .content {{
+{sizes}
+  --fs-measure: {MEASURE['em']:g}em; --fs-prose-width: calc(var(--fs-text) * {MEASURE['em']:g});
+}}
+body {{ font-size: var(--fs-16); line-height: var(--fs-24); font-variant-numeric: tabular-nums; }}
+.content {{ font-size: var(--fs-16); line-height: var(--fs-24); }}
+.content p, .content ol, .content ul, .content td, .content tbody th {{ line-height: var(--fs-24); }}
+/* title 28/32 for the page, subtitle 20/24 for a sheet's name, heading 14/20 in capitals for a section head inside one;
+   below that, a run-in head in body type, semibold. */
+h1 {{ font-size: var(--fs-28); line-height: var(--fs-32); }}
+h2 {{ font-size: var(--fs-20); line-height: var(--fs-24); }}
+h3 {{ font-size: var(--fs-14); line-height: var(--fs-20); text-transform: uppercase; letter-spacing: 0.06em; }}
+h4, h5, h6 {{ font-family: {FONTS['text']}; font-size: var(--fs-16); line-height: var(--fs-24); font-weight: 600; }}
+/* code 14/20; in a Cascadia Mono heading or column head, the head's own size, as written (a command or a symbol means
+   something else in capitals). Inline code has its padding from the first paint, not only once mdBook's script marks it. */
+code, pre, kbd {{ font-size: var(--fs-14); line-height: var(--fs-20); }}
+:not(pre) > code {{ padding: 0.1em 0.3em; }}
+h1 code, h2 code, h3 code, thead th code {{ font-size: inherit; line-height: inherit; }}
+h3 code, thead th code {{ text-transform: none; letter-spacing: 0; }}
+h4 code, h5 code, h6 code {{ font-size: var(--fs-14); line-height: var(--fs-20); }}
+/* Column heads in label, 12/16 in capitals; footnotes and the copy tooltip in small, 14/20. */
+.content thead th {{ font-size: var(--fs-12); line-height: var(--fs-16); }}
+.content .footnote-definition, .content .footnote-definition :is(li, p), .tooltiptext {{ font-size: var(--fs-14); line-height: var(--fs-20); }}
+/* Navigation in Cascadia Mono 14 (web.md, Page anatomy), a part's title as a section head; the menu bar's title in
+   subtitle; the search field and buttons in body type. */
+.sidebar, .chapter {{ font-family: {FONTS['mono']}; font-size: var(--fs-14); line-height: var(--fs-20); }}
+.chapter li, .chapter a, .chapter code {{ font-size: var(--fs-14); line-height: var(--fs-20); }}
+.chapter li a strong {{ font-weight: 400; }}
+.chapter li.part-title {{ font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }}
+button {{ font: inherit; }}
+.menu-title {{ font-size: var(--fs-20); line-height: var(--fs-24); font-weight: 600; align-self: center; }}
+#mdbook-searchbar {{ font-family: {FONTS['text']}; font-size: var(--fs-16); line-height: var(--fs-24); font-variant-numeric: tabular-nums; }}
+/* The measure: prose stops at {MEASURE['em']:g} em of its own text, a median line of about 65 characters in Archivo and none over
+   {MEASURE['max']}. An item or quote that holds a code block, a table or a figure keeps the column; its text sits in paragraphs, which
+   stop at the measure. */
+.content main :is(p, li, dd, dt, blockquote, figcaption):not(:has(pre, table, .checkbox-label)) {{ max-width: var(--fs-measure); }}
+/* The column: flush left beside the sidebar, up to {CONTENT} px, gutters {GUTTER['phone']} px on a phone and {GUTTER['wide']} px from {GUTTER['wide_from']} px (mdBook pads
+   the page with its own --page-padding). Tables, code and figures take the column's width, prose the measure; a code
+   block is at least as wide as the prose, and a wider one grows to the column before it scrolls. mdBook's page arrows
+   beside the column would sit over it, so the arrows go under the page at every width. */
+.content {{ padding-inline: calc({GUTTER['phone']}px - var(--page-padding)); }}
+@media only screen and (min-width: {GUTTER['wide_from']}px) {{ .content {{ padding-inline: calc({GUTTER['wide']}px - var(--page-padding)); }} }}
+.content main {{ margin-inline: 0; }}
+.content table {{ margin-inline: 0; }}
+.content main pre {{ box-sizing: border-box; width: fit-content; min-width: min(100%, var(--fs-prose-width)); max-width: 100%; }}
+.page-wrapper .nav-wide-wrapper {{ display: none; }}
+.page-wrapper .nav-wrapper {{ display: block; }}
 """
 
 # ================================================================ 8. command line (product/cli/)
@@ -1771,6 +1878,7 @@ def build_web():
     build_fonts(); build_stylesheet()
     wr("web/tailwind-theme.css", tailwind_theme())
     wr("web/mdbook/fusionspace-mdbook.css", mdbook_css())
+    wr("web/check/fusionspace-check.js", check_js())
     pred, meas = example_flight()
     for th in ("light", "dark"):
         p_ = wr(f"web/previews/chart-{th}.svg", chart_svg(pred, meas, standalone_theme=th))

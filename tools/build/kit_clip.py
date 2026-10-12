@@ -216,13 +216,42 @@ PAGE_JS = r"""
 }
 """
 
-def check_page(page):
-    """A web page: no sideways scrolling, no text cut by a box that hides overflow, no text on text."""
-    return page.evaluate(PAGE_JS)
+# The system's own rules on a page built with it (one that defines --fs-measure), through the shared check that a site runs
+# too (product/web/check/fusionspace-check.js): no line of prose over the measure's maximum, the median line at the full
+# measure inside its range, and on a reading page (.fs-read) the body size the reading scale gives at this width.
+SYSTEM_JS = r"""
+() => {
+  const out = [];
+  const C = window.FusionSpaceCheck;
+  if (!C || !getComputedStyle(document.documentElement).getPropertyValue('--fs-measure').trim()) return out;
+  const R = C.RULES;
+  const root = document.querySelector('main') || document.querySelector('.fs-page') || document.body;
+  const m = C.measure(window, root);
+  for (const o of m.over.slice(0, 3)) out.push(`a line of ${o.chars} characters, over ${R.measure.max}: "${o.text.slice(0, 40)}"`);
+  if (!m.median_ok) out.push(`the median line at the measure is ${m.median} characters, outside ${R.measure.median[0]} to ${R.measure.median[1]} (${m.counted} lines)`);
+  for (const el of document.querySelectorAll(R.fluid.scope)) {
+    const probe = document.createElement('span'); probe.style.fontSize = 'var(--fs-text)'; el.appendChild(probe);
+    const got = parseFloat(getComputedStyle(probe).fontSize); probe.remove();
+    const want = 16 * C.scaleAt(innerWidth);
+    if (Math.abs(got - want) > 0.05) out.push(`a reading page's body is ${got.toFixed(2)} px at ${innerWidth} px, not the reading scale's ${want.toFixed(2)}`);
+  }
+  return out;
+}
+"""
 
-def check_pages(paths, widths=(320, 360, 390, 768, 1280), schemes=("light",)):
+def check_page(page):
+    """A web page: no sideways scrolling, no text cut by a box that hides overflow, no text on text; on a page built with the
+    system, its measure and reading scale (SYSTEM_JS)."""
+    return page.evaluate(PAGE_JS) + page.evaluate(SYSTEM_JS)
+
+# Phones (320 is WCAG's reflow width), a tablet, and laptop and desktop windows: 1024 is where the reading scale starts to
+# grow, 1512 a 14-inch MacBook Pro's default window, 1920 a desktop monitor's.
+WIDTHS = (320, 360, 390, 768, 1024, 1280, 1512, 1920)
+
+def check_pages(paths, widths=WIDTHS, schemes=("light",)):
     """Run check_page on local HTML files at several widths; returns ["file @ width: problem", ...]."""
     from playwright.sync_api import sync_playwright
+    check_js = os.path.join(build.OUT, "product", "web", "check", "fusionspace-check.js")
     out = []
     with sync_playwright() as p_:
         b = p_.chromium.launch()
@@ -231,6 +260,7 @@ def check_pages(paths, widths=(320, 360, 390, 768, 1280), schemes=("light",)):
                 for sc in schemes:
                     pg = b.new_page(viewport={"width": w, "height": 900}, color_scheme=sc)
                     pg.goto("file://" + os.path.abspath(path)); pg.evaluate("document.fonts.ready"); pg.wait_for_timeout(200)
+                    if os.path.exists(check_js): pg.add_script_tag(path=check_js)
                     out += [f"{os.path.relpath(path, build.ROOT)} @ {w}px{'' if sc == 'light' else ' ' + sc}: {x}" for x in check_page(pg)]
                     pg.close()
         b.close()
