@@ -75,7 +75,11 @@ there (note the system's revision when you copy).
 
 ## Status
 
-Rev {{REV}}, {{DATE}}: prose takes its column's whole width, up to {{CONTENT}} px, and beside a sidebar the column is centered. Rev B's
+Rev {{REV}}, {{DATE}}: a docs site's table of contents can be put away and brought back at every width (a menu button, or
+its edge dragged to the window's side), and its page arrows are named buttons under the text, inside the column, instead
+of bare arrows at the window's sides. These came from the same review.
+
+Rev C, the same day: prose takes its column's whole width, up to {{CONTENT}} px, and beside a sidebar the column is centered. Rev B's
 measure (a median line of 60 to 75 characters, 29.5 em of the text) left most of a desktop window empty beside a narrow strip
 of text; the page check now fails prose held narrower than its column instead of counting characters.
 
