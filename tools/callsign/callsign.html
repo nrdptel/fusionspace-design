@@ -235,6 +235,17 @@ h1 { font: var(--fs-type-title); letter-spacing: -0.005em; }
 h2 { font: var(--fs-type-subtitle); }
 h3 { font: var(--fs-type-heading); text-transform: uppercase; letter-spacing: 0.04em; }
 p, li { text-wrap: pretty; }
+/* Equations (foundations.md, Type, Math): MathML in the math face, a display equation centered with a line's space
+   around it, aligned rows with MathML Core's cell padding. */
+math { font-family: 'NewCM Math Subset', math; font-size: 1.1em; }
+.fs-equation { margin: 1em 0; text-align: center; }
+.fs-equation > math[display="block"] { margin: 0; }
+mtd { padding: 0.5ex 0.4em; }
+mtr > mtd:first-child { padding-inline-start: 0; }
+mtr > mtd:last-child { padding-inline-end: 0; }
+/* A formula in a table's head keeps its letters' case, and the body's math size, so its scripts stay at 12 px or
+   more (1.1 times the body text, `--fs-text`); `mi` keeps MathML's own italic, which it sets for itself. */
+th math { font-size: calc(var(--fs-text) * 1.1); text-transform: none; letter-spacing: normal; }
 a { color: var(--fs-action); text-decoration-thickness: 1px; text-underline-offset: 3px; }
 a:hover { text-decoration-thickness: 2px; }
 :focus-visible { outline: 2px solid var(--fs-focus); outline-offset: 2px; }

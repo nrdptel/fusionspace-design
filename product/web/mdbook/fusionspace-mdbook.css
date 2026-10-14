@@ -255,6 +255,21 @@ html, h4, h5, h6, #mdbook-searchbar { font-family: 'Archivo', 'Archivo Fallback'
 code, pre, kbd, .hljs { font-family: 'Cascadia Mono', 'Cascadia Mono Fallback', ui-monospace, 'SF Mono', Menlo, Consolas, monospace !important; }
 h1, h2, h3, .menu-title, table thead th, .sidebar, .chapter { font-family: 'Cascadia Mono', 'Cascadia Mono Fallback', ui-monospace, Menlo, Consolas, monospace; }
 
+/* Equations (foundations.md, Type, Math). MathML in the math face and the text's color; 1.1 em sets its capitals a
+   little over Archivo's and its x-height a little under, between the two. A display equation is centered in the column
+   with a line's space above and below; one too wide for a phone's column is written on more lines, never scrolled or
+   shrunk. The cells of aligned rows take MathML Core's own padding, the outer edges flush, which Chromium's built-in
+   style leaves out. */
+math { font-family: 'NewCM Math Subset', math; font-size: 1.1em; }
+.fs-equation { margin: 1em 0; text-align: center; }
+.fs-equation > math[display="block"] { margin: 0; }
+mtd { padding: 0.5ex 0.4em; }
+mtr > mtd:first-child { padding-inline-start: 0; }
+mtr > mtd:last-child { padding-inline-end: 0; }
+/* A formula in a table's head keeps its letters' case, and the body's math size, so its scripts stay at 12 px or
+   more (1.1 times the body text, `--fs-text`); `mi` keeps MathML's own italic, which it sets for itself. */
+th math { font-size: calc(var(--fs-text) * 1.1); text-transform: none; letter-spacing: normal; }
+
 /* Print: the light values whatever theme the page is read in; links keep the action role and show their
    addresses; a table row stays on one sheet; the strip, fixed to the window, stands once at the top of
    the first sheet instead of over the text of every one. */

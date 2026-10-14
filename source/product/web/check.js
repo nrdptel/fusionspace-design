@@ -8,6 +8,7 @@
 // Use: load it in the page, or in a harness page that measures pages in same-origin frames, then
 //   FusionSpaceCheck.narrow(win, root)    prose under root held narrower than what holds it
 //   FusionSpaceCheck.lineStats(win, root) the median and longest line of that prose, to report
+//   FusionSpaceCheck.equations(win, root) math under root wider than the box that holds it
 //   FusionSpaceCheck.scaleAt(widthPx)     the reading scale's factor at a window width
 //   FusionSpaceCheck.RULES                the numbers: type scale, reading scale, widths
 
@@ -185,8 +186,44 @@
     return out;
   }
 
+  // Math wider than its room (`foundations.md`, *Type*, Math): MathML doesn't break a line, so
+  // an equation too wide for a phone's column runs past its edge, or a box that scrolls hides
+  // the rest. Each <math> under root whose drawn box leaves the content box of the block that
+  // holds it, by more than a pixel either side, is one: the fix is a narrower equation, written
+  // on more lines, never a scroll bar or a smaller size. Returns [{ math, width, room }] in px.
+  function equations(win, root) {
+    const out = [];
+    const num = function (v) { return parseFloat(v) || 0; };
+    for (const math of root.querySelectorAll('math')) {
+      if (!math.getClientRects().length) continue;
+      let p = math.parentElement;
+      while (p && p !== root && !/^(block|flow-root|list-item|table-cell)$/.test(win.getComputedStyle(p).display)) {
+        p = p.parentElement;
+      }
+      if (!p) continue;
+      const ps = win.getComputedStyle(p);
+      const box = p.getBoundingClientRect();
+      const left = box.left + p.clientLeft + num(ps.paddingLeft);
+      const right = left + p.clientWidth - num(ps.paddingLeft) - num(ps.paddingRight);
+      // The formula's extent, not only its box: a too-wide display keeps its <math> box at the
+      // column's width and lets its rows run past it.
+      let x0 = Infinity;
+      let x1 = -Infinity;
+      for (const e of [math].concat(Array.from(math.querySelectorAll('*')))) {
+        const r = e.getBoundingClientRect();
+        if (r.width <= 0) continue;
+        x0 = Math.min(x0, r.left);
+        x1 = Math.max(x1, r.right);
+      }
+      if (x0 < left - 1 || x1 > right + 1) {
+        out.push({ math: math, width: x1 - x0, room: right - left });
+      }
+    }
+    return out;
+  }
+
   global.FusionSpaceCheck = {
     RULES: RULES, PROSE: PROSE, scaleAt: scaleAt, proseBlocks: proseBlocks, lines: lines,
-    lineStats: lineStats, narrow: narrow,
+    lineStats: lineStats, narrow: narrow, equations: equations,
   };
 })(typeof window !== 'undefined' ? window : globalThis);

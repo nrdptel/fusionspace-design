@@ -4,7 +4,7 @@
 |---|---|
 | `fusionspace.css` | Tokens and every component |
 | `tailwind-theme.css` | Tailwind v4 theme with the defaults removed |
-| `fonts.css`, `fonts/` | WOFF2 subsets of Archivo and Cascadia Mono (SIL OFL) |
+| `fonts.css`, `fonts/` | WOFF2 subsets of Archivo and Cascadia Mono (SIL OFL) and of New Computer Modern Math (GUST Font License) |
 | `index.html` | The specimen |
 | `examples/` | Home (a drawing register), Charge, a flight report, Window |
 | `mdbook/` | mdBook theme |
