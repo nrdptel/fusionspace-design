@@ -78,9 +78,9 @@ there (note the system's revision when you copy).
 Rev E, October 13, 2026: equations are typeset, as a textbook sets them (`foundations.md`, *Type*). A third face, New Computer
 Modern Math, draws them, as MathML a site writes from LaTeX when it builds; the mdBook theme and `fusionspace.css` size and
 place them, and `web/check/fusionspace-check.js` fails math wider than its box. This came from the owner's first read of
-hpr-sim's guides, which wrote their equations as plain text. The face is a type choice made without the owner, for his
-review: the GUST Font License (LPPL 1.3c) is free but not the OFL of the other two faces, and the subset is renamed as it
-asks of a changed font.
+hpr-sim's guides, which wrote their equations as plain text. The owner accepted the face and its license on 2026-10-14:
+the GUST Font License (LPPL 1.3c) is free but not the OFL of the other two faces, and the subset is renamed as it asks of
+a changed font.
 
 Rev D, the same day: a docs site's table of contents can be put away and brought back at every width (a menu button, or
 its edge dragged to the window's side), and its page arrows are named buttons under the text, inside the column, instead
