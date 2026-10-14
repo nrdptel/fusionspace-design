@@ -137,12 +137,14 @@ dispersion density), use ramps built from the spectral classes:
 
 ## Type
 
-Two families, both open source (SIL OFL), in `type/fonts`:
+Two families for words, both open source (SIL OFL), and one for equations, all in `type/fonts`:
 
 - **Cascadia Mono** for what you read as data or as a drawing: titles, labels, numbers, units, codes, readouts, title blocks.
   Every digit is the same width, so columns line up and values don't jitter as they change.
 - **Archivo** for what you read as prose: paragraphs, help, descriptions. Turn on tabular figures
   (`font-variant-numeric: tabular-nums`) wherever Archivo shows a number.
+- **New Computer Modern Math** (Book) for equations, and only for them: the Computer Modern of LaTeX's textbooks, under the
+  GUST Font License (LPPL 1.3c). The web uses a subset renamed *NewCM Math Subset*, as its license asks of a changed font.
 - On iOS and Android, body text and controls use the system font so they scale with Dynamic Type and font scaling; Cascadia
   Mono and Archivo carry titles, labels and readouts.
 
@@ -174,6 +176,24 @@ Two families, both open source (SIL OFL), in `type/fonts`:
   lines read faster with comprehension unchanged (100 characters against 25, Dyson and Kipping, *Visible Language* 32,
   1998; 95 the fastest of 35 to 95, Shaikh and Chaparro, HFES 2005), and Rev B's 65-character measure left most of a
   desktop window empty beside a narrow strip of text.
+- **Math is typeset, as a textbook sets it.** An equation is written in LaTeX and drawn as MathML in the math face, never
+  as a picture, in a code block, or as plain text in a sentence; a symbol in a sentence is math too ($\rho$, not ρ or
+  `rho`), so the sentence and the equation match. On the web the LaTeX becomes MathML when the site builds, so the page
+  needs no script and a screen reader reads the structure (hpr-sim's documentation uses `math-core`). Words come first:
+  what the equation says, then the equation, then each symbol it introduces with its unit ("where $\rho$ is the air's
+  density, in kg/m³").
+  - **Size and color:** 1.1 em of the text around it, in the text's color. Scripts shrink as TeX shrinks them, so a
+    script inside a script would fall under 12 px: write $C_{D0}$, not $C_{D_0}$.
+  - **A display equation** is centered in the column, alone in its paragraph, with a line's space above and below, and
+    is not numbered; the text names it ("the drag equation above"). It fits the narrowest column it is shown in, 288 px
+    on a 320 px phone: a longer one is written on more lines (`aligned`), each broken before `=` or an operator and lined
+    up at the `=`. Never scroll an equation sideways or shrink it to fit; the page check fails one wider than its box
+    (`web/check/fusionspace-check.js`, `equations`).
+  - **Notation,** after ISO 80000-2: variables italic, and upright for names of more than one letter, units, the
+    differential d and constants such as e and π (`\mathrm{Re}`, `\mathrm{d}t`); vectors bold (`\mathbf{v}`), never
+    an arrow accent, which browsers misplace.
+  - **Where a reader sees raw text** (code, comments, terminal output, a commit), a formula stays plain Unicode text,
+    `F = ½ ρ v² C_D A`: LaTeX source reads worse there than either.
 - **A reading page grows with the window.** Documentation, a report or an article on the web scales the whole type scale
   together: ×1 up to 1024 px wide, ×1.125 from 1600 px, linear between (body 16 to 18 px), set in rem
   plus vw so zoom and the reader's font setting still enlarge it (`.fs-read`). The √2 steps keep their ratios, and a line's

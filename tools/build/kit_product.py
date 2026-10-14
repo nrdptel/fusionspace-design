@@ -16,7 +16,7 @@ from build import VOID, PAPER, WHITE, ION, EMBER, M_ORANGE, O_BLUE, contrast
 P = "product"
 SPDX = "SPDX-License-Identifier: Apache-2.0"
 COPY = "Copyright 2026 Neer Patel"
-DATE = "October 12, 2026"
+DATE = "October 13, 2026"
 SRC = os.path.join(build.SRC, "product")
 
 def out(p): return os.path.join(build.OUT, P, p)
@@ -597,8 +597,55 @@ def build_fonts():
     css.append("@font-face { font-family: 'Cascadia Mono Fallback'; src: local('Menlo'), local('Consolas'); size-adjust: 100%; }")
     for stem in ("OFL-Archivo.txt", "OFL-CascadiaMono.txt"):
         shutil.copy(os.path.join(build.ROOT, "type", "fonts", stem), out(f"web/fonts/{stem}"))
+    css.append(build_math_font())
     wr("web/fonts.css", "\n".join(css) + "\n")
     return True
+
+# The math face (foundations.md, Type, Math): New Computer Modern Math, Book weight, the Computer Modern of LaTeX's
+# textbooks drawn a little heavier for screens, version 8.1.1 from CTAN (`fonts/newcomputermodern`), under the GUST Font
+# License (LPPL 1.3c; the family's other fonts with a GPL text license are not used). The subset keeps Latin, Greek, the
+# operators, arrows and delimiters, and the math italic, bold and Greek letters MathML draws, with the MATH table's size
+# variants, so a stretched bracket or radical renders exactly as with the whole font (390 KB less). Two changes, so the
+# family takes a new name, as the license asks of a modified font: the subset, and the primes. Chromium doesn't apply a
+# math font's `ssty` variants to a superscript, so x′ drew a small raised prime raised again; each prime character maps to
+# its `ssty` glyph instead, as math-core-fonts patches it (github.com/tmke8/math-core-fonts), which every browser then
+# draws at a superscript's height. No glyph's outline changes.
+MATH_SRC = "NewCMMath-Book.otf"
+MATH_STEM = "NewCMMathSubset-Book"
+MATH_FAMILY = "NewCM Math Subset"
+MATH_SUBSET = ("U+0000-00FF,U+0131,U+0237,U+02C6-02DC,U+0300-036F,U+0391-03C9,U+03D1,U+03D5,U+03F0-03F6,U+2000-206F,"
+               "U+2070-209F,U+20D0-20F0,U+2100-214F,U+2190-21FF,U+2200-22FF,U+2300-23FF,U+27E8-27EF,U+1D400-1D4CF,"
+               "U+1D6A8-1D7D7")
+MATH_FEATURES = ["ssty", "flac", "dtls", "kern", "mark", "mkmk", "ccmp", "locl", "rlig", "curs"]
+PRIMES = {0x2032: "minute.st", 0x2033: "uni2033.st", 0x2034: "uni2034.st", 0x2035: "uni2035.st",
+          0x2036: "uni2036.st", 0x2037: "uni2037.st", 0x2057: "uni2057.st"}
+
+def build_math_font():
+    """product/web/fonts/NewCMMathSubset-Book.woff2 and its license; returns its @font-face rule."""
+    from fontTools import subset
+    opts = subset.Options(); opts.flavor = "woff2"; opts.layout_features = MATH_FEATURES; opts.name_IDs = ["*"]
+    opts.notdef_outline = True; opts.drop_tables += ["DSIG", "FFTM", "PfEd"]
+    f_ = subset.load_font(os.path.join(build.ROOT, "type", "fonts", MATH_SRC), opts)
+    order = set(f_.getGlyphOrder())
+    for table in f_["cmap"].tables:
+        if table.isUnicode():
+            for cp, glyph in PRIMES.items():
+                if cp in table.cmap and glyph in order: table.cmap[cp] = glyph
+    s_ = subset.Subsetter(opts); s_.populate(unicodes=subset.parse_unicodes(MATH_SUBSET)); s_.subset(f_)
+    name = f_["name"]
+    for rec in list(name.names):
+        if rec.nameID in (1, 4, 16, 21): name.setName(MATH_FAMILY + (" Book" if rec.nameID == 4 else ""), rec.nameID, rec.platformID, rec.platEncID, rec.langID)
+        elif rec.nameID in (3, 6): name.setName(MATH_STEM, rec.nameID, rec.platformID, rec.platEncID, rec.langID)
+    name.setName("Subset of New Computer Modern Math Book 8.1.1 (Antonis Tsolomitis, CTAN fonts/newcomputermodern), made "
+                 "by FusionSpace's build: fewer characters, and the primes mapped to their script-size glyphs. Outlines "
+                 "unchanged. The original is at https://ctan.org/pkg/newcomputermodern.", 10, 3, 1, 0x409)
+    if "head" in f_: f_["head"].modified = f_["head"].created
+    subset.save_font(f_, out(f"web/fonts/{MATH_STEM}.woff2"), opts)
+    for stem in ("GUST-FONT-LICENSE-NewCMMath.txt", "LPPL-1.3c.txt"):
+        shutil.copy(os.path.join(build.ROOT, "type", "fonts", stem), out(f"web/fonts/{stem}"))
+    # `block`: a formula in a stand-in face misleads (a wrong glyph, a misplaced script), so it waits for the face.
+    return (f"@font-face {{ font-family: '{MATH_FAMILY}'; font-style: normal; font-weight: 400; font-display: block; "
+            f"src: url('fonts/{MATH_STEM}.woff2') format('woff2'); unicode-range: {MATH_SUBSET}; }}")
 
 def build_stylesheet():
     comp = open(os.path.join(SRC, "web", "components.css"), encoding="utf-8").read()
@@ -697,6 +744,12 @@ def num(v, dp=0):
     s = f"{abs(v):,.{dp}f}"
     return ("−" if v < 0 else "") + s
 
+# The math sample on the specimen's Type sheet: MathML as math-core writes it from LaTeX (hpr-sim's `cargo xtask site-math`),
+# `F_D = \tfrac12 \rho v^2 C_D A` inline and Martin's flutter pressure as an aligned display.
+SPECIMEN_MATH = ('<p>New Computer Modern Math for equations, set as a textbook sets them: the drag force is '
+                 + '<math><msub><mi>F</mi><mi>D</mi></msub><mo>=</mo><mfrac displaystyle="false"><mn>1</mn><mn>2</mn></mfrac><mi>ρ</mi><msup><mi>v</mi><mn>2</mn></msup><msub><mi>C</mi><mi>D</mi></msub><mi>A</mi></math>' + ', and a display equation is centered, on more lines when it is long:</p>'
+                 + '<div class="fs-equation">' + '<math display="block"><mtable displaystyle="true" scriptlevel="0"><mtr><mtd style="text-align: right;justify-items: end;padding-right: 0;"><msub><mi>q</mi><mi>f</mi></msub></mtd><mtd style="text-align: left;justify-items: start;padding-left: 0;"><mo>=</mo><mfrac><mrow><mi>π</mi><mspace width="0.16666667em"/><msub><mi>G</mi><mi>E</mi></msub></mrow><mrow><mn>24</mn><mspace width="0.16666667em"/><mi>ε</mi><mi>K</mi><mspace width="0.16666667em"/><mo stretchy="false">(</mo><mi>λ</mi><mo>+</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></mfrac><mo rspace="0">,</mo></mtd></mtr><mtr><mtd style="text-align: right;justify-items: end;padding-right: 0;"><mi>K</mi></mtd><mtd style="text-align: left;justify-items: start;padding-left: 0;"><mo>=</mo><mfrac><msup><mi>A</mi><mn>3</mn></msup><mrow><mo stretchy="false">(</mo><mi>t</mi><mo lspace="0" rspace="0">/</mo><mi>c</mi><msup><mo stretchy="false">)</mo><mn>3</mn></msup><mspace width="0.16666667em"/><mo stretchy="false">(</mo><mi>A</mi><mo>+</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></mfrac></mtd></mtr></mtable></math>' + '</div>')
+
 def specimen(contrast_rows):
     T = 8
     # 1 color
@@ -731,7 +784,8 @@ def specimen(contrast_rows):
                   f'<td class="fs-small fs-muted">{use}</td></tr>' for n, sz, lh, fam, w, case, tr, use in TYPE)
     s2 = (f'<p>Cascadia Mono for anything you read as data or as a drawing: titles, labels, numbers, codes. Archivo for anything you read as prose. '
           f'Headings and readouts step by √2, like drawing lettering (ISO 3098). Capitals only where a drawing would use them: labels, title-block cells, sheet numbers, state words.</p>'
-          f'<div class="fs-table-wrap"><table class="fs-table"><thead><tr><th>Token</th><th class="n">px</th><th>Sample</th><th>Use</th></tr></thead><tbody>{trs}</tbody></table></div>')
+          f'<div class="fs-table-wrap"><table class="fs-table"><thead><tr><th>Token</th><th class="n">px</th><th>Sample</th><th>Use</th></tr></thead><tbody>{trs}</tbody></table></div>'
+          + SPECIMEN_MATH)
     # 3 lines
     def ln(y, cls, label, extra=""):
         return f'<line x1="0" x2="300" y1="{y}" y2="{y}" class="{cls}" {extra}/><text x="316" y="{y + 4}">{label}</text>'
@@ -797,7 +851,7 @@ def specimen(contrast_rows):
           f'Files in <code>product/icons/</code>: one SVG each, <code>sprite.svg</code>, and Android vector drawables.</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px">{icons}</div>')
     s8 = ("<p>The title block closes every page, report, printout and about screen. It answers: what is this, which version, from whom, when, "
           "in which units, from what data, and how finished it is.</p>"
-          + titleblock([("Title", "Product system specimen"), ("Designation", "FS · SPEC 001"), ("Rev", REV), ("Date", "2026-10-12"),
+          + titleblock([("Title", "Product system specimen"), ("Designation", "FS · SPEC 001"), ("Rev", REV), ("Date", "2026-10-13"),
                         ("Units", "px, ms"), ("Status", "IN PREPARATION"), ("Sheet", f"{T} / {T}")]))
     body = (f'<section style="padding:48px 0 32px;display:grid;gap:16px"><span class="fs-tag">FS · SPEC 001</span><h1 style="font:var(--fs-type-display)">Product system</h1>'
             f'<p class="fs-lead">How FusionSpace tools, apps and boards look and behave. The rules are in <code>product/</code>; this page shows each part working, '
@@ -901,7 +955,7 @@ def ex_window():
 
 
 # ================================================================ 6. documents (source/product/*.md -> product/*.md)
-REV = "D"
+REV = "E"
 SILK = {"text_mm": 1.2, "line_mm": 0.15, "label_mm": 2.3}   # dense silkscreen text and stroke; labels read while handling
 def _md_hex(h): return f"`{h}`"
 def table_signals():
@@ -1926,7 +1980,7 @@ FOLDER_READMES = {
     "icons/README.md": "# Icons\n\nOne SVG per icon (24 x 24, `currentColor`, 1.5 px strokes), `sprite.svg` with every icon as a `<symbol id=\"fs-name\">`, `android/` with each as a VectorDrawable (`fs_name.xml`, tinted by the theme), and `sf-symbols/` with each as an SF Symbols custom symbol for iOS and watchOS (`fs.name`). "
                        "Rules in `product/foundations.md#icons`.\n\n![Icons](preview.png)\n",
     "web/README.md": "# Web\n\n| File | What |\n|---|---|\n| `fusionspace.css` | Tokens and every component |\n| `tailwind-theme.css` | Tailwind v4 theme with the defaults removed |\n"
-                     "| `fonts.css`, `fonts/` | WOFF2 subsets of Archivo and Cascadia Mono (SIL OFL) |\n| `index.html` | The specimen |\n"
+                     "| `fonts.css`, `fonts/` | WOFF2 subsets of Archivo and Cascadia Mono (SIL OFL) and of New Computer Modern Math (GUST Font License) |\n| `index.html` | The specimen |\n"
                      "| `examples/` | Home (a drawing register), Charge, a flight report, Window |\n| `mdbook/` | mdBook theme |\n| `previews/` | Screenshots used in the docs |\n\nRules in `product/web.md`.\n",
     "embedded/README.md": "# Device screens\n\n| File | What |\n|---|---|\n| `oled-128x64-*.png` | 1:1 frame buffers (and `@4x` previews): SAFE, ARMED with a fault, in flight, landed |\n"
                           "| `tft-240x240-recovery.*` | A color ground-station screen in the dark roles |\n| `fs_lvgl_styles.c/.h` | LVGL styles (checked against LVGL 9.3) |\n\n"
