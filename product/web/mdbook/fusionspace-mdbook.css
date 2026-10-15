@@ -123,6 +123,11 @@ button { font: inherit; }
 .content { padding-inline: calc(16px - var(--page-padding)); }
 @media only screen and (min-width: 720px) { .content { padding-inline: calc(32px - var(--page-padding)); } }
 .content main { margin-inline: auto; }
+/* The search field, when its button opens it, stands in the column: its edges on the text's, with 16 px between
+   it and the page, so the focus ring (2 px, 2 px out) never touches the intro's first line. mdBook draws it
+   across the page's padding with nothing under it. */
+#mdbook-search-wrapper { padding: 0 calc(16px - var(--page-padding)) 16px; }
+@media only screen and (min-width: 720px) { #mdbook-search-wrapper { padding-inline: calc(32px - var(--page-padding)); } }
 .content table { margin-inline: 0; }
 .page-wrapper .nav-wide-wrapper { display: none; }
 
