@@ -36,6 +36,8 @@ template look (indigo buttons, `rounded-xl`, `shadow-lg`) can't creep in.
 
 - **Header.** The horizontal lockup at 24 px tall, in one color: Void on light and field, Paper on dark. The gradient lives
   in the strip (principle 6), and the brand's rule for small lockups on light is met in every theme. Nav links in Cascadia Mono; the current page underlined 2 px. No hamburger above 720 px.
+- **Search.** On a docs site, the search field its button opens stands under the header, in the column: its edges on
+  the text's, and 16 px between it and the intro, so its focus ring never touches the designation tag.
 - **Intro.** The designation tag (chamfered), a status chip, the title (Cascadia Mono 28) and one sentence in `lead`. No hero
   image, no background art, no gradient text.
 - **Sheets.** Each section is a sheet with its number and name in the rail. Two to six sheets per page.

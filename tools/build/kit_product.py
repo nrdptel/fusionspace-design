@@ -188,6 +188,7 @@ TARGET = {"web": 24, "touch": 44, "field": 96, "glove": 128, "field-pointer": 64
 FLUID = {"from": 1024, "to": 1600, "max": 1.125}
 CONTENT = 1120                                               # px, the widest content column, and so the longest line
 GUTTER = {"phone": 16, "wide": 32, "wide_from": 720}         # px
+SEARCH_GAP = 16                                              # px, between an open search field and the page
 FLASH = {"warning": (3.0, 0.5), "advisory": (0.8, 0.7)}      # Hz, duty: NASA-STD-3001 Vol 2 rates, the only two allowed
 
 def _hex_rgb(h): return [int(h[i:i + 2], 16) for i in (1, 3, 5)]
@@ -1151,6 +1152,11 @@ button {{ font: inherit; }}
 .content {{ padding-inline: calc({GUTTER['phone']}px - var(--page-padding)); }}
 @media only screen and (min-width: {GUTTER['wide_from']}px) {{ .content {{ padding-inline: calc({GUTTER['wide']}px - var(--page-padding)); }} }}
 .content main {{ margin-inline: auto; }}
+/* The search field, when its button opens it, stands in the column: its edges on the text's, with {SEARCH_GAP} px between
+   it and the page, so the focus ring (2 px, 2 px out) never touches the intro's first line. mdBook draws it
+   across the page's padding with nothing under it. */
+#mdbook-search-wrapper {{ padding: 0 calc({GUTTER['phone']}px - var(--page-padding)) {SEARCH_GAP}px; }}
+@media only screen and (min-width: {GUTTER['wide_from']}px) {{ #mdbook-search-wrapper {{ padding-inline: calc({GUTTER['wide']}px - var(--page-padding)); }} }}
 .content table {{ margin-inline: 0; }}
 .page-wrapper .nav-wide-wrapper {{ display: none; }}
 
