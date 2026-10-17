@@ -1,7 +1,7 @@
 """FusionSpace kit: GitHub extras (profile README, labels, badges, how-to) and the example project."""
 import os, json
-import build, kit
-from kit import KIT, TAGLINE, SCOPE, DISCIPLINES, SITE, SITE_URL, GITHUB_URL, note, out
+import build
+from kit import KIT, TAGLINE, DISCIPLINES, SITE, SITE_URL, GITHUB_URL, note, out
 
 LABELS = [  # GitHub issue labels in brand colors (hex without #)
     ("bug", "B34F0C", "Something is broken"), ("feature", "3350D6", "New capability"), ("enhancement", "768DF5", "Improve something that works"),
@@ -14,38 +14,75 @@ BADGES = [("FusionSpace", "Rev C", "0B0F1C", "3350D6"), ("status", "active", "33
 def q(x): return x.replace("-", "--").replace("_", "__").replace(" ", "%20")
 def badge(l, m, c, lc): return f"![{l}: {m}](https://img.shields.io/badge/{q(l)}-{q(m)}-{c}?style=flat-square&labelColor={lc})"
 
-PROFILE = """<!-- GitHub profile README for FusionSpace. Create a repo named exactly like your username, add this as README.md,
-     and copy readme-banner-dark.png / readme-banner-light.png into it (paths below assume the repo root). -->
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="readme-banner-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="readme-banner-light.png">
-  <img alt="FusionSpace · {tagline}" src="readme-banner-dark.png" width="100%">
+# The README on github.com/nrdptel, word for word (checked October 17, 2026), with what fusionspace.co lists. The banners
+# are the @2x ones: GitHub's sanitizer drops srcset's 1x/2x descriptors, so the large file is the only source. Lists, not
+# tables: a table scrolls sideways on a phone.
+PROFILE = """<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="readme-banner@2x-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="readme-banner@2x-light.png">
+  <img alt="FusionSpace · {tagline}" src="readme-banner@2x-dark.png" width="100%">
 </picture>
 
 ### Hi, I'm Neer.
 
-{role}. [FusionSpace]({site_url}) is everything I make, under one name: {scope}. Each project is a constellation, and each product in it is one of its stars.
+I'm a software engineer in Auburn, Alabama. Under the name [FusionSpace]({site_url}) I make free, open-source
+software for hobby and high-power rockets: [HPR Sim](https://hpr.fusionspace.co/the-simulator.html), a flight simulator,
+and the suite being built around it.
 
-| Product | Project | What | Status |
-|---|---|---|---|
-| [FS-VEGA]({github}/vega) | FS-LYR | One-line description | {active} |
-| [FS-ACHERNAR]({github}/achernar) | FS-ERI | One-line description | {proto} |
+#### FusionSpace HPR
 
-<details><summary>Discipline tags</summary>
+One suite for hobby and high-power rockets, written in Rust, MIT or Apache-2.0. Every product's source and releases live in
+[fusionspace-eridanus]({github}/fusionspace-eridanus).
 
-| Tag | Meaning |
-|---|---|
-{tags}
+- **HPR Sim** · released, [0.1.0]({github}/fusionspace-eridanus/releases/tag/v0.1.0) (2026-10-08)<br>
+  A 6-DOF flight simulator: a Rust library, the `hpr` command and a Python package. Reads OpenRocket designs, flies
+  Monte Carlo dispersions, and publishes [how far to trust it](https://hpr.fusionspace.co/trusting-a-simulation.html).<br>
+  [Guide](https://hpr.fusionspace.co/the-simulator.html) · [Docs](https://hpr.fusionspace.co/) ·
+  [PyPI](https://pypi.org/project/fusionspace-hpr/) · [crates.io](https://crates.io/crates/fusionspace-hpr)
+- **Analyzer** · in preparation, for 0.2<br>
+  Reads a flight computer's log and sets the flight beside its simulation.
+- **Competition Kit** · in preparation, for 0.4<br>
+  Challenge rules, presets and submission packs for student rocketry competitions.
+- **The app** · in preparation, a preview in 0.5, then 1.0<br>
+  Design, simulation and flight replay on the desktop, the web and phones.
+- After 1.0: **Motor Designer**, **Recovery Designer** and **Avionics**.
 
-</details>
+Try it: `pip install fusionspace-hpr` for Python, or `cargo install fusionspace-hpr-cli --locked` for the `hpr` command.
+
+#### Web tools
+
+Four tools for the browser that came before FusionSpace HPR. Each keeps working at its own address until its rebuild
+inside HPR ships.
+
+- **[HPR Motor Finder](https://motor.fusionspace.co)** · AeroTech, Cesaroni and Loki motor stock and prices across U.S.
+  vendors, matched to ThrustCurve. [Source]({github}/Hobby-Rocket-Motor-Finder)
+- **[Charge](https://charge.fusionspace.co)** · Sizes black-powder ejection charges, every constant shown, with a log of
+  your ground tests. [Source]({github}/fusionspace-charge)
+- **[Window](https://window.fusionspace.co)** · Launch weather at any U.S. field: surface wind, winds aloft, storms, cloud
+  ceiling and a few days ahead. [Source]({github}/fusionspace-window)
+- **[Muster](https://muster.fusionspace.co)** · Which reloads, closures and spacers fit each reloadable motor case, and the
+  parts to buy. [Source]({github}/fusionspace-muster)
+
+#### How they're built
+
+- **Show the working.** Formulas, constants and sources are there to read, not hidden.
+- **Say how far to trust it.** Estimates are labeled as estimates, with their spread. Never a go/no-go verdict.
+- **Work at the field.** Readable in sun, with big targets for cold hands. HPR Sim's core needs no network.
+- **No accounts, no tracking.**
+
+Every FusionSpace site, tool and app follows one brand and product system,
+[fusionspace-design]({github}/fusionspace-design). The front page is
+[fusionspace-site]({github}/fusionspace-site).
 """
 
 HOWTO = """# GitHub setup with the FusionSpace kit
 
 1. **Avatar**: upload `avatar-dark-500.png` (Settings → Profile → Profile picture). Use the same for an organization.
-2. **Profile README**: follow `profile-README.md` (a repo named after your username, plus the two banner PNGs).
+2. **Profile README**: `profile-README.md` is the README of a repo named after your username; put
+   `readme-banner@2x-dark.png` and `readme-banner@2x-light.png` beside it.
 3. **Each repository**:
-   - Social preview: Settings → General → Social preview → upload `social-preview-dark.png`, or a per-project one made with
+   - Social preview: Settings → General → Social preview → upload the project's `social-preview-dark.png` from
+     `kit/projects/` (HPR is `achernar/`; the four web tools and fusionspace.co each have their own), or make one with
      `python3 tools/build/project.py --star <Star> [--name <external name>] --tag <TAG> --desc "..."` (example in `kit/projects/example-vega/`).
    - README header: copy the project's `readme-banner-dark.png` and `-light.png` into `.github/brand/` and start from its
      `README-starter.md` (or use the brand banners here with `README-snippet.md`).
@@ -63,11 +100,9 @@ def build_github_extras():
     build.wr(f"{Gd}/apply-labels.sh", "#!/usr/bin/env bash\n# Create or update the FusionSpace issue labels in a repo: ./apply-labels.sh owner/repo   (needs the GitHub CLI, gh)\n"
              "set -euo pipefail\nREPO=\"$1\"\n" + "".join(f'gh label create "{n}" --repo "$REPO" --color {c} --description "{d}" --force\n' for n, c, d in LABELS))
     os.chmod(out(f"{Gd}/apply-labels.sh"), 0o755)
-    tags = "\n".join(f"| `{t}` | {d} |" for t, d in DISCIPLINES)
-    build.wr(f"{Gd}/profile-README.md", PROFILE.format(tagline=TAGLINE, role=kit.ROLE, scope=SCOPE, tags=tags, github=GITHUB_URL, site_url=SITE_URL,
-             active=badge("status", "active", "3350D6", "0B0F1C"), proto=badge("status", "prototype", "B34F0C", "0B0F1C")))
+    build.wr(f"{Gd}/profile-README.md", PROFILE.format(tagline=TAGLINE, github=GITHUB_URL, site_url=SITE_URL))
     build.wr(f"{Gd}/HOW-TO.md", HOWTO)
-    for p, what, use in [("profile-README.md", "profile README template with light/dark banner and project table", "github.com/<you>/<you>"),
+    for p, what, use in [("profile-README.md", "the profile README: light/dark banner, FusionSpace HPR, the web tools and the principles", "github.com/nrdptel/nrdptel"),
                          ("HOW-TO.md", "step-by-step GitHub setup with these files", "Start here for GitHub"),
                          ("labels.json / apply-labels.sh", "issue labels in brand colors, applied with the GitHub CLI", "Any repo"),
                          ("badges.md", "shields.io badges in brand colors (status, discipline)", "READMEs")]:
@@ -90,6 +125,7 @@ SITE_TOOLS = [
     ("Window", "Launch-weather board for US high-power and model rocketry."),
     ("Muster", "Motor-hardware compatibility for high-power rocketry."),
 ]
+SITE_DESC = "Open-source software for hobby and high-power rockets."      # as fusionspace.co says it
 
 def build_naming_option():
     """Full project kits for the site's tools, each under its own name: designation FS · SW · TOOL 00n."""
@@ -100,3 +136,9 @@ def build_naming_option():
         project.make(p, out(d))
         note(f"{d}/", "Per-project", f"{name}: project kit (social preview, README banners, OG, YouTube thumbnail, title slides, report covers, starter README); {p.designation}",
              "", "the tool's repo, its page on fusionspace.co, talks and reports")
+    # The front page itself, under the designation in its title block.
+    p = project.Project("fusionspace.co", code="FS", kind="Site", desc=SITE_DESC)
+    d = f"{KIT}/projects/{p.slug}"
+    project.make(p, out(d))
+    note(f"{d}/", "Per-project", f"fusionspace.co: project kit (social preview, README banners, OG, YouTube thumbnail, title slides, report covers, starter README); {p.designation}",
+         "", "the nrdptel/fusionspace-site repo")
