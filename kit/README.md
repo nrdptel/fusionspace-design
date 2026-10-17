@@ -145,7 +145,7 @@ Browse every image in `index.html`. New product? `python3 tools/build/project.py
 | `social/facebook-cover-{dark,light}.png/.svg` | facebook cover | 1702 × 630 | Facebook page cover (851 × 315 at 2×) |
 | `social/discord-banner-{dark,light}.png/.svg` | discord banner | 960 × 540 | Discord server banner |
 | `github/README-snippet.md` | <picture> snippet for light/dark README banners |  | Paste at the top of a README |
-| `github/profile-README.md` | profile README template with light/dark banner and project table |  | github.com/<you>/<you> |
+| `github/profile-README.md` | the profile README: light/dark banner, FusionSpace HPR, the web tools and the principles |  | github.com/nrdptel/nrdptel |
 | `github/HOW-TO.md` | step-by-step GitHub setup with these files |  | Start here for GitHub |
 | `github/labels.json / apply-labels.sh` | issue labels in brand colors, applied with the GitHub CLI |  | Any repo |
 | `github/badges.md` | shields.io badges in brand colors (status, discipline) |  | READMEs |
@@ -276,6 +276,7 @@ Browse every image in `index.html`. New product? `python3 tools/build/project.py
 | `projects/charge/` | Charge: project kit (social preview, README banners, OG, YouTube thumbnail, title slides, report covers, starter README); FS · SW · TOOL 002 |  | the tool's repo, its page on fusionspace.co, talks and reports |
 | `projects/window/` | Window: project kit (social preview, README banners, OG, YouTube thumbnail, title slides, report covers, starter README); FS · SW · TOOL 003 |  | the tool's repo, its page on fusionspace.co, talks and reports |
 | `projects/muster/` | Muster: project kit (social preview, README banners, OG, YouTube thumbnail, title slides, report covers, starter README); FS · SW · TOOL 004 |  | the tool's repo, its page on fusionspace.co, talks and reports |
+| `projects/fusionspace-co/` | fusionspace.co: project kit (social preview, README banners, OG, YouTube thumbnail, title slides, report covers, starter README); FS · SITE 001 |  | the nrdptel/fusionspace-site repo |
 
 ## Notes
 
