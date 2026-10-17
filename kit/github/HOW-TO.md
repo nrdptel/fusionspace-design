@@ -1,9 +1,11 @@
 # GitHub setup with the FusionSpace kit
 
 1. **Avatar**: upload `avatar-dark-500.png` (Settings → Profile → Profile picture). Use the same for an organization.
-2. **Profile README**: follow `profile-README.md` (a repo named after your username, plus the two banner PNGs).
+2. **Profile README**: `profile-README.md` is the README of a repo named after your username; put
+   `readme-banner@2x-dark.png` and `readme-banner@2x-light.png` beside it.
 3. **Each repository**:
-   - Social preview: Settings → General → Social preview → upload `social-preview-dark.png`, or a per-project one made with
+   - Social preview: Settings → General → Social preview → upload the project's `social-preview-dark.png` from
+     `kit/projects/` (HPR is `achernar/`; the four web tools and fusionspace.co each have their own), or make one with
      `python3 tools/build/project.py --star <Star> [--name <external name>] --tag <TAG> --desc "..."` (example in `kit/projects/example-vega/`).
    - README header: copy the project's `readme-banner-dark.png` and `-light.png` into `.github/brand/` and start from its
      `README-starter.md` (or use the brand banners here with `README-snippet.md`).
