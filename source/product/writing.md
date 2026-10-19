@@ -14,8 +14,8 @@ respectful of a capable reader. FusionSpace's tools are one maintainer's work, a
   flights", not "highly accurate".
 - Be honest about limits: say what isn't done, isn't checked, or isn't known, once, in the same tone as what is. "Its
   online fetch is not tested automatically."
-- Stay calm: no exclamation marks, no hype words (`powerful`, `seamless`, `revolutionary`, `effortless`, `magic`), no
-  jokes in errors or warnings, no emoji.
+- Stay calm: no exclamation marks, no hype words (`powerful` as praise, `seamless`, `revolutionary`, `effortless`,
+  `magic`), no jokes in errors or warnings, no emoji.
 - Respect the reader, a capable flyer. Explain, don't scold. Safety notes give the reason: "Ground-test before flight:
   real bays leak, and powder varies."
 
@@ -47,7 +47,7 @@ below).
 > *Before*, in hpr-sim's *Pick a motor*: Flying a few more motors is quick: change `--motor` and `--delay` and run
 > again.
 >
-> *After*: To fly another motor, change `--motor` and `--delay` and run it again.
+> *After*: To fly more motors, change `--motor` and `--delay` and run it again.
 
 ### Short sentences
 
@@ -71,8 +71,8 @@ about.
 > *Before*, in hpr-sim's OpenRocket format page: This section compares HPR Sim's whole flights with OpenRocket 24.12's
 > on the 54 configurations of OpenRocket's example designs that HPR Sim can fly, in 15 of the examples.
 >
-> *After*: HPR Sim and OpenRocket 24.12 flew the same 54 configurations: those of OpenRocket's example designs that HPR
-> Sim can fly, in 15 of the examples.
+> *After*: HPR Sim's whole flights are compared with OpenRocket 24.12's on 54 configurations: those of OpenRocket's
+> example designs that HPR Sim can fly, in 15 of the examples.
 
 ### Paragraphs and lists
 
@@ -94,7 +94,7 @@ follow it. A sentence that opens with one sends the reader to look it up before 
 > *Before*, in hpr-sim's *Accuracy*: Neither set is held out: both were seen during development, so neither is a blind
 > test until M2.7 holds flights out, predicted before their logs are read.
 >
-> *After*: Neither set is held out. I saw both while building the simulator, so neither is a blind test. That waits for
+> *After*: Neither set is held out. Both were seen during development, so neither is a blind test. That waits for
 > flights predicted before their logs are read, which is planned work (held-out flights).
 
 ### Honest, once
@@ -128,10 +128,10 @@ The sentence limit is hpr-sim's target: fewer than 10% of sentences over 25 word
 bold-label limit of 0.5 still allows a list of ten options on a 2,000-word page, but not a bold label on every item of
 every list. Labels get one every 200 words.
 
-Hedges get 1.0, about the top of the range on one engineer's blog the survey measured (0.22 to 1.19 per 100 words),
-because a single hedge is often the honest word. Stacked hedges, minimizers and signposts get one every 1,000 words. The
-limits were set against hpr-sim's pages as they stood on October 19, 2026, when most of them were over the sentence and
-bold-label limits.
+Hedges get 1.0, about the top of the range on one engineer's blog the survey measured (0.22 to 1.19 per 100 words, on a
+somewhat different list of hedges), because a single hedge is often the honest word. Stacked hedges, minimizers and
+signposts get one every 1,000 words. The limits were set against hpr-sim's pages as they stood on October 19, 2026, when
+most of them were over the sentence and bold-label limits.
 
 Who's talking has no limit: "I", "we", "you" and contractions per 100 words. For scale, the survey found 1.0 to 3.5
 contractions per 100 words on most personal pages and 0 to 0.25 on reference pages. One author wrote about 3 "I" per
@@ -139,12 +139,12 @@ contractions per 100 words on most personal pages and 0 to 0.25 on reference pag
 
 ### The check
 
-`cargo xtask voice` in hpr-sim reads any path it's given (Markdown, HTML or text) and prints, per page, each count
-above against its limit. It fails only on its stock-phrase list: 41 entries in 9 groups, each named by at least one
-published style guide or study. The groups are puffery (`seamless`, `cutting-edge`), inflated words (`pivotal`,
-`testament`), words that spread with generated text (`delve`, `showcase`), buzz verbs (`leverages`, `utilize`),
-note-that phrases (`please note`), vague sources (`research has shown`), wordy phrases (`in order to`, `a number of`),
-recaps (`in conclusion`) and chat residue (`I hope this helps`).
+`cargo xtask voice` in hpr-sim reads any path it's given (Markdown, HTML or text) and prints, per page, each count above
+against its limit. Of what it counts, it fails only on its stock-phrase list: 41 entries in 9 groups, each named by a
+published style guide or study, or by these writing rules. The groups are puffery (`seamless`, `cutting-edge`), inflated
+words (`pivotal`, `testament`), words that spread with generated text (`delve`, `showcase`), buzz verbs (`leverages`,
+`utilize`), note-that phrases (`please note`), vague sources (`research has shown`), wordy phrases (`in order to`, `a
+number of`), recaps (`in conclusion`) and chat residue (`I hope this helps`).
 
 Words with a technical sense stay off the list: robust, deploy, streamline, boost and powerful (a more powerful motor).
 Terms such as `magic bytes` and `seamless tube` pass. The list is in
