@@ -122,17 +122,18 @@ over one is where to look first; it doesn't fail the build.
 | Signposts | "in this section", "as mentioned", "let's", "in short," and the like | 0.1 |
 | First person on a reference page | "I", "me" or "my" on a model, format, command or glossary page | 0 |
 
-The sentence limit comes from hpr-sim's target: fewer than 10% of sentences over 25 words, at about 20 words a sentence,
-is 0.5 per 100 words. On a page of shorter sentences the limit is stricter than 10%, so the report prints each page's
+The sentence limit comes from hpr-sim's target: fewer than 10% of sentences over 25 words, at about 20 words a sentence.
+That's 0.5 per 100 words. On a page of shorter sentences the limit is stricter than 10%, so the report prints each page's
 share too. A bold-label limit of 0.5 still allows a list of ten options on a 2,000-word page, but not a bold label on
 every item of every list. Labels get one every 200 words, because each one sends the reader off to look it up.
 
 Hedges get 1.0, because a single hedge is often the honest word. That's about the top of the range the survey measured
 on one engineer's blog: 2.2 to 11.9 per 1,000 words, on a mostly different list of hedges. Stacked hedges, minimizers and
-signposts get one every 1,000 words: a second hedge, a word that calls a step easy and a sentence that points at the
-section or back at earlier text each give the reader little, so one should be rare enough to be a choice. First person on a reference page gets 0, because the
-program is the subject there. The limits were set against hpr-sim's pages as they stood on October 19, 2026, when
-most of them were over the sentence and bold-label limits.
+signposts get one every 1,000 words. Each adds little: a second hedge, a word that calls a step easy, a sentence that
+points back at the page. Use one only on purpose.
+
+First person on a reference page gets 0, because the program is the subject there. The limits were set against hpr-sim's
+pages as they stood on October 19, 2026, when most of them were over the sentence and bold-label limits.
 
 Who's talking has no limit: "I", "we", "you" and contractions per 100 words. For scale, the survey found 1.0 to 3.5
 contractions per 100 words on most personal pages and 0 to 0.25 on reference pages. One author wrote about 3 "I" per
@@ -154,7 +155,7 @@ published style guide or study, or by these writing rules:
 - recaps: `in conclusion`
 - chat residue: `I hope this helps`
 
-Words with a technical sense in hpr-sim stay off the list, whether or not a page uses them yet: robust, deploy,
+The list leaves out words that have a technical sense in hpr-sim, even if no page uses them yet: robust, deploy,
 streamline (a streamlined body), boost and powerful (a more powerful motor).
 Terms such as `magic bytes` and `seamless tube` pass. The list is in
 [hpr-sim's `xtask/src/voice.rs`](https://github.com/nrdptel/fusionspace-eridanus/blob/main/xtask/src/voice.rs), each
