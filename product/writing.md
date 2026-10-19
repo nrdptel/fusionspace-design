@@ -31,11 +31,10 @@ notes. It's one person's work, so there's no company "we". The bottom line still
 the maintainer's words. Reference pages stay impersonal: a model's equations, a file format, a command's options, a
 glossary. There the program is the subject, and "you" gives the steps, as it does in a tutorial or a how-to.
 
-*Before*, in hpr-sim's README: "FusionSpace HPR · Sim (…) is an open-source flight simulator for hobby and high-power rockets,
-written in Rust, that you use as a library, from the command line or from Python."
+*Before*, in hpr-sim's contributing guide: "Publishing packages, creating releases and tags, and changing repository
+settings are the maintainer's to do."
 
-*After*: "FusionSpace HPR · Sim (…) is an open-source flight simulator for hobby and high-power rockets. I write it in
-Rust, and you can use it as a library, from the command line or from Python."
+*After*: "Only I publish packages, create releases and tags, or change the repository's settings."
 
 ### Plain words
 
@@ -46,7 +45,7 @@ below).
 *Before*, in hpr-sim's *Pick a motor*: "Flying a few more motors is quick: change `--motor` and `--delay` and run
 again."
 
-*After*: "To fly more motors, change `--motor` and `--delay` and run it again."
+*After*: "To fly a few more motors, change `--motor` and `--delay` and run it again."
 
 ### Short sentences
 
@@ -83,7 +82,7 @@ that opens with a bold label reads like a form.
 *Before*, in hpr-sim's README: "**Status: RELEASED.** Version 0.1.0, released October 8, 2026; work toward 0.2 goes on
 here."
 
-*After*: "Version 0.1.0 came out on October 8, 2026, and I'm working on 0.2 here."
+*After*: "Version 0.1.0 came out on October 8, 2026, and work toward 0.2 goes on here."
 
 ### Labels
 
@@ -123,14 +122,18 @@ over one is where to look first; it doesn't fail the build.
 | Signposts | "in this section", "as mentioned", "let's", "in short," and the like | 0.1 |
 | First person on a reference page | "I", "me" or "my" on a model, format, command or glossary page | 0 |
 
-The sentence limit is hpr-sim's target: fewer than 10% of sentences over 25 words, at about 20 words a sentence. A
-bold-label limit of 0.5 still allows a list of ten options on a 2,000-word page, but not a bold label on every item of
-every list. Labels get one every 200 words.
+The sentence limit comes from hpr-sim's target: fewer than 10% of sentences over 25 words, at about 20 words a sentence.
+That's 0.5 per 100 words. On a page of shorter sentences the limit is stricter than 10%, so the report prints each page's
+share too. A bold-label limit of 0.5 still allows a list of ten options on a 2,000-word page, but not a bold label on
+every item of every list. Labels get one every 200 words, because each one sends the reader off to look it up.
 
 Hedges get 1.0, because a single hedge is often the honest word. That's about the top of the range the survey measured
-on one engineer's blog: 2.2 to 11.9 per 1,000 words, on a somewhat different list of hedges. Stacked hedges, minimizers and
-signposts get one every 1,000 words. The limits were set against hpr-sim's pages as they stood on October 19, 2026, when
-most of them were over the sentence and bold-label limits.
+on one engineer's blog: 2.2 to 11.9 per 1,000 words, on a mostly different list of hedges. Stacked hedges, minimizers and
+signposts get one every 1,000 words. Each adds little: a second hedge, a word that calls a step easy, a sentence that
+points back at the page. Use one only on purpose.
+
+First person on a reference page gets 0, because the program is the subject there. The limits were set against hpr-sim's
+pages as they stood on October 19, 2026, when most of them were over the sentence and bold-label limits.
 
 Who's talking has no limit: "I", "we", "you" and contractions per 100 words. For scale, the survey found 1.0 to 3.5
 contractions per 100 words on most personal pages and 0 to 0.25 on reference pages. One author wrote about 3 "I" per
@@ -152,7 +155,8 @@ published style guide or study, or by these writing rules:
 - recaps: `in conclusion`
 - chat residue: `I hope this helps`
 
-Words with a technical sense stay off the list: robust, deploy, streamline, boost and powerful (a more powerful motor).
+The list leaves out words that have a technical sense in hpr-sim, even if no page uses them yet: robust, deploy,
+streamline (a streamlined body), boost and powerful (a more powerful motor).
 Terms such as `magic bytes` and `seamless tube` pass. The list is in
 [hpr-sim's `xtask/src/voice.rs`](https://github.com/nrdptel/fusionspace-eridanus/blob/main/xtask/src/voice.rs), each
 entry with its sources and a test that fails without it. Voice is partly taste, so a cold reader checks each rewritten
