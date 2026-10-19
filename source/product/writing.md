@@ -21,7 +21,7 @@ respectful of a capable reader. FusionSpace's tools are one maintainer's work, a
 
 The rules below come from a read-through of hpr-sim's pages on October 18, 2026, which found them correct but generic,
 and from [a survey of plain technical writing](https://github.com/nrdptel/fusionspace-eridanus/blob/main/docs/research/plain-voice-docs.md).
-Each shows a passage from hpr-sim's pages as it was written, then the same passage in this voice. hpr-sim's
+Each shows a passage from hpr-sim's pages as it stood on October 19, 2026, then the same passage in this voice. hpr-sim's
 [writing guide](https://hpr.fusionspace.co/writing.html#voice) holds the same section.
 
 ### Where "I" goes
@@ -70,15 +70,15 @@ about.
 *Before*, in hpr-sim's OpenRocket format page: "This section compares HPR Sim's whole flights with OpenRocket 24.12's on
 the 54 configurations of OpenRocket's example designs that HPR Sim can fly, in 15 of the examples."
 
-*After*: "HPR Sim's whole flights are compared with OpenRocket 24.12's on 54 configurations: those of OpenRocket's
-example designs that HPR Sim can fly, in 15 of the examples."
+*After*: "HPR Sim's whole flights are compared with OpenRocket 24.12's on 54 configurations. They're the configurations
+of OpenRocket's example designs that HPR Sim can fly, in 15 of the examples."
 
 ### Paragraphs and lists
 
 Write a thought as a paragraph. Use a list for what really is a list: steps, options, parts. Give a list as many items
 as there are, not three of the same shape because three sounds finished. A bold label opens an item only where a reader
-scans for it, as in a list of options or a model page's *In short* box; a line that opens with a bold label and a colon
-reads like a form.
+scans for it, as in a list of options or a model page's *In short* box, whose items still count toward the limit. A line
+that opens with a bold label reads like a form.
 
 *Before*, in hpr-sim's README: "**Status: RELEASED.** Version 0.1.0, released October 8, 2026; work toward 0.2 goes on
 here."
@@ -127,8 +127,8 @@ The sentence limit is hpr-sim's target: fewer than 10% of sentences over 25 word
 bold-label limit of 0.5 still allows a list of ten options on a 2,000-word page, but not a bold label on every item of
 every list. Labels get one every 200 words.
 
-Hedges get 1.0, about the top of the range on one engineer's blog the survey measured (0.22 to 1.19 per 100 words, on a
-somewhat different list of hedges), because a single hedge is often the honest word. Stacked hedges, minimizers and
+Hedges get 1.0, because a single hedge is often the honest word. That's about the top of the range the survey measured
+on one engineer's blog: 2.2 to 11.9 per 1,000 words, on a somewhat different list of hedges. Stacked hedges, minimizers and
 signposts get one every 1,000 words. The limits were set against hpr-sim's pages as they stood on October 19, 2026, when
 most of them were over the sentence and bold-label limits.
 
@@ -140,10 +140,17 @@ contractions per 100 words on most personal pages and 0 to 0.25 on reference pag
 
 `cargo xtask voice` in hpr-sim reads any path it's given (Markdown, HTML or text) and prints, per page, each count above
 against its limit. Of what it counts, it fails only on its stock-phrase list: 41 entries in 9 groups, each named by a
-published style guide or study, or by these writing rules. The groups are puffery (`seamless`, `cutting-edge`), inflated
-words (`pivotal`, `testament`), words that spread with generated text (`delve`, `showcase`), buzz verbs (`leverages`,
-`utilize`), note-that phrases (`please note`), vague sources (`research has shown`), wordy phrases (`in order to`, `a
-number of`), recaps (`in conclusion`) and chat residue (`I hope this helps`).
+published style guide or study, or by these writing rules:
+
+- puffery: `seamless`, `cutting-edge`
+- inflated words: `pivotal`, `testament`
+- words that spread with generated text: `delve`, `showcase`
+- buzz verbs: `leverages`, `utilize`
+- note-that phrases: `please note`
+- vague sources: `research has shown`
+- wordy phrases: `in order to`, `a number of`
+- recaps: `in conclusion`
+- chat residue: `I hope this helps`
 
 Words with a technical sense stay off the list: robust, deploy, streamline, boost and powerful (a more powerful motor).
 Terms such as `magic bytes` and `seamless tube` pass. The list is in
