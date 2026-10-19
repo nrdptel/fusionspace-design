@@ -56,8 +56,8 @@ that carries five things is better as a few sentences, or as a list.
 variable mass: aerodynamics from subsonic to supersonic, the standard atmosphere or a measured one, winds that change
 with height, staging, clusters and air starts, and recovery with drift."
 
-*After*: "It flies a rocket in six degrees of freedom, three of position and three of rotation, with its mass changing
-in flight. The aerodynamics run from subsonic to supersonic. The air is the standard atmosphere or a measured one, with
+*After*: "It flies a rocket in six degrees of freedom (6-DOF), three of position and three of rotation, with its mass
+changing in flight. The aerodynamics run from subsonic to supersonic. The air is the standard atmosphere or a measured one, with
 winds that change with height. It covers staging, clusters and air starts, and recovery with drift."
 
 ### Say it once
@@ -120,7 +120,11 @@ over one is where to look first; it doesn't fail the build.
 | Stacked hedges | a sentence holding two or more hedges | 0.1 |
 | Minimizers | simply, just, easy, easily, quick, quickly | 0.1 |
 | Signposts | "in this section", "as mentioned", "let's", "in short," and the like | 0.1 |
-| First person on a reference page | "I", "me" or "my" on a model, format, command or glossary page | 0 |
+| First person on a reference page | "I", "me", "my" and their forms (I'm, mine, myself) on a model, format, command or glossary page | 0 |
+
+Hedges leave out a capital "May" and "could not". Minimizers leave out "just" before a word of place or time ("just
+below") and "how quick" or "how quickly", which measure something there. Quoted words aren't read for hedges,
+minimizers, signposts or first person, though the stock list reads them.
 
 The sentence limit comes from hpr-sim's target: fewer than 10% of sentences over 25 words, at about 20 words a sentence.
 That's 0.5 per 100 words. On a page of shorter sentences the limit is stricter than 10%, so the report prints each page's
@@ -143,7 +147,8 @@ contractions per 100 words on most personal pages and 0 to 0.25 on reference pag
 
 `cargo xtask voice` in hpr-sim reads any path it's given (Markdown, HTML or text) and prints, per page, each count above
 against its limit. Of what it counts, it fails only on its stock-phrase list: 41 entries in 9 groups, each named by a
-published style guide or study, or by these writing rules:
+published list (a style guide, a study, or Wikipedia's pages on word choice and on signs of generated writing) or by these
+writing rules:
 
 - puffery: `seamless`, `cutting-edge`
 - inflated words: `pivotal`, `testament`
@@ -155,8 +160,7 @@ published style guide or study, or by these writing rules:
 - recaps: `in conclusion`
 - chat residue: `I hope this helps`
 
-The list leaves out words that have a technical sense in hpr-sim, even if no page uses them yet: robust, deploy,
-streamline (a streamlined body), boost and powerful (a more powerful motor).
+The list leaves out words that have a technical sense in hpr-sim: robust, deploy, streamline (a streamlined body), boost and powerful (a more powerful motor).
 Terms such as `magic bytes` and `seamless tube` pass. The list is in
 [hpr-sim's `xtask/src/voice.rs`](https://github.com/nrdptel/fusionspace-eridanus/blob/main/xtask/src/voice.rs), each
 entry with its sources and a test that fails without it. Voice is partly taste, so a cold reader checks each rewritten
