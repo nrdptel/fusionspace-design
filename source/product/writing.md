@@ -5,16 +5,152 @@ engineer explaining their own work to another engineer: plain, specific, honest 
 
 ## Voice
 
-- **Plain.** Short sentences, common words, active voice. "The charge fired at 18.0 s", not "Successful deployment was
-  achieved".
-- **Specific.** Numbers with units, names of things, sources. "Within 0.02% of OpenRocket's landing speed on 33 of 37
+Write as one person explaining their own work to another flyer: plain, specific, honest about limits, calm, and
+respectful of a capable reader. FusionSpace's tools are one maintainer's work, and their pages should read that way.
+
+- Keep it plain: short sentences, common words, active voice, and contractions where you'd say them. "The charge fired
+  at 18.0 s", not "Successful deployment was achieved".
+- Be specific: numbers with units, names of things, sources. "Within 0.02% of OpenRocket's landing speed on 33 of 37
   flights", not "highly accurate".
-- **Honest about limits.** Say what isn't done, isn't checked, or isn't known, in the same tone as what is. "Its online fetch
-  is not tested automatically."
-- **Calm.** No exclamation marks, no hype words (powerful, seamless, revolutionary, effortless, magic), no jokes in errors or
-  warnings, no emoji.
-- **Respectful.** The reader is a capable flyer. Explain, don't scold. Safety notes give the reason: "Ground-test before
-  flight: real bays leak, and powder varies."
+- Be honest about limits: say what isn't done, isn't checked, or isn't known, once, in the same tone as what is. "Its
+  online fetch is not tested automatically."
+- Stay calm: no exclamation marks, no hype words (`powerful`, `seamless`, `revolutionary`, `effortless`, `magic`), no
+  jokes in errors or warnings, no emoji.
+- Respect the reader, a capable flyer. Explain, don't scold. Safety notes give the reason: "Ground-test before flight:
+  real bays leak, and powder varies."
+
+The rules below come from a read-through of hpr-sim's pages on October 18, 2026, which found them correct but generic,
+and from [a survey of plain technical writing](https://github.com/nrdptel/fusionspace-eridanus/blob/main/docs/research/plain-voice-docs.md).
+Each shows a passage from hpr-sim's pages as it was written, then the same passage in this voice. hpr-sim's
+[writing guide](https://hpr.fusionspace.co/writing.html#voice) holds the same section.
+
+### Where "I" goes
+
+Use "I" where a person is talking: a README, a landing page, a page that says why something exists, a guide, release
+notes. It's one person's work, so there's no company "we". The bottom line still comes first, and the why follows it, in
+the maintainer's words. Reference pages stay impersonal: a model's equations, a file format, a command's options, a
+glossary. There the program is the subject, and "you" gives the steps, as it does in a tutorial or a how-to.
+
+> *Before*, in hpr-sim's README: FusionSpace HPR · Sim (called hpr-sim before release 0.1) is an open-source flight
+> simulator for hobby and high-power rockets, written in Rust, that you use as a library, from the command line or from
+> Python.
+>
+> *After*: FusionSpace HPR · Sim, called hpr-sim before release 0.1, is an open-source flight simulator for hobby and
+> high-power rockets. I write it in Rust, and you can use it as a library, from the command line or from Python.
+
+### Plain words
+
+Use the plain word. Leave out the words that tell a reader something is "easy" or "quick": what's "quick" for you may
+not be for them. Never use a stock phrase; hpr-sim's check holds a list of them and fails its build on one (The check,
+below).
+
+> *Before*, in hpr-sim's *Pick a motor*: Flying a few more motors is quick: change `--motor` and `--delay` and run
+> again.
+>
+> *After*: To fly another motor, change `--motor` and `--delay` and run it again.
+
+### Short sentences
+
+Aim for about 20 words a sentence, and use contractions where you'd say them: "isn't", "doesn't", "it's". A sentence
+that carries five things is better as a few sentences, or as a list.
+
+> *Before*, in hpr-sim's README: Flight in six degrees of freedom (6-DOF: three of position, three of rotation), with
+> variable mass: aerodynamics from subsonic to supersonic, the standard atmosphere or a measured one, winds that change
+> with height, staging, clusters and air starts, and recovery with drift.
+>
+> *After*: It flies a rocket in six degrees of freedom, three of position and three of rotation, with its mass changing
+> in flight. The aerodynamics run from subsonic to supersonic. The air is the standard atmosphere or a measured one,
+> with winds that change with height. It covers staging, clusters and air starts, and recovery with drift.
+
+### Say it once
+
+Say a thing once, where it belongs. Don't announce what a section covers, point back to what was said ("as
+mentioned"), or recap it at the end (`In summary`). The heading and the first sentence already say what a section is
+about.
+
+> *Before*, in hpr-sim's OpenRocket format page: This section compares HPR Sim's whole flights with OpenRocket 24.12's
+> on the 54 configurations of OpenRocket's example designs that HPR Sim can fly, in 15 of the examples.
+>
+> *After*: HPR Sim and OpenRocket 24.12 flew the same 54 configurations: those of OpenRocket's example designs that HPR
+> Sim can fly, in 15 of the examples.
+
+### Paragraphs and lists
+
+Write a thought as a paragraph. Use a list for what really is a list: steps, options, parts. Give a list as many items
+as there are, not three of the same shape because three sounds finished. A bold label opens an item only where a reader
+scans for it, as in a list of options or a model page's *In short* box; a line that opens with a bold label and a colon
+reads like a form.
+
+> *Before*, in hpr-sim's README: **Status: RELEASED.** Version 0.1.0, released October 8, 2026; work toward 0.2 goes
+> on here.
+>
+> *After*: Version 0.1.0 came out on October 8, 2026, and I'm working on 0.2 here.
+
+### Labels
+
+Say what a thing is before its label, and use a label (a milestone or a decision number) only where the reader needs to
+follow it. A sentence that opens with one sends the reader to look it up before they know why.
+
+> *Before*, in hpr-sim's *Accuracy*: Neither set is held out: both were seen during development, so neither is a blind
+> test until M2.7 holds flights out, predicted before their logs are read.
+>
+> *After*: Neither set is held out. I saw both while building the simulator, so neither is a blind test. That waits for
+> flights predicted before their logs are read, which is planned work (held-out flights).
+
+### Honest, once
+
+Honesty stays exactly as strict (How far to trust it, below): what was checked, against what, and where it stops. Say it
+once and plainly, like someone who checked. Put a hedge on the claim it qualifies, not on every clause around it.
+
+> *Before*, in hpr-sim's simulator tour: Here the drag may read high, so the apogee may read low: for a field's ceiling,
+> the side that flatters (Trusting a simulation).
+>
+> *After*: Here the drag may read high. If it does, the apogee reads low, the side that flatters a field's ceiling
+> (Trusting a simulation).
+
+### The limits
+
+hpr-sim's `cargo xtask voice` counts these on each page, per 100 words, and its report marks a page over a limit. A page
+over one is where to look first; it doesn't fail the build.
+
+| Counted | What it counts | Limit per 100 words |
+|---|---|---:|
+| Bold-label items | a list item that opens with bold text | 0.5 |
+| Labels | a milestone, decision or lesson number, linked or not | 0.5 |
+| Sentences over 25 words | in paragraphs and list items | 0.5 |
+| Hedges | may, might, could, possibly, perhaps, probably, likely, seems, appears and the like | 1.0 |
+| Stacked hedges | a sentence holding two or more hedges | 0.1 |
+| Minimizers | simply, just, easy, easily, quick, quickly | 0.1 |
+| Signposts | "in this section", "as mentioned", "let's", "in short," and the like | 0.1 |
+| First person on a reference page | "I", "me" or "my" on a model, format, command or glossary page | 0 |
+
+The sentence limit is hpr-sim's target: fewer than 10% of sentences over 25 words, at about 20 words a sentence. A
+bold-label limit of 0.5 still allows a list of ten options on a 2,000-word page, but not a bold label on every item of
+every list. Labels get one every 200 words.
+
+Hedges get 1.0, about the top of the range on one engineer's blog the survey measured (0.22 to 1.19 per 100 words),
+because a single hedge is often the honest word. Stacked hedges, minimizers and signposts get one every 1,000 words. The
+limits were set against hpr-sim's pages as they stood on October 19, 2026, when most of them were over the sentence and
+bold-label limits.
+
+Who's talking has no limit: "I", "we", "you" and contractions per 100 words. For scale, the survey found 1.0 to 3.5
+contractions per 100 words on most personal pages and 0 to 0.25 on reference pages. One author wrote about 3 "I" per
+100 words on a blog and none on the project's reference pages.
+
+### The check
+
+`cargo xtask voice` in hpr-sim reads any path it's given (Markdown, HTML or text) and prints, per page, each count
+above against its limit. It fails only on its stock-phrase list: 41 entries in 9 groups, each named by at least one
+published style guide or study. The groups are puffery (`seamless`, `cutting-edge`), inflated words (`pivotal`,
+`testament`), words that spread with generated text (`delve`, `showcase`), buzz verbs (`leverages`, `utilize`),
+note-that phrases (`please note`), vague sources (`research has shown`), wordy phrases (`in order to`, `a number of`),
+recaps (`in conclusion`) and chat residue (`I hope this helps`).
+
+Words with a technical sense stay off the list: robust, deploy, streamline, boost and powerful (a more powerful motor).
+Terms such as `magic bytes` and `seamless tube` pass. The list is in
+[hpr-sim's `xtask/src/voice.rs`](https://github.com/nrdptel/fusionspace-eridanus/blob/main/xtask/src/voice.rs), each
+entry with its sources and a test that fails without it. Voice is partly taste, so a cold reader checks each rewritten
+page against these rules too.
 
 ## How far to trust it
 
