@@ -135,7 +135,7 @@ share too. A bold-label limit of 0.5 still allows a list of ten options on a 2,0
 every item of every list. Labels get one every 200 words, because each one sends the reader off to look it up.
 
 Hedges get 1.0, because a single hedge is often the honest word. That's about the top of the range the survey measured
-on one engineer's blog: 2.2 to 11.9 per 1,000 words, on a mostly different list of hedges. Stacked hedges, minimizers and
+on one writer's blog: 2.2 to 11.9 per 1,000 words, on a mostly different list of hedges. Stacked hedges, minimizers and
 signposts get one every 1,000 words. Each adds little: a second hedge, a word that calls a step easy, a sentence that
 points back at the page. Use one only on purpose.
 
