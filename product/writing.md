@@ -122,27 +122,31 @@ over one is where to look first; it doesn't fail the build.
 | Signposts | "in this section", "as mentioned", "let's", "in short," and the like | 0.1 |
 | First person on a reference page | "I", "me", "my" and their forms (I'm, mine, myself) on a model, format, command or glossary page | 0 |
 
-Hedges leave out a capital "May" and "could not". Minimizers leave out "just" before a word of place or time ("just
-below") and "how quick" or "how quickly", which measure something there. First person leaves out a capital I that
-is a numeral or a symbol ("Type I", "an I motor", "where I is the inertia"). A quotation inside one sentence isn't read
+Hedges leave out a capital "May" and "could not". Minimizers leave out "just" before one of sixteen words of place
+or time ("just below", "just after") and "how quick" or "how quickly", which measure something there. First person
+counts a capital I before a lower-case word other than "is", but not after a word that makes it a numeral or a name
+("Type I") or before a motor word ("an I motor"). So it leaves out "where I is the inertia" and an I at a clause's end
+or before a comma ("so did I"), but still counts a symbol I before another word ("the current I flowing"). A quotation inside one sentence isn't read
 for hedges, minimizers, signposts, first person or who's talking, though the stock list reads it.
 
 The sentence limit comes from hpr-sim's target: fewer than 10% of sentences over 25 words, at about 20 words a sentence.
-That's 0.5 per 100 words. On a page of shorter sentences the limit is stricter than 10%, so the report prints each page's
-share too. A bold-label limit of 0.5 still allows a list of ten options on a 2,000-word page, but not a bold label on
-every item of every list. Labels get one every 200 words, because each one sends the reader off to look it up.
+That's 0.5 per 100 words. On a page of shorter sentences the limit is stricter than 10%. On a page with many words in
+headings and tables it's looser, since those words count but hold no sentences. So the report prints each page's share
+too. A bold-label limit of 0.5 still allows a list of ten options on a 2,000-word page, but not a bold label on every
+item of every list. Labels get one every 200 words, because each one sends the reader off to look it up.
 
 Hedges get 1.0, because a single hedge is often the honest word. That's about the top of the range the survey measured
-on one engineer's blog: 2.2 to 11.9 per 1,000 words, on a mostly different list of hedges. Stacked hedges, minimizers and
+on one writer's blog: 2.2 to 11.9 per 1,000 words, on a mostly different list of hedges. Stacked hedges, minimizers and
 signposts get one every 1,000 words. Each adds little: a second hedge, a word that calls a step easy, a sentence that
 points back at the page. Use one only on purpose.
 
-First person on a reference page gets 0, because the program is the subject there. The limits were set against hpr-sim's
-pages as they stood on October 19, 2026, when most of them were over the sentence and bold-label limits.
+First person on a reference page gets 0, because the program is the subject there. The other limits were set against
+hpr-sim's pages as they stood on October 19, 2026, when most of them were over the sentence limit and
+about half over the bold-label limit.
 
-Who's talking has no limit, since the right amount depends on the kind of page: "I", "we", "you" and contractions per
-100 words. For scale, the survey found 1.0 to 3.5
-contractions per 100 words on most personal pages and 0 to 0.25 on reference pages. One author wrote about 3 "I" per
+Who's talking (the report's register) has no limit of its own, since the right amount depends on the kind of page.
+Only first person on a reference page is held to one, above. It's counted as "I", "we", "you" and contractions per 100
+words. For scale, the survey found 1.0 to 3.5 contractions per 100 words on most personal pages and 0 to 0.25 on reference pages. One author wrote about 3 "I" per
 100 words on a blog and none on the project's reference pages.
 
 ### The check
