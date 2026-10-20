@@ -4,7 +4,8 @@ from PIL import Image
 import geo
 
 # Paths: this file lives in <repo>/tools/build/. Inputs are the archived Rev B files (untouched originals of
-# the wordmark outlines, templates, guide and README); output goes to <repo>/_build/rev-c, never over the repo.
+# the wordmark outlines, templates and guide; the Rev B README is kept there but no longer read); output goes to
+# <repo>/_build/rev-c, never over the repo.
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
 SRC = os.environ.get("FS_SRC", os.path.join(ROOT, "source"))
@@ -22,7 +23,7 @@ VOID, PAPER, WHITE = "#0B0F1C", "#F3F4F7", "#FFFFFF"
 GRADIENT = [("0.0", "#DA7C30", "M orange"), ("0.35", "#D07D7A", "Rose"), ("0.65", "#A188CB", "Lavender"), ("1.0", "#768DF5", "O blue")]
 STOPS = [(o, c) for o, c, _ in GRADIENT]
 # The Rev B inputs (and Rev C until October 2, 2026) used the pastel gradient. rd() maps those colors to the current ones,
-# so the Rev B templates, guide and README come out in today's palette. Spectral O and M are the gradient ends.
+# so the Rev B templates and guide come out in today's palette. Spectral O and M are the gradient ends.
 OLD_COLORS = {"#FFB56C": "#DA7C30", "#F2B3A0": "#D07D7A", "#C3B3E0": "#A188CB", "#9BB0FF": "#768DF5"}
 def css_gradient():
     return "linear-gradient(90deg," + ",".join(f"{c} {round(float(o) * 100):g}%" for o, c in STOPS) + ")"
@@ -830,7 +831,7 @@ def build_guide(info):
                     "<tr><td>tools/callsign/</td><td>Callsign, the star name tool: <code>callsign.html</code> for any browser, phones included, and <code>callsign.py</code> for a terminal, with the IAU star list as JSON and CSV.</td></tr>\n"
                     "        <tr><td>tools/</td><td>The build scripts that make every file here, and the mark tuner. Apache-2.0 (<code>tools/LICENSE</code>).</td></tr>"),
                    ("<tr><td>_archive/</td><td>The original Illustrator and SolidWorks files, the Rev A single-star set and the Rev B star cluster.</td></tr>",
-                    "<tr><td>source/</td><td>The Rev B files the build starts from: the outlined wordmark, the templates, the guide and the README text.</td></tr>")):
+                    "<tr><td>source/</td><td>The Rev B files the build starts from: the outlined wordmark, the templates and the guide. The Rev B README is kept there too.</td></tr>")):
         assert a_ in s, a_[:40]
         s = s.replace(a_, b_)
     s = s.replace("<tr><td>templates/</td>", "<tr><td>kit/</td><td>The asset kit: logos in every color mode and size, web and app icons, social and GitHub images, documents, slides and production files. See the Kit sheet and <code>kit/README.md</code>.</td></tr>\n        <tr><td>templates/</td>", 1)
@@ -874,67 +875,100 @@ def guide_review_fixes(s):
 
 # ---------------------------------------------------------------- 8. README
 def build_readme():
-    s = rd("README.md")
-    s = ('<picture>\n  <source media="(prefers-color-scheme: dark)" srcset="kit/github/readme-banner-dark.png">\n'
-         '  <source media="(prefers-color-scheme: light)" srcset="kit/github/readme-banner-light.png">\n'
-         '  <img alt="FusionSpace" src="kit/github/readme-banner-dark.png" width="100%">\n</picture>\n\n') + s
-    reps = [
-        ("# FusionSpace: brand system, Rev B", f"# FusionSpace: brand system, Rev {REV}"),
-        ("The identity for my aerospace engineering projects, rebuilt in 2026", __import__("kit").INTRO + " The identity for my own projects (software and embedded systems, games, electronics, mechanical and machined parts, aerospace), rebuilt in 2026"),
-        ("It keeps the original 2023 idea, with the four-star cluster, the soft orange-to-blue gradient and Cascadia Mono, but redraws everything with exact geometry.",
-         "It keeps the original 2023 idea, a loose cluster of four shapes with the soft orange-to-blue gradient and Cascadia Mono, but Rev C turns the four stars into four nose cones and redraws everything with exact geometry."),
-        ("- **Mark.** Four stars in the original arrangement. Each star is the space left between four touching circles of radius *a*, so the tips are true points. The companion stars are 0.45, 0.40 and 0.32 the size of the main star (exact positions are in `color/fusion-space-tokens.json`).",
-         f"- **Mark.** Four nose cones in a diamond, each a real rocketry profile: Von Kármán (main, north), conical (west), elliptical (east) and a tangent ogive tail (south). Profiles follow the standard nose-cone equations, each {geo.H_K / geo.W_K:.2f}× as long as its base radius, with a notch {geo.SAG_K:.2f} of the base radius deep and feet cut flat where the wall is {geo.FOOT_K:.2f} of the base radius wide. With *r* as the Von Kármán base radius, the others are {geo.SIZE['west']:.1f} *r* (conical), {geo.SIZE['east']:.1f} *r* (elliptical) and {geo.SIZE['south']:.1f} *r* (ogive). Spacing is measured on a grid leaned {geo.TILT:g}°: the ogive sits on the Von Kármán axis with its tip {abs(geo.TAIL_R):.1f} *r* {'above' if geo.TAIL_R < 0 else 'below'} the Von Kármán foot line, and the wings' centroids share a line {abs(geo.WING_R):.2f} *r* {'below' if geo.WING_R >= 0 else 'above'} it, with the conical {geo.GAP_W_R:.2f} *r* and the elliptical {geo.GAP_E_R:.2f} *r* out from the Von Kármán feet (exact values are in `color/fusion-space-tokens.json`)."),
-        ("| `logo/mark` | The four-star mark: `fusion-space-mark` (gradient), `-void` and `-white` (one color), plus `fusion-space-mark-50mm.dxf` with exact arcs for laser/CNC | Inkscape, FreeCAD, CAM |",
-         "| `logo/mark` | The four-cone mark: `fusion-space-mark` (gradient), `-void` and `-white` (one color), `-twotone-on-dark` and `-twotone-on-light` (flat two-tone), plus `fusion-space-mark-50mm.dxf` (lines and arcs only) for laser/CNC | Inkscape, FreeCAD, CAM |"),
-        ("`favicon.svg` (main star, for small sizes)", "`favicon.svg` (full cluster, framed for 16–48 px)"),
-        ("| `guide` | Brand guide | browser |", "| `guide` | Brand guide | browser |\n| `kit` | Asset kit, ready for any project: every logo in every color mode and size; web/app icons; GitHub and social images (dark and light); letterhead, covers, business cards, email signature, slides; boot logos for OLED/TFT displays; KiCad PCB logos; 3D-print files (STL, STEP, two-color 3MF, sketches, a parametric badge); terminal themes and CLI banners; game splash and store art; logo animation; wallpapers; merch and posters; cut files, stickers, engraving and embroidery. Open `kit/index.html` to browse, `kit/README.md` for the list | everything |\n| `tools/build/project.py` | Per-project images: `python3 tools/build/project.py --name Vega --tag EMB --desc \"...\"` makes a project's social preview, README banners, OG image, YouTube thumbnail, title slides, report covers and starter README | terminal |"),
-        ("- Keep 0.25 H clear space around the logo, where H is the cluster height. The minimum cluster height is 24 px (8 mm). Below 48 px, use the main star on its own.",
-         f"- Keep 0.25 H clear space around the logo, where H is the cluster height. The minimum cluster height is 24 px (8 mm). Below 24 px, as in favicons, use the favicon files: they are the full cluster, hinted for 16 px (the two wing cones become small arrows).\n- In the horizontal lockup the mark is {H_MARK / 60:.2f}× the cap height of the wordmark, {H_POS} it, with a gap of {H_GAP_CAP:.2f} × the cap height ({H_GAP_K:.3f} × the mark height). In the stacked lockup the mark sits {STACK_POS} the wordmark with a gap of {STACK_GAP / STACK_H:.2f} H ({'to the cap line' if STACK_POS == 'above' else 'below the descenders'}). These are the only approved arrangements; don't put the mark {'after' if H_POS == 'before' else 'before'} or {'below' if STACK_POS == 'above' else 'above'} the wordmark."),
-        ("- The gradient always runs left to right, M orange to O blue. Don't reverse it, recolor it, or add outlines, shadows or glows.",
-         "- The gradient always runs left to right, M orange to O blue. It is the same on dark and light backgrounds. Don't reverse it, recolor it, or add outlines, shadows or glows.\n"
-         f"- Where gradients can't be reproduced (spot-color print, vinyl, embroidery), use the flat two-tone versions. The cones are the same on every background, M orange `{WARM}` (warm) and O blue `{COOL}` (cool); only the wordmark changes, white on dark and Void on light (`twotone-on-dark`, `twotone-on-light`). Each cone takes the nearer end of the gradient.\n"
-         f"- {SMALL_RULE}\n- Ion `{ION}` and Ember `{EMBER}` are text and UI colors on light (links, warnings), not logo colors."),
-        ("- Don't stretch the cluster or move, add or drop stars.", f"- Don't stretch the cluster, change the {geo.TILT:g}° lean, or move, add or drop cones."),
-        ("- The star tips are true points. Most cutters handle that, but if a vendor needs a minimum feature size, ask them to apply their usual tip radius at production size.",
-         f"- **Minimum feature size.** In the master artwork the feet are cut where the wall is {geo.FOOT_K:.2f} of each cone's base radius wide, which is only {thinnest_foot_mm():.2f} mm on the elliptical cone at {DXF_H_MM:g} mm. The DXF trims the feet so every foot is at least {DXF_MIN_WALL_MM:g} mm wide, then scales the trimmed outline to exactly {DXF_H_MM:g} mm tall; nothing else changes. Laser vendors typically need features of about half the material thickness, so for stock thicker than about 1 mm, scale the DXF up or ask the vendor. The cone tips are true points: ask the vendor to apply their usual tip radius."),
-    ]
-    reps += [
-        ("One soft gradient sweeps", "One gradient sweeps"),
-        ("The end colors come from the Harvard stellar classification.",
-         "The end colors start from the M- and O-class star colors of the Harvard stellar classification, deepened so the whole gradient holds at least 3:1 on white and 6:1 on Void. It is the same gradient on dark and light backgrounds."),
-        ("| `logo/lockup` | Horizontal and stacked lockups, each as `color`, `void` and `white` | Inkscape |",
-         "| `logo/lockup` | Horizontal and stacked lockups, each as `color`, `twotone-on-dark`, `twotone-on-light`, `void` and `white` | Inkscape |"),
-        ("- The gradient logo is strongest on Void.", "- The gradient logo works on Void, white and Paper."),
-        ("some fill themselves in (author, date, scale, sheet).",
-         "some fill themselves in (author, date, scale, sheet). The sheets are transparent; with a dark TechDraw page color use the `-dark` ones, and print from the light ones."),
-    ]
-    reps += [(" The old Illustrator and SolidWorks files are kept in `_archive/`.", ""),
-             ("| `tools/callsign` | Callsign, the star name tool: `callsign.html` (any browser, phones included) and `callsign.py` (terminal, Python 3.8+), with the IAU star list as JSON and CSV | browser, terminal |",
-              "| `tools/callsign` | Callsign, the star name tool: `callsign.html` (any browser, phones included) and `callsign.py` (terminal, Python 3.8+), with the IAU star list as JSON and CSV | browser, terminal |\n"
-              "| `tools/mark-tuner` | `index.html`: tune the mark and both lockups in the browser and export SVGs | browser |\n"
-              "| `product` | The product system: how FusionSpace sites, tools, PWAs, CLIs, iOS, Android, watch, macOS, Windows and Linux apps, flight computers, boards and rockets are designed. Rules (start with `product/README.md`), tokens for every platform, a web stylesheet with a specimen and example screens, icons, phone screens on iOS and Android with Live Activity, widget and Live Update mock-ups and SwiftUI and Compose parts, watch screens, complications and tiles for Apple Watch and Wear OS, device-screen mock-ups, a KiCad board title block, livery sheets, desktop packaging | anything |\n"
-              "| `tools/build` | The scripts that build every file here (`python3 tools/build/build.py`); see `tools/build/README.md` | terminal |")]
-    for a, b in reps:
-        if a not in s: print("README WARN:", a[:60]); continue
-        s = s.replace(a, b)
-    s = s.rstrip("\n") + "\n\n" + README_LICENSE
-    wr("README.md", s)
+    """The README, written whole here (it used to be the Rev B source README with replacements on top), in the
+    maintainer's own voice (product/writing.md#voice): paragraphs for thoughts, lists for real lists, no sentence over 25
+    words. The mark's and the lockups' numbers come from the constants the files are built from; the Core
+    and Spectral palette rows are typed here, as the Rev B README had them."""
+    banner = ('<picture>\n  <source media="(prefers-color-scheme: dark)" srcset="kit/github/readme-banner-dark.png">\n'
+              '  <source media="(prefers-color-scheme: light)" srcset="kit/github/readme-banner-light.png">\n'
+              '  <img alt="FusionSpace" src="kit/github/readme-banner-dark.png" width="100%">\n</picture>\n\n')
+    other = lambda pos, a, b: a if pos == b else b
+    s = f"""# FusionSpace: brand system, Rev {REV}
 
-README_LICENSE = """## License and trademarks
+{__import__("kit").INTRO} This is the identity for my own projects: software and embedded systems, games, electronics, mechanical and machined parts, and aerospace. I rebuilt it in 2026 using only free tools (Inkscape, FreeCAD, GIMP) and open-source fonts. It keeps the original 2023 idea, a loose cluster of four shapes with the soft orange-to-blue gradient and Cascadia Mono. Rev C turns the four stars into four nose cones and redraws everything with exact geometry.
 
-- **Code.** The build scripts and the mark tuner in `tools/` are licensed under the Apache License 2.0 (`tools/LICENSE`). The
-  license covers the code, not the FusionSpace name or logo, including the artwork the code draws.
-- **Product code.** The code-like files in `product/` are Apache-2.0 too, so any project can copy them in: the tokens
-  (`product/tokens/`), `fusionspace.css`, the Tailwind and mdBook themes, the CLI styles, the LVGL styles and the Linux
-  desktop templates. Each file says so in an SPDX line.
-- **Brand.** The FusionSpace name, the four-cone mark, both lockups and every brand file here (`logo/`, `kit/`, `guide/`,
-  `graphics/`, `color/`, `templates/`, `source/`, and the rest of `product/`) are © 2026 Neer Patel, all rights reserved. They're published to show the work.
-  `TRADEMARKS.md` says what's fine, such as linking to my projects and showing the logo unchanged when you mention them.
-- **Fonts.** Archivo and Cascadia Mono in `type/fonts/` are under the SIL Open Font License, with the license files next to them.
+Open `guide/index.html` in a browser for the full guide. To start a project on the system, read [`product/README.md`](product/README.md), which says how to point one here. The writing rules are in [`product/writing.md`](product/writing.md).
+
+## The idea
+
+Stars run on nuclear fusion, so the brand is *FusionSpace*.
+
+The mark is four nose cones in a diamond, each a real rocketry profile. Von Kármán is the main cone, at the north; the conical is west, the elliptical east, and a tangent ogive tail south. The profiles follow the standard nose-cone equations. Each is {geo.H_K / geo.W_K:.2f}× as long as its base radius, with a notch {geo.SAG_K:.2f} of the base radius deep. Its feet are cut flat where the wall is {geo.FOOT_K:.2f} of the base radius wide. With *r* as the Von Kármán base radius, the others are {geo.SIZE['west']:.1f} *r* (conical), {geo.SIZE['east']:.1f} *r* (elliptical) and {geo.SIZE['south']:.1f} *r* (ogive).
+
+Spacing is measured on a grid leaned {geo.TILT:g}°. The ogive sits on the Von Kármán axis, with its tip {abs(geo.TAIL_R):.1f} *r* {'above' if geo.TAIL_R < 0 else 'below'} the Von Kármán foot line. The wings' centroids share a line {abs(geo.WING_R):.2f} *r* {'below' if geo.WING_R >= 0 else 'above'} it. The conical sits {geo.GAP_W_R:.2f} *r* and the elliptical {geo.GAP_E_R:.2f} *r* out from the Von Kármán feet. The exact values are in `color/fusion-space-tokens.json`.
+
+One gradient sweeps left to right across the whole mark, from M-class orange `{M_ORANGE}` through rose and lavender to O-class blue `{O_BLUE}`. The end colors start from the M- and O-class star colors of the Harvard stellar classification. I deepened them so the whole gradient holds at least 3:1 on white and 6:1 on Void. It's the same gradient on dark and light backgrounds.
+
+The wordmark is `FusionSpace`, one word, in Cascadia Mono SemiBold with the same gradient.
+
+Each project takes a constellation (Lyra, `FS-LYR`). Each of its products takes one of that constellation's IAU-approved stars as its internal name (Vega, `FS-VEGA`). Its drawings are numbered from there (`FS-VEGA-001`), with revisions A, B, C… The name customers see can be the star's or a different one. This repository is project Ara (`FS-ARA`): Callsign's internal name is Cervantes (`FS-CERVANTES`), and the Mark Tuner's is Inquill (`FS-INQUILL`).
+
+## Folder map
+
+| Folder | Contents | Opens in |
+|---|---|---|
+| `logo/mark` | The four-cone mark: `fusion-space-mark` (gradient), `-void` and `-white` (one color), `-twotone-on-dark` and `-twotone-on-light` (flat two-tone), plus `fusion-space-mark-50mm.dxf` (lines and arcs only) for laser/CNC | Inkscape, FreeCAD, CAM |
+| `logo/lockup` | Horizontal and stacked lockups, each as `color`, `twotone-on-dark`, `twotone-on-light`, `void` and `white` | Inkscape |
+| `logo/wordmark` | Wordmark alone | Inkscape |
+| `logo/png` | Transparent PNG exports of all the above | anything |
+| `logo/favicon` | `favicon.svg` (full cluster, framed for 16–48 px), `icon.svg` (full cluster), `app-icon.svg` (square tile for iOS/Android), `.ico`, PNGs, `apple-touch-icon.png` | web |
+| `color` | `fusion-space.gpl` palette (includes the gradient stops), CSS and JSON tokens | Inkscape, GIMP, code |
+| `type/fonts` | Cascadia Mono and Archivo (SIL OFL) | install once |
+| `graphics` | Mark construction drawing, gradient strip, spectral bar | Inkscape |
+| `templates` | GitHub social card (1280×640), plus FreeCAD TechDraw sheets in ANSI A, ANSI B and A4 | Inkscape, FreeCAD |
+| `tools/callsign` | Callsign, the star name tool: `callsign.html` (any browser, phones included) and `callsign.py` (terminal, Python 3.8+), with the IAU star list as JSON and CSV | browser, terminal |
+| `tools/mark-tuner` | `index.html`: tune the mark and both lockups in the browser and export SVGs | browser |
+| `product` | The product system: how FusionSpace sites, tools, PWAs, CLIs, iOS, Android, watch, macOS, Windows and Linux apps, flight computers, boards and rockets are designed. Rules (start with `product/README.md`), tokens for every platform, a web stylesheet with a specimen and example screens, icons, phone screens on iOS and Android with Live Activity, widget and Live Update mock-ups and SwiftUI and Compose parts, watch screens, complications and tiles for Apple Watch and Wear OS, device-screen mock-ups, a KiCad board title block, livery sheets, desktop packaging | anything |
+| `tools/build` | The scripts that build every file here (`python3 tools/build/build.py`); see `tools/build/README.md` | terminal |
+| `guide` | Brand guide | browser |
+| `kit` | Asset kit, ready for any project: every logo in every color mode and size; web/app icons; GitHub and social images (dark and light); letterhead, covers, business cards, email signature, slides; boot logos for OLED/TFT displays; KiCad PCB logos; 3D-print files (STL, STEP, two-color 3MF, sketches, a parametric badge); terminal themes and CLI banners; game splash and store art; logo animation; wallpapers; merch and posters; cut files, stickers, engraving and embroidery. Open `kit/index.html` to browse, `kit/README.md` for the list | everything |
+| `tools/build/project.py` | Per-project images: `python3 tools/build/project.py --name Vega --tag EMB --desc "..."` makes a project's social preview, README banners, OG image, YouTube thumbnail, title slides, report covers and starter README | terminal |
+
+## Palette
+
+| Role | Name | Hex |
+|---|---|---|
+| Gradient | {" · ".join(f"{n} {round(float(o) * 100):g}%" for o, _, n in GRADIENT)} | {" ".join(f"`{c}`" for _, c, _ in GRADIENT)} |
+| Core | Void · Abyss · Graphite · Slate · Haze · Mist · Paper · White | `#0B0F1C` `#141A2B` `#2A3248` `#566079` `#98A1B8` `#D6DAE4` `#F3F4F7` `#FFFFFF` |
+| Signal | Ion (links/UI on light) · Ember (highlights on light) | `{ION}` `{EMBER}` |
+| Spectral | O · B · A · F · G · K · M | `{O_BLUE}` `#AABFFF` `#CAD7FF` `#F8F7FF` `#FFF4EA` `#FFD2A1` `{M_ORANGE}` |
+
+## Type
+
+The wordmark and display type are Cascadia Mono SemiBold, the same face as the original logo. Text is Archivo Regular. Technical type, for part numbers, dimensions and title blocks, is Cascadia Mono Regular.
+
+## Setup
+
+1. Install every font in `type/fonts`.
+2. Copy `color/fusion-space.gpl` to `~/Library/Application Support/org.inkscape.Inkscape/config/inkscape/palettes/`, then restart Inkscape.
+3. For FreeCAD, open TechDraw → *Insert Page using Template* and pick a file from `templates/freecad`. The title-block fields are editable, and on FreeCAD 1.0+ some fill themselves in (author, date, scale, sheet). The sheets are transparent; with a dark TechDraw page color use the `-dark` ones, and print from the light ones.
+4. The wordmark is outlined in every logo file. Each file also has a hidden, locked "live text" layer for when you want to retype it.
+
+## Rules
+
+- Keep 0.25 H clear space around the logo, where H is the cluster height. The minimum cluster height is 24 px (8 mm). Below 24 px, as in favicons, use the favicon files. They're the full cluster, hinted for 16 px, where the two wing cones become small arrows.
+- In the horizontal lockup the mark comes {H_POS} the wordmark and is {H_MARK / 60:.2f}× the wordmark's cap height. The gap is {H_GAP_CAP:.2f} × that cap height ({H_GAP_K:.3f} × the mark height). In the stacked lockup the mark sits {STACK_POS} the wordmark with a gap of {STACK_GAP / STACK_H:.2f} H ({'to the cap line' if STACK_POS == 'above' else 'below the descenders'}). These are the only approved arrangements; don't put the mark {other(H_POS, 'after', 'before')} or {other(STACK_POS, 'below', 'above')} the wordmark.
+- The gradient always runs left to right, M orange to O blue. It's the same on dark and light backgrounds. Don't reverse it, recolor it, or add outlines, shadows or glows.
+- Where gradients can't be reproduced (spot-color print, vinyl, embroidery), use the flat two-tone versions. The cones are the same on every background: M orange `{WARM}` (warm) and O blue `{COOL}` (cool). Only the wordmark changes, white on dark and Void on light (`twotone-on-dark`, `twotone-on-light`). Each cone takes the nearer end of the gradient.
+- On light backgrounds, a horizontal lockup under {SMALL_H_PX} px tall uses the one-color Void lockup (`fusion-space-horizontal-void`). At that size the thin gradient details are too faint on light.
+- Ion `{ION}` and Ember `{EMBER}` are text and UI colors on light (links, warnings), not logo colors.
+- Don't stretch the cluster, change the {geo.TILT:g}° lean, or move, add or drop cones.
+- The gradient logo works on Void, white and Paper. For single-color production (engraving, laser, vinyl, stamps), use the `void` or `white` files, or the DXF.
+- Mind the minimum feature size in cut files. In the master artwork the feet are cut where the wall is {geo.FOOT_K:.2f} of each cone's base radius wide. That's only {thinnest_foot_mm():.2f} mm on the elliptical cone at {DXF_H_MM:g} mm. The DXF trims the feet so every foot is at least {DXF_MIN_WALL_MM:g} mm wide, then scales the trimmed outline to exactly {DXF_H_MM:g} mm tall. Nothing else changes. Laser vendors typically need features of about half the material thickness. So for stock thicker than about 1 mm, scale the DXF up or ask the vendor. The cone tips are true points: ask the vendor to apply their usual tip radius.
+
+## License and trademarks
+
+The build scripts and the mark tuner in `tools/` are licensed under the Apache License 2.0 (`tools/LICENSE`). The license covers the code, not the FusionSpace name or logo, including the artwork the code draws.
+
+The code-like files in `product/` are Apache-2.0 too, so any project can copy them in. They're the tokens (`product/tokens/`), `fusionspace.css`, the Tailwind and mdBook themes, the CLI styles, the LVGL styles and the Linux desktop templates. Each file says so in an SPDX line.
+
+The FusionSpace name, the four-cone mark, both lockups and every brand file here are © 2026 Neer Patel, all rights reserved. The brand files are `logo/`, `kit/`, `guide/`, `graphics/`, `color/`, `templates/`, `source/` and the rest of `product/`. They're published to show the work. `TRADEMARKS.md` says what's fine, such as linking to my projects and showing the logo unchanged when you mention them.
+
+Archivo and Cascadia Mono in `type/fonts/` are under the SIL Open Font License, with the license files next to them.
 
 See `LICENSE` for the full terms.
 """
+    wr("README.md", banner + s)
 
 def check_web_pages():
     """Every page a person opens: from 320 (WCAG reflow) to 1920 px (kit_clip.WIDTHS), in light and dark, nothing may scroll the page
