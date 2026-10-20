@@ -14,9 +14,9 @@ BADGES = [("FusionSpace", "Rev C", "0B0F1C", "3350D6"), ("status", "active", "33
 def q(x): return x.replace("-", "--").replace("_", "__").replace(" ", "%20")
 def badge(l, m, c, lc): return f"![{l}: {m}](https://img.shields.io/badge/{q(l)}-{q(m)}-{c}?style=flat-square&labelColor={lc})"
 
-# The README on github.com/nrdptel, word for word (checked October 17, 2026), with what fusionspace.co lists. The banners
-# are the @2x ones: GitHub's sanitizer drops srcset's 1x/2x descriptors, so the large file is the only source. Lists, not
-# tables: a table scrolls sideways on a phone.
+# The README on github.com/nrdptel, word for word (October 19, 2026), with what fusionspace.co lists, in the maintainer's own
+# voice (product/writing.md#voice): no item opens with a bold label. The banners are the @2x ones: GitHub's sanitizer drops
+# srcset's 1x/2x descriptors, so the large file is the only source. Lists, not tables: a table scrolls sideways on a phone.
 PROFILE = """<picture>
   <source media="(prefers-color-scheme: dark)" srcset="readme-banner@2x-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="readme-banner@2x-light.png">
@@ -27,51 +27,51 @@ PROFILE = """<picture>
 
 I'm a software engineer in Auburn, Alabama. Under the name [FusionSpace]({site_url}) I make free, open-source
 software for hobby and high-power rockets: [HPR Sim](https://hpr.fusionspace.co/the-simulator.html), a flight simulator,
-and the suite being built around it.
+and the suite I'm building around it.
 
 #### FusionSpace HPR
 
-One suite for hobby and high-power rockets, written in Rust, MIT or Apache-2.0. Every product's source and releases live in
-[fusionspace-eridanus]({github}/fusionspace-eridanus).
+It's one suite for hobby and high-power rockets, written in Rust and licensed MIT or Apache-2.0. Every product's source
+and releases live in [fusionspace-eridanus]({github}/fusionspace-eridanus).
 
-- **HPR Sim** · released, [0.1.0]({github}/fusionspace-eridanus/releases/tag/v0.1.0) (2026-10-08)<br>
-  A 6-DOF flight simulator: a Rust library, the `hpr` command and a Python package. Reads OpenRocket designs, flies
-  Monte Carlo dispersions, and publishes [how far to trust it](https://hpr.fusionspace.co/trusting-a-simulation.html).<br>
-  [Guide](https://hpr.fusionspace.co/the-simulator.html) · [Docs](https://hpr.fusionspace.co/) ·
-  [PyPI](https://pypi.org/project/fusionspace-hpr/) · [crates.io](https://crates.io/crates/fusionspace-hpr)
-- **Analyzer** · in preparation, for 0.2<br>
-  Reads a flight computer's log and sets the flight beside its simulation.
-- **Competition Kit** · in preparation, for 0.4<br>
-  Challenge rules, presets and submission packs for student rocketry competitions.
-- **The app** · in preparation, a preview in 0.5, then 1.0<br>
-  Design, simulation and flight replay on the desktop, the web and phones.
-- After 1.0: **Motor Designer**, **Recovery Designer** and **Avionics**.
+HPR Sim is released: version [0.1.0]({github}/fusionspace-eridanus/releases/tag/v0.1.0), from 2026-10-08. It's a 6-DOF
+flight simulator: a Rust library, the `hpr` command and a Python package. It reads OpenRocket designs, flies Monte Carlo
+dispersions, and publishes [how far to trust it](https://hpr.fusionspace.co/trusting-a-simulation.html).
+[Guide](https://hpr.fusionspace.co/the-simulator.html) · [Docs](https://hpr.fusionspace.co/) ·
+[PyPI](https://pypi.org/project/fusionspace-hpr/) · [crates.io](https://crates.io/crates/fusionspace-hpr)
 
-Try it: `pip install fusionspace-hpr` for Python, or `cargo install fusionspace-hpr-cli --locked` for the `hpr` command.
+To try it, run `pip install fusionspace-hpr` for Python, or `cargo install fusionspace-hpr-cli --locked` for the `hpr`
+command. The rest of the suite is in preparation:
+
+- the Analyzer, for 0.2, reads a flight computer's log and sets the flight beside its simulation;
+- the Competition Kit, for 0.4, holds challenge rules, presets and submission packs for student rocketry competitions;
+- the app, with a preview in 0.5 and then 1.0, does design, simulation and flight replay on the desktop, the web and
+  phones;
+- after 1.0 come the Motor Designer, the Recovery Designer and Avionics.
 
 #### Web tools
 
-Four tools for the browser that came before FusionSpace HPR. Each keeps working at its own address until its rebuild
-inside HPR ships.
+These four browser tools came before FusionSpace HPR. Each keeps working at its own address until its rebuild inside HPR
+ships.
 
-- **[HPR Motor Finder](https://motor.fusionspace.co)** · AeroTech, Cesaroni and Loki motor stock and prices across U.S.
+- [HPR Motor Finder](https://motor.fusionspace.co) shows AeroTech, Cesaroni and Loki motor stock and prices across U.S.
   vendors, matched to ThrustCurve. [Source]({github}/Hobby-Rocket-Motor-Finder)
-- **[Charge](https://charge.fusionspace.co)** · Sizes black-powder ejection charges, every constant shown, with a log of
-  your ground tests. [Source]({github}/fusionspace-charge)
-- **[Window](https://window.fusionspace.co)** · Launch weather at any U.S. field: surface wind, winds aloft, storms, cloud
+- [Charge](https://charge.fusionspace.co) sizes black-powder ejection charges, every constant shown, with a log of your
+  ground tests. [Source]({github}/fusionspace-charge)
+- [Window](https://window.fusionspace.co) gives launch weather at any U.S. field: surface wind, winds aloft, storms, cloud
   ceiling and a few days ahead. [Source]({github}/fusionspace-window)
-- **[Muster](https://muster.fusionspace.co)** · Which reloads, closures and spacers fit each reloadable motor case, and the
-  parts to buy. [Source]({github}/fusionspace-muster)
+- [Muster](https://muster.fusionspace.co) shows which reloads, closures and spacers fit each reloadable motor case, and
+  the parts to buy. [Source]({github}/fusionspace-muster)
 
 #### How they're built
 
-- **Show the working.** Formulas, constants and sources are there to read, not hidden.
-- **Say how far to trust it.** Estimates are labeled as estimates, with their spread. Never a go/no-go verdict.
-- **Work at the field.** Readable in sun, with big targets for cold hands. HPR Sim's core needs no network.
-- **No accounts, no tracking.**
+- Show the working. Formulas, constants and sources are there to read, not hidden.
+- Say how far to trust it. An estimate says it's an estimate and shows its spread. You never get a go/no-go verdict.
+- Work at the field. Screens read well in sun and have big targets for cold hands. HPR Sim's core needs no network.
+- No accounts, no tracking.
 
 Every FusionSpace site, tool and app follows one brand and product system,
-[fusionspace-design]({github}/fusionspace-design). The front page is
+[fusionspace-design]({github}/fusionspace-design). The front page's source is
 [fusionspace-site]({github}/fusionspace-site).
 """
 

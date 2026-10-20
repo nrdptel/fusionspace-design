@@ -53,7 +53,7 @@ python3 tools/mark-tuner/src/assemble.py  # rebuilds tools/mark-tuner/index.html
 
 The mark tuner (`tools/mark-tuner/index.html`) is a JavaScript port of `geo.py` and the lockup/icon geometry in `build.py`. Its source is in `tools/mark-tuner/src/` (`app.html` page, `geo.js` geometry, `wm-*.txt` wordmark paths). Any change to the geometry or lockup rules must be made in both places; `parity.py` fails if they drift.
 
-- **Inputs:** the Rev B files in `source/`. The build takes the outlined wordmark paths, the templates, the guide HTML and the README text from there.
+- **Inputs:** the Rev B files in `source/`. The build takes the outlined wordmark paths, the templates and the guide HTML from there; `build_readme()` writes the README whole.
 - **Output:** `_build/rev-c/`, which mirrors the repo layout. After checking it, copy its contents over the repo root (not `verify.png`, `review.html` or `review-previews/`, which stay local).
 - **Paths:** override the input and output folders with the `FS_SRC` and `FS_OUT` environment variables.
 - **Reproducible:** `build.py` sets `SOURCE_DATE_EPOCH` (PDF dates), runs with `PYTHONHASHSEED=0` (DXF object order), writes DXFs with
