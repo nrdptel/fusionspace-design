@@ -886,7 +886,7 @@ def build_readme():
 
 {__import__("kit").INTRO} This is the identity for my own projects: software and embedded systems, games, electronics, mechanical and machined parts, and aerospace. I rebuilt it in 2026 using only free tools (Inkscape, FreeCAD, GIMP) and open-source fonts. It keeps the original 2023 idea, a loose cluster of four shapes with the soft orange-to-blue gradient and Cascadia Mono. Rev C turns the four stars into four nose cones and redraws everything with exact geometry.
 
-Open `guide/index.html` in a browser for the full guide.
+Open `guide/index.html` in a browser for the full guide. To start a project on the system, read [`product/README.md`](product/README.md), which says how to point one here. The writing rules are in [`product/writing.md`](product/writing.md).
 
 ## The idea
 
