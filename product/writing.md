@@ -123,8 +123,9 @@ over one is where to look first; it doesn't fail the build.
 | First person on a reference page | "I", "me", "my" and their forms (I'm, mine, myself) on a model, format, command or glossary page | 0 |
 
 Hedges leave out a capital "May" and "could not". Minimizers leave out "just" before a word of place or time ("just
-below") and "how quick" or "how quickly", which measure something there. First person leaves out a capital I that
-is a numeral or a symbol ("Type I", "an I motor", "where I is the inertia"). A quotation inside one sentence isn't read
+below") and "how quick" or "how quickly", which measure something there. First person counts a capital I only
+before a lower-case word, so it leaves out a numeral or a symbol ("Type I", "an I motor", "where I is the inertia") and an
+I at a clause's end or before a comma ("so did I"). A quotation inside one sentence isn't read
 for hedges, minimizers, signposts, first person or who's talking, though the stock list reads it.
 
 The sentence limit comes from hpr-sim's target: fewer than 10% of sentences over 25 words, at about 20 words a sentence.
@@ -140,9 +141,9 @@ points back at the page. Use one only on purpose.
 First person on a reference page gets 0, because the program is the subject there. The limits were set against hpr-sim's
 pages as they stood on October 19, 2026, when most of them were over the sentence and bold-label limits.
 
-Who's talking has no limit, since the right amount depends on the kind of page: "I", "we", "you" and contractions per
-100 words. For scale, the survey found 1.0 to 3.5
-contractions per 100 words on most personal pages and 0 to 0.25 on reference pages. One author wrote about 3 "I" per
+Who's talking (the report's register) has no limit of its own, since the right amount depends on the kind of page.
+Only first person on a reference page is held to one, above. It's counted as "I", "we", "you" and contractions per 100
+words. For scale, the survey found 1.0 to 3.5 contractions per 100 words on most personal pages and 0 to 0.25 on reference pages. One author wrote about 3 "I" per
 100 words on a blog and none on the project's reference pages.
 
 ### The check
