@@ -130,9 +130,10 @@ or before a comma ("so did I"), but still counts a symbol I before another word 
 for hedges, minimizers, signposts, first person or who's talking, though the stock list reads it.
 
 The sentence limit comes from hpr-sim's target: fewer than 10% of sentences over 25 words, at about 20 words a sentence.
-That's 0.5 per 100 words. On a page of shorter sentences the limit is stricter than 10%, so the report prints each page's
-share too. A bold-label limit of 0.5 still allows a list of ten options on a 2,000-word page, but not a bold label on
-every item of every list. Labels get one every 200 words, because each one sends the reader off to look it up.
+That's 0.5 per 100 words. On a page of shorter sentences the limit is stricter than 10%. On a page with many words in
+headings and tables it's looser, since those words count but hold no sentences. So the report prints each page's share
+too. A bold-label limit of 0.5 still allows a list of ten options on a 2,000-word page, but not a bold label on every
+item of every list. Labels get one every 200 words, because each one sends the reader off to look it up.
 
 Hedges get 1.0, because a single hedge is often the honest word. That's about the top of the range the survey measured
 on one writer's blog: 2.2 to 11.9 per 1,000 words, on a mostly different list of hedges. Stacked hedges, minimizers and
