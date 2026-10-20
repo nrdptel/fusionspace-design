@@ -56,8 +56,8 @@ that carries five things is better as a few sentences, or as a list.
 variable mass: aerodynamics from subsonic to supersonic, the standard atmosphere or a measured one, winds that change
 with height, staging, clusters and air starts, and recovery with drift."
 
-*After*: "It flies a rocket in six degrees of freedom, three of position and three of rotation, with its mass changing
-in flight. The aerodynamics run from subsonic to supersonic. The air is the standard atmosphere or a measured one, with
+*After*: "It flies a rocket in six degrees of freedom (6-DOF), three of position and three of rotation, with its mass
+changing in flight. The aerodynamics run from subsonic to supersonic. The air is the standard atmosphere or a measured one, with
 winds that change with height. It covers staging, clusters and air starts, and recovery with drift."
 
 ### Say it once
@@ -75,9 +75,9 @@ of OpenRocket's example designs that HPR Sim can fly, in 15 of the examples."
 ### Paragraphs and lists
 
 Write a thought as a paragraph. Use a list for what really is a list: steps, options, parts. Give a list as many items
-as there are, not three of the same shape because three sounds finished. A bold label opens an item only where a reader
-scans for it, as in a list of options or a model page's *In short* box, whose items still count toward the limit. A line
-that opens with a bold label reads like a form.
+as there are, not three of the same shape because three sounds finished. Open an item with a bold label only where a
+reader scans for it, as in a list of options or a model page's *In short* box. Those items still count toward the limit.
+A line that opens with a bold label reads like a form, as this pair shows.
 
 *Before*, in hpr-sim's README: "**Status: RELEASED.** Version 0.1.0, released October 8, 2026; work toward 0.2 goes on
 here."
@@ -92,8 +92,8 @@ follow it. A sentence that opens with one sends the reader to look it up before 
 *Before*, in hpr-sim's *Accuracy*: "Neither set is held out: both were seen during development, so neither is a blind
 test until M2.7 holds flights out, predicted before their logs are read."
 
-*After*: "Neither set is held out. Both were seen during development, so neither is a blind test. That waits for flights
-predicted before their logs are read, which is planned work (held-out flights)."
+*After*: "Neither set is held out. Both were seen during development, so neither is a blind test. That waits for the
+planned milestone that holds flights out, predicted before their logs are read (held-out flights)."
 
 ### Honest, once
 
@@ -120,7 +120,12 @@ over one is where to look first; it doesn't fail the build.
 | Stacked hedges | a sentence holding two or more hedges | 0.1 |
 | Minimizers | simply, just, easy, easily, quick, quickly | 0.1 |
 | Signposts | "in this section", "as mentioned", "let's", "in short," and the like | 0.1 |
-| First person on a reference page | "I", "me" or "my" on a model, format, command or glossary page | 0 |
+| First person on a reference page | "I", "me", "my" and their forms (I'm, mine, myself) on a model, format, command or glossary page | 0 |
+
+Hedges leave out a capital "May" and "could not". Minimizers leave out "just" before a word of place or time ("just
+below") and "how quick" or "how quickly", which measure something there. First person leaves out a capital I that
+is a numeral or a symbol ("Type I", "an I motor", "where I is the inertia"). A quotation inside one sentence isn't read
+for hedges, minimizers, signposts, first person or who's talking, though the stock list reads it.
 
 The sentence limit comes from hpr-sim's target: fewer than 10% of sentences over 25 words, at about 20 words a sentence.
 That's 0.5 per 100 words. On a page of shorter sentences the limit is stricter than 10%, so the report prints each page's
@@ -135,15 +140,17 @@ points back at the page. Use one only on purpose.
 First person on a reference page gets 0, because the program is the subject there. The limits were set against hpr-sim's
 pages as they stood on October 19, 2026, when most of them were over the sentence and bold-label limits.
 
-Who's talking has no limit: "I", "we", "you" and contractions per 100 words. For scale, the survey found 1.0 to 3.5
+Who's talking has no limit, since the right amount depends on the kind of page: "I", "we", "you" and contractions per
+100 words. For scale, the survey found 1.0 to 3.5
 contractions per 100 words on most personal pages and 0 to 0.25 on reference pages. One author wrote about 3 "I" per
 100 words on a blog and none on the project's reference pages.
 
 ### The check
 
 `cargo xtask voice` in hpr-sim reads any path it's given (Markdown, HTML or text) and prints, per page, each count above
-against its limit. Of what it counts, it fails only on its stock-phrase list: 41 entries in 9 groups, each named by a
-published style guide or study, or by these writing rules:
+against its limit. Of what it counts, it fails only on its stock-phrase list: 41 entries in 9 groups. Each is named by a
+published list or by these writing rules. The lists are style guides, studies, and Wikipedia's pages on word choice and
+on signs of generated writing:
 
 - puffery: `seamless`, `cutting-edge`
 - inflated words: `pivotal`, `testament`
@@ -155,8 +162,7 @@ published style guide or study, or by these writing rules:
 - recaps: `in conclusion`
 - chat residue: `I hope this helps`
 
-The list leaves out words that have a technical sense in hpr-sim, even if no page uses them yet: robust, deploy,
-streamline (a streamlined body), boost and powerful (a more powerful motor).
+The list leaves out words that have a technical sense in hpr-sim: robust, deploy, streamline (a streamlined body), boost and powerful (a more powerful motor).
 Terms such as `magic bytes` and `seamless tube` pass. The list is in
 [hpr-sim's `xtask/src/voice.rs`](https://github.com/nrdptel/fusionspace-eridanus/blob/main/xtask/src/voice.rs), each
 entry with its sources and a test that fails without it. Voice is partly taste, so a cold reader checks each rewritten
