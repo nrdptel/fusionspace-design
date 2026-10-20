@@ -123,8 +123,9 @@ over one is where to look first; it doesn't fail the build.
 | First person on a reference page | "I", "me", "my" and their forms (I'm, mine, myself) on a model, format, command or glossary page | 0 |
 
 Hedges leave out a capital "May" and "could not". Minimizers leave out "just" before a word of place or time ("just
-below") and "how quick" or "how quickly", which measure something there. Quoted words aren't read for hedges,
-minimizers, signposts or first person, though the stock list reads them.
+below") and "how quick" or "how quickly", which measure something there. First person leaves out a capital I that
+is a numeral or a symbol ("Type I", "an I motor", "where I is the inertia"). A quotation inside one sentence isn't read
+for these counts or for who's talking, though the stock list reads it.
 
 The sentence limit comes from hpr-sim's target: fewer than 10% of sentences over 25 words, at about 20 words a sentence.
 That's 0.5 per 100 words. On a page of shorter sentences the limit is stricter than 10%, so the report prints each page's
