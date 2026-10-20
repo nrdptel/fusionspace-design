@@ -24,9 +24,9 @@ dispersions, and publishes [how far to trust it](https://hpr.fusionspace.co/trus
 To try it, run `pip install fusionspace-hpr` for Python, or `cargo install fusionspace-hpr-cli --locked` for the `hpr`
 command. The rest of the suite is in preparation:
 
-- the Analyzer, for 0.2, reads a flight computer's log and sets the flight beside its simulation;
-- the Competition Kit, for 0.4, holds challenge rules, presets and submission packs for student rocketry competitions;
-- the app, with a preview in 0.5 and then 1.0, does design, simulation and flight replay on the desktop, the web and
+- the Analyzer, for 0.2, will read a flight computer's log and set the flight beside its simulation;
+- the Competition Kit, for 0.4, will hold challenge rules, presets and submission packs for student rocketry competitions;
+- the app, with a preview in 0.5 and then 1.0, will do design, simulation and flight replay on the desktop, the web and
   phones;
 - after 1.0 come the Motor Designer, the Recovery Designer and Avionics.
 
@@ -48,7 +48,7 @@ ships.
 
 - Show the working. Formulas, constants and sources are there to read, not hidden.
 - Say how far to trust it. An estimate says it's an estimate and shows its spread. You never get a go/no-go verdict.
-- Work at the field. Screens read well in sun and have big targets for cold hands. HPR Sim's core needs no network.
+- Work at the field. Readable in sun, with big targets for cold hands. HPR Sim's core needs no network.
 - No accounts, no tracking.
 
 Every FusionSpace site, tool and app follows one brand and product system,

@@ -68,7 +68,7 @@ The wordmark and display type are Cascadia Mono SemiBold, the same face as the o
 ## Rules
 
 - Keep 0.25 H clear space around the logo, where H is the cluster height. The minimum cluster height is 24 px (8 mm). Below 24 px, as in favicons, use the favicon files. They're the full cluster, hinted for 16 px, where the two wing cones become small arrows.
-- In the horizontal lockup the mark comes before the wordmark and is 1.92× its cap height. The gap is 0.35 × the cap height (0.183 × the mark height). In the stacked lockup the mark sits above the wordmark with a gap of 0.10 H (to the cap line). These are the only approved arrangements; don't put the mark after or below the wordmark.
+- In the horizontal lockup the mark comes before the wordmark and is 1.92× the wordmark's cap height. The gap is 0.35 × that cap height (0.183 × the mark height). In the stacked lockup the mark sits above the wordmark with a gap of 0.10 H (to the cap line). These are the only approved arrangements; don't put the mark after or below the wordmark.
 - The gradient always runs left to right, M orange to O blue. It's the same on dark and light backgrounds. Don't reverse it, recolor it, or add outlines, shadows or glows.
 - Where gradients can't be reproduced (spot-color print, vinyl, embroidery), use the flat two-tone versions. The cones are the same on every background: M orange `#DA7C30` (warm) and O blue `#768DF5` (cool). Only the wordmark changes, white on dark and Void on light (`twotone-on-dark`, `twotone-on-light`). Each cone takes the nearer end of the gradient.
 - On light backgrounds, a horizontal lockup under 32 px tall uses the one-color Void lockup (`fusion-space-horizontal-void`). At that size the thin gradient details are too faint on light.
