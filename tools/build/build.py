@@ -877,7 +877,8 @@ def guide_review_fixes(s):
 def build_readme():
     """The README, written whole here (it used to be the Rev B source README with replacements on top), in the
     maintainer's own voice (product/writing.md#voice): paragraphs for thoughts, lists for real lists, no sentence over 25
-    words. Every number comes from the constants the files are built from."""
+    words. The mark's and the lockups' numbers come from the constants the files are built from; the Core
+    and Spectral palette rows are typed here, as the Rev B README had them."""
     banner = ('<picture>\n  <source media="(prefers-color-scheme: dark)" srcset="kit/github/readme-banner-dark.png">\n'
               '  <source media="(prefers-color-scheme: light)" srcset="kit/github/readme-banner-light.png">\n'
               '  <img alt="FusionSpace" src="kit/github/readme-banner-dark.png" width="100%">\n</picture>\n\n')
