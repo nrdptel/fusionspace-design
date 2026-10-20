@@ -140,7 +140,8 @@ signposts get one every 1,000 words. Each adds little: a second hedge, a word th
 points back at the page. Use one only on purpose.
 
 First person on a reference page gets 0, because the program is the subject there. The other limits were set against
-hpr-sim's pages as they stood on October 19, 2026, when most of them were over the sentence and bold-label limits.
+hpr-sim's pages as they stood on October 19, 2026, when most of them were over the sentence limit and
+about half over the bold-label limit.
 
 Who's talking (the report's register) has no limit of its own, since the right amount depends on the kind of page.
 Only first person on a reference page is held to one, above. It's counted as "I", "we", "you" and contractions per 100
