@@ -181,6 +181,13 @@ PAGE_JS = r"""
     // only what the browser actually draws (closed <details>, display:none ancestors, hidden or transparent text)
     if (!el.checkVisibility({contentVisibilityAuto: true, opacityProperty: true, visibilityProperty: true})) continue;
     if (el.closest('details:not([open])') && !el.closest('summary')) continue;
+    // visually hidden for screen readers (the system's .fs-visually-hidden: a 1 px box that hides its overflow), never drawn
+    let hidden = false;
+    for (let a = el; a && a !== document.body; a = a.parentElement) {
+      const r = a.getBoundingClientRect(), s = getComputedStyle(a);
+      if (r.width <= 1 && r.height <= 1 && (/(hidden|clip)/.test(s.overflowX + s.overflowY) || s.clipPath !== 'none')) { hidden = true; break; }
+    }
+    if (hidden) continue;
     const range = document.createRange(); range.selectNodeContents(n);
     const rects = [...range.getClientRects()].filter(r => r.width > 0.5 && r.height > 0.5);
     if (!rects.length) continue;

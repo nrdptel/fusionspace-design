@@ -1,15 +1,15 @@
 # Web
 
 Websites, in-browser tools, progressive web apps and documentation sites. The reference implementation is
-[`web/fusionspace.css`](web/fusionspace.css), with a specimen ([`web/index.html`](web/index.html)) and four example screens
+[`web/fusionspace.css`](web/fusionspace.css), with a specimen ([`web/index.html`](web/index.html)) and five example pages
 in [`web/examples/`](web/examples/). Open them in a browser and switch between Light, Dark and Field. A page is built at one
 of three levels, front, tool or record ([`principles.md`](principles.md#three-levels)), and each level has its own anatomy
 below.
 
 | | |
 |---|---|
-| ![Charge, light](web/previews/charge-light.png) | ![A flight report, dark](web/previews/flight-report-dark.png) |
-| ![Home as a drawing register](web/previews/home-light.png) | ![Window in the field theme](web/previews/window-field.png) |
+| ![A front page: HPR Sim's landing, light](web/previews/front-light.png) | ![Charge at the tool level, light](web/previews/charge-light.png) |
+| ![Window at the tool level, in the field theme](web/previews/window-field.png) | ![A flight report, a record, dark](web/previews/flight-report-dark.png) |
 
 ## Using it in a project
 
@@ -18,8 +18,10 @@ below.
    `<link rel="preload" href="fonts/CascadiaMono-SemiBold.woff2" as="font" type="font/woff2" crossorigin>`.
 3. Set `<meta name="color-scheme" content="light dark">` and the two `theme-color` metas (Paper and Void) from
    `kit/web/head.html`.
-4. Build pages from the parts below. Use the `--fs-*` roles for anything custom; never a hex value, never a default palette.
-5. Copy the icons you need from `product/icons/` as inline SVG (they use `currentColor`).
+4. Set the page's level on `<html>`: `data-level="front"` or `data-level="tool"`; a record needs none. The attribute
+   also works on any element, for a panel at another level.
+5. Build pages from the parts below. Use the `--fs-*` roles for anything custom; never a hex value, never a default palette.
+6. Copy the icons you need from `product/icons/` as inline SVG (they use `currentColor`).
 
 With **Tailwind**, import `tailwind-theme.css` instead of Tailwind's default theme. It maps the roles to utilities
 (`bg-canvas`, `text-ink-muted`, `border-rule-strong`, `font-mono`) and removes the default palette, radii and shadows, so the
@@ -90,7 +92,8 @@ Every level opens with the gradient strip and a header, and every level has the 
 
 - **The home page is a front page.** It opens with the main product's own output, then shows what backs it up: a check
   against real data, the program's output, what comes next as a timeline, and the other tools as a plain index (name, one
-  line, address). A drawing register ([`examples/home.html`](web/examples/home.html)) is the record version, for a
+  line, address). See [`examples/front.html`](web/examples/front.html), whose layout is its own (`front.css`,
+  `front.js`) and not a shared part. A drawing register ([`examples/home.html`](web/examples/home.html)) is the record version, for a
   project's list of parts and releases.
 - **A front page's figure** is drawn at the width it's shown, so its words stay 13 px from 320 to 1920 px instead of
   scaling with the window. If the reader can move along it, it's one control: a slider to a screen reader, with the

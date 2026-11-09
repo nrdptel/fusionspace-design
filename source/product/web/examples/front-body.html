@@ -1,0 +1,111 @@
+<main id="main">
+<div class="wrap">
+<p class="example-note">Example front page. The flight, the check against 60 flights and the terminal output are HPR Sim 0.1.0&#39;s own.</p>
+
+<section class="hero" id="sim" aria-labelledby="title">
+  <div class="hero-copy">
+    <h1 id="title">Fly your rocket before launch day.</h1>
+    <p class="lead"><b>HPR Sim</b> is a free, open-source flight simulator for hobby and high&#8209;power rockets. Give it your OpenRocket file: it flies the design, then tells you how far to trust each number.</p>
+    <div class="fs-row">
+      <a class="fs-btn" href="https://hpr.fusionspace.co/the-simulator.html">Install HPR Sim</a>
+      <a class="fs-btn" data-variant="secondary" href="https://hpr.fusionspace.co/simulator-tour.html">Take the tour</a>
+    </div>
+  </div>
+  <figure class="flight">
+    <div class="plot" role="slider" tabindex="0" aria-label="Time into the flight" aria-valuemin="0" aria-valuemax="53.94" aria-describedby="flight-cap"></div>
+    <dl class="readout" aria-hidden="true">
+      <div><dt>Time</dt><dd data-r="t">9.1<small>s</small></dd></div>
+      <div><dt>Height</dt><dd data-r="h">1,063<small>ft</small></dd></div>
+      <div><dt>Speed</dt><dd data-r="v">0<small>ft/s</small></dd></div>
+      <div class="ph"><dt>What's happening</dt><dd class="phase" data-r="p">Apogee: the drogue fires</dd></div>
+    </dl>
+    <figcaption id="flight-cap">Loft Demo 54mm on an H54, dual deploy, as HPR Sim 0.1.0 flies it: burnout at 3.5 s, apogee of 1,063 ft at 9.1 s, main at 492 ft, landing at 53.9 s. Move along the flight, or use the arrow keys, to read any moment.</figcaption>
+  </figure>
+</section>
+
+<section class="section" id="trust" aria-labelledby="trust-title">
+  <div class="intro">
+    <h2 id="trust-title">Checked against 60 real flights</h2>
+    <p>Fliers sent in their own designs and their altimeters' logs. Flown in each day's weather, HPR Sim's apogee came within 10% on 32 of them. On average it read 7.8% high; it read low on 15, by at most 20%.</p>
+    <p>I write down every gap I know of, with its issue. <a href="https://hpr.fusionspace.co/trusting-a-simulation.html">How far to trust a simulation</a></p>
+  </div>
+  <figure class="trust-fig">
+    <div class="hist-plot" role="img" aria-label="How far HPR Sim's apogee missed on 60 logged flights, in steps of 5%. 32 were within 10% either way; the misses averaged 7.8% high; the low misses stopped at 20%."></div>
+    <figcaption>Each bar counts flights by how far the simulated apogee missed the altimeter's. The end bars hold every flight past 30%.</figcaption>
+  </figure>
+</section>
+</div>
+
+<section class="ink-band" aria-labelledby="cli-title">
+  <div class="wrap section">
+    <div class="intro">
+      <h2 id="cli-title">Read the flight in your terminal</h2>
+      <p>One command flies the design file and prints what you need on the pad: stability, apogee, rail exit speed and descent rate, in metric with feet beside.</p>
+    </div>
+    <div class="listing" role="group" aria-label="What hpr sim prints for the Level 1 guide rocket, shortened">
+<code class="l first"><span class="p">$</span> hpr sim level-1.ork</code>
+<span aria-hidden="true"></span>
+<code class="l"><span class="h">Level 1 guide rocket</span> (level-1.ork)</code>
+<span aria-hidden="true"></span>
+<code class="l">configuration 1 of 2: [H170M-10]</code>
+<span aria-hidden="true"></span>
+<code class="l">a simulated flight, not a measurement</code>
+<p class="note">Every result says it is a simulation, and so does every file it exports.</p>
+<code class="l kv"><span>static margin</span><span>1.70 calibers off the rail</span></code>
+<span aria-hidden="true"></span>
+<code class="l kv"><span>apogee</span><span>1065.1 m (3494 ft) above the site at 11.62 s</span></code>
+<span aria-hidden="true"></span>
+<code class="l kv"><span>rail exit speed</span><span>26.3 m/s (86 ft/s)</span></code>
+<span aria-hidden="true"></span>
+<code class="l kv"><span>descent</span><span>4.4 m/s (15 ft/s) at landing under `Parachute`</span></code>
+<span aria-hidden="true"></span>
+<code class="l"><span class="p">[…]</span></code>
+<span aria-hidden="true"></span>
+<code class="l last"><span class="w">warning:</span> drag: issue #67: a cone-like nose's or shoulder's pressure drag reads high from Mach 0.8 <span class="p">[…]</span> This flight reaches Mach 0.84 at 1.7 s</code>
+<p class="note">Near a known gap in the physics, it names the issue and says which way the numbers lean.</p>
+    </div>
+    <div class="ways">
+      <p><b>The <code>hpr</code> command</b>Point it at a design file and read the flight.</p>
+      <p><b>A Python package</b><code>pip install fusionspace-hpr</code>, for notebooks, sweeps and your own plots.</p>
+      <p><b>A Rust library</b>The simulator itself, to build on. MIT or Apache-2.0.</p>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+<section class="section" aria-labelledby="next-title">
+  <div class="intro">
+    <h2 id="next-title">What comes next</h2>
+    <p>HPR Sim is the first part of FusionSpace HPR, a suite I'm building in one <a href="https://github.com/nrdptel/fusionspace-eridanus">open repository</a>.</p>
+  </div>
+  <ol class="road">
+    <li class="now"><span class="v">0.1, out now</span><b>HPR Sim</b><span class="d">Fly a design and read the flight. Released October 8, 2026.</span></li>
+    <li><span class="v">0.2</span><b>Analyzer</b><span class="d">Your flight computer's log beside its simulation.</span></li>
+    <li><span class="v">0.4</span><b>Competition Kit</b><span class="d">Rules, presets and submission packs for student contests.</span></li>
+    <li><span class="v">0.5</span><b>The app, in preview</b><span class="d">Design, simulate and replay on desktop, web and phone.</span></li>
+    <li><span class="v">After 1.0</span><b>Designers</b><span class="d">Motors, recovery and avionics.</span></li>
+  </ol>
+</section>
+
+<section class="section" id="tools" aria-labelledby="tools-title">
+  <div class="intro">
+    <h2 id="tools-title">Web tools for the field</h2>
+    <p>I built these before HPR Sim. They keep working at their own addresses until I rebuild them.</p>
+  </div>
+  <ul class="tools">
+    <li><a href="https://motor.fusionspace.co"><b>Motor Finder</b><span class="d">AeroTech, Cesaroni and Loki stock and prices across U.S. vendors.</span><span class="addr">motor.fusionspace.co</span></a></li>
+    <li><a href="https://charge.fusionspace.co"><b>Charge</b><span class="d">Black-powder ejection charges, with a log of your ground tests.</span><span class="addr">charge.fusionspace.co</span></a></li>
+    <li><a href="https://window.fusionspace.co"><b>Window</b><span class="d">Launch weather at any U.S. field: wind, winds aloft, storms, ceiling.</span><span class="addr">window.fusionspace.co</span></a></li>
+    <li><a href="https://muster.fusionspace.co"><b>Muster</b><span class="d">Which reloads, closures and spacers fit each motor case.</span><span class="addr">muster.fusionspace.co</span></a></li>
+  </ul>
+</section>
+</div>
+</main>
+
+<footer class="wrap">
+  <div class="site-foot">
+    <span class="brand">{{MARK}}FusionSpace</span>
+    <p>Open-source software for rocketry. This site sets no cookies and loads nothing from anyone else.</p>
+    <nav aria-label="Elsewhere"><a href="https://github.com/nrdptel">GitHub</a><a href="https://github.com/nrdptel/fusionspace-design">Brand system</a><a href="https://github.com/nrdptel/fusionspace-site">This site's source</a></nav>
+  </div>
+</footer>

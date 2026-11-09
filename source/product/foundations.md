@@ -95,9 +95,10 @@ Two families for words, both open source (SIL OFL), and one for equations, all i
   you read as a drawing: titles, labels, title blocks. Every digit is the same width, so columns line up and values don't
   jitter as they change.
 - **Archivo** for what you read as words: paragraphs, help, descriptions, and on front pages and tools, headings, labels
-  and controls too. It's a variable font, from 100 to 900 in weight and 62% to 125% in width, in one file. Headings on
-  front pages and tools are set at 118% width, like the lettering on an airframe; text stays at 100%. Turn on tabular
-  figures (`font-variant-numeric: tabular-nums`) wherever Archivo shows a number.
+  and controls too. `type/fonts` has its variable font, from 100 to 900 in weight and 62% to 125% in width. Headings on
+  front pages and tools are set at 118% width and weight 640, like the lettering on an airframe; text stays at 100%. The
+  web kit cuts that one heading face from the variable font, so a page loads about 15 KB for it, not the whole font's
+  95. Turn on tabular figures (`font-variant-numeric: tabular-nums`) wherever Archivo shows a number.
 - **New Computer Modern Math** (Book) for equations, and only for them: the Computer Modern of LaTeX's textbooks, under the
   GUST Font License (LPPL 1.3c). The web uses a subset renamed *NewCM Math Subset*, as its license asks of a changed font.
 - On iOS and Android, body text and controls use the system font so they scale with Dynamic Type and font scaling; Cascadia
@@ -114,11 +115,13 @@ The table is a record's set. Front pages and tools change the words' roles and k
 |---|---|---|---|---|---|
 | Front page headline | 36 to 49 / 1.04 | Archivo | 640 | 118% | as written |
 | Title | 32 to 39 / 1.1 | Archivo | 640 | 118% | as written |
-| Section head | 25 to 31 / 1.15 | Archivo | 620 | 118% | as written |
+| Section head | 25 to 31 / 1.15 | Archivo | 640 | 118% | as written |
 | Heading in a section | 16 / 24 px | Archivo | 600 | 100% | as written |
 | Label, column head | 13 / 18 px | Archivo | 600 | 100% | as written |
-| Button, navigation | 15 / 20 px | Archivo | 600 and 450 | 100% | as written |
-| Signal word (CAUTION) | 13 / 16 px | Archivo | 700 | 125% | capitals |
+| Button | 15 / 20 px | Archivo | 600 | 100% | as written |
+| Navigation, segmented control, tab | 15 / 20 px | Archivo | 400 | 100% | as written |
+| Status chip, note heading | 13 / 16 px | Archivo | 600 | 100% | as written |
+| Signal word (CAUTION) | 13 / 16 px | Archivo | 640 | 118% | capitals |
 
 Readouts, units, codes and web addresses stay in Cascadia Mono at every level. A range scales with the window, in rem plus
 vw.
