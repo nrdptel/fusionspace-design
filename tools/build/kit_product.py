@@ -1157,9 +1157,13 @@ def mdbook_css():
      additional-css = ["theme/fusionspace-mdbook.css", "theme/fonts.css"]
      default-theme = "light"
      preferred-dark-theme = "navy"
-   Copy this file, product/web/fonts.css and product/web/fonts/ into the book's theme/ folder. */
-.light, .rust {{
+   Copy this file, product/web/fonts.css and product/web/fonts/ into the book's theme/ folder.
+   mdBook's `rust` theme is the field theme (foundations.md, Themes): offer it as Field in the theme switch. */
+.light {{
 {vars_("light")}
+}}
+.rust {{
+{vars_("field")}
 }}
 .navy, .coal, .ayu {{
 {vars_("dark")}

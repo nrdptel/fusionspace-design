@@ -5,8 +5,9 @@
      additional-css = ["theme/fusionspace-mdbook.css", "theme/fonts.css"]
      default-theme = "light"
      preferred-dark-theme = "navy"
-   Copy this file, product/web/fonts.css and product/web/fonts/ into the book's theme/ folder. */
-.light, .rust {
+   Copy this file, product/web/fonts.css and product/web/fonts/ into the book's theme/ folder.
+   mdBook's `rust` theme is the field theme (foundations.md, Themes): offer it as Field in the theme switch. */
+.light {
   --bg: #F3F4F7; --fg: #0B0F1C; --sidebar-bg: #FFFFFF; --sidebar-fg: #0B0F1C;
   --sidebar-non-existant: #98A1B8; --sidebar-active: #3350D6; --sidebar-spacer: #D6DAE4;
   --scrollbar: #566079; --icons: #566079; --icons-hover: #0B0F1C; --links: #3350D6;
@@ -18,6 +19,20 @@
   --searchresults-li-bg: #FFFFFF; --search-mark-bg: #3350D6;
   --code-bg: #FFFFFF; --sidebar-header-border-color: #D6DAE4; --footnote-highlight: #3350D6;
   --fs-ink: #0B0F1C; --fs-ink-muted: #566079; --fs-canvas: #F3F4F7; --fs-surface: #FFFFFF; --fs-rule: #D6DAE4; --fs-rule-strong: #566079; --fs-action: #3350D6; --fs-on-action: #FFFFFF; --fs-danger: #AC001E; --fs-ok: #0A6355;
+  --fs-selection: rgb(51 80 214 / 0.22);
+}
+.rust {
+  --bg: #FFFFFF; --fg: #0B0F1C; --sidebar-bg: #FFFFFF; --sidebar-fg: #0B0F1C;
+  --sidebar-non-existant: #566079; --sidebar-active: #3350D6; --sidebar-spacer: #98A1B8;
+  --scrollbar: #0B0F1C; --icons: #2A3248; --icons-hover: #0B0F1C; --links: #3350D6;
+  --inline-code-color: #0B0F1C; --theme-popup-bg: #FFFFFF; --theme-popup-border: #0B0F1C;
+  --theme-hover: #98A1B8; --quote-bg: #FFFFFF; --quote-border: #0B0F1C;
+  --table-border-color: #98A1B8; --table-header-bg: #FFFFFF; --table-alternate-bg: #FFFFFF;
+  --searchbar-border-color: #0B0F1C; --searchbar-bg: #FFFFFF; --searchbar-fg: #0B0F1C;
+  --searchbar-shadow-color: transparent; --searchresults-header-fg: #2A3248; --searchresults-border-color: #98A1B8;
+  --searchresults-li-bg: #FFFFFF; --search-mark-bg: #3350D6;
+  --code-bg: #FFFFFF; --sidebar-header-border-color: #98A1B8; --footnote-highlight: #3350D6;
+  --fs-ink: #0B0F1C; --fs-ink-muted: #2A3248; --fs-canvas: #FFFFFF; --fs-surface: #FFFFFF; --fs-rule: #98A1B8; --fs-rule-strong: #0B0F1C; --fs-action: #3350D6; --fs-on-action: #FFFFFF; --fs-danger: #AC001E; --fs-ok: #0A6355;
   --fs-selection: rgb(51 80 214 / 0.22);
 }
 .navy, .coal, .ayu {
