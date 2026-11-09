@@ -1866,7 +1866,7 @@ def build_rockets():
        "before cutting: π × outside diameter plus the overlap.\n\nRules: `product/rockets.md`.\n")
 
 # ================================================================ 12. the guide's Products sheet
-PRINCIPLES = [("Drawn, not decorated", "Every screen is a sheet from a drawing set: line types, title blocks, balloons. No ornament."),
+PRINCIPLES = [("Drawn, not decorated", "Line types, balloons and no ornament everywhere; the whole sheet, with its title block, on a record."),
               ("Show the working", "Formula, constants, inputs, sources and dates one step from every result."),
               ("Say how far to trust it", "Measured, predicted or copied, with its spread. Never a go/no-go verdict."),
               ("Built for the field", "Offline, readable in sun, usable with gloves, printable in black."),
@@ -1887,7 +1887,7 @@ def guide_sheet(n, total):
     rules = "".join(f'<div><h3>{i + 1} · {h}</h3><p>{t}</p></div>' for i, (h, t) in enumerate(PRINCIPLES))
     rows = "".join(f"<tr><td>product/{p}</td><td>{d}</td></tr>" for p, d in (
         ("README.md", "Start here: the reading order, the idea in one paragraph, how a project points here."),
-        ("principles.md · foundations.md", "The eight principles; color roles, signals, themes, type, space, lines, motion, icons."),
+        ("principles.md · foundations.md", "The three levels and eight principles; color roles, signals, themes, type, space, lines, motion, icons."),
         ("data.md · writing.md", "Numbers, units, readouts, charts, maps, telemetry; voice, errors, signal words."),
         ("web.md · cli.md · mobile.md · watch.md · desktop.md", "Sites, tools and PWAs; command-line tools; iOS and Android; Apple Watch and Wear OS; macOS, Windows and Linux."),
         ("embedded.md · hardware.md · rockets.md", "Flight computers and devices; boards, enclosures and labels; airframes and livery."),
@@ -1899,7 +1899,8 @@ def guide_sheet(n, total):
         return (f'<figure style="flex-grow:{w / h:.4f}"><img class="fsp-shot" src="../product/{p}" alt="{a}" width="{w}" height="{h}" '
                 f'loading="lazy"><figcaption>{a}</figcaption></figure>')
     lines = (   # rows of previews, paired so that a row isn't too short to read: wide previews get a row of their own
-        (("web/previews/charge-light.png", "Charge, a tool page"), ("web/previews/flight-report-dark.png", "A flight report, dark theme")),
+        (("web/previews/front-light.png", "HPR Sim's landing, a front page"), ("web/previews/charge-light.png", "Charge, a tool page"),
+         ("web/previews/flight-report-dark.png", "A flight report, a record, dark theme")),
         (("embedded/preview.png", "Device screens"),),
         (("mobile/preview.png", "Phones: four screens on iOS and Android"), ("mobile/glance/ios-live-activity.png", "A flight as a Live Activity")),
         (("watch/preview.png", "Watches: Apple Watch and Wear OS"),),
@@ -1909,7 +1910,7 @@ def guide_sheet(n, total):
   <section class="sheet" id="products">
     <div class="sheet-head"><span class="sheet-no">SHEET {n} / {total}</span><h2>Products</h2><p class="muted" style="font-size:14px">How FusionSpace tools, apps, devices and rockets are designed. The rules are in <code>product/</code>.</p></div>
     <div class="sheet-body">
-      <p>The brand says who made it; the product system says how the thing behaves. FusionSpace products are drawn, not decorated: every screen is a sheet from a drawing set, with line types that mean what they mean on a drawing, a title block, and a designation like a part. They show their working, say how far to trust each number, and are built for a launch field.</p>
+      <p>The brand says who made it; the product system says how the thing behaves. FusionSpace products are drawn, not decorated, at one of three levels. A record (a report, an export, a printed card) is a sheet from a drawing set, with a title block and a designation like a part. A tool keeps the drawing's meaning, its line types and trust notes, without the frame. A front page leads with the product's own work. All of them show their working, say how far to trust each number, and are built for a launch field.</p>
       <div class="rules" style="grid-template-columns:repeat(2,minmax(0,1fr))">{rules}</div>
       <h3 style="margin-top:8px">Signal colors</h3>
       <p>Four colors that mean a state, kept apart from the brand colors and used with a word and a shape: Flare for danger, Sodium for caution, Aurora for normal, Nebula for predicted. They follow the flight-deck and spacecraft standards (14 CFR 25.1322, FAA AC 25-11B, NASA-STD-3001).</p>
