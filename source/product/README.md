@@ -12,7 +12,7 @@ Every FusionSpace project points here for its design rules. Rev {{REV}}, {{DATE}
 
 | | Document | What it decides |
 |---|---|---|
-| 1 | [Principles](principles.md) | The eight rules everything else follows |
+| 1 | [Principles](principles.md) | The three levels (front, tool, record) and the eight rules everything else follows |
 | 2 | [Foundations](foundations.md) | Color roles and signals, themes, type, space, lines and shape, motion, icons, tokens |
 | 3 | [Data](data.md) | Numbers, units, readouts, tables, charts, maps, live telemetry, exports |
 | 4 | [Writing](writing.md) | Voice, "how far to trust it", screen copy, errors, signal words, names |
@@ -28,12 +28,14 @@ Every FusionSpace project points here for its design rules. Rev {{REV}}, {{DATE}
 
 ## The idea in one paragraph
 
-FusionSpace products are drawn, not decorated: every screen is a sheet from a drawing set, with a 2 px edge, a sheet number, a
-title block, and lines that mean what they mean on a drawing (solid measured, dashed predicted, chain for references, hatch
-for the unavailable). They show their working and say how far to trust it. They're built for a launch field: offline,
-readable in sun, operable with gloves. Color that means something is rare and follows the cockpit and spacecraft standards,
-and the brand's gradient appears once per view, as identity only. Every product has a designation and a revision, like a
-part. On phones and in terminals, the platform owns behavior and FusionSpace owns content.
+FusionSpace products are drawn, not decorated. A record (a report, an export, a printed card) is a sheet from a drawing set,
+with a 2 px edge, a sheet number and a title block. Tools keep the drawing's meaning without its frame, and a front page
+leads with the product's own work. At every level, lines mean what they mean on a drawing (solid measured, dashed
+predicted, chain for references, hatch for the unavailable). They show their working and say how far to trust it. They're
+built for a launch field: offline, readable in sun, operable with gloves. Color that means something is rare and follows the
+cockpit and spacecraft standards, and the brand's gradient appears once per view, as identity only. Every product has a
+designation and a revision, like a part. On phones and in terminals, the platform owns behavior and FusionSpace owns
+content.
 
 ## Files
 

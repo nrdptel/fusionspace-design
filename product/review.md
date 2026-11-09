@@ -6,13 +6,14 @@ Checklists for before something ships, and the test for whether it looks like Fu
 
 Ask these of any screen, page, board or printout. Each "no" is a fix.
 
-1. **Drawn?** Does every line, rule, color and mark have a job? Is it built from sheets, rules, labels and a title block?
+1. **Drawn?** Does every line, rule, color and mark have a job? Does it wear as much of the drawing as its level calls for
+   (front, tool or record), and no more?
 2. **Working shown?** Can the result be checked from what's on screen: inputs, formula, constants, sources, dates?
 3. **Trust stated?** Is every figure marked as measured, predicted, forecast or copied, with its spread? Is there no verdict?
 4. **Field-ready?** Readable in sun at arm's length, usable with a glove, working offline, printable in black?
 5. **Quiet?** With color turned off, is every state still clear? Is red used only for danger, and nothing unused shown red?
 6. **One sweep?** Does the gradient appear once, as identity, and nowhere else?
-7. **Numbered?** Is the designation, revision or version on it?
+7. **Numbered?** Is the designation, revision or version on it, where its level puts it?
 8. **Native?** Would someone who knows the platform find anything odd about how it behaves?
 
 ## Template smells
@@ -24,22 +25,26 @@ these are FusionSpace:
 | Smell | Instead |
 |---|---|
 | Indigo or violet primary buttons (Tailwind's `indigo-500`, which its author has since apologized for) | Ink buttons; Ion only for links and focus |
-| A centered hero with a gradient headline and a glow, blob or starfield behind it | Left-aligned intro: designation tag, title, one sentence, two buttons |
-| A badge or pill above the headline ("New", "Now in beta") | The designation tag and a status chip, when there's real status |
-| Rows of three cards with an icon on top of each | A table, a register, or prose |
+| A centered hero with a gradient headline and a glow, blob or starfield behind it | The product's own output, with a left-aligned headline, one or two sentences and two buttons |
+| A badge or pill above the headline ("New", "Now in beta") | Nothing above the headline; status said in words where it matters |
+| Rows of three cards with an icon on top of each | A table, a register, a timeline or prose: the form the content has |
+| The same section repeated down a page, text on one side and a boxed figure on the other | Each section shaped by what it holds |
+| A small capitals label over every heading; 01, 02, 03 on things that aren't steps | The heading alone; numbers only on steps |
+| Monospace for small labels and captions | Monospace for code, readouts, and a record's labels |
 | Large radii (`rounded-2xl`) and soft drop shadows | Square corners, 1 px rules, no shadows |
 | Frosted glass and blur | Solid surfaces, separated by rules |
 | Colored left borders on boxes | A note panel with its signal word |
 | Status dots and pills as decoration ("Live" on everything) | Status only where it changes something, with a word |
 | Emoji navigation, sparkle icons ✨, shimmering "thinking" text | The icon set; plain progress |
-| Inter or Geist everywhere; the default `font-sans` | Cascadia Mono and Archivo, each with a job |
+| Inter or Geist everywhere; the default `font-sans` | Archivo, set wide for headings, and Cascadia Mono for data |
 | Cream backgrounds with orange accents and a serif, as a "warm" alternative | Paper or Void, ink, one accent |
 | Stock 3D renders and abstract illustrations | Real photos and drawings of the hardware, plots of real data |
 | Gradient text, gradient buttons, gradient borders | The gradient once, as the strip or the logo |
 
 Note the overlaps, and why FusionSpace's versions are different: the gradient passes through a lavender near the
 "template purple", but it comes from star colors and is used only as identity; capitals and monospace appear on the lists, but
-here they are confined to the places a drawing uses them (labels, title blocks, sheet numbers, state words).
+here they are confined to records, where a drawing uses them (labels, title blocks, sheet numbers), and to state words.
+The same goes for the gradient on a front page's figure: it draws the product's own output, once.
 
 ## Before release
 
@@ -121,6 +126,7 @@ The rules cite these; the research notes behind them are kept with the project's
   Material 3 (color, motion, type scale); Android developer guides (edge-to-edge, adaptive icons, companion devices).
 - Data: W. S. Cleveland, banking to 45°; Padilla, Kay and Hullman on uncertainty visualization; Chartability; Paul Tol's
   color schemes; Machado, Oliveira and Fernandes (2009) color-vision simulation; RocketPy's Monte Carlo analysis.
-- Design: Adrian Krebs, "Design slop" (2026); Adam Wathan on `indigo-500`; Pentagram's Oxide identity; Linear's 2024
-  redesign; the NASA Graphics Standards Manual (1975); Dieter Rams's principles; Teenage Engineering's OP-1.
+- Design: Adrian Krebs, "Design slop" (2026); IBM Carbon's productive and expressive type sets; Adam Wathan on `indigo-500`;
+  Pentagram's Oxide identity; Linear's 2024 redesign; the NASA Graphics Standards Manual (1975); Dieter Rams's principles;
+  Teenage Engineering's OP-1.
 - Tokens: Design Tokens Community Group format 2025.10; Style Dictionary.

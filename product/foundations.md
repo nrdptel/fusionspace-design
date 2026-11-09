@@ -139,10 +139,13 @@ dispersion density), use ramps built from the spectral classes:
 
 Two families for words, both open source (SIL OFL), and one for equations, all in `type/fonts`:
 
-- **Cascadia Mono** for what you read as data or as a drawing: titles, labels, numbers, units, codes, readouts, title blocks.
-  Every digit is the same width, so columns line up and values don't jitter as they change.
-- **Archivo** for what you read as prose: paragraphs, help, descriptions. Turn on tabular figures
-  (`font-variant-numeric: tabular-nums`) wherever Archivo shows a number.
+- **Cascadia Mono** for what you read as data: numbers, units, codes, readouts, commands. On a record it also sets what
+  you read as a drawing: titles, labels, title blocks. Every digit is the same width, so columns line up and values don't
+  jitter as they change.
+- **Archivo** for what you read as words: paragraphs, help, descriptions, and on front pages and tools, headings, labels
+  and controls too. It's a variable font, from 100 to 900 in weight and 62% to 125% in width, in one file. Headings on
+  front pages and tools are set at 118% width, like the lettering on an airframe; text stays at 100%. Turn on tabular
+  figures (`font-variant-numeric: tabular-nums`) wherever Archivo shows a number.
 - **New Computer Modern Math** (Book) for equations, and only for them: the Computer Modern of LaTeX's textbooks, under the
   GUST Font License (LPPL 1.3c). The web uses a subset renamed *NewCM Math Subset*, as its license asks of a changed font.
 - On iOS and Android, body text and controls use the system font so they scale with Dynamic Type and font scaling; Cascadia
@@ -163,10 +166,27 @@ Two families for words, both open source (SIL OFL), and one for equations, all i
 | `readout-l` | 40 / 44 px | Cascadia Mono | 400 | as written | The value a screen exists to show |
 | `code` | 14 / 20 px | Cascadia Mono | 400 | as written | Code, commands, file names, part numbers |
 
+The table is a record's set. Front pages and tools change the words' roles and keep the numbers'
+([`principles.md`](principles.md#three-levels)):
+
+| Role on a front page or a tool | Size / line | Family | Weight | Width | Case |
+|---|---|---|---|---|---|
+| Front page headline | 36 to 49 / 1.04 | Archivo | 640 | 118% | as written |
+| Title | 32 to 39 / 1.1 | Archivo | 640 | 118% | as written |
+| Section head | 25 to 31 / 1.15 | Archivo | 620 | 118% | as written |
+| Heading in a section | 16 / 24 px | Archivo | 600 | 100% | as written |
+| Label, column head | 13 / 18 px | Archivo | 600 | 100% | as written |
+| Button, navigation | 15 / 20 px | Archivo | 600 and 450 | 100% | as written |
+| Signal word (CAUTION) | 13 / 16 px | Archivo | 700 | 125% | capitals |
+
+Readouts, units, codes and web addresses stay in Cascadia Mono at every level. A range scales with the window, in rem plus
+vw.
+
 - Headings and readouts step by √2, the ISO 3098 lettering series (2.5, 3.5, 5, 7, 10, 14 mm) at 4 px per mm. Body and small
   text sit between, at 16 and 14.
-- **Capitals only where a drawing uses them:** labels, column heads, title-block cells, sheet numbers, signal words (CAUTION,
-  WARNING) and single-word states (ARMED, SAFE). Never for sentences, and never as a floating label above a heading.
+- **Capitals only where a drawing uses them:** on a record's labels, column heads, title-block cells and sheet numbers,
+  and at every level for signal words (CAUTION, WARNING) and single-word states (ARMED, SAFE). Never for sentences, and
+  never as a floating label above a heading.
 - No weight lighter than 400 anywhere; no text smaller than 12 px on screen, or 2.5 mm (about 7 pt) in print. Device screens
   are the exception: bitmap fonts at their native sizes, from 5 × 8 px.
 - **Line length, for prose on screen: the column's.** Prose takes its column's whole width, as tables, code and figures do;
@@ -175,7 +195,8 @@ Two families for words, both open source (SIL OFL), and one for equations, all i
   1,512 px. That is longer than print's 45 to 75 (Bringhurst) and the US Web Design System's 90, on purpose. On screen, long
   lines read faster with comprehension unchanged (100 characters against 25, Dyson and Kipping, *Visible Language* 32,
   1998; 95 the fastest of 35 to 95, Shaikh and Chaparro, HFES 2005), and Rev B's 65-character measure left most of a
-  desktop window empty beside a narrow strip of text.
+  desktop window empty beside a narrow strip of text. The one exception is a front page's short introduction to a figure:
+  a paragraph or two, held to about 38 rem (some 70 characters), with the figure itself taking the column's width below.
 - **Math is typeset, as a textbook sets it.** An equation is written in LaTeX and drawn as MathML in the math face, never
   as a picture, in a code block, or as plain text in a sentence; a symbol in a sentence is math too ($\rho$, not ρ or
   `rho`), so the sentence and the equation match. On the web the LaTeX becomes MathML when the site builds, so the page
@@ -202,8 +223,9 @@ Two families for words, both open source (SIL OFL), and one for equations, all i
 ## Space and layout
 
 - **4 px base, 8 px rhythm.** Spacing tokens: 2, 4, 8, 12, 16, 24, 32, 48, 64, 96 px.
-- **The sheet.** A page is a stack of sheets. Each sheet has a 2 px ink rule along its top, a rail with `SHEET n / N` and its
-  name, and its content. On narrow screens the rail sits above the content.
+- **The sheet.** A record is a stack of sheets. Each sheet has a 2 px ink rule along its top, a rail with `SHEET n / N` and its
+  name, and its content. On narrow screens the rail sits above the content. A tool's parts keep the 2 px rule and the name,
+  without the rail or the number. A front page's sections are shaped by what they hold.
 - **Results next to inputs.** Tools put inputs on the left and the result on the right, with the result kept in view as the
   inputs scroll; on a phone the result comes straight after the inputs.
 - **Width.** Content up to 1120 px, and prose with it; gutters 16 px on phones, 32 px from 720 px. Beside a
@@ -244,6 +266,8 @@ Motion shows a change of state and nothing else. It is mechanical: quick, damped
 - Flashing only for "act now", at two rates (NASA-STD-3001): warning 3 Hz at
   50% on, low priority 0.8 Hz at 70% on.
   All flashing is synchronized and can be stopped; flash a glyph or bar beside text, never the text itself.
+- One exception: a front page may play its one figure once, on arrival, in under 2.5 s. HPR Sim's flight draws itself
+  left to right, each event appearing as the line reaches it. It never loops, and anything the reader does stops it.
 - With reduced motion set, everything snaps.
 
 ## Icons

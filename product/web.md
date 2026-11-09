@@ -2,7 +2,9 @@
 
 Websites, in-browser tools, progressive web apps and documentation sites. The reference implementation is
 [`web/fusionspace.css`](web/fusionspace.css), with a specimen ([`web/index.html`](web/index.html)) and four example screens
-in [`web/examples/`](web/examples/). Open them in a browser and switch between Light, Dark and Field.
+in [`web/examples/`](web/examples/). Open them in a browser and switch between Light, Dark and Field. A page is built at one
+of three levels, front, tool or record ([`principles.md`](principles.md#three-levels)), and each level has its own anatomy
+below.
 
 | | |
 |---|---|
@@ -25,36 +27,81 @@ template look (indigo buttons, `rounded-xl`, `shadow-lg`) can't creep in.
 
 ## Page anatomy
 
+Every level opens with the gradient strip and a header, and every level has the theme switch.
+
+- **Header.** The horizontal lockup at 24 px tall, in one color: Void on light and field, Paper on dark. The gradient lives
+  in the strip (principle 6), and the brand's rule for small lockups on light is met in every theme. Navigation links
+  in Archivo, or in Cascadia Mono on a record; the current page underlined 2 px. No hamburger above 720 px. A tool puts its
+  name beside the lockup, after a 1 px rule.
+- **Theme switch.** Auto, Light, Dark and Field, on every page.
+
+**A front page** leads with the product's own work and shapes each section from what it holds:
+
 ```
 [ gradient strip, 4 px ]
-[ header: lockup · nav (Cascadia Mono 14) · theme switch ]
+[ header: lockup · navigation · theme switch ]
+[ the product's own output, with the headline, one or two sentences and two buttons beside or over it ]
+[ a section for each thing worth showing, each in the form its content has ]
+[ plain footer: the mark, one sentence, links ]
+```
+
+- **The opening.** The headline says what the product does for the reader. Under it, a sentence or two say what it is,
+  and two buttons follow: ink primary, outlined secondary. The figure beside or under them is real output, never an
+  illustration. No designation tag, status chip or label above the headline.
+- **Sections.** Each takes the form of what it holds: a chart, a terminal, a timeline, an index. Its heading is a plain
+  statement, with no label above it. Sections are parted by space; a full-width band in a different surface marks the
+  one that changes medium, such as a terminal.
+
+**A tool** is a few parts, inputs beside the result:
+
+```
+[ gradient strip, 4 px ]
+[ header: lockup | tool name · navigation · theme switch ]
+[ title · one-sentence lead ]
+[ 1  Part name | content ]          2 px ink rule on top of each part; numbered only when the parts are steps
+[ 2  Part name | content ]
+[ one-line footer: tool and version · data and its date · units · About ]
+```
+
+**A record** is a sheet from a drawing set:
+
+```
+[ gradient strip, 4 px ]
+[ header: lockup · navigation (Cascadia Mono 14) · theme switch ]
 [ intro: designation tag · status chip · title · one-sentence lead ]
 [ SHEET 1 / n · name | content ]      2 px ink rule on top of each sheet
 [ SHEET 2 / n · name | content ]
 [ title block: owner · title · designation · rev · date · units · data · status ]
 ```
 
-- **Header.** The horizontal lockup at 24 px tall, in one color: Void on light and field, Paper on dark. The gradient lives
-  in the strip (principle 6), and the brand's rule for small lockups on light is met in every theme. Nav links in Cascadia Mono; the current page underlined 2 px. No hamburger above 720 px.
 - **Search.** On a docs site, the search field its button opens stands under the header, in the column: its edges on
-  the text's, and 16 px between it and the intro, so its focus ring never touches the designation tag.
-- **Intro.** The designation tag (chamfered), a status chip, the title (Cascadia Mono 28) and one sentence in `lead`. No hero
-  image, no background art, no gradient text.
-- **Sheets.** Each section is a sheet with its number and name in the rail. Two to six sheets per page.
+  the text's, and 16 px between it and the intro, so its focus ring never touches the title.
+- **Intro.** On a record: the designation tag (chamfered), a status chip, the title (Cascadia Mono 28) and one sentence in
+  `lead`. On a tool: the title and the sentence. No hero image, no background art, no gradient text.
+- **Sheets.** On a record, each section is a sheet with its number and name in the rail. Two to six sheets per page.
 - **Page arrows.** On a page of a set read in order (docs), links to the previous and the next page end its text, above the
-  title block and inside the column: the previous at the column's left edge, the next at its right, each a bordered button
+  footer and inside the column: the previous at the column's left edge, the next at its right, each a bordered button
   at least 44 px tall that names its page ("Previous" or "Next" in `label`, then the page's title). Never only an arrow at
   the window's side, where a reader on a wide window doesn't look.
-- **Title block.** Every page ends with one. Fields from ISO 7200: owner (FusionSpace, with the mark), title, designation,
-  revision or version, date of issue, units, data source and its date, status. On a tool it doubles as the about box.
+- **Title block.** Every record ends with one. Fields from ISO 7200: owner (FusionSpace, with the mark), title, designation,
+  revision or version, date of issue, units, data source and its date, status. A tool's about box holds the same fields.
 
 ## Site patterns
 
-- **The home page is a drawing register**, not a grid of cards: a table of every tool with its designation, title, one-line
-  description, status and address. See [`examples/home.html`](web/examples/home.html).
+- **The home page is a front page.** It opens with the main product's own output, then shows what backs it up: a check
+  against real data, the program's output, what comes next as a timeline, and the other tools as a plain index (name, one
+  line, address). A drawing register ([`examples/home.html`](web/examples/home.html)) is the record version, for a
+  project's list of parts and releases.
+- **A front page's figure** is drawn at the width it's shown, so its words stay 13 px from 320 to 1920 px instead of
+  scaling with the window. If the reader can move along it, it's one control: a slider to a screen reader, with the
+  arrow keys, Home and End, a value said in words ("9.1 seconds: 1,063 feet, 0 feet per second, apogee"), and a readout
+  under the figure, never a tooltip that can run off an edge. Its focus shows on the figure's own marker and readout.
+  When words sit over it, the page's check proves the line and its labels stay clear of them at every width.
 - **A tool page** (Charge, Window) puts inputs left and the result right, the result sticky as the inputs scroll; on a phone
-  the result follows the inputs. The result panel has a 2 px ink border, the headline readout, a "Show the math" disclosure,
-  the "How far to trust it" note, and any caution.
+  the result follows the inputs. A choice that changes which inputs apply comes first. The result panel has a 2 px ink
+  border, the headline readout, a "Show the math" disclosure, the "How far to trust it" note, and any caution. The
+  headline readout is the number the reader acts on: the grams to put on the scale, rounded as the scale reads, with the
+  estimate it came from under it.
 - **An analysis page** (a flight report) leads with readouts, then the stacked chart, then the event and channel tables, then a Source
   sheet with the file, its hash and every setting used.
 - **A board** (Window) is readouts plus a table, with every value's source and age, and a Print button.
@@ -72,10 +119,12 @@ template look (indigo buttons, `rounded-xl`, `shadow-lg`) can't creep in.
 
 All in `fusionspace.css`, shown in the specimen. The rules that matter:
 
-- **Buttons.** Square, 44 px tall (with `data-size="field"`: 96 px on touch screens, 64 px with a mouse), Cascadia Mono 14 semibold, sentence case. Primary is ink
+- **Buttons.** Square, 44 px tall (with `data-size="field"`: 96 px on touch screens, 64 px with a mouse), sentence case:
+  Archivo 15 semibold on front pages and tools, Cascadia Mono 14 semibold on a record. Primary is ink
   filled; hover turns it Ion. Secondary is a 2 px ink outline; quiet is an Ion text link. Danger is the Flare fill, and only
   for actions that fire, arm or destroy. Disabled is a dashed outline, and says why nearby.
-- **Fields.** Label above (12 px capitals, muted), input 44 px tall with a 1 px Slate border, help below. Numbers go in
+- **Fields.** Label above (Archivo 13 semibold on a tool, Cascadia Mono 12 capitals on a record, muted), input 44 px
+  tall with a 1 px Slate border, help below. Numbers go in
   `type="text" inputmode="decimal"` (GOV.UK's finding: `type="number"` loses leading zeros, accepts `e`, and changes on
   scroll), parsed as [`data.md`](data.md#copying-and-typing-numbers) says, with the unit fixed in a box on the right and the
   value as read shown back. Errors: 2 px danger border and a
@@ -97,7 +146,7 @@ All in `fusionspace.css`, shown in the specimen. The rules that matter:
 
 - Light by default, dark when the system asks (`prefers-color-scheme`), field on request. `<html data-theme="light|dark|field">`
   overrides the system; remember the choice in `localStorage` (wrapped in try/catch). A theme switch with Auto, Light, Dark and
-  Field belongs on every tool used outdoors.
+  Field belongs on every page, at every level.
 - Set `theme-color` to Paper and Void with media queries, as `kit/web/head.html` does; browsers differ in whether and where
   they show it, so nothing depends on it.
 - `forced-colors` (Windows high contrast) is handled in the stylesheet: borders and outlines, never shadows, carry every
@@ -181,14 +230,15 @@ revision it came from.
 
 ## fusionspace.co
 
-The live site (checked October 4, 2026) uses the template look this system avoids: an indigo button, a glowing hero with a
-starfield, rounded cards with pill tags, and a "Live" dot on every card. To bring it in line:
+The live site (checked November 8, 2026) is built on this system at the record level: a designation tag over the
+headline, four numbered sheets, and a title block. Its stylesheet is an older copy of `fusionspace.css`, with sizes in px.
+The record level is right for a register of parts, but too much for a page that meets people first. To bring it in line:
 
-1. Replace the hero with the intro pattern (designation tag, title, lead, two buttons: ink primary, outlined secondary).
-2. Replace the project cards with the drawing register table ([example](web/examples/home.html)), using each tool's
-   designation from `kit/projects/<tool>/project.json` and RELEASED or IN PREPARATION as status.
-3. Drop the glow, the stars and the indigo; use `fusionspace.css` or `tailwind-theme.css` so the defaults are gone.
-4. Use the one-color lockup in the header (Void on light, Paper on dark) and the gradient strip along the top.
-5. Close every page with a title block, and give each tool page the result-beside-inputs layout.
-6. Keep the copy's substance, which is already right ("careful about the data", "no go/no-go verdict"), and edit it to
-   [`writing.md`](writing.md): no em dashes, no "genuinely".
+1. Make the home page a front page (Site patterns, above). Open with HPR Sim's own flight: the altitude it flew, drawn in the
+   gradient, which the reader can move along. Follow it with the check against 60 logged flights, the `hpr sim` output
+   with its trust notes, what comes next as a timeline, and the older tools as a plain index.
+2. Replace the title block with a plain footer, and drop the designation tags and sheet numbers from the page.
+3. Update its stylesheet to this repository's `fusionspace.css` and fonts, with the Archivo variable font.
+4. Keep the copy's substance, and edit it to [`writing.md`](writing.md): the landing page is one person talking, so it
+   uses "I".
+5. Leave the older tools' own pages as they are until they're rebuilt.

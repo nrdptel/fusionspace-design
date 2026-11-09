@@ -1,22 +1,53 @@
 # Principles
 
-Eight rules that decide everything else in `product/`. When a specific rule is missing or unclear, these settle it.
+Three levels and eight rules that decide everything else in `product/`. When a specific rule is missing or unclear, these
+settle it.
 
 FusionSpace makes engineering tools, mostly for high-power rocketry: calculators, simulators, flight reports, flight computers,
 boards and rockets. The people using them are measuring, building and flying real hardware, often outdoors, sometimes next to
 live energetics. The design follows from that: the products look like what they are, careful engineering documents, and they
 behave like good instruments.
 
+## Three levels
+
+How much of the drawing a piece wears depends on what it is. A record is a drawing, so it carries the whole sheet. A tool
+keeps what the drawing means and leaves off what it wears. A page that meets people first leads with the product's own
+work and shows almost none of the drawing. IBM's Carbon system splits its type the same way, into a productive set for
+tools and an expressive set for pages that introduce.
+
+| | Front | Tool | Record |
+|---|---|---|---|
+| What it is | A landing page, the top of a README, a store listing | A calculator, an app screen, documentation | A flight report, an export, a printed card, a board, a CAD drawing |
+| Leads with | The product's own output: a flight it flew, a check it passed | The inputs and the result | The readouts and the data |
+| Headings | Archivo, wide | Archivo, wide | Cascadia Mono |
+| Labels | Archivo, sentence case | Archivo, sentence case | Cascadia Mono, capitals |
+| Sections | Each shaped by what it holds | Parts under a 2 px rule, numbered only when they're steps | Numbered sheets with a rail |
+| Designation and status | On the about page, if anywhere | In the about box | In the title block |
+| Ends with | A plain footer | One line: version, data date, units | The title block |
+
+Every level keeps the line types, the trust notes, the signal colors and their words, units on screen, the field theme,
+and the two-step arming. Those carry meaning, not style. The platform pages ([`mobile.md`](mobile.md),
+[`desktop.md`](desktop.md), [`watch.md`](watch.md)) describe tools, and are being moved to these levels. Where one still
+differs, this page settles it.
+
+**Shape each page from its content.** A sequence is drawn as a timeline, a program's output as a terminal, a check
+against real flights as its chart. A page whose sections all look alike is a template, whatever it's dressed in. A front
+page shows the product's real output, never made-up numbers, because its reader is deciding whether to trust it. Spend
+the boldness in one place on a page, and keep the rest quiet.
+
+**Test:** with the logo covered, does the page still show what the product does, with its own data?
+
 ## 1. Drawn, not decorated
 
-Every FusionSpace screen, page and printout is a sheet from a drawing set. The visual language comes from engineering drawings
-(ISO 128 lines, ISO 7200 title blocks, ISO 3098 lettering) because that is the language of the work itself, not a style picked
-for effect. Every line, rule and mark has a job.
+The visual language comes from engineering drawings (ISO 128 lines, ISO 7200 title blocks, ISO 3098 lettering) because
+that is the language of the work itself, not a style picked for effect. Every line, rule and mark has a job. A record is a
+sheet from a drawing set; tools and front pages keep the drawing's meaning and leave off its frame (Three levels, above).
 
 - Two line widths in a 1 : 2 ratio, and a line type for each kind of information: solid for measured, dashed for predicted,
-  chain (long dash, dot) for references, dotted for events, 45° hatching for unavailable or uncertain areas.
-- Sections are sheets: a 2 px rule along the top edge, a sheet number, a name.
-- Every page, report and about screen ends in a title block.
+  chain (long dash, dot) for references, dotted for events, 45° hatching for unavailable or uncertain areas. These hold at
+  every level.
+- On a record, sections are sheets: a 2 px rule along the top edge, a sheet number, a name.
+- A record ends in a title block. A tool's about box holds the same fields.
 - Callouts are balloons and leaders, the way a drawing points at a feature.
 - No ornament: no glows, blobs, glass, shadows, decorative gradients, stock 3D, sparkles.
 
@@ -53,7 +84,8 @@ The tools are used at the bench, but also on a dry lake bed in full sun, in the 
 signal. Design for the worst place it will be used.
 
 - Offline once loaded. Nothing needed at the pad depends on a connection.
-- A field theme: white canvas, darker text, stronger rules, for a screen in sunlight.
+- A field theme: white canvas, darker text, stronger rules, for a screen in sunlight. Every page offers it, at every
+  level: it's part of what FusionSpace is.
 - Controls used at the pad are at least {{TARGET['field']}} pt (about 15 mm) on a touch screen, and the one critical control used
   with gloves {{TARGET['glove']}} pt (about 20 mm); critical ones sit in the lower half of a phone screen.
 - Everything that matters prints well in black on white: flight cards, checklists, charge logs.
@@ -81,10 +113,13 @@ never color alone.
 
 The brand appears once per view, and gets out of the way. The Fusion gradient is identity, and in a product it has one place:
 the thin strip along the top edge. The logo in a product's header is one color (Void on light, Paper on dark); the gradient
-lockup is for splash screens, covers and anywhere the logo stands alone. The gradient is never a button, a status, a chart
-series, a text effect or a background.
+lockup is for splash screens, covers and anywhere the logo stands alone. The gradient is never a button, a status, a
+series in a comparison, a text effect or a background.
 
 - One gradient strip per view, along the top.
+- A front page may draw its one figure of the product's own work in the gradient: the line, and a faded area under it.
+  The flight HPR Sim flew is FusionSpace's signature as much as the logo is. Once per page, and never a series beside
+  others, where the gradient would read as data.
 - The logo follows the brand rules exactly (clear space, minimum sizes, one-color Void on light under 32 px tall).
 - Interactive color is Ion (O blue on dark), one accent, used for links, selection and focus. The primary button is ink.
 
@@ -96,8 +131,9 @@ Everything FusionSpace makes has a designation and a revision, like a part on a 
 rev B`, `FS-VEGA · ELEC · BOARD 004`. The designation is how a printout, a board, a screenshot and a bug report find each other.
 
 - Software shows its designation and version in its title block or about screen; hardware carries both on silkscreen or a
-  label.
-- Status uses drawing words: IN PREPARATION, RELEASED, WITHDRAWN.
+  label. Front pages and tool screens don't wear it as a tag.
+- On a record, status uses drawing words: IN PREPARATION, RELEASED, WITHDRAWN. A front page says it in words ("out now",
+  "planned for 0.2").
 - Hardware revisions are letters (skip I, O, Q, S, X, Z); software uses semantic versions; both are shown together when they
   meet (firmware 1.4.0 on board rev B).
 
@@ -128,6 +164,10 @@ These are the marks of a template, and they say nothing about the work. Avoid th
 - Colored left borders on boxes; dots and pills used as decoration.
 - Emoji or sparkle icons; shimmering "thinking" text while something loads.
 - Status shown by color alone.
+- The same section repeated down a page: text on one side and a boxed figure on the other, five times over.
+- A wall of identical cards, where a list or a table would do.
+- A small capitals label over every heading, and numbers (01, 02, 03) on things that aren't steps.
+- Monospace for small labels on a front page or a tool, and middle-dot strings (A · B · C) used as decoration.
 
 The defense isn't a different trend. It's provenance: every choice here has a reason in rocketry, engineering drawing or
 human-factors research, written down next to the rule.
