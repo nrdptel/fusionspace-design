@@ -31,9 +31,9 @@ main { display: grid; grid-template-columns: minmax(0, 1fr); }
 .flight { margin: 0; display: grid; gap: 14px; min-width: 0; }
 .flight .plot { position: relative; min-width: 0; touch-action: pan-y; outline-offset: 6px; cursor: crosshair; }
 .flight svg { display: block; width: 100%; height: auto; overflow: visible; }
-.flight svg text { font: 450 13px/1 var(--fs-font-text); fill: var(--fs-ink-muted); font-variant-numeric: tabular-nums; }
+.flight svg text { font: 400 13px/1 var(--fs-font-text); fill: var(--fs-ink-muted); font-variant-numeric: tabular-nums; }
 .flight svg .ev { font-weight: 600; fill: var(--fs-ink); paint-order: stroke; stroke: var(--fs-canvas); stroke-width: 5px; stroke-linejoin: round; }
-.flight svg .ev-v { fill: var(--fs-ink-muted); font-weight: 450; }
+.flight svg .ev-v { fill: var(--fs-ink-muted); font-weight: 400; }
 .flight svg .ev-dot { fill: var(--fs-canvas); stroke: var(--fs-ink); stroke-width: 1.75; }
 .flight svg .axis { stroke: var(--fs-rule-strong); stroke-width: 1; }
 .flight svg .tick { stroke: var(--fs-rule-strong); stroke-width: 1; }
@@ -63,7 +63,7 @@ main { display: grid; grid-template-columns: minmax(0, 1fr); }
 
 .trust-fig { margin: 0; display: grid; gap: 12px; max-width: 860px; }
 .trust-fig figcaption { font: var(--fs-type-small); color: var(--fs-ink-muted); max-width: 40rem; }
-.fs-chart.hist { font-family: var(--fs-font-text); }
+.fs-chart.hist { font-family: var(--fs-font-text); font-size: 13px; }
 .fs-chart.hist text { font-size: inherit; font-variant-numeric: tabular-nums; }
 .fs-chart.hist .bar { fill: var(--fs-ink-muted); }
 .fs-chart.hist .bar.in { fill: var(--fs-ink); }
@@ -105,22 +105,22 @@ main { display: grid; grid-template-columns: minmax(0, 1fr); }
 
 /* --- what comes next: a real sequence, so it is drawn as one */
 .road { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; grid-template-columns: minmax(0, 1fr); }
-.road li { position: relative; display: grid; gap: 4px; align-content: start; padding: 0 0 28px 32px; }
-.road li::before { content: ""; position: absolute; left: 5px; top: 8px; bottom: -8px; width: 2px; background: var(--fs-rule); }
-.road li:last-child::before { display: none; }
-.road li::after { content: ""; position: absolute; left: 0; top: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--fs-canvas); border: 2px solid var(--fs-ink-muted); }
-.road li.now::after { background: var(--fs-ink); border-color: var(--fs-ink); }
-.road li.now::before { background: linear-gradient(var(--fs-ink-muted), var(--fs-rule)); }
+.road > li { position: relative; display: grid; gap: 4px; align-content: start; padding: 0 0 28px 32px; }
+.road > li::before { content: ""; position: absolute; left: 5px; top: 8px; bottom: -8px; width: 2px; background: var(--fs-rule); }
+.road > li:last-child::before { display: none; }
+.road > li::after { content: ""; position: absolute; left: 0; top: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--fs-canvas); border: 2px solid var(--fs-ink-muted); }
+.road > li.now::after { background: var(--fs-ink); border-color: var(--fs-ink); }
+.road > li.now::before { background: linear-gradient(var(--fs-ink-muted), var(--fs-rule)); }
 .road .v { font: 600 0.875rem/1.125rem var(--fs-font-text); font-stretch: var(--fs-head-stretch); color: var(--fs-ink-muted); font-variant-numeric: tabular-nums; }
-.road .now .v { color: var(--fs-ink); }
+.road > .now .v { color: var(--fs-ink); }
 .road b { font: 600 1.125rem/1.5rem var(--fs-font-text); }
 .road span.d { font: var(--fs-type-small); color: var(--fs-ink-muted); max-width: 26em; }
 @media (min-width: 900px) {
   .road { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 24px; }
-  .road li { padding: 28px 8px 0 0; }
-  .road li::before { left: 0; right: -24px; top: 5px; bottom: auto; width: auto; height: 2px; }
-  .road li::after { top: 0; }
-  .road li.now::before { background: linear-gradient(90deg, var(--fs-ink-muted), var(--fs-rule)); }
+  .road > li { padding: 28px 8px 0 0; }
+  .road > li::before { left: 0; right: -24px; top: 5px; bottom: auto; width: auto; height: 2px; }
+  .road > li::after { top: 0; }
+  .road > li.now::before { background: linear-gradient(90deg, var(--fs-ink-muted), var(--fs-rule)); }
 }
 
 /* --- the older tools: a plain index, not a wall of cards */

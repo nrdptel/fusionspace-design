@@ -94,13 +94,14 @@
 ${yt.map((v, i) => `<line class="tick" x1="${ml - 6}" x2="${ml}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${ml - 10}" y="${Y(v) + 4.5}" text-anchor="end">${fmt(v)}${i === yt.length - 1 ? " ft" : ""}</text>`).join("")}
 <line class="axis" x1="${ml}" x2="${ml + pw}" y1="${Y(0)}" y2="${Y(0)}"/>
 ${xt.map((v, i) => `<text x="${X(v)}" y="${Y(0) + 22}" text-anchor="${i ? "middle" : "start"}">${v}${i === xt.length - 1 ? " s" : ""}</text>`).join("")}
-<g class="rv" style="clip-path: inset(0 ${W - reveal}px 0 0)"><path d="${area}" fill="url(#fl-g)" mask="url(#fl-m)"/><path class="under" d="${path}"/>
+<g class="rv"><path d="${area}" fill="url(#fl-g)" mask="url(#fl-m)"/><path class="under" d="${path}"/>
 <path d="${path}" fill="none" stroke="url(#fl-g)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></g>
 ${labels.map(lab).join("")}
 <line class="scrub-line" x1="0" x2="0" y1="0" y2="0"/><circle class="scrub-dot" r="5"/>
 </svg>`;
       const svg = plot.firstElementChild;
       S = { X, Y, ml, pw, xmax, line: svg.querySelector(".scrub-line"), dot: svg.querySelector(".scrub-dot"), rv: svg.querySelector(".rv"), W };
+      S.rv.style.clipPath = `inset(0 ${W - reveal}px 0 0)`; // through the CSSOM: a strict security policy refuses style attributes
       show(cur);
       if (!played) play();
     };
@@ -140,9 +141,12 @@ ${labels.map(lab).join("")}
       e.preventDefault(); finish(); show(nearest(Math.max(0, Math.min(T_END, go))));
     });
 
-    let queued = 0;
-    new ResizeObserver(() => { cancelAnimationFrame(queued); queued = requestAnimationFrame(() => { const p = played; draw(); if (p) finish(); }); }).observe(plot);
-    if (document.fonts) document.fonts.ready.then(() => { const p = played; draw(); if (p && !anim) finish(); });
+    // Redraw on the next frame, and only for a new width: drawing changes the figure's height, and a redraw run while
+    // the browser delivers resize notifications (as a promise's callback can be) is a ResizeObserver loop.
+    let queued = 0, lastW = -1;
+    const redraw = () => { cancelAnimationFrame(queued); queued = requestAnimationFrame(() => { lastW = plot.clientWidth; const p = played; draw(); if (p) finish(); }); };
+    new ResizeObserver(() => { if (plot.clientWidth !== lastW) redraw(); }).observe(plot);
+    if (document.fonts) document.fonts.ready.then(redraw);
   }
 
   /* ------------------------------------------------------------------ the 60-flight check */
@@ -163,7 +167,7 @@ ${labels.map(lab).join("")}
       const sign = (v) => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v) + "%";
       const gap = narrow ? 2 : 3;
       const mx = X(MEAN), meanRight = mx + 6 + 104 < W;
-      hf.innerHTML = `<svg class="fs-chart hist" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" aria-hidden="true" focusable="false" style="font-size:13px">
+      hf.innerHTML = `<svg class="fs-chart hist" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" aria-hidden="true" focusable="false">
 <rect class="within" x="${X(-10)}" y="${mt - 26}" width="${X(10) - X(-10)}" height="${ph + 26}"/>
 <text class="t-ink" x="${X(-10) + 8}" y="${mt - 9}">32 within 10%</text>
 ${[0, 5, 10, 15].map((c) => `<line class="grid" x1="${ml}" x2="${ml + pw}" y1="${Y(c)}" y2="${Y(c)}"/><text x="${ml - 8}" y="${Y(c) + 4.5}" text-anchor="end">${c}</text>`).join("")}
@@ -176,7 +180,7 @@ ${xt.map((v) => `<text x="${X(v)}" y="${Y(0) + 20}" text-anchor="middle">${sign(
 <text x="${ml}" y="${Y(0) + 42}">read low</text><text x="${ml + pw}" y="${Y(0) + 42}" text-anchor="end">read high</text>
 </svg>`;
     };
-    new ResizeObserver(() => requestAnimationFrame(drawHist)).observe(hf);
-    drawHist();
+    let hq = 0, hw = -1;
+    new ResizeObserver(() => { if (hf.clientWidth === hw) return; cancelAnimationFrame(hq); hq = requestAnimationFrame(() => { hw = hf.clientWidth; drawHist(); }); }).observe(hf);
   }
 })();
