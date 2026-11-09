@@ -752,7 +752,8 @@ def sheet(n, total, name, body, desc=""):
 def titleblock(cells):
     mark = build.inline(open(os.path.join(build.OUT, "logo/mark/fusion-space-mark.svg"), encoding="utf-8").read(), "tbm" + str(len(cells)), "height:20px;width:auto")
     body = f'<div class="mark wide"><span class="k">Owner</span><span class="v" style="display:flex;gap:8px;align-items:center">{mark}FusionSpace</span></div>'
-    body += "".join(f'<div{" class=\"wide\"" if len(v) > 26 else ""}><span class="k">{k}</span><span class="v">{v}</span></div>' for k, v in cells)
+    body += "".join(f'<div{" class=\"wide\"" if len(v) > 26 or k == "Designation" else ""}><span class="k">{k}</span>'
+                    f'<span class="v{" fs-designation" if k == "Designation" else ""}">{v}</span></div>' for k, v in cells)
     return f'<footer class="fs-titleblock" aria-label="Title block">{body}</footer>'
 def note(kind, head, text, icon=None):
     """A note panel. DANGER, WARNING and CAUTION carry the safety-alert triangle (ANSI Z535); NOTICE carries no symbol."""
@@ -993,7 +994,7 @@ def ex_flight_report():
                     f'{readout("Max speed", num(float(meas["vel"].max())), "ft/s", "Mach 0.58")}{readout("Descent · main", f"{abs(float(meas['vel'][-60])):.0f}", "ft/s", "Under the main, just before landing")}</div>'
                     + chart_svg(pred, meas) + '<p class="fs-small fs-muted">Solid: measured. Dashed with a band: hpr-sim\'s prediction and its spread. Dotted lines with balloons: events, in order: 1 liftoff, 2 burnout, 3 apogee, 4 drogue out, 5 main out, 6 landing.</p>')
             + sheet(2, 3, "Channels", chan)
-            + sheet(3, 3, "Source", '<dl class="fs-titleblock" style="margin-top:0">' + "".join(f'<div><dt>{k}</dt><dd>{v}</dd></div>' for k, v in (
+            + sheet(3, 3, "Source", '<dl class="fs-titleblock" style="margin-top:0">' + "".join(f'<div{" class=\"wide\"" if k in ("File", "Logger", "Hash") else ""}><dt>{k}</dt><dd>{v}</dd></div>' for k, v in (
                 ("File", "vega-flight-03.csv"), ("Logger", "Barometer 20 Hz, accelerometer 100 Hz"), ("Filter", "None; raw samples"), ("Pad elevation", "4,000 ft MSL"),
                 ("Imported", "2026-10-04 14:22"), ("Hash", "sha256 9f3c…b21e"))) + "</dl>")
             + titleblock([("Title", "Flight 03 report"), ("Designation", "FS-VEGA · REPORT 003"), ("Rev", "A"), ("Date", "2026-10-04"), ("Units", "ft, ft/s, g, s"), ("Status", "RELEASED")]))
