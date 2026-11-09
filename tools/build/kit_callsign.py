@@ -13,7 +13,7 @@ The star list is source/callsign/iau-star-names.json, read from the IAU by `pyth
 """
 import os, re, json, base64, shutil, importlib.util
 import build, kit_icons, kit_product
-from kit_product import THEME_SWITCH, THEME_JS, status, note, titleblock
+from kit_product import THEME_SWITCH, THEME_JS, status, note, foot
 
 D = "tools/callsign"
 SRC = os.path.join(build.SRC, "callsign")
@@ -55,19 +55,16 @@ def build_page(m, cat, cli):
     s = open(os.path.join(SRC, "callsign.html"), encoding="utf-8").read()
     fav = base64.b64encode(open(os.path.join(build.OUT, "logo/favicon/favicon.svg"), "rb").read()).decode()
     css = open(os.path.join(build.OUT, "product/web/fusionspace.css"), encoding="utf-8").read()
-    tb = titleblock([("Title", "Callsign"), ("Designation", m.DESIGNATION), ("Version", m.VERSION), ("Date", DATE),
-                     ("Units", "vmag, degrees J2000"), ("Data", f"IAU star names, read {cat['read']}"), ("Status", "RELEASED"),
-                     ("Notes", "Checks the repository for a newer list when online. Names in use stay in this browser.")])
-    tb, n = re.subn(r'(<span class="k">Data</span><span class="v")', r'\1 data-tb="data"', tb)
-    assert n == 1
+    tb = foot("Callsign", [f'<span class="fs-mono">{m.DESIGNATION}</span>', f"Version {m.VERSION}, {DATE}",
+                           f'<span data-tb="data">IAU star names, read {cat["read"]}</span>', "Units: vmag, degrees J2000"],
+              "Names in use stay in this browser.")
     vals = {
         "favicon": "data:image/svg+xml;base64," + fav, "fonts": _fonts(), "stylesheet": css.strip(),
         "logo": kit_product._logo("hdr"), "theme_switch": THEME_SWITCH, "theme_js": THEME_JS,
-        "designation": m.DESIGNATION, "status_released": status("ok", "Released", "check"),
         "note_check": note("note", "Note", "<p>The IAU names stars, not products. A star name is an internal name; if it is "
                                            "also to be the external name, search it before it goes on a box or a domain: "
                                            "someone may already use it.</p>"),
-        "titleblock": tb, "catalog": _script_json(cat), "constellations": _script_json(m.CONSTELLATIONS), "cli": _script_json(cli),
+        "foot": tb, "catalog": _script_json(cat), "constellations": _script_json(m.CONSTELLATIONS), "cli": _script_json(cli),
     }
     s = re.sub(r"\{\{icon:([a-z-]+)\}\}", lambda g: kit_icons.inline(g.group(1), ""), s)
     for k, v in vals.items():

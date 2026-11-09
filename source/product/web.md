@@ -71,24 +71,28 @@ footer line. A page made at one level should look like a page made at another by
 ```
 [ gradient strip, 4 px ]
 [ header: lockup · navigation · theme switch ]
-[ title · one-sentence lead · designation tag and status chip ]
+[ title · one-sentence lead ]
 [ SHEET 1 / n  Sheet name | content ]      2 px ink rule on top of each sheet, as a tool's part
 [ SHEET 2 / n  Sheet name | content ]
-[ title block: owner · title · designation · rev · date · units · data · status ]
+[ one-line footer: title · designation · rev · date · units · status ]
 ```
 
 - **Search.** On a docs site, the search field its button opens stands under the header, in the column: its edges on
   the text's, and 16 px between it and the intro, so its focus ring never touches the title.
-- **Intro** (`.fs-intro`), the same on tools and records: the title and one sentence in `lead`. A record follows them
-  with its designation tag (chamfered) and a status chip. No hero image, no background art, no gradient text.
+- **Intro** (`.fs-intro`), the same on tools and records: the title and one sentence in `lead`. Nothing goes over
+  the title or under it as a tag: a record's designation and status are in its footer. No hero image, no background art, no gradient text.
 - **Sheets.** On a record, each section is a sheet: its number and name on one line under the 2 px rule. Two to six
   sheets per page.
 - **Page arrows.** On a page of a set read in order (docs), links to the previous and the next page end its text, above the
   footer and inside the column: the previous at the column's left edge, the next at its right, each a bordered button
   at least 44 px tall that names its page ("Previous" or "Next" in `label`, then the page's title). Never only an arrow at
   the window's side, where a reader on a wide window doesn't look.
-- **Title block.** Every record ends with one. Fields from ISO 7200: owner (FusionSpace, with the mark), title, designation,
-  revision or version, date of issue, units, data source and its date, status. A tool's about box holds the same fields.
+- **Facts.** A list of names and values, such as a record's source or a star's details, is `.fs-facts`: one to a row, on
+  hairlines, the name in `label` and the value in Cascadia. Not a grid of boxes.
+- **Footer** (`.fs-foot`). Every page ends with one line under a 1 px rule: the mark and the page's name, then its facts.
+  A tool's: version, data and its date, units, and its About link last. A record's: designation, revision or version,
+  date, units, data source, and its status last. The full title block (ISO 7200) is for drawings and boards
+  ([`hardware.md`](hardware.md)) and an app's about box.
 
 ## Site patterns
 
@@ -210,7 +214,7 @@ people back. Each one says what changed, its value and unit, and its source time
 Every tool page prints usefully: a charge card, a flight card, a weather sheet for the pad.
 
 - Print uses the light values whatever the theme, hides navigation and theme controls, keeps sheets and table rows together,
-  shows link addresses, and keeps the title block (with date and version) on the page.
+  shows link addresses, and keeps the footer line (with date and version) on the page.
 - A dedicated "Print flight card" layout is better than printing the screen: A6 or half-letter, the designation, the motor,
   the charges, the settings, blank boxes to tick and sign.
 - Page margin boxes (`@page` headers and footers) only work in Chrome 131 and later, so put the date and version in the body.

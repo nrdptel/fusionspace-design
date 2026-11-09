@@ -30,7 +30,7 @@ these are FusionSpace:
 | Rows of three cards with an icon on top of each | A table, a register, a timeline or prose: the form the content has |
 | The same section repeated down a page, text on one side and a boxed figure on the other | Each section shaped by what it holds |
 | A small capitals label over every heading; 01, 02, 03 on things that aren't steps | The heading alone; numbers only on steps |
-| Monospace for small labels and captions | Monospace for code and readouts, and a record's sheet numbers, tags and title block |
+| Monospace for small labels and captions | Monospace for code and readouts, and a record's sheet numbers |
 | Large radii (`rounded-2xl`) and soft drop shadows | Square corners, 1 px rules, no shadows |
 | Frosted glass and blur | Solid surfaces, separated by rules |
 | Colored left borders on boxes | A note panel with its signal word |
@@ -43,7 +43,7 @@ these are FusionSpace:
 
 Note the overlaps, and why FusionSpace's versions are different: the gradient passes through a lavender near the
 "template purple", but it comes from star colors and is used only as identity; capitals and monospace appear on the lists, but
-here they are confined to a record's own parts, where a drawing uses them (title blocks, sheet numbers, designation tags),
+here they are confined to a record's own parts, where a drawing uses them (sheet numbers, a drawing's title block),
 and to state words.
 The same goes for the gradient on a front page's figure: it draws the product's own output, once.
 
@@ -56,7 +56,7 @@ The same goes for the gradient on a front page's figure: it draws the product's 
 - [ ] Every value has a unit; every prediction is labeled and dashed; every dataset has an "as of".
 - [ ] A "How far to trust it" note on every result someone might fly on.
 - [ ] Status by word + shape + color; unused is gray; red only for danger.
-- [ ] Title block (or about screen) with designation, version, date, units, data sources, status.
+- [ ] Footer line (or about screen, or a drawing's title block) with designation, version, date, units, data sources, status.
 - [ ] Copy edited to [`writing.md`](writing.md): no hype, no em dashes, signal words exact.
 - [ ] Logo per the brand rules (clear space, minimum size, one-color on light under 32 px).
 

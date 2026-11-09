@@ -20,13 +20,13 @@ tools and an expressive set for pages that introduce.
 | What it is | A landing page, the top of a README, a store listing | A calculator, an app screen, documentation | A flight report, an export, a printed card, a board, a CAD drawing |
 | Leads with | The product's own output: a flight it flew, a check it passed | The inputs and the result | The readouts and the data |
 | Sections | Each shaped by what it holds | Parts under a 2 px rule, numbered only when they're steps | Numbered sheets with a rail |
-| Designation and status | On the about page, if anywhere | In the about box | In the title block |
-| Ends with | A plain footer | One line: version, data date, units | The title block |
+| Designation and status | On the about page, if anywhere | In the about box | In the footer line |
+| Ends with | One line: a sentence, links | One line: version, data date, units | One line: designation, revision, date, status |
 
 Every level shares one frame and one type: the same header, intro, headings in Archivo's wide cut, sentence-case labels
 in Archivo, numbers in Cascadia Mono, the same spacing and the same footer line. Pages made by one person should look it.
-The levels differ only in the parts a page uses, so a record's own parts (sheet numbers, the designation tag, the title
-block) keep the drawing's lettering. Every level also keeps the line types, the trust notes, the signal colors and their
+The levels differ only in the parts a page uses: a record numbers its sheets, in the drawing's lettering, and its footer
+line carries its designation and status. No page wears its designation as a tag over its title. Every level also keeps the line types, the trust notes, the signal colors and their
 words, units on screen, the field theme, and the two-step arming. Those carry meaning, not style. The platform pages ([`mobile.md`](mobile.md),
 [`desktop.md`](desktop.md), [`watch.md`](watch.md)) describe tools, and are being moved to these levels. Where one still
 differs, this page settles it.
@@ -48,7 +48,8 @@ sheet from a drawing set; tools and front pages keep the drawing's meaning and l
   chain (long dash, dot) for references, dotted for events, 45° hatching for unavailable or uncertain areas. These hold at
   every level.
 - On a record, sections are sheets: a 2 px rule along the top edge, a sheet number, a name.
-- A record ends in a title block. A tool's about box holds the same fields.
+- A drawing or a board ends in a title block, and an app's about box holds the same fields. A web page ends with its
+  footer line at every level.
 - Callouts are balloons and leaders, the way a drawing points at a feature.
 - No ornament: no glows, blobs, glass, shadows, decorative gradients, stock 3D, sparkles.
 
@@ -131,8 +132,8 @@ series in a comparison, a text effect or a background.
 Everything FusionSpace makes has a designation and a revision, like a part on a drawing: `FS · SW · TOOL 002`, `FS-VEGA-001
 rev B`, `FS-VEGA · ELEC · BOARD 004`. The designation is how a printout, a board, a screenshot and a bug report find each other.
 
-- Software shows its designation and version in its title block or about screen; hardware carries both on silkscreen or a
-  label. Front pages and tool screens don't wear it as a tag.
+- Software shows its designation and version in its footer line or about screen; hardware carries both on silkscreen or a
+  label. No page wears it as a tag over its title.
 - On a record, status uses drawing words: IN PREPARATION, RELEASED, WITHDRAWN. A front page says it in words ("out now",
   "planned for 0.2").
 - Hardware revisions are letters (skip I, O, Q, S, X, Z); software uses semantic versions; both are shown together when they

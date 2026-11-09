@@ -814,7 +814,7 @@ def specimen(contrast_rows):
     trs = "".join(f'<tr><td><code>{n}</code></td><td class="n">{sz}</td><td style="font:var(--fs-type-{n});font-stretch:{"var(--fs-head-stretch)" if n in wide else "normal"}">{sample}</td>'
                   f'<td class="fs-small fs-muted">{use}</td></tr>' for n, sz, sample, use in WEB_TYPE)
     s2 = (f'<p>One voice on every page: headings in Archivo&#39;s wide cut, labels, controls and prose in Archivo, and Cascadia Mono for anything you read as data: '
-          f'numbers, units, codes, readouts. A record&#39;s sheet numbers, designation tags and title block keep the drawing&#39;s lettering, Cascadia Mono in capitals, '
+          f'numbers, units, codes, readouts. A record&#39;s sheet numbers keep the drawing&#39;s lettering, Cascadia Mono in capitals, '
           f'and so do state words (ARMED, SAFE). The sizes below are the web&#39;s; the platform tokens keep the drawing scale for now.</p>'
           f'<div class="fs-table-wrap"><table class="fs-table"><thead><tr><th>Token</th><th class="n">px</th><th>Sample</th><th>Use</th></tr></thead><tbody>{trs}</tbody></table></div>'
           + SPECIMEN_MATH)
@@ -845,7 +845,7 @@ def specimen(contrast_rows):
           f'<div class="fs-field" data-invalid><label for="p">Shear pins</label><div class="fs-input-group"><input class="fs-input" id="p" inputmode="numeric" value="0" aria-describedby="pe" aria-invalid="true"><span class="fs-unit">× 2-56</span></div>'
           f'<span class="fs-error" id="pe">{ico("danger", "")}At least one pin, or switch to friction fit.</span></div></div>'
           f'<div class="fs-row"><div class="fs-seg" role="group" aria-label="Units"><button type="button" aria-pressed="true">ft</button><button type="button" aria-pressed="false">m</button></div>'
-          f'<label class="fs-check"><input type="checkbox" checked> Dual deploy</label><span class="fs-tag">FS · SW · TOOL 002</span><span class="fs-tag" data-tone="action">REV 1.4.0</span></div>'
+          f'<label class="fs-check"><input type="checkbox" checked> Dual deploy</label></div>'
           f'<div class="fs-tabs" role="tablist"><button role="tab" aria-selected="true">Flight</button><button role="tab" aria-selected="false">Channels</button><button role="tab" aria-selected="false">Raw log</button></div>'
           f'<p class="fs-small fs-muted">Square corners, 1 px borders, no shadows. The primary button is ink, not a color: color is saved for links, focus and signals. '
           f'Numbers are typed into text fields with <code>inputmode="decimal"</code>, with the unit fixed beside the value. Controls used at the pad are {TARGET["field"]} px tall on touch screens and {TARGET["field-pointer"]} px with a mouse.</p>'
@@ -882,9 +882,9 @@ def specimen(contrast_rows):
     s7 = (f'<p>{len(kit_icons.ICONS)} icons on a 24 px grid: 1.5 px strokes, square ends, 45° and 90° angles, drawn from the real objects. '
           f'Files in <code>product/icons/</code>: one SVG each, <code>sprite.svg</code>, and Android vector drawables.</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px">{icons}</div>')
     # 9 levels: one frame and one type at every level; what differs is the parts a page uses
-    s9 = ("<p>Every page shares one frame and one type (<code>principles.md</code>, Three levels). The levels differ in the parts "
-          "a page uses. A tool numbers its parts when they are steps and ends with a one-line footer. A record numbers its sheets, "
-          "carries its designation, and ends with a title block, in the drawing's own lettering. A front page lays itself out "
+    s9 = ("<p>Every page shares one frame and one type (<code>principles.md</code>, Three levels), and ends with the same one-line "
+          "footer. The levels differ in the parts a page uses. A tool numbers its parts when they are steps. A record numbers its "
+          "sheets, and its footer carries its designation and status. A front page lays itself out "
           "from what it shows (<a href=\"examples/front.html\">the front example</a>).</p>"
           '<div class="fs-grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));align-items:start">'
           '<div class="fs-panel fs-stack"><p class="fs-small fs-muted">A tool&#39;s part</p>'
@@ -892,17 +892,21 @@ def specimen(contrast_rows):
           + readout("Put on the scale", "1.15", "g", "Rounded up to the scale&#39;s 0.05 g", size="m") + '</section></div>'
           '<div class="fs-panel fs-stack"><p class="fs-small fs-muted">A record&#39;s sheet</p>'
           '<section class="fs-sheet" style="padding-bottom:8px"><div class="fs-sheet-rail"><span class="fs-sheet-no">SHEET 1 / 3</span><h2>Flight</h2></div>'
-          '<div class="fs-sheet-body"><div class="fs-row"><span class="fs-tag">FS-VEGA · REPORT 003</span></div>'
+          '<div class="fs-sheet-body">'
           + readout("Apogee", "5,104", "ft AGL", "Barometer, 20 Hz", size="m") + '</div></section></div></div>')
-    s8 = ("<p>The title block closes every record: a report, a printout, an export. A tool&#39;s about box holds the same fields. It answers: what is this, which version, from whom, when, "
-          "in which units, from what data, and how finished it is.</p>"
-          + titleblock([("Title", "Product system specimen"), ("Designation", "FS · SPEC 001"), ("Rev", REV), ("Date", "2026-10-13"),
-                        ("Units", "px, ms"), ("Status", "IN PREPARATION"), ("Sheet", f"{T} / {T}")]))
+    s8 = ("<p>Every page ends with one line under a 1 px rule: what it is, then the facts a reader needs to trust it. A tool&#39;s "
+          "gives its version, the date of its data and its units, and ends with its About link. A record&#39;s gives its designation, "
+          "revision, date and units, and ends with its status. A front page&#39;s gives a sentence and its links.</p>"
+          + foot("Charge", ["Version 1.4.0", "Constants from September 2026", "Units: in, psi, g"], '<a href="#">About Charge</a>')
+          + recordfoot("Flight 03 report", "FS-VEGA · REPORT 003", ["Rev A", "2026-10-04", "Units: ft, ft/s, g, s"])
+          + "<p class=\"fs-small fs-muted\">A drawing or a board keeps the full title block in its corner (<code>hardware.md</code>), "
+          "and an app&#39;s About box holds the same fields.</p>")
     body = (f'<section class="fs-intro"><h1>Product system</h1>'
             f'<p class="fs-lead">How FusionSpace tools, apps and boards look and behave. The rules are in <code>product/</code>; this page shows each part working, '
-            f'in light, dark and the outdoor field theme.</p><div class="fs-row"><span class="fs-tag">FS · SPEC 001</span></div></section>'
+            f'in light, dark and the outdoor field theme.</p></section>'
             + sheet(1, T, "Color", s1) + sheet(2, T, "Type", s2) + sheet(3, T, "Lines", s3) + sheet(4, T, "Controls", s4)
-            + sheet(5, T, "Data", s5) + sheet(6, T, "Status and notes", s6) + sheet(7, T, "Icons", s7) + sheet(8, T, "Levels", s9) + sheet(9, T, "Title block", s8))
+            + sheet(5, T, "Data", s5) + sheet(6, T, "Status and notes", s6) + sheet(7, T, "Icons", s7) + sheet(8, T, "Levels", s9) + sheet(9, T, "Footer", s8)
+            + recordfoot("Product system specimen", "FS · SPEC 001", [f"Rev {REV}", "2026-10-13", "Units: px, ms"], "off", "In preparation", "edit"))
     return page("Specimen · FusionSpace product system", body, example=True, desc="The FusionSpace product system: color, type, lines, controls, data, status, icons.")
 
 TOOLS = [  # the drawing register on the example home page: (designation, name, what it is, status, where)
@@ -912,11 +916,10 @@ TOOLS = [  # the drawing register on the example home page: (designation, name, 
     ("FS · SW · TOOL 004", "Muster", "Motor-hardware compatibility: every reload a case flies, and what it needs.", "RELEASED", "muster.fusionspace.co"),
 ]
 def ex_home():
-    rows = "".join(f'<tr><td><span class="fs-tag">{d}</span></td><td><a href="#"><b>{n}</b></a><div class="fs-small fs-muted">{w}</div></td>'
+    rows = "".join(f'<tr><td style="white-space:nowrap"><span class="fs-mono fs-small">{d}</span></td><td><a href="#"><b>{n}</b></a><div class="fs-small fs-muted">{w}</div></td>'
                    f'<td>{status("ok", "Released", "check") if s == "RELEASED" else status("off", "In preparation", "edit")}</td><td class="fs-mono fs-small">{u}</td></tr>' for d, n, w, s, u in TOOLS)
     body = (f'<section class="fs-intro"><h1>Free tools for high‑power rocketry.</h1>'
             f'<p class="fs-lead">Free and open source. Each tool shows its working, says how far to trust it, and works offline at the field.</p>'
-            f'<div class="fs-row"><span class="fs-tag">FS · SITE 001</span></div>'
             f'<div class="fs-row"><a class="fs-btn" href="#register">See the tools</a><a class="fs-btn" data-variant="secondary" href="#">Source on GitHub {ico("external", "")}</a></div></section>'
             + sheet(1, 2, "Register", f'<div class="fs-table-wrap" id="register"><table class="fs-table"><caption>Every tool, numbered like a drawing. Released tools are maintained; in preparation means usable but changing.</caption>'
                     f'<thead><tr><th>No.</th><th>Title</th><th>Status</th><th>Where</th></tr></thead><tbody>{rows}</tbody></table></div>')
@@ -926,14 +929,20 @@ def ex_home():
                         ("Says how far to trust it", "Estimates are labeled as estimates, with their spread. Never a go/no-go verdict."),
                         ("Works at the field", "Offline once loaded, readable in sun, big targets for cold hands."),
                         ("No accounts, no tracking", "Your logs stay in your browser unless you export them."))) + "</dl>")
-            + titleblock([("Title", "FusionSpace tools"), ("Designation", "FS · SITE 001"), ("Rev", "C"), ("Date", "2026-10-04"), ("Contact", "NeerDPatel@FusionSpace.co"), ("Status", "RELEASED")]))
+            + recordfoot("FusionSpace tools", "FS · SITE 001", ["Rev C", "2026-10-04", '<a href="mailto:NeerDPatel@FusionSpace.co">NeerDPatel@FusionSpace.co</a>']))
     return page("Register · example", body, rel="../", example=True, desc="Example: a register of tools, numbered like drawings, at the record level.")
 
-def toolfoot(name, cells, about):
-    """A tool's one-line footer (web.md, Page anatomy): its name with the mark, then what a record's title block holds."""
-    mark = build.inline(open(os.path.join(build.OUT, "logo/mark/fusion-space-mark.svg"), encoding="utf-8").read(), "ftm" + name[:3].lower(), "height:20px;width:auto")
+def foot(name, cells, end=""):
+    """The one-line footer every page ends with (web.md, Page anatomy): the name with the mark, its facts, and at the end a
+    tool's About link or a record's status."""
+    mark = build.inline(open(os.path.join(build.OUT, "logo/mark/fusion-space-mark.svg"), encoding="utf-8").read(), "ftm" + re.sub(r"[^a-z]", "", name.lower())[:6], "height:20px;width:auto")
     return (f'<footer class="fs-foot"><span class="fs-foot-name">{mark}{name}</span>' + "".join(f"<span>{c}</span>" for c in cells)
-            + f'<a class="fs-push" href="#">{about}</a></footer>')
+            + (f'<span class="fs-push">{end}</span>' if end else "") + "</footer>")
+def toolfoot(name, cells, about): return foot(name, cells, f'<a href="#">{about}</a>')
+def recordfoot(name, designation, cells, state="ok", word="Released", icon="check"):
+    """A record's footer: its designation (in Cascadia, as a code), revision, date and units, and its status last."""
+    return foot(name, [f'<span class="fs-mono">{designation}</span>'] + cells, status(state, word, icon))
+def facts(rows): return '<dl class="fs-facts">' + "".join(f"<dt>{k}</dt><dd>{v}</dd>" for k, v in rows) + "</dl>"
 def part(name, body, step=None):
     pid = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
     n = f'<span class="fs-step">{step}</span>' if step else ""
@@ -992,16 +1001,16 @@ def ex_flight_report():
             f'<tr><td class="fs-mono">3 · —</td><td class="fs-muted">Not used</td><td>{status("off", "Not used")}</td><td>{status("off", "Not used")}</td><td class="n fs-muted">—</td><td class="n fs-muted">—</td></tr></tbody></table></div>'
             '<p class="fs-small fs-muted">An unused channel is gray and says so. Red is only for a real fault, so a fault is never lost among false alarms.</p>')
     body = (f'<section class="fs-intro"><h1>Flight 03 · J350W-L</h1><p class="fs-lead">Dual deploy, nominal. Apogee {num(pap - ap)} ft ({(1 - ap / pap) * 100:.1f}%) under the prediction, outside its ±{num(0.04 * pap + 8)} ft spread: the rocket flew heavier than its design file says.</p>'
-            f'<div class="fs-row"><span class="fs-tag">FS-VEGA-001 · FLIGHT 03</span>{status("ok", "Released", "check")}</div></section>'
+            f'</section>'
             + sheet(1, 3, "Flight", f'<div class="fs-readouts">{readout("Apogee", num(ap), "ft AGL", "Barometer, 20 Hz")}'
                     f'{readout("Predicted", num(pap), "ft AGL", f"±{num(0.04 * pap + 8)} ft · hpr-sim 0.9, from the design file", "predicted")}'
                     f'{readout("Max speed", num(float(meas["vel"].max())), "ft/s", "Mach 0.58")}{readout("Descent · main", f"{abs(float(meas['vel'][-60])):.0f}", "ft/s", "Under the main, just before landing")}</div>'
                     + chart_svg(pred, meas) + '<p class="fs-small fs-muted">Solid: measured. Dashed with a band: hpr-sim\'s prediction and its spread. Dotted lines with balloons: events, in order: 1 liftoff, 2 burnout, 3 apogee, 4 drogue out, 5 main out, 6 landing.</p>')
             + sheet(2, 3, "Channels", chan)
-            + sheet(3, 3, "Source", '<dl class="fs-titleblock" style="margin-top:0">' + "".join(f'<div{" class=\"wide\"" if k in ("File", "Logger", "Hash") else ""}><dt>{k}</dt><dd>{v}</dd></div>' for k, v in (
-                ("File", "vega-flight-03.csv"), ("Logger", "Barometer 20 Hz, accelerometer 100 Hz"), ("Filter", "None; raw samples"), ("Pad elevation", "4,000 ft MSL"),
-                ("Imported", "2026-10-04 14:22"), ("Hash", "sha256 9f3c…b21e"))) + "</dl>")
-            + titleblock([("Title", "Flight 03 report"), ("Designation", "FS-VEGA · REPORT 003"), ("Rev", "A"), ("Date", "2026-10-04"), ("Units", "ft, ft/s, g, s"), ("Status", "RELEASED")]))
+            + sheet(3, 3, "Source", facts((
+                ("File", "vega-flight-03.csv"), ("Logger", "Barometer 20 Hz, accelerometer 100 Hz"), ("Filter", "None: raw samples"), ("Pad elevation", "4,000 ft MSL"),
+                ("Imported", "2026-10-04 14:22"), ("Hash", "sha256 9f3c…b21e"))))
+            + recordfoot("Flight 03 report", "FS-VEGA · REPORT 003", ["Rev A", "2026-10-04", "Units: ft, ft/s, g, s"]))
     return page("Flight report · example", body, rel="../", example=True, read=True, desc="Example: a flight report from a flight computer's log, in the FusionSpace product system.")
 
 def ex_window():
@@ -1870,7 +1879,7 @@ def build_rockets():
        "before cutting: π × outside diameter plus the overlap.\n\nRules: `product/rockets.md`.\n")
 
 # ================================================================ 12. the guide's Products sheet
-PRINCIPLES = [("Drawn, not decorated", "Line types, balloons and no ornament everywhere; the whole sheet, with its title block, on a record."),
+PRINCIPLES = [("Drawn, not decorated", "Line types, balloons and no ornament everywhere; numbered sheets on a record."),
               ("Show the working", "Formula, constants, inputs, sources and dates one step from every result."),
               ("Say how far to trust it", "Measured, predicted or copied, with its spread. Never a go/no-go verdict."),
               ("Built for the field", "Offline, readable in sun, usable with gloves, printable in black."),
@@ -1914,7 +1923,7 @@ def guide_sheet(n, total):
   <section class="sheet" id="products">
     <div class="sheet-head"><span class="sheet-no">SHEET {n} / {total}</span><h2>Products</h2><p class="muted" style="font-size:14px">How FusionSpace tools, apps, devices and rockets are designed. The rules are in <code>product/</code>.</p></div>
     <div class="sheet-body">
-      <p>The brand says who made it; the product system says how the thing behaves. FusionSpace products are drawn, not decorated, at one of three levels. A record (a report, an export, a printed card) is a sheet from a drawing set, with a title block and a designation like a part. A tool keeps the drawing's meaning, its line types and trust notes, without the frame. A front page leads with the product's own work. All of them show their working, say how far to trust each number, and are built for a launch field.</p>
+      <p>The brand says who made it; the product system says how the thing behaves. FusionSpace products are drawn, not decorated, at one of three levels. A record (a report, an export, a printed card) is a sheet from a drawing set, with a designation like a part. A tool keeps the drawing's meaning, its line types and trust notes, without the frame. A front page leads with the product's own work. All of them show their working, say how far to trust each number, and are built for a launch field.</p>
       <div class="rules" style="grid-template-columns:repeat(2,minmax(0,1fr))">{rules}</div>
       <h3 style="margin-top:8px">Signal colors</h3>
       <p>Four colors that mean a state, kept apart from the brand colors and used with a word and a shape: Flare for danger, Sodium for caution, Aurora for normal, Nebula for predicted. They follow the flight-deck and spacecraft standards (14 CFR 25.1322, FAA AC 25-11B, NASA-STD-3001).</p>

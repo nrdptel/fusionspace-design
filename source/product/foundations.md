@@ -91,8 +91,8 @@ dispersion density), use ramps built from the spectral classes:
 
 Two families for words, both open source (SIL OFL), and one for equations, all in `type/fonts`:
 
-- **Cascadia Mono** for what you read as data: numbers, units, codes, readouts, commands. A record's own parts keep it
-  too, as the drawing's lettering: sheet numbers, designation tags, title-block cells. Every digit is the same width, so
+- **Cascadia Mono** for what you read as data: numbers, units, codes, readouts, commands. A record's sheet numbers keep
+  it too, as the drawing's lettering, and so do a drawing's title block and a hardware tag. Every digit is the same width, so
   columns line up and values don't jitter as they change.
 - **Archivo** for what you read as words, on every page: headings, labels, controls, paragraphs, help. `type/fonts` has
   its variable font, from 100 to 900 in weight and 62% to 125% in width. Headings are set at 118% width and weight 640,
@@ -128,7 +128,7 @@ vw.
 
 - Headings and readouts step by √2, the ISO 3098 lettering series (2.5, 3.5, 5, 7, 10, 14 mm) at 4 px per mm. Body and small
   text sit between, at 16 and 14.
-- **Capitals only where a drawing uses them:** on a record's title-block cells, sheet numbers and designation tags, and
+- **Capitals only where a drawing uses them:** on a record's sheet numbers, a drawing's title block and hardware tags, and
   on every page for signal words (CAUTION, WARNING) and single-word states (ARMED, SAFE). Never for sentences, and
   never as a floating label above a heading.
 - No weight lighter than 400 anywhere; no text smaller than 12 px on screen, or 2.5 mm (about 7 pt) in print. Device screens

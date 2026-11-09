@@ -29,7 +29,7 @@ Every FusionSpace project points here for its design rules. Rev {{REV}}, {{DATE}
 ## The idea in one paragraph
 
 FusionSpace products are drawn, not decorated. A record (a report, an export, a printed card) is a sheet from a drawing set,
-with a 2 px edge, a sheet number and a title block. Tools keep the drawing's meaning without its frame, and a front page
+with a 2 px edge and a sheet number, and its footer line names it. Tools keep the drawing's meaning without its frame, and a front page
 leads with the product's own work. At every level, lines mean what they mean on a drawing (solid measured, dashed
 predicted, chain for references, hatch for the unavailable). They show their working and say how far to trust it. They're
 built for a launch field: offline, readable in sun, operable with gloves. Color that means something is rare and follows the
@@ -68,7 +68,7 @@ https://github.com/nrdptel/fusionspace-design/tree/main/product
 - Principles and foundations apply to everything; also read <web.md | cli.md | mobile.md | watch.md | desktop.md | embedded.md | hardware.md | rockets.md>.
 - Colors, type and spacing come from product/tokens/ (copied into <path>); no other colors.
 - Names: internal <Star> (FS-<STAR>), in project <Constellation> (FS-<CON>); external <the star's name, or its own>.
-- Designation: FS-<STAR> · <TAG> · <KIND> 00n. Show it after the external name, with the version, in the title block / about screen.
+- Designation: FS-<STAR> · <TAG> · <KIND> 00n. Show it after the external name, with the version, in the footer line / about screen.
 - Run the checklist in product/review.md before each release.
 ```
 
