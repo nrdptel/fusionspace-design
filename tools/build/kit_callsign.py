@@ -18,8 +18,9 @@ from kit_product import THEME_SWITCH, THEME_JS, status, note, foot
 D = "tools/callsign"
 SRC = os.path.join(build.SRC, "callsign")
 DATE = "2026-10-06"                                         # date of issue of this version (1.1.1: internal name Cervantes, project Ara)
-FONTS = (("Archivo", 400, "Archivo-Regular"), ("Archivo", 600, "Archivo-SemiBold"),
-         ("Cascadia Mono", 400, "CascadiaMono-Regular"), ("Cascadia Mono", 600, "CascadiaMono-SemiBold"))
+FONTS = (("Archivo", 400, "Archivo-Regular", ""), ("Archivo", 600, "Archivo-SemiBold", ""),
+         ("Archivo", 640, "Archivo-WideSemiBold", "118%"),     # headings: Archivo's wide cut, as fonts.css declares it
+         ("Cascadia Mono", 400, "CascadiaMono-Regular", ""), ("Cascadia Mono", 600, "CascadiaMono-SemiBold", ""))
 
 def _module():
     spec = importlib.util.spec_from_file_location("callsign_src", os.path.join(SRC, "callsign.py"))
@@ -32,9 +33,9 @@ def _script_json(obj):
 
 def _fonts():
     faces = []
-    for fam, w, stem in FONTS:
+    for fam, w, stem, stretch in FONTS:
         data = base64.b64encode(open(os.path.join(build.OUT, "product/web/fonts", stem + ".woff2"), "rb").read()).decode()
-        faces.append(f"@font-face{{font-family:'{fam}';font-style:normal;font-weight:{w};font-display:swap;"
+        faces.append(f"@font-face{{font-family:'{fam}';font-style:normal;font-weight:{w};{f'font-stretch:{stretch};' if stretch else ''}font-display:swap;"
                      f"src:url(data:font/woff2;base64,{data}) format('woff2')}}")
     faces.append("@font-face{font-family:'Archivo Fallback';src:local('Arial');size-adjust:101%}")
     faces.append("@font-face{font-family:'Cascadia Mono Fallback';src:local('Menlo'),local('Consolas');size-adjust:100%}")

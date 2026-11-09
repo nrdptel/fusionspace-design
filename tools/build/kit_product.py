@@ -494,20 +494,43 @@ def example_flight(seed=7):
     meas["events"]["liftoff"] = 0.0; pred["events"]["liftoff"] = 0.0
     return pred, meas
 
-def chart_svg(pred, meas, width=880, standalone_theme=None, title="Altitude, speed and acceleration against time"):
-    """Stacked panels with one time axis (product/data.md): altitude (measured solid ink, predicted dashed Nebula with a
-    hatched +/- band), vertical speed, acceleration. Events are dotted lines with numbered balloons. With standalone_theme,
-    colors are written in (for PNG previews); otherwise the classes in fusionspace.css color it."""
+_FACES = {}
+def text_width(text, size=12, face="Regular"):
+    """How wide text sets in Archivo at size px, measured from the font itself: for plates and fits in drawings made
+    without a browser."""
+    from PIL import ImageFont
+    if (face, size) not in _FACES:
+        _FACES[face, size] = ImageFont.truetype(os.path.join(build.ROOT, "type", "fonts", f"Archivo-{face}.ttf"), size)
+    return _FACES[face, size].getlength(text)
+
+def _thin(t, v, px):
+    """A trace's points for a drawing px wide: the first, lowest and highest point in each pixel column, in order, so a
+    short spike (the main's opening shock) survives however narrow the drawing is."""
     import numpy as np
-    left, right, top = 56, 16, 64
+    col = np.floor(np.asarray(t) / t[-1] * px).astype(int)
+    keep = []
+    for c in np.unique(col):
+        i = np.nonzero(col == c)[0]
+        keep += sorted({int(i[0]), int(i[np.argmin(v[i])]), int(i[np.argmax(v[i])])})
+    return keep
+
+CHART_WIDTHS = (("0", 288), ("440", 440), ("640", 640), ("880", 880))   # .fs-chart-set in components.css shows each from its width
+def chart_svg(pred, meas, width=880, standalone_theme=None, title="Altitude, speed and acceleration against time", attrs=""):
+    """Stacked panels with one time axis (product/data.md): altitude (measured solid ink, predicted dashed Nebula with a
+    hatched +/- band), vertical speed, acceleration. Events are dotted lines with numbered balloons. Drawn for `width`
+    px: its words are 12 px when it's shown at that width (chart_set() puts several widths in one figure). With
+    standalone_theme, colors are written in (for PNG previews); otherwise the classes in fusionspace.css color it."""
+    import numpy as np
+    left, right, top = 56, 16, 86     # the balloons' row, then room for a leader to bend above the first panel's title
     ph, gap = [190, 120, 120], 40
     height = top + sum(ph) + gap * (len(ph) - 1) + 40
     tmax = max(meas["t"][-1], pred["t"][-1]) * 1.02
-    X = lambda t: left + (width - left - right) * t / tmax
-    o = [f'<svg class="fs-chart" viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="{title}">']
+    pw = width - left - right
+    X = lambda t: left + pw * t / tmax
+    o = [f'<svg class="fs-chart" viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="{title}"{attrs}>']
     if standalone_theme:
         c = lambda r: role(r, standalone_theme)
-        o.append("<style>" + f"text{{fill:{c('ink-muted')};font:12px 'Cascadia Mono',monospace}} .t-ink{{fill:{c('ink')};paint-order:stroke;stroke:{c('canvas')};stroke-width:4px;stroke-linejoin:round}} .grid{{stroke:{c('rule')};stroke-width:1}} "
+        o.append("<style>" + f"text{{fill:{c('ink-muted')};font:12px Archivo,sans-serif;font-variant-numeric:tabular-nums}} .t-ink{{fill:{c('ink')};paint-order:stroke;stroke:{c('canvas')};stroke-width:4px;stroke-linejoin:round}} .plate{{fill:{c('canvas')}}} .grid{{stroke:{c('rule')};stroke-width:1}} "
                  f".axis{{stroke:{c('rule-strong')};stroke-width:1}} .measured{{fill:none;stroke:{c('ink')};stroke-width:2;stroke-linejoin:round}} "
                  f".predicted{{fill:none;stroke:{c('predicted')};stroke-width:2;stroke-dasharray:8 4}} .band{{fill:{c('predicted')};fill-opacity:.10}} "
                  f".reference{{fill:none;stroke:{c('ink-muted')};stroke-width:1;stroke-dasharray:24 3 1 3}} .event{{stroke:{c('ink-muted')};stroke-width:1;stroke-dasharray:1 3}} "
@@ -523,10 +546,10 @@ def chart_svg(pred, meas, width=880, standalone_theme=None, title="Altitude, spe
         x = X(ev[k]); bx = x
         while any(abs(bx - p) < 26 for p in placed): bx += 26
         placed.append(bx)
-        o.append(f'<line class="event" x1="{x:.1f}" y1="{y0 - (4 if bx != x else 39)}" x2="{x:.1f}" y2="{y1}"/>')
-        if bx != x: o.append(f'<line class="event" x1="{x:.1f}" y1="{y0 - 4}" x2="{bx:.1f}" y2="{y0 - 39}"/>')
-        o.append(f'<g class="balloon"><circle cx="{bx:.1f}" cy="{y0 - 48}" r="11"/><text x="{bx:.1f}" y="{y0 - 43.8}">{i + 1}</text></g>')
-    panels = [("ALTITUDE · ft AGL", "alt", True), ("VERTICAL SPEED · ft/s", "vel", False), ("ACCELERATION · g", "acc", False)]
+        o.append(f'<line class="event" x1="{x:.1f}" y1="{y0 - (30 if bx != x else 59)}" x2="{x:.1f}" y2="{y1}"/>')
+        if bx != x: o.append(f'<line class="event" x1="{x:.1f}" y1="{y0 - 30}" x2="{bx:.1f}" y2="{y0 - 59}"/>')
+        o.append(f'<g class="balloon"><circle cx="{bx:.1f}" cy="{y0 - 70}" r="11"/><text x="{bx:.1f}" y="{y0 - 65.8}">{i + 1}</text></g>')
+    panels = [("Altitude · ft AGL", "alt", True), ("Vertical speed · ft/s", "vel", False), ("Acceleration · g", "acc", False)]
     y = top
     for (label, key, with_pred), h in zip(panels, ph):
         vals = np.concatenate([meas[key], pred[key]]) if with_pred else meas[key]
@@ -535,7 +558,9 @@ def chart_svg(pred, meas, width=880, standalone_theme=None, title="Altitude, spe
         span = hi - lo; step = 10 ** math.floor(math.log10(span / 3)); step *= 5 if span / step > 15 else 2 if span / step > 7 else 1
         lo = math.floor(lo / step) * step; hi = math.ceil(hi / step) * step
         Y = lambda v, lo=lo, hi=hi, y=y, h=h: y + h - h * (v - lo) / (hi - lo)
-        o.append(f'<text x="{left}" y="{y - 12}" class="t-ink">{label}</text>')
+        tail = []   # drawn after the grid and data: the panel's title on a plate, so the event lines crossing it part around it
+        tail.append(f'<rect class="plate" x="{left - 2}" y="{y - 25}" width="{text_width(label) + 6:.1f}" height="18"/>')
+        tail.append(f'<text x="{left}" y="{y - 12}" class="t-ink">{label}</text>')
         v = lo
         while v <= hi + 1e-9:
             o.append(f'<line class="grid" x1="{left}" x2="{width - right}" y1="{Y(v):.1f}" y2="{Y(v):.1f}"/>')
@@ -546,23 +571,31 @@ def chart_svg(pred, meas, width=880, standalone_theme=None, title="Altitude, spe
         o.append(f'<line class="axis" x1="{left}" x2="{left}" y1="{y}" y2="{y + h}"/>')
         if with_pred:
             t = pred["t"]; p = pred[key]; band = 0.04 * p + 8
-            up = " ".join(f"{X(a):.1f},{Y(b):.1f}" for a, b in zip(t[::10], (p + band)[::10]))
-            dn = " ".join(f"{X(a):.1f},{Y(b):.1f}" for a, b in zip(t[::10][::-1], (p - band)[::10][::-1]))
+            k_ = _thin(t, p, pw // 2)
+            up = " ".join(f"{X(t[i]):.1f},{Y(p[i] + band[i]):.1f}" for i in k_)
+            dn = " ".join(f"{X(t[i]):.1f},{Y(p[i] - band[i]):.1f}" for i in k_[::-1])
             o.append(f'<polygon class="band" points="{up} {dn}"/>')
-            o.append('<polyline class="predicted" points="' + " ".join(f"{X(a):.1f},{Y(b):.1f}" for a, b in zip(t[::5], p[::5])) + '"/>')
+            o.append('<polyline class="predicted" points="' + " ".join(f"{X(t[i]):.1f},{Y(p[i]):.1f}" for i in _thin(t, p, pw)) + '"/>')
         t = meas["t"]; m = meas[key]
-        o.append('<polyline class="measured" points="' + " ".join(f"{X(a):.1f},{Y(b):.1f}" for a, b in zip(t[::5], m[::5])) + '"/>')
+        o.append('<polyline class="measured" points="' + " ".join(f"{X(t[i]):.1f},{Y(m[i]):.1f}" for i in _thin(t, m, pw)) + '"/>')
+        o += tail
         y += h + gap
     yb = y - gap
     o.append(f'<line class="axis" x1="{left}" x2="{width - right}" y1="{yb}" y2="{yb}"/>')
-    tstep = 10 if tmax > 60 else 5
+    # time ticks at least 44 px apart, so three-digit times keep a gap between them
+    tstep = next(s_ for s_ in (5, 10, 20, 25, 50, 100) if pw * s_ / tmax >= 44)
     tt = 0
     while tt <= tmax:
         o.append(f'<line class="axis" x1="{X(tt):.1f}" x2="{X(tt):.1f}" y1="{yb}" y2="{yb + 4}"/><text x="{X(tt):.1f}" y="{yb + 17}" text-anchor="middle">{tt}</text>')
         tt += tstep
-    o.append(f'<text x="{width - right}" y="{yb + 34}" text-anchor="end">TIME SINCE LIFTOFF · s</text>')
+    o.append(f'<text x="{width - right}" y="{yb + 34}" text-anchor="end">Time since liftoff · s</text>')
     o.append("</svg>")
     return "\n".join(o)
+
+def chart_set(pred, meas, title="Altitude, speed and acceleration against time"):
+    """The chart drawn at each of CHART_WIDTHS, in a .fs-chart-set that shows the one made nearest the width it has."""
+    return ('<div class="fs-chart-set">' + "".join(chart_svg(pred, meas, width=w, title=title, attrs=f' data-from="{f}"') for f, w in CHART_WIDTHS)
+            + "</div>")
 
 # ================================================================ 5. web reference: stylesheet, fonts, specimen, examples
 import kit_icons
@@ -780,25 +813,26 @@ def specimen(contrast_rows):
     # 1 color
     def sw(h, label=""):
         return f'<span style="display:inline-block;width:28px;height:20px;background:{h};border:1px solid var(--fs-rule);vertical-align:middle"></span> <code>{h}</code>{label}'
-    rows = ""
+    rows = []
     for name, l, d, fld, use in ROLES:
         cr = lambda t: contrast(role(name, t), role("canvas", t))
         ratios = "—" if name in ("canvas", "surface", "on-action") else f"{cr('light'):.1f} · {cr('dark'):.1f} · {cr('field'):.1f}"
-        rows += (f'<tr><td style="white-space:nowrap"><code>--fs-{name}</code></td><td>{sw(l)}</td><td>{sw(d)}</td><td>{sw(fld)}</td>'
-                 f'<td class="n">{ratios}</td><td class="fs-small">{use}</td></tr>')
-    roles = (f'<div class="fs-table-wrap"><table class="fs-table"><caption>Semantic roles. Contrast is against the canvas of the same theme '
-             f'(WCAG 2 ratio, light · dark · field). Use roles in code, never hex values.</caption><thead><tr><th>Role</th><th>Light</th><th>Dark</th><th>Field</th>'
-             f'<th class="n">Contrast</th><th>Use</th></tr></thead><tbody>{rows}</tbody></table></div>')
+        rows.append([(f'<code>--fs-{name}</code>', "", 'style="white-space:nowrap" data-wide'), (sw(l), ""), (sw(d), ""), (sw(fld), ""),
+                     (ratios, "n"), (use, "fs-small", "data-wide")])
+    roles = stacked("Semantic roles. Contrast is against the canvas of the same theme (WCAG 2 ratio, light · dark · field). Use roles in code, never hex values.",
+                    [("Role", False), ("Light", False), ("Dark", False), ("Field", False), ("Contrast", True), ("Use", False)], rows)
     chips = " ".join([status("danger", "Armed"), status("caution", "Near limit"), status("ok", "Cont", "continuity"), status("info", "Advisory"),
                       status("off", "Not used"), status("stale", 'Stale · <span class="u">4 h</span>'), status("predicted", "Simulated")])
-    sig = "".join(f'<tr><td><b>{n}</b></td><td>{SIGNALS[k][1]}</td><td>{sw(SIGNALS[k][2]) if SIGNALS[k][2] else "none: data only"}</td>'
-                  f'<td>{sw(SIGNALS[k][4])}</td><td>{sw(SIGNALS[k][5])}</td></tr>' for k, n in SIGNAL_NAMES.items())
-    ramps = "".join(f'<div class="fs-stack" style="gap:6px"><span class="fs-label">{k} · {" → ".join(v)}</span><div style="display:flex;height:20px;border:1px solid var(--fs-rule)">'
+    sig = stacked("The four signal colors. Each is a fill for chips and notes, and an ink for text and lines on each theme.",
+                  [("Name", False), ("Means", False), ("Fill (every theme)", False), ("Ink on light", False), ("Ink on dark", False)],
+                  [[(f"<b>{n}</b>", "", "data-wide"), (SIGNALS[k][1], "", "data-wide"), (sw(SIGNALS[k][2]) if SIGNALS[k][2] else "none: data only", ""),
+                    (sw(SIGNALS[k][4]), ""), (sw(SIGNALS[k][5]), "")] for k, n in SIGNAL_NAMES.items()])
+    ramps = "".join(f'<div class="fs-stack" style="gap:6px"><span class="fs-label">{k.capitalize()} · {" → ".join(v)}</span><div style="display:flex;height:20px;border:1px solid var(--fs-rule)">'
                     + "".join(f'<span style="flex:1;background:{SPECTRAL[c]}"></span>' for c in v) + "</div></div>" for k, v in RAMPS.items())
     s1 = (f'<p>Two kinds of color that never mix. <b>Brand</b> (the gradient, the spectral classes, the two-tone cones) says who made it. '
           f'<b>Signal</b> (four reserved colors) says what state something is in, and appears only when there is something to say. '
           f'The gradient is never a status, a button or a data scale.</p>{roles}'
-          f'<h3>Signal colors</h3><div class="fs-table-wrap"><table class="fs-table"><thead><tr><th>Name</th><th>Means</th><th>Fill (every theme)</th><th>Ink on light</th><th>Ink on dark</th></tr></thead><tbody>{sig}</tbody></table></div>'
+          f'<h3>Signal colors</h3>{sig}'
           f'<div class="fs-row">{chips}</div><p class="fs-small fs-muted">Every chip has a word and a shape as well as a color. Danger is light text on deep red and caution is dark text on amber: '
           f'the polarity differs, so they stay apart for every kind of color vision and in grayscale.</p>'
           f'<h3>Data ramps</h3><div class="fs-grid">{ramps}</div><p class="fs-small fs-muted">From the spectral classes. Cool and warm are sequential; O to M through F is diverging. '
@@ -811,29 +845,38 @@ def specimen(contrast_rows):
                 ("readout", "28/32", "5,104 ft AGL", "A headline value"), ("readout-l", "40/44", "1.15 g", "The value a screen exists to show"),
                 ("code", "14/20", "FS-VEGA-001 rev B", "Code, commands, file names, part numbers")]
     wide = ("subtitle", "title", "display")
-    trs = "".join(f'<tr><td><code>{n}</code></td><td class="n">{sz}</td><td style="font:var(--fs-type-{n});font-stretch:{"var(--fs-head-stretch)" if n in wide else "normal"}">{sample}</td>'
-                  f'<td class="fs-small fs-muted">{use}</td></tr>' for n, sz, sample, use in WEB_TYPE)
+    types = stacked("The web's type tokens, each set in its own style.", [("Token", False), ("px", True), ("Sample", False), ("Use", False)],
+                    [[(f"<code>{n}</code>", "", 'style="white-space:nowrap"'), (sz, "n"),
+                      (f'<span style="font:var(--fs-type-{n});font-stretch:{"var(--fs-head-stretch)" if n in wide else "normal"}">{sample}</span>', "", "data-wide"),
+                      (use, "fs-small fs-muted", "data-wide")] for n, sz, sample, use in WEB_TYPE])
     s2 = (f'<p>One voice on every page: headings in Archivo&#39;s wide cut, labels, controls and prose in Archivo, and Cascadia Mono for anything you read as data: '
           f'numbers, units, codes, readouts. A record&#39;s sheet numbers keep the drawing&#39;s lettering, Cascadia Mono in capitals, '
           f'and so do state words (ARMED, SAFE). The sizes below are the web&#39;s; the platform tokens keep the drawing scale for now.</p>'
-          f'<div class="fs-table-wrap"><table class="fs-table"><thead><tr><th>Token</th><th class="n">px</th><th>Sample</th><th>Use</th></tr></thead><tbody>{trs}</tbody></table></div>'
+          f'{types}'
           + SPECIMEN_MATH)
-    # 3 lines
-    def ln(y, cls, label, extra=""):
-        return f'<line x1="0" x2="300" y1="{y}" y2="{y}" class="{cls}" {extra}/><text x="316" y="{y + 4}">{label}</text>'
-    lines = (f'<svg class="fs-chart" viewBox="0 0 720 300" role="img" aria-label="Line types">'
-             '<defs><pattern id="fs-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><line x1="0" y1="0" x2="0" y2="6" class="hatch-line"/></pattern></defs>'
-             + ln(16, "measured", "THICK 2 px · measured data, outlines, the sheet edge")
-             + ln(46, "axis", "THIN 1 px · axes, control borders", 'style="stroke:var(--fs-ink)"')
-             + ln(76, "predicted", "DASHED 8 4 · predicted, simulated, forecast")
-             + ln(106, "reference", "CHAIN 24 3 1 3 · references: ground, rail, limits, center lines")
-             + ln(136, "event", "DOTTED 1 3 · events, with a numbered balloon")
-             + '<rect x="0" y="160" width="300" height="40" class="hatch-fill" style="stroke:var(--fs-rule-strong)"/><text x="316" y="184">HATCH 45° · unavailable, out of range, uncertain</text>'
-             + '<g class="balloon"><circle cx="12" cy="236" r="9"/><text x="12" y="239.5">3</text></g><line x1="21" y1="236" x2="60" y2="236" class="axis" style="stroke:var(--fs-ink)"/>'
-             + '<line x1="60" y1="236" x2="88" y2="264" class="axis" style="stroke:var(--fs-ink)"/><circle cx="88" cy="264" r="2.5" style="fill:var(--fs-ink)"/>'
-             + '<text x="316" y="240">BALLOON + LEADER · a dot on a surface, an arrow on an edge</text>'
-             + '<line x1="0" y1="284" x2="300" y2="284" class="axis" style="stroke:var(--fs-ink)"/><line x1="0" y1="276" x2="0" y2="292" class="axis" style="stroke:var(--fs-ink)"/><line x1="300" y1="276" x2="300" y2="292" class="axis" style="stroke:var(--fs-ink)"/>'
-             + '<text x="150" y="278" text-anchor="middle" class="t-ink">300 px</text><text x="316" y="288">DIMENSION · extension lines, value above the line</text></svg>')
+    # 3 lines: each line type drawn beside its name and use. The words are the page's text, so they keep their size at
+    # every width; the samples are drawn in px (no viewBox), so a dash is the length it's meant to be.
+    def sample(svg, h=24):
+        return f'<svg class="fs-chart" width="100%" height="{h}" aria-hidden="true" focusable="false">{svg}</svg>'
+    def row(drawing, name, use):
+        return f'<div class="fs-line-row">{drawing}<p><b>{name}</b> · {use}</p></div>'
+    ln = lambda cls, extra="": sample(f'<line x1="0" x2="100%" y1="12" y2="12" class="{cls}" {extra}/>')
+    lines = ('<div class="fs-line-rows">'
+             + row(ln("measured"), "Thick, 2 px", "measured data, outlines, the sheet edge")
+             + row(ln("axis", 'style="stroke:var(--fs-ink)"'), "Thin, 1 px", "axes, control borders")
+             + row(ln("predicted"), "Dashed, 8 4", "predicted, simulated, forecast")
+             + row(ln("reference"), "Chain, 24 3 1 3", "references: ground, rail, limits, center lines")
+             + row(ln("event"), "Dotted, 1 3", "events, with a numbered balloon")
+             + row(sample('<defs><pattern id="fs-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><line x1="0" y1="0" x2="0" y2="6" class="hatch-line"/></pattern></defs>'
+                          '<rect x="0.5" y="0.5" width="99%" height="39" class="hatch-fill" style="stroke:var(--fs-rule-strong)"/>', 40),
+                   "Hatch, 45°", "unavailable, out of range, uncertain")
+             + row(sample('<g class="balloon"><circle cx="12" cy="12" r="9"/><text x="12" y="15.5">3</text></g><line x1="21" y1="12" x2="60" y2="12" class="axis" style="stroke:var(--fs-ink)"/>'
+                          '<line x1="60" y1="12" x2="84" y2="36" class="axis" style="stroke:var(--fs-ink)"/><circle cx="84" cy="36" r="2.5" style="fill:var(--fs-ink)"/>', 40),
+                   "Balloon and leader", "a dot on a surface, an arrow on an edge")
+             + row(sample('<line x1="0.5" y1="30" x2="200.5" y2="30" class="axis" style="stroke:var(--fs-ink)"/><line x1="0.5" y1="22" x2="0.5" y2="38" class="axis" style="stroke:var(--fs-ink)"/>'
+                          '<line x1="200.5" y1="22" x2="200.5" y2="38" class="axis" style="stroke:var(--fs-ink)"/><text x="100.5" y="24" text-anchor="middle" class="t-ink">200 px</text>', 40),
+                   "Dimension", "extension lines, the value above the line")
+             + "</div>")
     s3 = (f'<p>Lines carry meaning the way they do on a drawing (ISO 128): two widths in a 1 : 2 ratio, and a line type for each kind of information. '
           f'A predicted value is always dashed as well as colored, so it survives printing in black.</p>{lines}')
     # 4 controls
@@ -854,15 +897,17 @@ def specimen(contrast_rows):
     pred, meas = example_flight()
     ev = meas["events"]; ap = float(meas["alt"].max()); pap = float(pred["alt"].max())
     s5 = (f'<div class="fs-readouts">{readout("Apogee · measured", num(ap), "ft AGL", "Barometric, from the flight log")}'
-          f'{readout("Apogee · predicted", num(pap), "ft AGL", f"±{num(0.04 * pap + 8)} ft, hpr-sim 0.9 · −{(1 - ap / pap) * 100:.1f}% vs measured", "predicted")}'
+          f'{readout("Apogee · predicted", num(pap), "ft AGL", f"±{num(0.04 * pap + 8)} ft, HPR Sim 0.1 · −{(1 - ap / pap) * 100:.1f}% vs measured", "predicted")}'
           f'{readout("Max speed", num(float(meas["vel"].max())), "ft/s", "Mach 0.58 at 1.8 s")}'
           f'{readout("Main at", num(700), "ft AGL", "Set 700 ft, fired at 71.3 s")}</div>'
-          f'{chart_svg(pred, meas)}'
-          f'<div class="fs-table-wrap"><table class="fs-table"><caption>Events. Times from liftoff; altitudes above the pad.</caption><thead><tr><th></th><th>Event</th><th class="n">Time · s</th><th class="n">Altitude · ft AGL</th><th>Source</th></tr></thead><tbody>'
-          + "".join(f'<tr><td><span class="fs-balloon">{i + 1}</span></td><td>{n}</td><td class="n">{ev[k]:.2f}</td><td class="n">{num(0.0 if k in ("liftoff", "landing") else float(meas["alt"][min(len(meas["alt"]) - 1, int(ev[k] / 0.01))]))}</td><td class="fs-small fs-muted">{src}</td></tr>'
-                    for i, (k, n, src) in enumerate([("liftoff", "Liftoff", "Accelerometer"), ("burnout", "Burnout", "Accelerometer"), ("apogee", "Apogee", "Barometer"),
-                                                     ("drogue", "Drogue out", "Channel 1 fired"), ("main", "Main out", "Channel 2 fired"), ("landing", "Landing", "Barometer, still for 2 s")]))
-          + '</tbody></table></div>')
+          f'{chart_set(pred, meas)}'
+          + stacked("Events. Times from liftoff; altitudes above the pad.",
+                    [("Event", False), ("Time · s", True), ("Altitude · ft AGL", True), ("Source", False)],
+                    [[(f'<span class="fs-event"><span class="fs-balloon">{i + 1}</span>{n}</span>', "", "data-wide"), (f"{ev[k]:.2f}", "n"),
+                      (num(0.0 if k in ("liftoff", "landing") else float(meas["alt"][min(len(meas["alt"]) - 1, int(ev[k] / 0.01))])), "n"),
+                      (src, "fs-small fs-muted", "data-wide")]
+                     for i, (k, n, src) in enumerate([("liftoff", "Liftoff", "Accelerometer"), ("burnout", "Burnout", "Accelerometer"), ("apogee", "Apogee", "Barometer"),
+                                                      ("drogue", "Drogue out", "Channel 1 fired"), ("main", "Main out", "Channel 2 fired"), ("landing", "Landing", "Barometer, still for 2 s")])]))
     # 6 status and notes
     s6 = (f'<div class="fs-grid">{note("note", "Note", "<p>Times are from liftoff, detected when acceleration first passed 3 g.</p>")}'
           f'{note("caution", "Caution", "<p>Ground-test this charge before you fly it. The estimate assumes a sealed bay.</p>")}'
@@ -877,7 +922,7 @@ def specimen(contrast_rows):
           f'<span class="fs-label">Waiting for GPS fix</span><div class="fs-progress" data-indeterminate><span></span></div></div>'
           f'<div class="fs-empty"><span class="fs-label">No flight loaded</span><span>Drop a log file here, or pick one.</span><button class="fs-btn" data-variant="secondary">Choose file</button></div>')
     # 7 icons
-    icons = "".join(f'<div style="display:grid;gap:6px;justify-items:center;padding:12px 4px;border:1px solid var(--fs-rule)">{kit_icons.inline(n, "")[:4]} width="24" height="24"{kit_icons.inline(n, "")[4:]}<span class="fs-small fs-muted" style="font:12px/16px var(--fs-font-mono)">{n}</span></div>'
+    icons = "".join(f'<div style="display:grid;gap:6px;justify-items:center;padding:12px 4px;border:1px solid var(--fs-rule)">{kit_icons.inline(n, "")[:4]} width="24" height="24"{kit_icons.inline(n, "")[4:]}<span class="fs-small fs-muted" style="font:12px/16px var(--fs-font-mono);text-align:center">{n}</span></div>'
                     for g, ns in kit_icons.GROUPS for n in ns)
     s7 = (f'<p>{len(kit_icons.ICONS)} icons on a 24 px grid: 1.5 px strokes, square ends, 45° and 90° angles, drawn from the real objects. '
           f'Files in <code>product/icons/</code>: one SVG each, <code>sprite.svg</code>, and Android vector drawables.</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px">{icons}</div>')
@@ -907,7 +952,7 @@ def specimen(contrast_rows):
             + sheet(1, T, "Color", s1) + sheet(2, T, "Type", s2) + sheet(3, T, "Lines", s3) + sheet(4, T, "Controls", s4)
             + sheet(5, T, "Data", s5) + sheet(6, T, "Status and notes", s6) + sheet(7, T, "Icons", s7) + sheet(8, T, "Levels", s9) + sheet(9, T, "Footer", s8)
             + recordfoot("Product system specimen", "FS · SPEC 001", [f"Rev {REV}", "2026-10-13", "Units: px, ms"], "off", "In preparation", "edit"))
-    return page("Specimen · FusionSpace product system", body, example=True, desc="The FusionSpace product system: color, type, lines, controls, data, status, icons.")
+    return page("Specimen · FusionSpace product system", body, desc="The FusionSpace product system: color, type, lines, controls, data, status, icons.")
 
 TOOLS = [  # the drawing register on the example home page: (designation, name, what it is, status, where)
     ("FS · SW · TOOL 001", "HPR Motor Finder", "AeroTech, Cesaroni and Loki motor stock and pricing across major U.S. vendors.", "RELEASED", "motor.fusionspace.co"),
@@ -916,13 +961,15 @@ TOOLS = [  # the drawing register on the example home page: (designation, name, 
     ("FS · SW · TOOL 004", "Muster", "Motor-hardware compatibility: every reload a case flies, and what it needs.", "RELEASED", "muster.fusionspace.co"),
 ]
 def ex_home():
-    rows = "".join(f'<tr><td style="white-space:nowrap"><span class="fs-mono fs-small">{d}</span></td><td><a href="#"><b>{n}</b></a><div class="fs-small fs-muted">{w}</div></td>'
-                   f'<td>{status("ok", "Released", "check") if s == "RELEASED" else status("off", "In preparation", "edit")}</td><td class="fs-mono fs-small">{u}</td></tr>' for d, n, w, s, u in TOOLS)
+    register = stacked("Every tool, numbered like a drawing. Released tools are maintained; in preparation means usable but changing.",
+                       [("No.", False), ("Title", False), ("Status", False), ("Where", False)],
+                       [[(d, "fs-mono fs-small"), (f'<a href="#"><b>{n}</b></a><div class="fs-small fs-muted">{w}</div>', "", "data-wide data-lead"),
+                         (status("ok", "Released", "check") if s == "RELEASED" else status("off", "In preparation", "edit"), ""),
+                         (u, "fs-mono fs-small")] for d, n, w, s, u in TOOLS])
     body = (f'<section class="fs-intro"><h1>Free tools for high‑power rocketry.</h1>'
             f'<p class="fs-lead">Free and open source. Each tool shows its working, says how far to trust it, and works offline at the field.</p>'
             f'<div class="fs-row"><a class="fs-btn" href="#register">See the tools</a><a class="fs-btn" data-variant="secondary" href="#">Source on GitHub {ico("external", "")}</a></div></section>'
-            + sheet(1, 2, "Register", f'<div class="fs-table-wrap" id="register"><table class="fs-table"><caption>Every tool, numbered like a drawing. Released tools are maintained; in preparation means usable but changing.</caption>'
-                    f'<thead><tr><th>No.</th><th>Title</th><th>Status</th><th>Where</th></tr></thead><tbody>{rows}</tbody></table></div>')
+            + sheet(1, 2, "Register", register)
             + sheet(2, 2, "Principles", '<dl class="fs-stack">'
                     + "".join(f'<div style="border-top:1px solid var(--fs-rule);padding-top:12px;display:grid;gap:4px"><dt><h3>{h}</h3></dt><dd style="margin:0">{t}</dd></div>' for h, t in (
                         ("Shows its working", "Every formula, constant and source is one click away. No black boxes."),
@@ -948,10 +995,13 @@ def part(name, body, step=None):
     n = f'<span class="fs-step">{step}</span>' if step else ""
     return f'<section class="fs-part" id="{pid}" aria-labelledby="{pid}-h"><h2 id="{pid}-h">{n}{name}</h2>{body}</section>'
 def stacked(caption, heads, rows):
-    """A table that stacks on a phone: each cell carries its column's name (fs-cell-label), shown only when stacked."""
+    """A table that stacks on a phone: each cell carries its column's name (fs-cell-label), shown only when stacked. A
+    cell is (value, class) or (value, class, attributes): data-wide takes a stacked row's full width, data-lead puts the
+    cell first in it."""
     th = "".join(f'<th{" class=\"n\"" if n else ""}>{h}</th>' for h, n in heads)
-    tb = "".join("<tr>" + "".join(f'<td{" class=\"" + c + "\"" if c else ""}><span class="fs-cell-label" aria-hidden="true">{heads[k][0]}</span>{v}</td>'
-                                  for k, (v, c) in enumerate(r)) + "</tr>" for r in rows)
+    tb = "".join("<tr>" + "".join(f'<td{" class=\"" + cell[1] + "\"" if cell[1] else ""}{" " + cell[2] if len(cell) > 2 else ""}>'
+                                  f'<span class="fs-cell-label" aria-hidden="true">{heads[k][0]}</span>{cell[0]}</td>'
+                                  for k, cell in enumerate(r)) + "</tr>" for r in rows)
     return f'<div class="fs-table-wrap"><table class="fs-table" data-stack><caption>{caption}</caption><thead><tr>{th}</tr></thead><tbody>{tb}</tbody></table></div>'
 
 def ex_charge():
@@ -981,7 +1031,7 @@ def ex_charge():
               f'{note("trust", "How far to trust it", f"<p>An ideal-gas estimate. Real bays leak and real powder varies, so the charge that separates on the ground is the one to fly. In the log below, that took {1.20 / g * 100:.0f}% of the estimate.</p>")}'
               f'{note("caution", "Caution", "<p>Ground-test before every first flight, and after any change to the bay, pins or powder.</p>")}</div>')
     log = stacked("Your bench log, kept in this browser. It prints with the flight card.",
-                  [("Date", False), ("Charge, g", True), ("Of the estimate", True), ("Result", False), ("Note", False)],
+                  [("Date", False), ("Charge · g", True), ("Of the estimate", True), ("Result", False), ("Note", False)],
                   [[("2026-09-12", "fs-mono"), ("1.00", "n"), (f"{1.00 / g * 100:.0f}%", "n"), (status("caution", "Partial", "caution"), ""), ("Nose cone moved 2 in, chute stayed in.", "fs-small")],
                    [("2026-09-12", "fs-mono"), ("1.20", "n"), (f"{1.20 / g * 100:.0f}%", "n"), (status("ok", "Separated", "ok"), ""), ("Full separation, shock cord taut.", "fs-small")],
                    [("2026-09-19", "fs-mono"), ("1.20", "n"), (f"{1.20 / g * 100:.0f}%", "n"), (status("ok", "Separated", "ok"), ""), ("Repeat with flight pins.", "fs-small")]])
@@ -995,17 +1045,18 @@ def ex_flight_report():
     """A flight report for the example project's flight computer: readouts, the stacked chart, channels, the source."""
     pred, meas = example_flight(); ev = meas["events"]
     ap, pap = float(meas["alt"].max()), float(pred["alt"].max())
-    chan = (f'<div class="fs-table-wrap"><table class="fs-table"><thead><tr><th>Channel</th><th>Set to</th><th>Continuity</th><th>Fired</th><th class="n">At · s</th><th class="n">At · ft AGL</th></tr></thead><tbody>'
-            f'<tr><td class="fs-mono">1 · DROGUE</td><td>Apogee + 0.4 s</td><td>{status("ok", "Cont", "continuity")}</td><td>{status("ok", "Fired", "check")}</td><td class="n">{ev["drogue"]:.2f}</td><td class="n">{num(ap)}</td></tr>'
-            f'<tr><td class="fs-mono">2 · MAIN</td><td>700 ft descending</td><td>{status("ok", "Cont", "continuity")}</td><td>{status("ok", "Fired", "check")}</td><td class="n">{ev["main"]:.2f}</td><td class="n">{num(700)}</td></tr>'
-            f'<tr><td class="fs-mono">3 · —</td><td class="fs-muted">Not used</td><td>{status("off", "Not used")}</td><td>{status("off", "Not used")}</td><td class="n fs-muted">—</td><td class="n fs-muted">—</td></tr></tbody></table></div>'
-            '<p class="fs-small fs-muted">An unused channel is gray and says so. Red is only for a real fault, so a fault is never lost among false alarms.</p>')
+    chan = (stacked("Channels as the flight computer reported them after landing.",
+                    [("Channel", False), ("Set to", False), ("Continuity", False), ("Fired", False), ("At · s", True), ("At · ft AGL", True)],
+                    [[("1 · DROGUE", "fs-mono"), ("Apogee + 0.4 s", ""), (status("ok", "Cont", "continuity"), ""), (status("ok", "Fired", "check"), ""), (f'{ev["drogue"]:.2f}', "n"), (num(ap), "n")],
+                     [("2 · MAIN", "fs-mono"), ("700 ft descending", ""), (status("ok", "Cont", "continuity"), ""), (status("ok", "Fired", "check"), ""), (f'{ev["main"]:.2f}', "n"), (num(700), "n")],
+                     [("3 · —", "fs-mono"), ("Not used", "fs-muted"), (status("off", "Not used"), ""), (status("off", "Not used"), ""), ("—", "n fs-muted"), ("—", "n fs-muted")]])
+            + '<p class="fs-small fs-muted">An unused channel is gray and says so. Red is only for a real fault, so a fault is never lost among false alarms.</p>')
     body = (f'<section class="fs-intro"><h1>Flight 03 · J350W-L</h1><p class="fs-lead">Dual deploy, nominal. Apogee {num(pap - ap)} ft ({(1 - ap / pap) * 100:.1f}%) under the prediction, outside its ±{num(0.04 * pap + 8)} ft spread: the rocket flew heavier than its design file says.</p>'
             f'</section>'
             + sheet(1, 3, "Flight", f'<div class="fs-readouts">{readout("Apogee", num(ap), "ft AGL", "Barometer, 20 Hz")}'
-                    f'{readout("Predicted", num(pap), "ft AGL", f"±{num(0.04 * pap + 8)} ft · hpr-sim 0.9, from the design file", "predicted")}'
+                    f'{readout("Predicted", num(pap), "ft AGL", f"±{num(0.04 * pap + 8)} ft · HPR Sim 0.1, from the design file", "predicted")}'
                     f'{readout("Max speed", num(float(meas["vel"].max())), "ft/s", "Mach 0.58")}{readout("Descent · main", f"{abs(float(meas['vel'][-60])):.0f}", "ft/s", "Under the main, just before landing")}</div>'
-                    + chart_svg(pred, meas) + '<p class="fs-small fs-muted">Solid: measured. Dashed with a band: hpr-sim\'s prediction and its spread. Dotted lines with balloons: events, in order: 1 liftoff, 2 burnout, 3 apogee, 4 drogue out, 5 main out, 6 landing.</p>')
+                    + chart_set(pred, meas) + '<p class="fs-small fs-muted">Solid: measured. Dashed with a band: HPR Sim\'s prediction and its spread. Dotted lines with balloons: events, in order: 1&nbsp;liftoff, 2&nbsp;burnout, 3&nbsp;apogee, 4&nbsp;drogue out, 5&nbsp;main out, 6&nbsp;landing.</p>')
             + sheet(2, 3, "Channels", chan)
             + sheet(3, 3, "Source", facts((
                 ("File", "vega-flight-03.csv"), ("Logger", "Barometer 20 Hz, accelerometer 100 Hz"), ("Filter", "None: raw samples"), ("Pad elevation", "4,000 ft MSL"),
@@ -1026,7 +1077,7 @@ def ex_window():
                     f'{readout("Upper winds", "31", "mph", "At 6,000 ft, issued 10:00 AM, 4 h old", "stale")}</div>'
                     f'{note("caution", "Caution", "<p>Gusts of 19 mph are within 1 mph of the NAR and Tripoli 20 mph limit.</p>")}')
             + part("Winds aloft", stacked("Winds by height. Forecast rows are model output, dashed in charts and tagged here.",
-                    [("Kind", False), ("Height, ft AGL", True), ("Wind, mph", True), ("Gust, mph", True), ("From", True)], rows)
+                    [("Kind", False), ("Height · ft AGL", True), ("Wind · mph", True), ("Gust · mph", True), ("From", True)], rows)
                     + f'<div class="fs-row"><button class="fs-btn" data-size="field">{ico("refresh", "")}Refresh</button><button class="fs-btn" data-variant="secondary" data-size="field">{ico("print", "")}Print for the pad</button></div>')
             + toolfoot("Window", ["Version 2.1.0", "Updated 2026-10-04 14:10", "Surface: station observations; aloft: model forecast", "Units: mph, ft, °F"], "About Window"))
     return page("Window · example", body, rel="../", example=True, level="tool", tool="Window", desc="Example: a launch-weather board at the tool level, in the field theme.",
@@ -1157,7 +1208,7 @@ def mdbook_css():
                 f"  --scrollbar: {r('rule-strong')}; --icons: {r('ink-muted')}; --icons-hover: {r('ink')}; --links: {r('action')};\n"
                 f"  --inline-code-color: {r('ink')}; --theme-popup-bg: {r('surface')}; --theme-popup-border: {r('rule-strong')};\n"
                 f"  --theme-hover: {r('rule')}; --quote-bg: {r('surface')}; --quote-border: {r('rule-strong')};\n"
-                f"  --table-border-color: {r('rule')}; --table-header-bg: {r('surface')}; --table-alternate-bg: {r('canvas')};\n"
+                f"  --table-border-color: {r('rule')}; --table-header-bg: {r('canvas')}; --table-alternate-bg: {r('canvas')};\n"
                 f"  --searchbar-border-color: {r('rule-strong')}; --searchbar-bg: {r('surface')}; --searchbar-fg: {r('ink')};\n"
                 f"  --searchbar-shadow-color: transparent; --searchresults-header-fg: {r('ink-muted')}; --searchresults-border-color: {r('rule')};\n"
                 f"  --searchresults-li-bg: {r('surface')}; --search-mark-bg: {r('action')};\n"
@@ -1168,10 +1219,14 @@ def mdbook_css():
 /* FusionSpace theme for mdBook. Generated by tools/build/kit_product.py.
    book.toml:
      [output.html]
-     additional-css = ["theme/fusionspace-mdbook.css", "theme/fonts.css"]
+     additional-css = ["theme/fusionspace-mdbook.css"]
      default-theme = "light"
      preferred-dark-theme = "navy"
-   Copy this file, product/web/fonts.css and product/web/fonts/ into the book's theme/ folder.
+     hash-files = false
+   Copy this file into the book's theme/ folder, the WOFF2 files in product/web/fonts/ into theme/fonts/, and
+   product/web/fonts.css there as theme/fonts/fonts.css with `fonts/` taken out of each address: mdBook links
+   theme/fonts/fonts.css from every page in place of its own fonts and serves it beside them. With hashing on, mdBook
+   renames the files and the addresses in fonts.css point at nothing.
    mdBook's `rust` theme is the field theme (foundations.md, Themes): offer it as Field in the theme switch. */
 .light {{
 {vars_("light")}
@@ -1202,8 +1257,17 @@ h1, h2, .menu-title {{ font-stretch: 118%; letter-spacing: -0.01em; }}
 h2 {{ border-top: 2px solid var(--fg); padding-top: 0.6em; }}
 table {{ border-collapse: collapse; }}
 table thead th {{ font-family: {FONTS['text']}; font-weight: 600; font-size: 0.8125em; border-bottom: 2px solid var(--fg); }}
-table td, table th {{ border-left: 0; border-right: 0; }}
-blockquote {{ border-left: 0; border: 1px solid var(--quote-border); padding: 0.6em 1em; }}
+/* Tables as data.md sets them: heads at the start of their column (a column the Markdown aligns right keeps its own
+   alignment), the first column flush with the text, rules between rows and none between columns. */
+table td, table th {{ border-left: 0; border-right: 0; padding: 0.5em 1em 0.5em 0; }}
+table thead th {{ text-align: start; padding: 0.5em 1em 0.5em 0; }}   /* mdBook pads a head 20 px each side */
+table td:last-child, table th:last-child {{ padding-inline-end: 0; }}
+/* Code and quotes are panels on the surface with a 1 px rule, so they keep their edge in the field theme, whose surface is
+   its canvas. */
+pre {{ border: 1px solid var(--fs-rule); }}
+blockquote {{ border-left: 0; border: 1px solid var(--quote-border); padding: 0.75em 1em; }}
+blockquote > :first-child {{ margin-top: 0; }}
+blockquote > :last-child {{ margin-bottom: 0; }}
 
 /* The page's frame (foundations.md, Type and Space and layout; web.md, Documentation sites). mdBook's root is 62.5%, so
    1 rem is 10 px here. The book's text is a reading page: inside `.content` the type scale grows with the window, x1 up to

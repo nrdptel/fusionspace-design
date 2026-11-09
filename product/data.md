@@ -20,7 +20,7 @@ will act on, so this is where the principles matter most: show the working, and 
 | Fields are sized for the longest value; if one still overflows, asterisks in caution ink, with the full value in its accessible name | `*****` | a cut-off number |
 
 - Numbers are Cascadia Mono, or Archivo with tabular figures; right-aligned in columns, aligned on the decimal point.
-- Keep the unit beside every value or in the column head (`APOGEE · ft AGL`). A number without a unit is a bug.
+- Keep the unit beside every value or in the column head (`Apogee · ft AGL`). A number without a unit is a bug.
 - Unit symbols are never pluralised or followed by a period: `3 lb`, `12 in`.
 - In code, keep values in SI and convert only for display. Never store a rounded display value.
 
@@ -76,9 +76,11 @@ APOGEE · PREDICTED            label: what, and which kind (measured, predicted,
 
 ## Tables
 
-- Real table markup. Wrap wide tables in a scrolling region rather than turning rows into cards.
-- Column heads are labels (12 px Cascadia Mono, capitals) with the unit: `TIME · s`. A 2 px ink rule under the head, 1 px rules
-  between rows, no zebra stripes, no vertical rules.
+- Real table markup. On a phone a table stacks (`.fs-table[data-stack]`): each row becomes its cells' names and values,
+  two to a line, the row's name first (`data-lead`) and long cells across the line (`data-wide`), under the same rules.
+  Only a table too wide to read that way, such as a catalog of many columns, scrolls sideways instead, with a hint.
+- Column heads are labels (13 px Archivo, semibold, as written) with the unit after a middle dot: `Time · s`. A 2 px ink rule
+  under the head, 1 px rules between rows, no zebra stripes, no vertical rules.
 - Numbers right-aligned; text left-aligned; dates as `2026-10-04`.
 - Status cells use chips (word + shape + color). An unused row says "Not used" in gray.
 - A caption above the table says what it is and where the data came from.
@@ -101,8 +103,12 @@ FusionSpace charts are drawings: ink on a canvas, with the line types from [foun
   points as small dots with 1σ, 2σ and 3σ ellipses outlined (not filled).
 - **Aspect ratio.** Choose the panel's width and height so the important slopes run near 45° (Cleveland's banking to 45°), the
   angle at which the eye compares slopes best.
-- **Labels** are 12 px Cascadia Mono. Axis titles carry units (`ALTITUDE · ft AGL`). Ticks at round numbers; 3 to 6 per
-  axis. Gridlines are 1 px rule color.
+- **Labels** are 12 px Archivo with tabular figures, never smaller on screen. Axis titles carry units (`Altitude · ft AGL`)
+  and sit on a plate of the canvas color, so the event lines that cross them part around the words. Ticks at round
+  numbers, 3 to 6 per axis, at least 44 px apart. Gridlines are 1 px rule color.
+- **Drawn at the width it's shown.** A chart scaled to fit its column shrinks its words with it: an 880 px drawing on a
+  phone sets its labels at 5 px. Redraw it for its width (a script that measures the column), or draw it at a few widths
+  and show the nearest (`.fs-chart-set`, with drawings 288, 440, 640 and 880 px wide), so its words stay 12 to 18 px.
 - **No legend boxes.** Label lines directly, or explain the line types once in the caption.
 - **Accessible.** Every chart has a caption, a text summary of what it shows ("Apogee 5,104 ft at 17.6 s, 7.0% under the
   prediction"), and the data as a table or a CSV link. On iOS, Swift Charts' audio graphs; on Android, semantics on the
