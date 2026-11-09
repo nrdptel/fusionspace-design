@@ -19,14 +19,15 @@ tools and an expressive set for pages that introduce.
 |---|---|---|---|
 | What it is | A landing page, the top of a README, a store listing | A calculator, an app screen, documentation | A flight report, an export, a printed card, a board, a CAD drawing |
 | Leads with | The product's own output: a flight it flew, a check it passed | The inputs and the result | The readouts and the data |
-| Headings | Archivo, wide | Archivo, wide | Cascadia Mono |
-| Labels | Archivo, sentence case | Archivo, sentence case | Cascadia Mono, capitals |
 | Sections | Each shaped by what it holds | Parts under a 2 px rule, numbered only when they're steps | Numbered sheets with a rail |
 | Designation and status | On the about page, if anywhere | In the about box | In the title block |
 | Ends with | A plain footer | One line: version, data date, units | The title block |
 
-Every level keeps the line types, the trust notes, the signal colors and their words, units on screen, the field theme,
-and the two-step arming. Those carry meaning, not style. The platform pages ([`mobile.md`](mobile.md),
+Every level shares one frame and one type: the same header, intro, headings in Archivo's wide cut, sentence-case labels
+in Archivo, numbers in Cascadia Mono, the same spacing and the same footer line. Pages made by one person should look it.
+The levels differ only in the parts a page uses, so a record's own parts (sheet numbers, the designation tag, the title
+block) keep the drawing's lettering. Every level also keeps the line types, the trust notes, the signal colors and their
+words, units on screen, the field theme, and the two-step arming. Those carry meaning, not style. The platform pages ([`mobile.md`](mobile.md),
 [`desktop.md`](desktop.md), [`watch.md`](watch.md)) describe tools, and are being moved to these levels. Where one still
 differs, this page settles it.
 

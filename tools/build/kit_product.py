@@ -683,8 +683,7 @@ THEME_JS = """<script>
   document.addEventListener("click", function (e) { var b = e.target.closest("[data-set-theme]"); if (b) set(b.dataset.setTheme); });
 })();
 </script>"""
-EXAMPLE_NOTE = ('<p class="fs-small fs-muted fs-hatch" style="margin-top:16px;padding:6px 10px;border:1px solid var(--fs-rule-strong);max-width:none">'
-                '<span style="background:var(--fs-canvas);padding:0 4px">Example screen. The layout is the point; the numbers are made up.</span></p>')
+EXAMPLE_NOTE = '<p class="fs-example">Example screen. The layout is the point; the numbers are made up.</p>'
 THEME_SWITCH = ('<div class="fs-seg" role="group" aria-label="Theme">' + "".join(
     f'<button type="button" data-set-theme="{t}" aria-pressed="false">{n}</button>' for t, n in (("auto", "Auto"), ("light", "Light"), ("dark", "Dark"), ("field", "Field"))) + "</div>")
 
@@ -805,12 +804,18 @@ def specimen(contrast_rows):
           f'<h3>Data ramps</h3><div class="fs-grid">{ramps}</div><p class="fs-small fs-muted">From the spectral classes. Cool and warm are sequential; O to M through F is diverging. '
           f'The gradient isn\'t a ramp: its four stops have the same lightness, so it carries no order.</p>')
     # 2 type
-    trs = "".join(f'<tr><td><code>{n}</code></td><td class="n">{sz}/{lh}</td><td style="font:var(--fs-type-{n});{"text-transform:uppercase;letter-spacing:" + str(tr) + "em;" if case == "upper" else ""}">'
-                  f'{"5,104 ft AGL" if n.startswith("readout") else "Apogee 5,104 ft" if n in ("title", "display", "hero") else "Ejection charge" if n in ("label", "heading") else "FS-VEGA-001 rev B" if n == "code" else "Size the charge, then ground-test it."}</td>'
-                  f'<td class="fs-small fs-muted">{use}</td></tr>' for n, sz, lh, fam, w, case, tr, use in TYPE)
-    s2 = (f'<p>On a record, Cascadia Mono for anything you read as data or as a drawing: titles, labels, numbers, codes; Archivo for anything you read as prose. '
-          f'On front pages and tools, headings take Archivo&#39;s wide cut and labels Archivo, as the Levels sheet shows; numbers stay in Cascadia Mono. '
-          f'Headings and readouts step by √2, like drawing lettering (ISO 3098). Capitals only where a drawing would use them: labels, title-block cells, sheet numbers, state words.</p>'
+    WEB_TYPE = [("label", "13/18", "Ejection charge", "Field labels, column heads"), ("small", "14/20", "Size the charge, then ground-test it.", "Captions, helper text, sources"),
+                ("body", "16/24", "Size the charge, then ground-test it.", "Running text and controls"), ("lead", "20/28", "Size the charge, then ground-test it.", "The sentence under a page title"),
+                ("heading", "16/24", "Ejection charge", "A head inside a part or sheet"), ("subtitle", "25–31", "Ground-test it", "A part's or sheet's name"),
+                ("title", "32–39", "Charge", "Page and screen titles"), ("display", "36–49", "Fly it first.", "A front page's headline"),
+                ("readout", "28/32", "5,104 ft AGL", "A headline value"), ("readout-l", "40/44", "1.15 g", "The value a screen exists to show"),
+                ("code", "14/20", "FS-VEGA-001 rev B", "Code, commands, file names, part numbers")]
+    wide = ("subtitle", "title", "display")
+    trs = "".join(f'<tr><td><code>{n}</code></td><td class="n">{sz}</td><td style="font:var(--fs-type-{n});font-stretch:{"var(--fs-head-stretch)" if n in wide else "normal"}">{sample}</td>'
+                  f'<td class="fs-small fs-muted">{use}</td></tr>' for n, sz, sample, use in WEB_TYPE)
+    s2 = (f'<p>One voice on every page: headings in Archivo&#39;s wide cut, labels, controls and prose in Archivo, and Cascadia Mono for anything you read as data: '
+          f'numbers, units, codes, readouts. A record&#39;s sheet numbers, designation tags and title block keep the drawing&#39;s lettering, Cascadia Mono in capitals, '
+          f'and so do state words (ARMED, SAFE). The sizes below are the web&#39;s; the platform tokens keep the drawing scale for now.</p>'
           f'<div class="fs-table-wrap"><table class="fs-table"><thead><tr><th>Token</th><th class="n">px</th><th>Sample</th><th>Use</th></tr></thead><tbody>{trs}</tbody></table></div>'
           + SPECIMEN_MATH)
     # 3 lines
@@ -876,27 +881,26 @@ def specimen(contrast_rows):
                     for g, ns in kit_icons.GROUPS for n in ns)
     s7 = (f'<p>{len(kit_icons.ICONS)} icons on a 24 px grid: 1.5 px strokes, square ends, 45° and 90° angles, drawn from the real objects. '
           f'Files in <code>product/icons/</code>: one SVG each, <code>sprite.svg</code>, and Android vector drawables.</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px">{icons}</div>')
-    # 9 levels: the same few parts at each level, each panel scoped with data-level
-    def lv(level, what):
-        return (f'<div class="fs-panel fs-stack" data-level="{level}" style="align-content:start"><p class="fs-small fs-muted">{what}</p>'
-                f'<h2>Size the charge</h2>'
-                f'<div class="fs-field"><label for="lv-{level}">Bay length</label><div class="fs-input-group"><input class="fs-input" id="lv-{level}" inputmode="decimal" value="12.0" autocomplete="off"><span class="fs-unit">in</span></div></div>'
-                f'{readout("Put on the scale", "1.15", "g", "Rounded up to the scale&#39;s 0.05 g", size="m")}'
-                f'<div class="fs-row">{status("ok", "Separated", "ok")}<button class="fs-btn" data-variant="secondary">Add a test</button></div></div>')
-    s9 = ("<p>The same parts at each level (<code>principles.md</code>, Three levels). A record is the default. "
-          "<code>data-level=\"tool\"</code> or <code>\"front\"</code> on the page, or on any element, sets headings in Archivo&#39;s wide cut "
-          "and labels, controls and chips in Archivo, sentence case. Numbers, units and code stay in Cascadia Mono at every level. "
-          "Front pages and tools share their parts; what differs is the page around them (<code>web.md</code>, Page anatomy).</p>"
-          '<div class="fs-grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,248px),1fr));align-items:start">'
-          + lv("front", "Front: a landing page, the top of a README") + lv("tool", "Tool: a calculator, an app screen, docs")
-          + lv("record", "Record: a report, an export, a printed card") + "</div>")
+    # 9 levels: one frame and one type at every level; what differs is the parts a page uses
+    s9 = ("<p>Every page shares one frame and one type (<code>principles.md</code>, Three levels). The levels differ in the parts "
+          "a page uses. A tool numbers its parts when they are steps and ends with a one-line footer. A record numbers its sheets, "
+          "carries its designation, and ends with a title block, in the drawing's own lettering. A front page lays itself out "
+          "from what it shows (<a href=\"examples/front.html\">the front example</a>).</p>"
+          '<div class="fs-grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));align-items:start">'
+          '<div class="fs-panel fs-stack"><p class="fs-small fs-muted">A tool&#39;s part</p>'
+          '<section class="fs-part" style="padding-bottom:8px"><h2><span class="fs-step">1</span>Size the charge</h2>'
+          + readout("Put on the scale", "1.15", "g", "Rounded up to the scale&#39;s 0.05 g", size="m") + '</section></div>'
+          '<div class="fs-panel fs-stack"><p class="fs-small fs-muted">A record&#39;s sheet</p>'
+          '<section class="fs-sheet" style="padding-bottom:8px"><div class="fs-sheet-rail"><span class="fs-sheet-no">SHEET 1 / 3</span><h2>Flight</h2></div>'
+          '<div class="fs-sheet-body"><div class="fs-row"><span class="fs-tag">FS-VEGA · REPORT 003</span></div>'
+          + readout("Apogee", "5,104", "ft AGL", "Barometer, 20 Hz", size="m") + '</div></section></div></div>')
     s8 = ("<p>The title block closes every record: a report, a printout, an export. A tool&#39;s about box holds the same fields. It answers: what is this, which version, from whom, when, "
           "in which units, from what data, and how finished it is.</p>"
           + titleblock([("Title", "Product system specimen"), ("Designation", "FS · SPEC 001"), ("Rev", REV), ("Date", "2026-10-13"),
                         ("Units", "px, ms"), ("Status", "IN PREPARATION"), ("Sheet", f"{T} / {T}")]))
-    body = (f'<section style="padding:48px 0 32px;display:grid;gap:16px"><span class="fs-tag">FS · SPEC 001</span><h1 style="font:var(--fs-type-display)">Product system</h1>'
+    body = (f'<section class="fs-intro"><h1>Product system</h1>'
             f'<p class="fs-lead">How FusionSpace tools, apps and boards look and behave. The rules are in <code>product/</code>; this page shows each part working, '
-            f'in light, dark and the outdoor field theme.</p></section>'
+            f'in light, dark and the outdoor field theme.</p><div class="fs-row"><span class="fs-tag">FS · SPEC 001</span></div></section>'
             + sheet(1, T, "Color", s1) + sheet(2, T, "Type", s2) + sheet(3, T, "Lines", s3) + sheet(4, T, "Controls", s4)
             + sheet(5, T, "Data", s5) + sheet(6, T, "Status and notes", s6) + sheet(7, T, "Icons", s7) + sheet(8, T, "Levels", s9) + sheet(9, T, "Title block", s8))
     return page("Specimen · FusionSpace product system", body, example=True, desc="The FusionSpace product system: color, type, lines, controls, data, status, icons.")
@@ -910,9 +914,9 @@ TOOLS = [  # the drawing register on the example home page: (designation, name, 
 def ex_home():
     rows = "".join(f'<tr><td><span class="fs-tag">{d}</span></td><td><a href="#"><b>{n}</b></a><div class="fs-small fs-muted">{w}</div></td>'
                    f'<td>{status("ok", "Released", "check") if s == "RELEASED" else status("off", "In preparation", "edit")}</td><td class="fs-mono fs-small">{u}</td></tr>' for d, n, w, s, u in TOOLS)
-    body = (f'<section style="padding:56px 0 40px;display:grid;gap:20px;max-width:760px"><span class="fs-tag">FS · SITE 001</span>'
-            f'<h1 style="font:var(--fs-type-display)">Free tools for high‑power rocketry.</h1>'
+    body = (f'<section class="fs-intro"><h1>Free tools for high‑power rocketry.</h1>'
             f'<p class="fs-lead">Free and open source. Each tool shows its working, says how far to trust it, and works offline at the field.</p>'
+            f'<div class="fs-row"><span class="fs-tag">FS · SITE 001</span></div>'
             f'<div class="fs-row"><a class="fs-btn" href="#register">See the tools</a><a class="fs-btn" data-variant="secondary" href="#">Source on GitHub {ico("external", "")}</a></div></section>'
             + sheet(1, 2, "Register", f'<div class="fs-table-wrap" id="register"><table class="fs-table"><caption>Every tool, numbered like a drawing. Released tools are maintained; in preparation means usable but changing.</caption>'
                     f'<thead><tr><th>No.</th><th>Title</th><th>Status</th><th>Where</th></tr></thead><tbody>{rows}</tbody></table></div>')
@@ -972,7 +976,7 @@ def ex_charge():
                   [[("2026-09-12", "fs-mono"), ("1.00", "n"), (f"{1.00 / g * 100:.0f}%", "n"), (status("caution", "Partial", "caution"), ""), ("Nose cone moved 2 in, chute stayed in.", "fs-small")],
                    [("2026-09-12", "fs-mono"), ("1.20", "n"), (f"{1.20 / g * 100:.0f}%", "n"), (status("ok", "Separated", "ok"), ""), ("Full separation, shock cord taut.", "fs-small")],
                    [("2026-09-19", "fs-mono"), ("1.20", "n"), (f"{1.20 / g * 100:.0f}%", "n"), (status("ok", "Separated", "ok"), ""), ("Repeat with flight pins.", "fs-small")]])
-    body = (f'<section style="padding:36px 0 32px;display:grid;gap:10px"><h1>Charge</h1><p class="fs-lead">Size a black-powder ejection charge, then prove it on the ground.</p></section>'
+    body = (f'<section class="fs-intro"><h1>Charge</h1><p class="fs-lead">Size a black-powder ejection charge, then prove it on the ground.</p></section>'
             + part("Size the charge", f'<div class="fs-split" style="align-items:start"><div class="fs-stack">{form}</div>{result}</div>', step=1)
             + part("Ground-test it", log + '<div class="fs-row"><button class="fs-btn" data-variant="secondary">Add a test</button><button class="fs-btn" data-variant="secondary">' + ico("print", "") + 'Print flight card</button></div>', step=2)
             + toolfoot("Charge", ["Version 1.4.0", "Constants from September 2026", "Units: in, psi, g"], "About Charge"))
@@ -987,8 +991,8 @@ def ex_flight_report():
             f'<tr><td class="fs-mono">2 · MAIN</td><td>700 ft descending</td><td>{status("ok", "Cont", "continuity")}</td><td>{status("ok", "Fired", "check")}</td><td class="n">{ev["main"]:.2f}</td><td class="n">{num(700)}</td></tr>'
             f'<tr><td class="fs-mono">3 · —</td><td class="fs-muted">Not used</td><td>{status("off", "Not used")}</td><td>{status("off", "Not used")}</td><td class="n fs-muted">—</td><td class="n fs-muted">—</td></tr></tbody></table></div>'
             '<p class="fs-small fs-muted">An unused channel is gray and says so. Red is only for a real fault, so a fault is never lost among false alarms.</p>')
-    body = (f'<section style="padding:40px 0 24px;display:grid;gap:12px"><div class="fs-row"><span class="fs-tag">FS-VEGA-001 · FLIGHT 03</span>{status("ok", "Released", "check")}</div>'
-            f'<h1>Flight 03 · J350W-L</h1><p class="fs-lead">Dual deploy, nominal. Apogee {num(pap - ap)} ft ({(1 - ap / pap) * 100:.1f}%) under the prediction, outside its ±{num(0.04 * pap + 8)} ft spread: the rocket flew heavier than its design file says.</p></section>'
+    body = (f'<section class="fs-intro"><h1>Flight 03 · J350W-L</h1><p class="fs-lead">Dual deploy, nominal. Apogee {num(pap - ap)} ft ({(1 - ap / pap) * 100:.1f}%) under the prediction, outside its ±{num(0.04 * pap + 8)} ft spread: the rocket flew heavier than its design file says.</p>'
+            f'<div class="fs-row"><span class="fs-tag">FS-VEGA-001 · FLIGHT 03</span>{status("ok", "Released", "check")}</div></section>'
             + sheet(1, 3, "Flight", f'<div class="fs-readouts">{readout("Apogee", num(ap), "ft AGL", "Barometer, 20 Hz")}'
                     f'{readout("Predicted", num(pap), "ft AGL", f"±{num(0.04 * pap + 8)} ft · hpr-sim 0.9, from the design file", "predicted")}'
                     f'{readout("Max speed", num(float(meas["vel"].max())), "ft/s", "Mach 0.58")}{readout("Descent · main", f"{abs(float(meas['vel'][-60])):.0f}", "ft/s", "Under the main, just before landing")}</div>'
@@ -1005,7 +1009,7 @@ def ex_window():
     aloft = [(0, 12, 19, 270), (1000, 16, None, 275), (3000, 22, None, 280), (6000, 31, None, 285), (9000, 38, None, 290)]
     rows = [[(status("predicted", "Forecast", "simulate") if h else status("info", "Measured", "windsock"), ""), (num(h), "n"), (str(w), "n"),
              (str(g) if g else "—", "n"), (f"{d}°", "n")] for h, w, g, d in aloft]
-    body = (f'<section style="padding:36px 0 32px;display:grid;gap:10px;justify-items:start"><h1>Example field</h1>'
+    body = (f'<section class="fs-intro"><h1>Example field</h1>'
             f'<p class="fs-lead">Surface wind under the 20 mph limit, gusting close to it. Ceiling under the waiver. No verdict: your RSO decides.</p>'
             f'{status("stale", "Upper air is 4 h old")}</section>'
             + part("Now", f'<div class="fs-readouts">{readout("Surface wind", "12", "mph", "Gusts 19 mph, from 270°, measured 2:10 PM")}'
@@ -2021,7 +2025,7 @@ def shoot(rel_html, dest, width=1280, scheme="light", full=True, height=900):
         return False
     with sync_playwright() as p_:
         b = p_.chromium.launch(); pg = b.new_page(viewport={"width": width, "height": height}, color_scheme=scheme, device_scale_factor=1)
-        pg.goto("file://" + out(rel_html)); pg.wait_for_timeout(400)
+        pg.goto("file://" + out(rel_html) + "?still"); pg.wait_for_timeout(400)   # ?still: a front page's figure drawn whole, not mid-reveal
         os.makedirs(os.path.dirname(out(dest)), exist_ok=True); pg.screenshot(path=out(dest), full_page=full, animations="disabled"); b.close()
     return True
 

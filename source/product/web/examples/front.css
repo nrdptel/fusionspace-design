@@ -1,15 +1,11 @@
 /* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 Neer Patel */
 /* The example front page's own layout (product/web.md, Site patterns). A front page shapes each section from what it
    holds, so none of this is a shared part: copy what fits, and draw the rest from the page's own content. */
-.fs-header .fs-nav a { color: var(--fs-ink); }
 .num { font-family: var(--fs-font-mono); font-variant-numeric: tabular-nums slashed-zero; }
 /* main is one column of full-width bands; each band's content sits in a 1120 px column of its own. */
 main { display: grid; grid-template-columns: minmax(0, 1fr); }
 .wrap { width: 100%; max-width: var(--fs-content); margin: 0 auto; padding-inline: 16px; }
 @media (min-width: 720px) { .wrap { padding-inline: 32px; } }
-.example-note { margin-top: 8px; padding: 6px 10px; border: 1px dashed var(--fs-rule-strong); font: var(--fs-type-small); color: var(--fs-ink-muted); }
-.fs-header .fs-nav a { color: var(--fs-ink); }
-.fs-header .fs-nav a:hover { box-shadow: inset 0 -2px 0 var(--fs-ink); }
 
 .intro { display: grid; gap: 14px; max-width: 38rem; }
 .intro p { color: var(--fs-ink-muted); font-size: 1.0625rem; line-height: 1.6; }
@@ -133,14 +129,8 @@ main { display: grid; grid-template-columns: minmax(0, 1fr); }
 .tools .d { color: var(--fs-ink-muted); }
 .tools .addr { font: 400 0.875rem/1.25rem var(--fs-font-mono); color: var(--fs-action); overflow-wrap: anywhere; }
 
-/* --- footer */
-.site-foot { margin-top: 112px; padding: 28px 0 40px; border-top: 1px solid var(--fs-rule); display: flex; flex-wrap: wrap; gap: 16px 40px;
-  align-items: center; font: var(--fs-type-small); color: var(--fs-ink-muted); }
-.site-foot .brand { display: flex; gap: 10px; align-items: center; color: var(--fs-ink); font-weight: 600; font-size: 1rem; }
-.site-foot .brand svg { height: 22px; width: auto; flex: none; }
-.site-foot nav { display: flex; flex-wrap: wrap; gap: 4px 20px; }
-@media (min-width: 900px) { .site-foot nav { margin-left: auto; } }
-.site-foot p { max-width: 30rem; }
+/* --- footer: the system's one-line footer, with the room a front page leaves before it */
+footer .fs-foot { margin-top: 112px; padding-bottom: 40px; }
 
 @media (prefers-reduced-motion: reduce) { .flight svg .late { transition: none; } }
 

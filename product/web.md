@@ -18,8 +18,8 @@ below.
    `<link rel="preload" href="fonts/CascadiaMono-SemiBold.woff2" as="font" type="font/woff2" crossorigin>`.
 3. Set `<meta name="color-scheme" content="light dark">` and the two `theme-color` metas (Paper and Void) from
    `kit/web/head.html`.
-4. Set the page's level on `<html>`: `data-level="front"` or `data-level="tool"`; a record needs none. The attribute
-   also works on any element, for a panel at another level.
+4. Name the page's level on `<html>` (`data-level="front"`, `"tool"` or `"record"`). It changes nothing on its own:
+   every level shares the frame and the type, and the level decides which parts you build the page from.
 5. Build pages from the parts below. Use the `--fs-*` roles for anything custom; never a hex value, never a default palette.
 6. Copy the icons you need from `product/icons/` as inline SVG (they use `currentColor`).
 
@@ -29,11 +29,12 @@ template look (indigo buttons, `rounded-xl`, `shadow-lg`) can't creep in.
 
 ## Page anatomy
 
-Every level opens with the gradient strip and a header, and every level has the theme switch.
+Every level shares one frame: the gradient strip, the same header, the same intro, the same headings, spacing and
+footer line. A page made at one level should look like a page made at another by the same hand; only the parts differ.
 
 - **Header.** The horizontal lockup at 24 px tall, in one color: Void on light and field, Paper on dark. The gradient lives
   in the strip (principle 6), and the brand's rule for small lockups on light is met in every theme. Navigation links
-  in Archivo, or in Cascadia Mono on a record; the current page underlined 2 px. No hamburger above 720 px. A tool puts its
+  in Archivo, in ink; the current page underlined 2 px. No hamburger above 720 px. A tool puts its
   name beside the lockup, after a 1 px rule.
 - **Theme switch.** Auto, Light, Dark and Field, on every page.
 
@@ -69,18 +70,19 @@ Every level opens with the gradient strip and a header, and every level has the 
 
 ```
 [ gradient strip, 4 px ]
-[ header: lockup · navigation (Cascadia Mono 14) · theme switch ]
-[ intro: designation tag · status chip · title · one-sentence lead ]
-[ SHEET 1 / n · name | content ]      2 px ink rule on top of each sheet
-[ SHEET 2 / n · name | content ]
+[ header: lockup · navigation · theme switch ]
+[ title · one-sentence lead · designation tag and status chip ]
+[ SHEET 1 / n  Sheet name | content ]      2 px ink rule on top of each sheet, as a tool's part
+[ SHEET 2 / n  Sheet name | content ]
 [ title block: owner · title · designation · rev · date · units · data · status ]
 ```
 
 - **Search.** On a docs site, the search field its button opens stands under the header, in the column: its edges on
   the text's, and 16 px between it and the intro, so its focus ring never touches the title.
-- **Intro.** On a record: the designation tag (chamfered), a status chip, the title (Cascadia Mono 28) and one sentence in
-  `lead`. On a tool: the title and the sentence. No hero image, no background art, no gradient text.
-- **Sheets.** On a record, each section is a sheet with its number and name in the rail. Two to six sheets per page.
+- **Intro** (`.fs-intro`), the same on tools and records: the title and one sentence in `lead`. A record follows them
+  with its designation tag (chamfered) and a status chip. No hero image, no background art, no gradient text.
+- **Sheets.** On a record, each section is a sheet: its number and name on one line under the 2 px rule. Two to six
+  sheets per page.
 - **Page arrows.** On a page of a set read in order (docs), links to the previous and the next page end its text, above the
   footer and inside the column: the previous at the column's left edge, the next at its right, each a bordered button
   at least 44 px tall that names its page ("Previous" or "Next" in `label`, then the page's title). Never only an arrow at
@@ -122,11 +124,11 @@ Every level opens with the gradient strip and a header, and every level has the 
 
 All in `fusionspace.css`, shown in the specimen. The rules that matter:
 
-- **Buttons.** Square, 44 px tall (with `data-size="field"`: 96 px on touch screens, 64 px with a mouse), sentence case:
-  Archivo 15 semibold on front pages and tools, Cascadia Mono 14 semibold on a record. Primary is ink
+- **Buttons.** Square, 44 px tall (with `data-size="field"`: 96 px on touch screens, 64 px with a mouse), sentence case,
+  Archivo 15 semibold. Primary is ink
   filled; hover turns it Ion. Secondary is a 2 px ink outline; quiet is an Ion text link. Danger is the Flare fill, and only
   for actions that fire, arm or destroy. Disabled is a dashed outline, and says why nearby.
-- **Fields.** Label above (Archivo 13 semibold on a tool, Cascadia Mono 12 capitals on a record, muted), input 44 px
+- **Fields.** Label above (Archivo 13 semibold, sentence case, muted), input 44 px
   tall with a 1 px Slate border, help below. Numbers go in
   `type="text" inputmode="decimal"` (GOV.UK's finding: `type="number"` loses leading zeros, accepts `e`, and changes on
   scroll), parsed as [`data.md`](data.md#copying-and-typing-numbers) says, with the unit fixed in a box on the right and the

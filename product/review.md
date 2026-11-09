@@ -7,7 +7,7 @@ Checklists for before something ships, and the test for whether it looks like Fu
 Ask these of any screen, page, board or printout. Each "no" is a fix.
 
 1. **Drawn?** Does every line, rule, color and mark have a job? Does it wear as much of the drawing as its level calls for
-   (front, tool or record), and no more?
+   (front, tool or record), and no more? Does it share the frame and type every other page has?
 2. **Working shown?** Can the result be checked from what's on screen: inputs, formula, constants, sources, dates?
 3. **Trust stated?** Is every figure marked as measured, predicted, forecast or copied, with its spread? Is there no verdict?
 4. **Field-ready?** Readable in sun at arm's length, usable with a glove, working offline, printable in black?
@@ -30,7 +30,7 @@ these are FusionSpace:
 | Rows of three cards with an icon on top of each | A table, a register, a timeline or prose: the form the content has |
 | The same section repeated down a page, text on one side and a boxed figure on the other | Each section shaped by what it holds |
 | A small capitals label over every heading; 01, 02, 03 on things that aren't steps | The heading alone; numbers only on steps |
-| Monospace for small labels and captions | Monospace for code, readouts, and a record's labels |
+| Monospace for small labels and captions | Monospace for code and readouts, and a record's sheet numbers, tags and title block |
 | Large radii (`rounded-2xl`) and soft drop shadows | Square corners, 1 px rules, no shadows |
 | Frosted glass and blur | Solid surfaces, separated by rules |
 | Colored left borders on boxes | A note panel with its signal word |
@@ -43,7 +43,8 @@ these are FusionSpace:
 
 Note the overlaps, and why FusionSpace's versions are different: the gradient passes through a lavender near the
 "template purple", but it comes from star colors and is used only as identity; capitals and monospace appear on the lists, but
-here they are confined to records, where a drawing uses them (labels, title blocks, sheet numbers), and to state words.
+here they are confined to a record's own parts, where a drawing uses them (title blocks, sheet numbers, designation tags),
+and to state words.
 The same goes for the gradient on a front page's figure: it draws the product's own output, once.
 
 ## Before release

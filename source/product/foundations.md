@@ -91,12 +91,12 @@ dispersion density), use ramps built from the spectral classes:
 
 Two families for words, both open source (SIL OFL), and one for equations, all in `type/fonts`:
 
-- **Cascadia Mono** for what you read as data: numbers, units, codes, readouts, commands. On a record it also sets what
-  you read as a drawing: titles, labels, title blocks. Every digit is the same width, so columns line up and values don't
-  jitter as they change.
-- **Archivo** for what you read as words: paragraphs, help, descriptions, and on front pages and tools, headings, labels
-  and controls too. `type/fonts` has its variable font, from 100 to 900 in weight and 62% to 125% in width. Headings on
-  front pages and tools are set at 118% width and weight 640, like the lettering on an airframe; text stays at 100%. The
+- **Cascadia Mono** for what you read as data: numbers, units, codes, readouts, commands. A record's own parts keep it
+  too, as the drawing's lettering: sheet numbers, designation tags, title-block cells. Every digit is the same width, so
+  columns line up and values don't jitter as they change.
+- **Archivo** for what you read as words, on every page: headings, labels, controls, paragraphs, help. `type/fonts` has
+  its variable font, from 100 to 900 in weight and 62% to 125% in width. Headings are set at 118% width and weight 640,
+  like the lettering on an airframe; text stays at 100%. The
   web kit cuts that one heading face from the variable font, so a page loads about 15 KB for it, not the whole font's
   95. Turn on tabular figures (`font-variant-numeric: tabular-nums`) wherever Archivo shows a number.
 - **New Computer Modern Math** (Book) for equations, and only for them: the Computer Modern of LaTeX's textbooks, under the
@@ -108,10 +108,10 @@ Two families for words, both open source (SIL OFL), and one for equations, all i
 |---|---|---|---|---|---|
 {{table_type()}}
 
-The table is a record's set. Front pages and tools change the words' roles and keep the numbers'
-([`principles.md`](principles.md#three-levels)):
+The table is the drawing scale, which the platform tokens still use for phones, watches and desktop. On the web, every
+page sets its words this way, at every level ([`principles.md`](principles.md#three-levels)):
 
-| Role on a front page or a tool | Size / line | Family | Weight | Width | Case |
+| Role on the web | Size / line | Family | Weight | Width | Case |
 |---|---|---|---|---|---|
 | Front page headline | 36 to 49 / 1.04 | Archivo | 640 | 118% | as written |
 | Title | 32 to 39 / 1.1 | Archivo | 640 | 118% | as written |
@@ -123,13 +123,13 @@ The table is a record's set. Front pages and tools change the words' roles and k
 | Status chip, note heading | 13 / 16 px | Archivo | 600 | 100% | as written |
 | Signal word (CAUTION) | 13 / 16 px | Archivo | 640 | 118% | capitals |
 
-Readouts, units, codes and web addresses stay in Cascadia Mono at every level. A range scales with the window, in rem plus
+Readouts, units, codes and web addresses are Cascadia Mono on every page. A range scales with the window, in rem plus
 vw.
 
 - Headings and readouts step by √2, the ISO 3098 lettering series (2.5, 3.5, 5, 7, 10, 14 mm) at 4 px per mm. Body and small
   text sit between, at 16 and 14.
-- **Capitals only where a drawing uses them:** on a record's labels, column heads, title-block cells and sheet numbers,
-  and at every level for signal words (CAUTION, WARNING) and single-word states (ARMED, SAFE). Never for sentences, and
+- **Capitals only where a drawing uses them:** on a record's title-block cells, sheet numbers and designation tags, and
+  on every page for signal words (CAUTION, WARNING) and single-word states (ARMED, SAFE). Never for sentences, and
   never as a floating label above a heading.
 - No weight lighter than 400 anywhere; no text smaller than 12 px on screen, or 2.5 mm (about 7 pt) in print. Device screens
   are the exception: bitmap fonts at their native sizes, from 5 × 8 px.
@@ -167,9 +167,9 @@ vw.
 ## Space and layout
 
 - **4 px base, 8 px rhythm.** Spacing tokens: {{", ".join(str(v) for v in SPACE if v)}} px.
-- **The sheet.** A record is a stack of sheets. Each sheet has a 2 px ink rule along its top, a rail with `SHEET n / N` and its
-  name, and its content. On narrow screens the rail sits above the content. A tool's parts keep the 2 px rule and the name,
-  without the rail or the number. A front page's sections are shaped by what they hold.
+- **The sheet.** A record is a stack of sheets, laid out as a tool's parts are: a 2 px ink rule along the top, then
+  `SHEET n / N` and the sheet's name on one line, then its content. A tool's part puts a step number there, and only when
+  its parts are steps. A front page's sections are shaped by what they hold.
 - **Results next to inputs.** Tools put inputs on the left and the result on the right, with the result kept in view as the
   inputs scroll; on a phone the result comes straight after the inputs.
 - **Width.** Content up to {{CONTENT}} px, and prose with it; gutters {{GUTTER['phone']}} px on phones, {{GUTTER['wide']}} px from {{GUTTER['wide_from']}} px. Beside a
