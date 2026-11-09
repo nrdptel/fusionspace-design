@@ -1177,10 +1177,13 @@ html:not(.js) {{
 html {{ font-family: {FONTS['text']}; }}
 body::before {{ content: ""; position: fixed; top: 0; left: 0; right: 0; height: 4px; background: {build.css_gradient()}; z-index: 1000; }}
 code, pre, kbd, .hljs {{ font-family: {FONTS['mono']} !important; font-variant-numeric: tabular-nums slashed-zero; }}
-h1, h2, h3, .menu-title {{ font-family: {FONTS['display']}; font-weight: 600; letter-spacing: 0; }}
+/* A docs site is a tool (principles.md, Three levels): headings in Archivo's wide cut, labels and navigation in Archivo,
+   sentence case; code and numbers in Cascadia Mono. */
+h1, h2, h3, .menu-title {{ font-family: {FONTS['text']}; font-weight: 600; letter-spacing: 0; }}
+h1, h2, .menu-title {{ font-stretch: 118%; letter-spacing: -0.01em; }}
 h2 {{ border-top: 2px solid var(--fg); padding-top: 0.6em; }}
 table {{ border-collapse: collapse; }}
-table thead th {{ font-family: {FONTS['mono']}; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 2px solid var(--fg); }}
+table thead th {{ font-family: {FONTS['text']}; font-weight: 600; font-size: 0.8125em; border-bottom: 2px solid var(--fg); }}
 table td, table th {{ border-left: 0; border-right: 0; }}
 blockquote {{ border-left: 0; border: 1px solid var(--quote-border); padding: 0.6em 1em; }}
 
@@ -1196,28 +1199,28 @@ blockquote {{ border-left: 0; border: 1px solid var(--quote-border); padding: 0.
 body {{ font-size: var(--fs-16); line-height: var(--fs-24); font-variant-numeric: tabular-nums; }}
 .content {{ font-size: var(--fs-16); line-height: var(--fs-24); }}
 .content p, .content ol, .content ul, .content td, .content tbody th {{ line-height: var(--fs-24); }}
-/* title 28/32 for the page, subtitle 20/24 for a sheet's name, heading 14/20 in capitals for a section head inside one;
-   below that, a run-in head in body type, semibold. */
-h1 {{ font-size: var(--fs-28); line-height: var(--fs-32); }}
-h2 {{ font-size: var(--fs-20); line-height: var(--fs-24); }}
-h3 {{ font-size: var(--fs-14); line-height: var(--fs-20); text-transform: uppercase; letter-spacing: 0.06em; }}
+/* The page's title 32/36 and a part's name 24/28, wide; a section head inside a part 16/24, semibold; below that, a run-in
+   head in body type, semibold. */
+h1 {{ font-size: calc(var(--fs-text) * 2); line-height: calc(var(--fs-text) * 2.25); }}
+h2 {{ font-size: calc(var(--fs-text) * 1.5); line-height: calc(var(--fs-text) * 1.75); }}
+h3 {{ font-size: var(--fs-16); line-height: var(--fs-24); }}
 h4, h5, h6 {{ font-family: {FONTS['text']}; font-size: var(--fs-16); line-height: var(--fs-24); font-weight: 600; }}
 /* code 14/20; in a Cascadia Mono heading or column head, the head's own size, as written (a command or a symbol means
    something else in capitals). Inline code has its padding from the first paint, not only once mdBook's script marks it. */
 code, pre, kbd {{ font-size: var(--fs-14); line-height: var(--fs-20); }}
 :not(pre) > code {{ padding: 0.1em 0.3em; }}
 h1 code, h2 code, h3 code, thead th code {{ font-size: inherit; line-height: inherit; }}
-h3 code, thead th code {{ text-transform: none; letter-spacing: 0; }}
 h4 code, h5 code, h6 code {{ font-size: var(--fs-14); line-height: var(--fs-20); }}
-/* Column heads in label, 12/16 in capitals; footnotes and the copy tooltip in small, 14/20. */
-.content thead th {{ font-size: var(--fs-12); line-height: var(--fs-16); }}
+/* Column heads in label, 13/18, sentence case; footnotes and the copy tooltip in small, 14/20. */
+.content thead th {{ font-size: calc(var(--fs-text) * 0.8125); line-height: calc(var(--fs-text) * 1.125); }}
 .content .footnote-definition, .content .footnote-definition :is(li, p), .tooltiptext {{ font-size: var(--fs-14); line-height: var(--fs-20); }}
-/* Navigation in Cascadia Mono 14 (web.md, Page anatomy), a part's title as a section head; the menu bar's title in
-   subtitle; the search field and buttons in body type. */
-.sidebar, .chapter {{ font-family: {FONTS['mono']}; font-size: var(--fs-14); line-height: var(--fs-20); }}
-.chapter li, .chapter a, .chapter code {{ font-size: var(--fs-14); line-height: var(--fs-20); }}
+/* Navigation in Archivo 15 (web.md, Page anatomy), a part's title semibold; the menu bar's title wide; the search field
+   and buttons in body type. */
+.sidebar, .chapter {{ font-family: {FONTS['text']}; font-size: 15px; line-height: var(--fs-20); }}
+.chapter li, .chapter a {{ font-size: 15px; line-height: var(--fs-20); }}
+.chapter code {{ font-size: var(--fs-14); line-height: var(--fs-20); }}
 .chapter li a strong {{ font-weight: 400; }}
-.chapter li.part-title {{ font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }}
+.chapter li.part-title {{ font-weight: 600; }}
 button {{ font: inherit; }}
 .menu-title {{ font-size: var(--fs-20); line-height: var(--fs-24); font-weight: 600; align-self: center; }}
 #mdbook-searchbar {{ font-family: {FONTS['text']}; font-size: var(--fs-16); line-height: var(--fs-24); font-variant-numeric: tabular-nums; }}
