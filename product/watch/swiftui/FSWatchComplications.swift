@@ -14,7 +14,7 @@ public struct FSFindEntry: TimelineEntry, Sendable {
     public let date: Date
     public let fixedAt: Date
     public let name: String                 // the rocket's external name: "Vega"
-    public let phase: String                // "LANDED"
+    public let phase: String                // "LANDED": the flight's state, in capitals
     public let distanceFt: Int
     public let bearingTrue: Int
     public static let example = FSFindEntry(date: .now, fixedAt: .now.addingTimeInterval(-4), name: "Vega", phase: "LANDED",
@@ -87,18 +87,18 @@ struct FSFindComplication: View {
             Text("\(entry.name)\(stale ? " stale" : "") \(entry.distanceFt.formatted())\u{00A0}ft \(bearing)")
         default:
             VStack(alignment: .leading, spacing: 1) {
-                HStack {
-                    Text("\(entry.name.uppercased()) · \(entry.phase)")
-                    Spacer()
-                    if stale { Text("STALE") } else { age.monospacedDigit().multilineTextAlignment(.trailing) }  // a relative date takes the spare width
-                }
-                .font(FS.label()).foregroundStyle(d.inkMuted)
+                // The name and phase have the top line to themselves: a face sets this text larger than the app asks,
+                // and beside the age it was cut to "Vega · LA…" on Modular Ultra.
+                Text("\(entry.name) · \(entry.phase)").lineLimit(1)
+                    .font(FS.label()).foregroundStyle(d.inkMuted)
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
                     Text(entry.distanceFt.formatted()).font(FS.readout(24, relativeTo: .title3)).widgetAccentable()
-                    Text("ft").font(FS.label()).foregroundStyle(d.inkMuted)
+                    Text("ft").font(FS.data(12, relativeTo: .caption)).foregroundStyle(d.inkMuted)
                 }
                 .foregroundStyle(stale ? d.inkMuted : d.ink)
-                Text("\(bearing) from you").font(.caption2).foregroundStyle(d.inkMuted)
+                // the bearing, then the fix's age counting up on its own, or STALE past the limit
+                (stale ? Text("\(bearing) · STALE") : Text("\(bearing) · fix ") + age.monospacedDigit())
+                    .lineLimit(1).font(.caption2).foregroundStyle(d.inkMuted)
             }
         }
     }

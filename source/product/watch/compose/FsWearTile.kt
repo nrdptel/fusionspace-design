@@ -103,7 +103,7 @@ open class FsFindTileService : TileService() {
         val layout = materialScope(this, requestParams.deviceConfiguration, allowDynamicTheme = false, defaultColorScheme = fsTileColors()) {
             primaryLayout(
                 titleSlot = {
-                    text("${s.name.uppercase()} · ${s.phase}".layoutString, color = colorScheme.onSurfaceVariant,
+                    text("${s.name} · ${s.phase}".layoutString, color = colorScheme.onSurfaceVariant,
                         modifier = LayoutModifier.contentDescription("${s.name}, ${s.phase.lowercase()}"))
                 },
                 // One readout with its unit and its age: the distance, then the bearing and how old the fix is, the age

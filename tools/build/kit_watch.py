@@ -2,9 +2,11 @@
 
 product/watch.md says what a watch is for in this system: finding a landed rocket, glancing at a flight, and feeling the
 events that matter, with the phone or the device doing anything that changes hardware. This draws it. Every screen exists
-twice, once per platform: an Apple Watch Ultra 3 on watchOS 27 (SF type, Liquid Glass toolbar buttons) and a Pixel Watch 4
-on Wear OS 6 (round, curved time text, edge-hugging button, Roboto). The content layer is the same on both: Cascadia Mono
-readouts and labels, the signal colors, the state box. Watches are emissive screens, so they always use the dark roles.
+twice, once per platform: an Apple Watch Ultra 4 on watchOS 27 (SF Compact, Liquid Glass toolbar buttons) and a Pixel Watch
+5 on Wear OS 7 (round, curved time text, edge-hugging button, Roboto). The content layer is the same on both: labels, titles
+and prose in the watch's own font in sentence case, the state box and chips in Archivo as on the phone, readouts and
+designations in Cascadia Mono, capitals only for states, the signal colors. Watches are emissive screens, so they always
+use the dark roles.
 
 Screens and the complication/tile page are HTML on product/web/fusionspace.css, shot with Playwright at 2x. The SwiftUI and
 Compose parts are written in source/product/watch/ and copied with their {{...}} values filled in.
@@ -126,17 +128,19 @@ def scr_flight(p):
     names = ["PAD", "BOOST", "COAST", "APOGEE", "DROGUE", "MAIN", "LANDED"]; i = names.index("MAIN")
     ticks = '<ol class="w-ticks" aria-label="Phase: main">' + "".join(
         f'<li data-s="{"done" if j < i else "now" if j == i else "next"}"></li>' for j in range(len(names))) + "</ol>"
-    body = (f'<div class="w-flight"><span class="w-k">MAIN · T+1:02</span>{ticks}'
-            f'<span class="w-k">ALTITUDE</span><div class="w-read"><span class="w-big">612</span><span class="u">ft AGL</span></div>'
-            f'<div class="w-row"><span class="w-k">DESCENT</span><span class="w-v">18 <span class="u">ft/s</span></span></div>'
-            f'<div class="w-row"><span class="w-k">LINK</span><span class="w-v">0.4 <span class="u">s</span></span></div></div>')
+    # the phase is the flight's state: in capitals, in Archivo like a chip; the time since liftoff is data
+    body = (f'<div class="w-flight"><span class="w-k"><span class="w-st">MAIN</span> · <span class="w-d">T+1:02</span></span>{ticks}'
+            f'<span class="w-k">Altitude</span><div class="w-read"><span class="w-big">612</span><span class="u">ft AGL</span></div>'
+            f'<div class="w-row"><span class="w-k">Descent</span><span class="w-v">18 <span class="u">ft/s</span></span></div>'
+            f'<div class="w-row"><span class="w-k">Link</span><span class="w-v">0.4 <span class="u">s</span></span></div></div>')
     return chrome(p, body, title="Flight 04")
 
 def scr_pad(p):
     """The device's state at the pad, read only: ARMED in its inverted box, the channels. The watch sends nothing."""
+    st = lambda k, w, i=None: kp.status(k, w, i).replace('class="fs-status"', 'class="fs-status" data-caps', 1)
     chans = "".join(f'<div class="w-ch"><span>{n}</span>{s}</div>' for n, s in (
-        ("1 DROGUE", kp.status("ok", "Cont", "continuity")), ("2 MAIN", kp.status("ok", "Cont", "continuity")), ("3 —", kp.status("off", "Not used"))))
-    body = (f'<div class="w-pad"><span class="w-box armed">ARMED</span><span class="w-k">{DESIG} · 0.3 <span class="u">s</span></span>{chans}'
+        ("1 · Drogue", st("ok", "Cont", "continuity")), ("2 · Main", st("ok", "Cont", "continuity")), ("3 · —", st("off", "Not used"))))
+    body = (f'<div class="w-pad"><span class="w-box armed">ARMED</span><span class="w-d">{DESIG} · 0.3 s</span>{chans}'
             f'<p class="w-note">Safe it with the switch or the phone.</p></div>')
     return chrome(p, body, title="Pad 3")
 
@@ -144,7 +148,7 @@ def scr_unfired(p):
     """After landing, a configured charge didn't fire: first, before anything else, until it's acknowledged."""
     fill = kp.SIGNALS["danger"][2]
     body = (f'<div class="w-alert">{ico("danger")}<span class="w-alert-h">UNFIRED</span>'
-            f'<span class="w-alert-c">2 · MAIN</span><p>Approach as live. Disarm before handling.</p></div>')
+            f'<span class="w-alert-c">2 · Main</span><p>Approach as live. Disarm before handling.</p></div>')
     return chrome(p, body, title="Vega", edge=edge_button(p, "OK", "onfill"), bg=fill, extra_cls="alert")
 
 SCREENS = [("find", lambda p: scr_find(p), "Find: the way to the rocket, how far, how old the fix is"),
@@ -164,9 +168,9 @@ FACE = {
 
 def comp_rect(kind="find", tint=None):
     if kind == "find":
-        return ('<div class="c-rect"><div class="c-h"><span>VEGA · LANDED</span><span class="u">4 s</span></div>'
-                '<div class="c-big">1,352 <span class="u">ft</span></div><div class="c-q">062° T from you</div></div>')
-    return ('<div class="c-rect"><div class="c-h"><span>WIND · 4 MIN</span></div>'
+        return ('<div class="c-rect"><div class="c-h"><span>Vega · LANDED</span></div>'
+                '<div class="c-big">1,352 <span class="u">ft</span></div><div class="c-q">062° T · fix 4 sec</div></div>')
+    return ('<div class="c-rect"><div class="c-h"><span>Wind · <span class="c-d">4 min</span></span></div>'
             '<div class="c-big">12 <span class="u">mph</span> G19</div>'
             f'<div class="c-caution">{ico("caution")}NEAR LIMIT</div></div>')
 
@@ -174,7 +178,7 @@ def comp_circ(kind="find"):
     if kind == "find":
         return (f'<div class="c-circ">{arrow(ROCKET["bearing"] - ROCKET["heading"], 30)}<span class="c-cv">1352</span><span class="c-cu">ft</span></div>')
     if kind == "wind":
-        return '<div class="c-circ"><span class="c-cu">MPH</span><span class="c-cv l">12</span><span class="c-cu">G19</span></div>'
+        return '<div class="c-circ"><span class="c-cu">mph</span><span class="c-cv l">12</span><span class="c-cu">G19</span></div>'
     return '<div class="c-circ"><span class="c-box">SAFE</span></div>'
 
 def apple_face(mode):
@@ -185,16 +189,16 @@ def apple_face(mode):
 
 def smart_stack():
     return (f'<div class="wface apple stack"><div class="f-sttime">9:41</div>'
-            '<div class="st-card la"><div class="c-h"><span>FLIGHT 04 · MAIN</span><span class="u">0.4 s</span></div>'
+            '<div class="st-card la"><div class="c-h"><span>Flight 04 · MAIN</span><span class="c-d">0.4 s</span></div>'
             '<div class="c-big">612 <span class="u">ft AGL</span></div><div class="c-q">1,352 ft from you · 062° T</div></div>'
             f'<div class="st-card">{comp_rect("wind").replace("c-rect", "c-rect flat")}</div></div>')
 
 def wear_tile(kind):
     if kind == "find":
-        body = ('<div class="t-title">VEGA · LANDED</div><div class="t-main"><div class="c-big">1,352 <span class="u">ft</span></div>'
+        body = ('<div class="t-title">Vega · LANDED</div><div class="t-main"><div class="c-big">1,352 <span class="u">ft</span></div>'
                 '<div class="c-q">062° T · fix 4 s ago</div></div><div class="t-edge">Find</div>')
     else:
-        body = ('<div class="t-title">WINDOW · 2:10 PM</div><div class="t-main"><div class="c-big">12 <span class="u">mph</span></div>'
+        body = ('<div class="t-title">Window · 2:10 PM</div><div class="t-main"><div class="c-big">12 <span class="u">mph</span></div>'
                 f'<div class="c-q">Gusts 19 · from 270°</div><div class="c-caution">{ico("caution")}NEAR LIMIT</div></div><div class="t-edge q">Refresh</div>')
     return f'<div class="wface wear tile">{curved_time(DEVICES["wearos"])}{body}</div>'
 
@@ -212,25 +216,29 @@ def wear_face():
 FACES_CSS = """
 body { margin: 0; background: #fff; }
 .fig { max-width: 100%%; overflow-x: auto; box-sizing: border-box; display: inline-block; padding: 22px; background: %(paper)s; }
-.fig > h2 { font: 600 15px/20px 'Cascadia Mono', monospace; margin: 0 0 4px; color: #0B0F1C; }
-.fig > p.cap { font: 400 13px/18px 'Cascadia Mono', monospace; color: #566079; margin: 0 0 16px; max-width: 760px; }
+.fig > h2 { font: 600 15px/20px 'Archivo', sans-serif; margin: 0 0 4px; color: #0B0F1C; }
+.fig > p.cap { font: 400 13px/18px 'Archivo', sans-serif; color: #566079; margin: 0 0 16px; max-width: 760px; }
 .row { display: flex; gap: 22px; align-items: flex-start; }
 .col { display: grid; gap: 10px; justify-items: center; }
-.lab { font: 400 12px/16px 'Cascadia Mono', monospace; color: #566079; }
+.lab { font: 400 12px/16px 'Archivo', sans-serif; color: #566079; }
 .u { color: var(--fs-ink-muted); text-transform: none; letter-spacing: 0; }
 .wface { position: relative; box-sizing: border-box; background: #000; color: var(--fs-ink); overflow: hidden; }
+.wface { --sys: 'SF Compact', -apple-system, system-ui, sans-serif; }
+.wface.wear { --sys: Roboto, sans-serif; }
 .wface.apple { width: %(aw)spx; height: %(ah)spx; border-radius: 52px; padding: 12px 10px; display: grid; align-content: start; gap: 6px; }
 .wface.wear { width: %(ww)spx; height: %(wh)spx; border-radius: 50%%; }
-.f-inline { font: 600 13px/16px -apple-system, system-ui; text-align: center; color: var(--fs-ink); }
-.f-time { font: 600 44px/44px -apple-system, system-ui; color: #fff; padding-left: 4px; }
+.f-inline { font: 600 13px/16px var(--sys); text-align: center; color: var(--fs-ink); }
+.f-time { font: 600 44px/44px var(--sys); color: #fff; padding-left: 4px; }
 .f-row { display: flex; justify-content: space-between; padding: 0 2px; }
 .c-rect { width: 100%%; box-sizing: border-box; padding: 6px 8px; border-radius: 14px; background: rgba(255,255,255,.10); display: grid; gap: 1px; }
 .c-rect.flat { background: transparent; padding: 0; border-radius: 0; }
-.c-h { display: flex; justify-content: space-between; font: 400 11px/14px 'Cascadia Mono', monospace; letter-spacing: .05em; color: var(--fs-ink-muted); }
+/* the watch's own font for words, in sentence case; Cascadia Mono for numbers and ages; capitals only for a state */
+.c-h { display: flex; justify-content: space-between; gap: 6px; font: 500 12px/14px var(--sys); color: var(--fs-ink-muted); }
+.c-d { font: 400 11px/14px 'Cascadia Mono', monospace; }
 .c-big { font: 400 24px/28px 'Cascadia Mono', monospace; font-variant-numeric: tabular-nums; }
 .c-big .u { font-size: 12px; }
-.c-q { font: 400 11px/14px 'Archivo', sans-serif; color: var(--fs-ink-muted); }
-.c-caution { display: inline-flex; width: fit-content; align-items: center; gap: 3px; font: 600 10px/13px 'Cascadia Mono', monospace; padding: 1px 5px;
+.c-q { font: 400 12px/14px var(--sys); color: var(--fs-ink-muted); }
+.c-caution { display: inline-flex; width: fit-content; align-items: center; gap: 3px; font: 600 12px/14px 'Archivo', sans-serif; letter-spacing: .05em; padding: 1px 5px;
   background: var(--fs-caution-fill); color: var(--fs-on-caution-fill); }
 .c-caution svg { width: 11px; height: 11px; }
 .c-circ { width: %(circ)spx; height: %(circ)spx; border-radius: 50%%; background: rgba(255,255,255,.10); display: grid; place-content: center; justify-items: center; gap: 0; }
@@ -238,7 +246,7 @@ body { margin: 0; background: #fff; }
 .c-cv { font: 400 12px/13px 'Cascadia Mono', monospace; }
 .c-cv.l { font-size: 18px; line-height: 19px; }
 .c-cu { font: 400 10px/11px 'Cascadia Mono', monospace; color: var(--fs-ink-muted); letter-spacing: .04em; }
-.c-box { font: 600 10px/1 'Cascadia Mono', monospace; padding: 3px 4px; border: 1.5px solid var(--fs-ink); }
+.c-box { font: 600 11px/1 'Archivo', sans-serif; letter-spacing: .03em; padding: 3px 4px; border: 1.5px solid var(--fs-ink); }
 .c-corner { position: absolute; }
 /* accented: the system draws everything in one tint; meaning stays in words and shapes */
 /* accented: primary content tinted white, the accent group (the values) in the face's color */
@@ -250,12 +258,12 @@ body { margin: 0; background: #fff; }
 .tinted .c-box { border-color: #fff; }
 /* Smart Stack */
 .stack { gap: 8px; }
-.f-sttime { font: 600 15px/18px -apple-system, system-ui; text-align: right; padding: 6px 26px 0 0; color: #fff; }
+.f-sttime { font: 600 15px/18px var(--sys); text-align: right; padding: 6px 26px 0 0; color: #fff; }
 .st-card { border-radius: 18px; background: #1c1d22; padding: 8px 10px; display: grid; gap: 1px; }
 .st-card.la { background: %(abyss)s; }
 /* Wear OS tile: title slot, main slot, edge button */
 .tile { display: grid; justify-items: center; align-content: start; }
-.t-title { margin-top: 34px; font: 400 11px/14px 'Cascadia Mono', monospace; letter-spacing: .06em; color: var(--fs-ink-muted); }
+.t-title { margin-top: 34px; font: 500 13px/16px Roboto, sans-serif; color: var(--fs-ink-muted); }
 .t-main { margin-top: 14px; display: grid; justify-items: center; gap: 2px; text-align: center; }
 .tile .c-big { font-size: 30px; line-height: 34px; }
 .t-edge { position: absolute; left: 0; right: 0; bottom: 0; height: 46px; padding-top: 8px; box-sizing: border-box;
@@ -406,6 +414,16 @@ def build_readme():
     wr("README.md", README.format(a=a, w=w_, sa=DEVICES["watchos-small"], sw=DEVICES["wearos-small"], screens=screens, code=code))
 
 # ================================================================ build
+# Apple Watch's own face, SF Compact, ships with macOS but hidden: a page can't name it, only load its file. The shots load
+# it for the duration of the render, so the published HTML names no local path ('SF Compact' there falls back to the
+# system font). Without it (not a Mac), the watchOS shots use the system font and the build says so.
+SF_COMPACT = "/System/Library/Fonts/SFCompact.ttf"
+def _sf_compact(pg):
+    if not os.path.exists(SF_COMPACT): return "no SF Compact on this machine: watchOS shots in the system font"
+    pg.add_style_tag(content=f"@font-face {{ font-family: 'SF Compact'; src: url('file://{SF_COMPACT}'); font-weight: 1 1000; }}")
+    ok = pg.evaluate("document.fonts.load(\"16px 'SF Compact'\").then(f => f.length > 0)")
+    return None if ok else "SF Compact didn't load"
+
 def shots(jobs):
     """jobs: (html rel, png rel, width, height, selector or None), under product/watch/. False without Playwright."""
     try:
@@ -418,7 +436,12 @@ def shots(jobs):
         for job in jobs:
             rel, dest, w, h, sel = job[:5]; clip = job[5] if len(job) > 5 else None
             pg = b.new_page(viewport={"width": w, "height": h}, device_scale_factor=SCALE)
-            pg.goto("file://" + out(rel)); pg.evaluate("document.fonts.ready"); pg.wait_for_timeout(250)
+            pg.goto("file://" + out(rel))
+            if "wearos" not in rel:                                 # watchOS screens and the faces page
+                why = _sf_compact(pg)
+                if why == "SF Compact didn't load": problems.append(f"{dest}: {why}")
+                elif why: print("WARN watch:", why)
+            pg.evaluate("document.fonts.ready"); pg.wait_for_timeout(250)
             os.makedirs(os.path.dirname(out(dest)), exist_ok=True)
             if sel: pg.locator(sel).screenshot(path=out(dest), animations="disabled")
             else: pg.screenshot(path=out(dest), clip={"x": 0, "y": 0, "width": w, "height": h}, animations="disabled")

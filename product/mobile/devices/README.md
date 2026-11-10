@@ -1,6 +1,6 @@
 # Real screens
 
-Screenshots of the reference code running in the sample apps on simulators and emulators, captured 2026-10-06. The drawn
+Screenshots of the reference code running in the sample apps on simulators and emulators, captured 2026-11-09. The drawn
 mock-ups next to this folder show the intent; these show what the code actually does. Built by `tools/build/kit_devices.py`
 from `source/product/devices/`, where `devices.json` records each capture's device, OS, size and what it shows.
 
@@ -16,9 +16,16 @@ from `source/product/devices/`, where `devices.json` records each capture's devi
 | `ios-track.png` | iPhone 17 Pro, iOS 27.0 (24A434) | Track screen, system dark appearance, opened from the Home Screen icon through Device Hub (no back-link); FusionSpace SF Symbols in the tab bar and chips |
 | `ios-lock-flight.png` | iPhone 17 Pro, iOS 27.0 (24A434) | Live Activity on the Lock Screen in flight (phase strip, altitude, distance and bearing), -activity flight, locked and woken with the power button through Device Hub; dark |
 | `ios-lock-pad.png` | iPhone 17 Pro, iOS 27.0 (24A434) | Live Activity on the Lock Screen at the pad (countdown and the device's SAFE state), -activity pad, locked and woken with the power button through Device Hub; dark. Built with FS_CAPTURE_CLOCK=9:41, so the pad time (9:45 AM) agrees with the 9:41 clock and the 3:48 countdown |
+| `ios-pad-ax5.png` | iPhone 17 Pro, iOS 27.0 (24A434) | Pad at the largest accessibility text size (AX5): the top of the screen, as it scrolls |
+| `ios-pad-ax5-end.png` | iPhone 17 Pro, iOS 27.0 (24A434) | Pad at AX5, scrolled to its end: the state, Hold to arm and SAFE stacked, and the confirmation link |
 | `phone-pad.png` | Pixel 10, Android 17, API 37.0 (Google APIs arm64 system image r6, build CE2A.260420.019) | Pad, field theme |
 | `phone-track.png` | Pixel 10, Android 17, API 37.0 (Google APIs arm64 system image r6, build CE2A.260420.019) | Track, dark |
 | `phone-live-update.png` | Pixel 10, Android 17, API 37.0 (Google APIs arm64 system image r6, build CE2A.260420.019) | Live Update in the notification shade (MetricStyle, semantic style SAFE) |
 | `phone-live-update-android16.png` | Pixel 10, Android 16, API 36.1 (Google APIs arm64 system image r4, build BE4B.251210.005) | Live Update in the notification shade on Android 16 (ProgressStyle: the phases as segments, apogee and main as points, the rocket as the tracker; promoted, with the 612 ft chip in the status bar) |
+
+The screens were also captured at the largest text size each platform offers (Accessibility 5 on iPhone, font scale 2.0
+on Android, Accessibility 3 and 1 on the 49 mm and 40 mm watches, 1.24 on Wear OS). There they scroll, so those captures,
+caught part way through, aren't shown here; they're in `source/product/devices/`, and the build reads them back with text
+recognition and stops on any line cut short with "…".
 
 The sample apps are in `source/product/samples/` (their READMEs list what running them found and fixed).

@@ -55,4 +55,7 @@ units, Material's default purple in Compose dialogs, the Dynamic Island cutting 
 checked by `tools/build/kit_clip.py`: nothing may be cut by the screen's real outline or sit under a bar.
 
 `fonts/Roboto.woff2` is a Latin subset of Roboto (SIL OFL, `fonts/OFL-Roboto.txt`) so the Android mock-ups show Android's
-type; apps get Roboto from the system.
+type; apps get Roboto from the system. `fonts/Archivo-WideSemiBold.ttf` is for apps: the web's heading cut of Archivo (weight
+640, width 118%) as a whole static font with its own names (PostScript `Archivo-WideSemiBold`; `archivo_widesemibold` in an
+Android `res/font`), bundled beside Archivo Regular and SemiBold and Cascadia Mono from `type/fonts` (SIL OFL,
+`fonts/OFL-Archivo.txt`).

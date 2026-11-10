@@ -3,6 +3,8 @@
 # 9:41 on the watch's clock, the fix taken at 9:41:00 (so ambient says "as of 9:41" and awake "fix 4.x s ago").
 # PREFIX is "wear" (large round) or "wear-small"; OUT defaults to build/captures. Needs adb on PATH and the debug APK built
 # (gradle :wear:assembleDebug). The watch's own clock is set (auto time off), not drawn: Wear OS has no status bar override.
+# FS124=1 captures Find, Pad and Unfired at font scale 1.24 instead, the largest Wear OS offers ($P-pad-fs124.png, ...): the
+# build reads each back for "…".
 set -e
 W=$1; P=$2; OUT=${3:-$(dirname "$0")/../build/captures}
 A="adb -s $W"; mkdir -p "$OUT"
@@ -15,6 +17,11 @@ wake() { $A shell input keyevent KEYCODE_WAKEUP; sleep 1; }
 open() { at941; $A shell am start -n co.fusionspace.sample.wear/.MainActivity --es screen $1 --el fixed $T >/dev/null 2>&1; sleep 4; }
 shot() { $A exec-out screencap -p > "$OUT/$P-$1.png"; echo "$OUT/$P-$1.png"; }
 $A shell am force-stop co.fusionspace.sample.wear
+if [ -n "$FS124" ]; then
+  $A shell settings put system font_scale 1.24; sleep 2
+  for s in find pad unfired; do wake; $A shell am force-stop co.fusionspace.sample.wear; open $s; shot $s-fs124; done
+  $A shell settings put system font_scale 1.0; $A shell settings put global auto_time 1; exit 0
+fi
 for s in find pad unfired; do wake; open $s; shot $s; done
 wake; open find; $A shell input keyevent KEYCODE_SLEEP; sleep 4; shot find-ambient
 wake; at941

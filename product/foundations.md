@@ -149,8 +149,10 @@ Two families for words, both open source (SIL OFL), and one for equations, all i
   95. Turn on tabular figures (`font-variant-numeric: tabular-nums`) wherever Archivo shows a number.
 - **New Computer Modern Math** (Book) for equations, and only for them: the Computer Modern of LaTeX's textbooks, under the
   GUST Font License (LPPL 1.3c). The web uses a subset renamed *NewCM Math Subset*, as its license asks of a changed font.
-- On iOS and Android, body text and controls use the system font so they scale with Dynamic Type and font scaling; Cascadia
-  Mono and Archivo carry titles, labels and readouts.
+- In apps, Archivo and Cascadia Mono carry everything the app draws, as on the web, and scale with Dynamic Type and font
+  scaling; the system font stays where the system draws (lists, menus, alerts, the keyboard) and, on a watch, sets the
+  labels and prose ([`mobile.md`](mobile.md), [`watch.md`](watch.md)). Apps bundle the wide cut as a static font,
+  `product/mobile/fonts/Archivo-WideSemiBold.ttf`.
 
 | Token | Size / line | Family | Weight | Case | Use |
 |---|---|---|---|---|---|
@@ -167,8 +169,9 @@ Two families for words, both open source (SIL OFL), and one for equations, all i
 | `readout-l` | 40 / 44 px | Cascadia Mono | 400 | as written | The value a screen exists to show |
 | `code` | 14 / 20 px | Cascadia Mono | 400 | as written | Code, commands, file names, part numbers |
 
-The table is the drawing scale, which the platform tokens still use for phones, watches and desktop. On the web, every
-page sets its words this way, at every level ([`principles.md`](principles.md#three-levels)):
+The table is the drawing scale: a record's lettering, title blocks and device screens keep it. Every web page, at every
+level, and every phone and desktop screen sets its words this way ([`principles.md`](principles.md#three-levels); the
+phone sizes are in `FS.title()`, `FS.label()` and the rest of the Swift token file, and `FsType` in Compose):
 
 | Role on the web | Size / line | Family | Weight | Width | Case |
 |---|---|---|---|---|---|

@@ -3,7 +3,9 @@
 The reference code in product/ runs in the sample apps (source/product/samples/apple, source/product/samples/android), and
 their screenshots from simulators and emulators are kept in source/product/devices/<platform>/ with a devices.json saying
 what each one is. This copies them into product/, cuts each to its real screen outline (Apple's screenshot mask, the circle
-of a round watch) and makes a contact sheet per folder, next to the drawn mock-ups they prove.
+of a round watch) and makes a contact sheet per folder, next to the drawn mock-ups they prove. Rows marked "check_only" (the
+screens at the largest text sizes, caught part way through a scroll) stay in source/: the build reads them back for "…"
+like every capture, but a screen mid-scroll shows a row running off its edge, so they aren't published.
 """
 import os, re, sys, json, shutil
 import build, kit_product as kp, kit_mobile as km
@@ -100,6 +102,11 @@ from `source/product/devices/`, where `devices.json` records each capture's devi
 |---|---|---|
 {rows}
 
+The screens were also captured at the largest text size each platform offers (Accessibility 5 on iPhone, font scale 2.0
+on Android, Accessibility 3 and 1 on the 49 mm and 40 mm watches, 1.24 on Wear OS). There they scroll, so those captures,
+caught part way through, aren't shown here; they're in `source/product/devices/`, and the build reads them back with text
+recognition and stops on any line cut short with "…".
+
 The sample apps are in `source/product/samples/` (their READMEs list what running them found and fixed).
 """
 
@@ -141,7 +148,7 @@ def tree_elements(text, mode):
         for i, r in enumerate(rows):
             if mode == "home" and r[0] == "com.apple.springboard" and r[2] == "Icon" and r[5] == "FusionSpace": sel += _subtree(rows, i)
             if mode == "lock" and r[0] == "com.apple.springboard" and r[5].startswith("ListCell") \
-                    and any("FLIGHT 04" in s[4] for s in _subtree(rows, i)) and not any(s[5].startswith("ListCell") for s in _subtree(rows, i)[1:]):
+                    and any("flight 04" in s[4].lower() for s in _subtree(rows, i)) and not any(s[5].startswith("ListCell") for s in _subtree(rows, i)[1:]):
                 sel += _subtree(rows, i)
     W = max((r[3][2] for r in rows if r[2] == "Window"), default=0)
     watch = 0 < W < 250                     # watchOS draws its buttons as capsules: tested along that outline, not the box
@@ -169,6 +176,7 @@ def build_devices():
     if not rows: print("WARN devices: no captures in source/product/devices"); return
     import kit_clip
     kit_clip.assert_clean(kit_clip.check_captures(SRC), "real-screen captures")
+    rows = [r for r in rows if not r.get("check_only")]          # checked above, not published
     for kind, prefixes, folder, h, title in (("phone", PHONE, "mobile/devices", 520, "Phones: the reference code running"),
                                              ("watch", WATCH, "watch/devices", 230, "Watches: the reference code running")):
         sel = [r for r in rows if r["file"].startswith(prefixes)]

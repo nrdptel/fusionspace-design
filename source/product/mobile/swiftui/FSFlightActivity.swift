@@ -24,7 +24,7 @@ public struct FSFlightAttributes: ActivityAttributes {
         public var liftoff: Date?
         public var sampledAt: Date         // the age shown is now minus this
     }
-    public var flight: String             // "FLIGHT 04"
+    public var flight: String             // "Flight 04"
     public var designation: String        // "FS-VEGA-004"
     public var motor: String              // "K535W"
 }
@@ -41,10 +41,10 @@ public struct FSFlightActivity: Widget {
             let s = context.state, d = FS.darkPalette
             return DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    FSIslandValue(label: "ALTITUDE", value: s.altitudeFt.map(fsNumber) ?? "—", unit: "ft AGL", big: true, spoken: fsSpokenAltitude(s.altitudeFt))
+                    FSIslandValue(label: "Altitude", value: s.altitudeFt.map(fsNumber) ?? "—", unit: "ft AGL", big: true, spoken: fsSpokenAltitude(s.altitudeFt))
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    FSIslandValue(label: "FROM YOU", value: s.distanceFt.map(fsNumber) ?? "—", unit: "ft",
+                    FSIslandValue(label: "From you", value: s.distanceFt.map(fsNumber) ?? "—", unit: "ft",
                                   note: s.bearingTrue.map { String(format: "%03d°\u{00A0}T", $0) },
                                   spoken: fsSpokenFromYou(s.distanceFt, s.bearingTrue))
                 }
@@ -52,7 +52,7 @@ public struct FSFlightActivity: Widget {
                     VStack(spacing: 8) {
                         FSActivityPhaseStrip(phase: s.phase)
                         Text("\(context.attributes.designation) · link \(FSFreshness.age(since: s.sampledAt))")
-                            .font(.caption).foregroundStyle(d.inkMuted).frame(maxWidth: .infinity, alignment: .leading)
+                            .font(FS.data(12, relativeTo: .caption)).foregroundStyle(d.inkMuted).frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
             } compactLeading: {
@@ -66,7 +66,8 @@ public struct FSFlightActivity: Widget {
                         .font(.custom("CascadiaMono-SemiBold", size: 13))
                         .frame(maxWidth: 52, alignment: .leading)
                     } else {
-                        Text(s.phase.rawValue.uppercased())
+                        // the phase is the flight's state: capitals, in Archivo like a chip
+                        Text(s.phase.rawValue.uppercased()).font(FS.chip(15, relativeTo: .headline)).tracking(0.6)
                     }
                 }
                 .font(.custom("CascadiaMono-SemiBold", size: 15)).foregroundStyle(d.ink)
@@ -93,9 +94,9 @@ struct FSFlightLockScreen: View {
         let s = context.state, a = context.attributes, d = FS.darkPalette
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text(header(s, a)).font(FS.label())
+                Text(header(s, a)).font(FS.labelStrong())
                 Spacer()
-                Text("LINK \(FSFreshness.age(since: s.sampledAt).replacingOccurrences(of: " ago", with: ""))").font(FS.label())
+                Text("Link \(FSFreshness.age(since: s.sampledAt).replacingOccurrences(of: " ago", with: ""))").font(FS.labelStrong())
             }
             .foregroundStyle(d.inkMuted)
             if s.phase == .pad {
@@ -103,7 +104,7 @@ struct FSFlightLockScreen: View {
                     VStack(alignment: .leading, spacing: 2) {
                         if let t = s.padTime {
                             Text(timerInterval: Date.now...max(t, .now), countsDown: true).font(FS.readout(30, relativeTo: .title))
-                            Text("to your pad time, \(t.formatted(date: .omitted, time: .shortened))").font(.caption).foregroundStyle(d.inkMuted)
+                            Text("to your pad time, \(t.formatted(date: .omitted, time: .shortened))").font(FS.prose(12, relativeTo: .caption)).foregroundStyle(d.inkMuted)
                         }
                     }
                     Spacer()
@@ -112,9 +113,9 @@ struct FSFlightLockScreen: View {
             } else {
                 FSActivityPhaseStrip(phase: s.phase)
                 HStack(alignment: .top) {                                   // the two labels on one line
-                    FSIslandValue(label: "ALTITUDE", value: s.altitudeFt.map(fsNumber) ?? "—", unit: "ft AGL", big: true, spoken: fsSpokenAltitude(s.altitudeFt))
+                    FSIslandValue(label: "Altitude", value: s.altitudeFt.map(fsNumber) ?? "—", unit: "ft AGL", big: true, spoken: fsSpokenAltitude(s.altitudeFt))
                     Spacer()
-                    FSIslandValue(label: "FROM YOU", value: s.distanceFt.map(fsNumber) ?? "—", unit: "ft",
+                    FSIslandValue(label: "From you", value: s.distanceFt.map(fsNumber) ?? "—", unit: "ft",
                                   note: s.bearingTrue.map { String(format: "%03d°\u{00A0}T", $0) },
                                   spoken: fsSpokenFromYou(s.distanceFt, s.bearingTrue))
                 }
@@ -137,12 +138,12 @@ struct FSIslandValue: View {
     var body: some View {
         let d = FS.darkPalette
         VStack(alignment: .leading, spacing: 2) {
-            Text(label).font(FS.label()).foregroundStyle(d.inkMuted)
+            Text(label).font(FS.labelStrong()).foregroundStyle(d.inkMuted)
             HStack(alignment: .firstTextBaseline, spacing: 4) {
                 Text(value).font(FS.readout(big ? 30 : 20, relativeTo: big ? .title : .headline))
-                Text(unit).font(FS.label()).foregroundStyle(d.inkMuted)
+                Text(unit).font(FS.data(13, relativeTo: .footnote)).foregroundStyle(d.inkMuted)
             }
-            if let note { Text(note).font(.caption).foregroundStyle(d.inkMuted) }
+            if let note { Text(note).font(FS.data(12, relativeTo: .caption)).foregroundStyle(d.inkMuted) }
         }
         .foregroundStyle(d.ink)
         .accessibilityElement(children: .combine)
@@ -150,7 +151,8 @@ struct FSIslandValue: View {
     }
 }
 
-/// PAD BOOST COAST APOGEE DROGUE MAIN LANDED: done in ink, now inverted, next faint.
+/// PAD BOOST COAST APOGEE DROGUE MAIN LANDED: done in ink, now inverted, next faint. A phase is the flight's state:
+/// capitals, in Archivo like a chip.
 struct FSActivityPhaseStrip: View {
     let phase: FSFlightAttributes.ContentState.Phase
     var body: some View {
@@ -158,7 +160,7 @@ struct FSActivityPhaseStrip: View {
         HStack(spacing: 0) {
             ForEach(Array(all.enumerated()), id: \.offset) { j, p in
                 Text(p.rawValue.uppercased())
-                    .font(.custom("CascadiaMono-Regular", size: 8.5)).lineLimit(1).minimumScaleFactor(0.7)
+                    .font(.custom(j == i ? "Archivo-SemiBold" : "Archivo-Regular", size: 8.5)).tracking(0.3).lineLimit(1).minimumScaleFactor(0.7)
                     .frame(maxWidth: .infinity).padding(.vertical, 4)
                     .foregroundStyle(j == i ? d.canvas : (j < i ? d.ink : d.inkMuted))
                     .background(j == i ? d.ink : Color.clear)
@@ -173,7 +175,7 @@ struct FSActivityPhaseStrip: View {
 struct FSIslandState: View {
     let armed: Bool
     var body: some View {
-        Text(armed ? "ARMED" : "SAFE").font(.custom("CascadiaMono-SemiBold", size: 10))
+        Text(armed ? "ARMED" : "SAFE").font(FS.chip(10, relativeTo: .caption2)).tracking(0.3)
             .padding(.horizontal, 4).padding(.vertical, 2)
             .foregroundStyle(armed ? FS.onDangerFill : FS.darkPalette.ink)
             .background(armed ? FS.dangerFill : Color.clear)

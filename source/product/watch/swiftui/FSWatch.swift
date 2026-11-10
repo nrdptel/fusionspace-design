@@ -114,14 +114,14 @@ public struct FSWatchFind: View {
             FSBearingArrow(relativeDegrees: bearingTrue - (headingTrue ?? 0), outline: dimmed).frame(width: arrow, height: arrow)
             HStack(alignment: .firstTextBaseline, spacing: 4) {
                 Text(distanceFt.formatted()).font(FS.readout(32, relativeTo: .title))
-                Text("ft").font(FS.label()).foregroundStyle(d.inkMuted)
+                Text("ft").font(FS.data(13, relativeTo: .footnote)).foregroundStyle(d.inkMuted)
             }
             .foregroundStyle(dimmed ? d.inkMuted : d.ink)
             .lineLimit(1).minimumScaleFactor(0.7)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(Text("Rocket \(distanceFt.formatted()) feet away, \(spokenDirection)"))
             .accessibilityValue(Text("fix \(FSWatchAge.spoken(since: fixedAt, now: now)) old"))
-            Text(qualifier(now: now)).font(FS.label()).foregroundStyle(d.inkMuted)
+            Text(qualifier(now: now)).font(FS.data(12, relativeTo: .footnote)).foregroundStyle(d.inkMuted)
                 .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
             // The primary action, full width in the content (a bottom-bar item would sit over the text above).
             // Always On shows it as unavailable instead of removing it.
@@ -156,11 +156,13 @@ public struct FSWatchFind: View {
 // MARK: - State and alerts
 
 /// The device's state at the pad, read only: SAFE outlined or ARMED inverted, then the channels in order. Nothing here
-/// sends a command; safing is the airframe switch or the phone.
+/// sends a command; safing is the airframe switch or the phone. The box and the chips are Archivo, as on the phone; the
+/// channels' names and the note are the watch's own font, in sentence case ("1 · Drogue"); the designation is data.
 public struct FSWatchState: View {
     public struct Channel: Identifiable, Sendable {
         public let id: Int; let name: String; let state: FSSignal; let word: String; let spoken: String?
         /// - spoken: what VoiceOver says for an abbreviated state word (`Cont` → `Continuity`).
+        /// - name: as written, "Drogue"; "—" for a channel with no charge. word: the state, "Cont" (shown in capitals).
         public init(_ n: Int, _ name: String, _ state: FSSignal, _ word: String, spoken: String? = nil) {
             id = n; self.name = name; self.state = state; self.word = word; self.spoken = spoken
         }
@@ -187,22 +189,23 @@ public struct FSWatchState: View {
     private func content(compact: Bool, side: Bool = false) -> some View {
         let d = FS.darkPalette
         let box = Text(armed ? "ARMED" : "SAFE")
-            .font(.custom("CascadiaMono-SemiBold", size: compact ? 18 : 22, relativeTo: .title3))
-            .padding(.horizontal, compact ? 6 : 10).padding(.vertical, compact ? 3 : 5)
+            .font(FS.chip(compact ? 16 : 22, relativeTo: .title3)).tracking(0.5)
+            .padding(.horizontal, compact ? 6 : 10).padding(.vertical, compact ? 2 : 5)
             .foregroundStyle(armed ? FS.onDangerFill : d.ink)
             .background(armed ? FS.dangerFill : Color.clear)
             .overlay(Rectangle().strokeBorder(armed ? FS.dangerFill : d.ink, lineWidth: 3))
+            .lineLimit(1).fixedSize()      // a state word never wraps: squeezed beside the designation, it measured three lines tall
             .accessibilityLabel(Text(armed ? "Device state, armed" : "Device state, safe"))
-        let link = Text("\(designation) · \(linkAge)").font(FS.label()).foregroundStyle(d.inkMuted).lineLimit(1).minimumScaleFactor(0.8)
+        let link = Text("\(designation) · \(linkAge)").font(FS.data(12, relativeTo: .footnote)).foregroundStyle(d.inkMuted).lineLimit(1).minimumScaleFactor(0.8)
             .accessibilityLabel(Text("\(designation), link \(linkAge)"))
-        return VStack(spacing: compact ? 2 : 4) {
+        return VStack(spacing: compact ? 1 : 4) {
             if side {
                 // the smallest watches: the designation beside the box saves a line
                 HStack(spacing: 6) {
                     box
                     VStack(alignment: .leading, spacing: 0) {
-                        Text(designation).font(FS.label()).lineLimit(1).minimumScaleFactor(0.7)
-                        Text(linkAge).font(FS.label()).foregroundStyle(d.inkMuted)
+                        Text(designation).font(FS.data(12, relativeTo: .footnote)).lineLimit(1).minimumScaleFactor(0.7)
+                        Text(linkAge).font(FS.data(12, relativeTo: .footnote)).foregroundStyle(d.inkMuted)
                     }
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(Text("\(designation), link \(linkAge)"))
@@ -212,24 +215,38 @@ public struct FSWatchState: View {
                 link
             }
             ForEach(channels) { ch in
-                // the channel and its state on one line, or the state under the name when both don't fit
-                ViewThatFits(in: .horizontal) {
-                    HStack(spacing: 4) {
-                        Text("\(ch.id) \(ch.name)").font(FS.label()).fixedSize()
-                        Spacer(minLength: 4)
-                        FSStatus(ch.word, signal: ch.state, minHeight: 20)
+                Group {
+                    if compact {
+                        // The compact layouts keep each channel on one line (the name may shrink a little), so their
+                        // height is known when the screen picks a layout; a row that stacked there made the 40 mm SE
+                        // scroll at its default text size.
+                        HStack(spacing: 4) {
+                            Text("\(ch.id) · \(ch.name)").font(FS.label()).lineLimit(1).minimumScaleFactor(0.85)
+                            Spacer(minLength: 0)
+                            FSStatus(ch.word, signal: ch.state, caps: true, minHeight: 20).layoutPriority(1)
+                        }
+                    } else {
+                        // the channel and its state on one line, or the state under the name when both don't fit
+                        ViewThatFits(in: .horizontal) {
+                            HStack(spacing: 4) {
+                                Text("\(ch.id) · \(ch.name)").font(FS.label()).fixedSize()
+                                Spacer(minLength: 0)
+                                FSStatus(ch.word, signal: ch.state, caps: true, minHeight: 20)
+                            }
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("\(ch.id) · \(ch.name)").font(FS.label())
+                                FSStatus(ch.word, signal: ch.state, caps: true, minHeight: 20)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
                     }
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("\(ch.id) \(ch.name)").font(FS.label())
-                        FSStatus(ch.word, signal: ch.state, minHeight: 20)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel(Text(ch.label))
             }
             Text(compact ? "Safe: switch or phone." : "Safe it with the switch or phone.").font(.caption2).foregroundStyle(d.inkMuted)
                 .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity)      // the screen's width, not the narrowest a stack offers it
         }
         .foregroundStyle(d.ink)
         .scenePadding(.horizontal)
@@ -265,12 +282,12 @@ public struct FSWatchUnfired: View {
                         title("UNFIRED \(channel)", size: 15).fixedSize()
                         VStack(spacing: 0) {
                             title("UNFIRED", size: 15)
-                            Text(channel).font(.custom("CascadiaMono-SemiBold", size: 15, relativeTo: .title2))
+                            Text(channel).font(.system(.headline))
                         }
                     }
                 } else {
                     title("UNFIRED", size: compact ? 20 : 24)
-                    Text(channel).font(FS.readout(compact ? 16 : 18, relativeTo: .headline))
+                    Text(channel).font(.system(compact ? .subheadline : .headline, weight: .semibold))
                 }
                 Text("Approach as live. Disarm before handling.").font(compact ? .caption2 : .footnote)
                     .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
@@ -285,7 +302,8 @@ public struct FSWatchUnfired: View {
     private func title(_ word: String, size: CGFloat) -> some View {
         HStack(spacing: size < 20 ? 4 : 6) {
             Image(systemName: "exclamationmark.triangle")
-            Text(word).font(.custom("CascadiaMono-SemiBold", size: size, relativeTo: .title2)).lineLimit(1).minimumScaleFactor(0.6)
+            // the state in Archivo, like the box and the chips
+            Text(word).font(FS.chip(size, relativeTo: .title2)).tracking(size * 0.04).lineLimit(1).minimumScaleFactor(0.6)
         }
         .accessibilityElement(children: .combine)
     }

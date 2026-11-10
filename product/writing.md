@@ -188,7 +188,7 @@ Never a go/no-go verdict. The motor's printed data, the manufacturer's manual an
 ## On screens
 
 - **Titles say what the screen is for**, in sentence case: "Size a charge", "Flight 03 · J350W-L".
-- **Labels are nouns, controls are verbs.** `INNER DIAMETER` (a field), "Run simulation" (a button). A button says what will
+- **Labels are nouns, controls are verbs.** "Inner diameter" (a field), "Run simulation" (a button). A button says what will
   happen, never "OK", "Submit" or "Click here". Confirmation buttons repeat the action: "Arm channel 2", "Delete log".
 - **Help text is one sentence** under the field, about the thing people get wrong: "Inside the tube, not the outside."
 - **Empty states** say what goes here and how to get it: "No flight loaded. Drop a log file here, or pick one."

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0 · Copyright 2026 Neer Patel
-// The pad screen (product/mobile.md#screens, product/mobile/screens/android-pad.png): field theme; checks and channels as
-// sheets; at the bottom where a thumb reaches, the device's state above Hold to arm, with SAFE, one tap, to its right (or
+// The pad screen (product/mobile.md#screens, product/mobile/screens/android-pad.png), a tool: field theme; the title, then
+// the designation as a data line; checks and channels as sections under a 2 dp rule; at the bottom where a thumb reaches, the device's state above Hold to arm, with SAFE, one tap, to its right (or
 // below it, when the text is too large for both side by side), and the accessible alternative under them.
 package co.fusionspace.sample
 
@@ -70,9 +70,9 @@ import co.fusionspace.design.FsSheetHeader
 import co.fusionspace.design.FsSignal
 import co.fusionspace.design.FsStateBox
 import co.fusionspace.design.FsStatus
-import co.fusionspace.design.FsTag
+import co.fusionspace.design.FsType
+import co.fusionspace.design.fsUnbroken
 import co.fusionspace.design.LocalFsColors
-import co.fusionspace.design.LocalFsMono
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -100,22 +100,24 @@ fun PadScreen(onBack: () -> Unit) {
         BoxWithConstraints(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding)) {
           Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).heightIn(min = maxHeight)) {
             Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp), itemVerticalAlignment = Alignment.CenterVertically) {
-                    FsTag("FS-VEGA-004 rev B")
+                // the title first, then the designation as a plain data line (no tag over the title)
+                Text("Pad 3 · Flight 04", style = FsType.title(), color = c.ink, modifier = Modifier.semantics { heading() })
+                Text("${fsUnbroken("FS-VEGA-004")} rev B · K535W · dual deploy", style = FsType.data(), color = c.inkMuted)
+                Spacer(Modifier.height(8.dp))
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp), itemVerticalAlignment = Alignment.CenterVertically) {
                     FsStatus("Link", FsSignal.Ok, detail = "0.3\u00A0s", icon = { StatusIcon(R.drawable.fs_link) })
+                    Text("Screen stays on", style = FsType.label(), color = c.inkMuted)
                 }
-                Text("Pad 3 · Flight 04", style = MaterialTheme.typography.headlineMedium, color = c.ink, modifier = Modifier.semantics { heading() })
-                Text("K535W · dual deploy · screen stays on", style = mono(14), color = c.inkMuted)
                 Spacer(Modifier.height(12.dp))
-                FsSheetHeader("Checks", 1, 2)
-                Line("Switch", "ON") { FsStatus("On", FsSignal.Ok, icon = { StatusIcon(R.drawable.fs_check) }) }
-                Line("Battery", "8.1\u00A0V") { FsStatus("OK", FsSignal.Ok, icon = { StatusIcon(R.drawable.fs_battery) }) }
-                Line("GPS", "3D · 11\u00A0sat") { FsStatus("Fix", FsSignal.Ok, icon = { StatusIcon(R.drawable.fs_gps_fix) }) }
+                FsSheetHeader("Checks")
+                Line("Switch", "ON") { FsStatus("On", FsSignal.Ok, icon = { StatusIcon(R.drawable.fs_check) }, caps = true) }
+                Line("Battery", "8.1\u00A0V") { FsStatus("OK", FsSignal.Ok, icon = { StatusIcon(R.drawable.fs_battery) }, caps = true) }
+                Line("GPS", "3D · 11\u00A0sat") { FsStatus("Fix", FsSignal.Ok, icon = { StatusIcon(R.drawable.fs_gps_fix) }, caps = true) }
                 Spacer(Modifier.height(12.dp))
-                FsSheetHeader("Channels", 2, 2)
-                Line("1 · Drogue", "Apogee +\u00A00.4\u00A0s") { FsStatus("Cont", FsSignal.Ok, icon = { StatusIcon(R.drawable.fs_continuity) }, spoken = "Continuity") }
-                Line("2 · Main", "700\u00A0ft desc.") { FsStatus("Cont", FsSignal.Ok, icon = { StatusIcon(R.drawable.fs_continuity) }, spoken = "Continuity") }
-                Line("3 · —", "Not used") { FsStatus("Not used", FsSignal.Off, icon = { StatusIcon(R.drawable.fs_minus) }) }
+                FsSheetHeader("Channels")
+                Line("1 · Drogue", "Apogee +\u00A00.4\u00A0s") { FsStatus("Cont", FsSignal.Ok, icon = { StatusIcon(R.drawable.fs_continuity) }, spoken = "Continuity", caps = true) }
+                Line("2 · Main", "700\u00A0ft desc.") { FsStatus("Cont", FsSignal.Ok, icon = { StatusIcon(R.drawable.fs_continuity) }, spoken = "Continuity", caps = true) }
+                Line("3 · —", "Not used", words = true) { FsStatus("Not used", FsSignal.Off, icon = { StatusIcon(R.drawable.fs_minus) }, caps = true) }
                 Spacer(Modifier.height(12.dp))
             }
             Spacer(Modifier.weight(1f))
@@ -143,7 +145,7 @@ fun PadScreen(onBack: () -> Unit) {
                 }
             }
             TextButton(onClick = { confirming = true }, modifier = Modifier.align(Alignment.CenterHorizontally).padding(vertical = 4.dp)) {
-                Text("Arm with a confirmation instead", textAlign = TextAlign.Center)
+                Text("Arm with a confirmation instead", style = FsType.button(15), textAlign = TextAlign.Center)
             }
           }
         }
@@ -151,30 +153,29 @@ fun PadScreen(onBack: () -> Unit) {
     if (confirming) FsArmConfirmation("Arm", "FS-VEGA-004", onConfirmed = { confirming = false; arm() }, onDismiss = { confirming = false })
 }
 
-@Composable
-private fun mono(size: Int, weight: FontWeight = FontWeight.Normal) =
-    TextStyle(fontFamily = LocalFsMono.current, fontSize = size.sp, fontWeight = weight, letterSpacing = 0.02.em)
-
 /** A FusionSpace icon from product/icons/android, in the status chip's own foreground color. */
 @Composable
 fun StatusIcon(@DrawableRes id: Int) = Icon(painterResource(id), null, Modifier.size(16.dp))
 
+/** A label / value / state row: the label in Archivo, the value in Cascadia Mono ([words], such as "Not used", in the label's font). */
 @Composable
-private fun Line(label: String, value: String, status: @Composable () -> Unit) {
+private fun Line(label: String, value: String, words: Boolean = false, status: @Composable () -> Unit) {
     val c = LocalFsColors.current
-    val key = @Composable { m: Modifier -> Text(label.uppercase(), style = mono(12).copy(letterSpacing = 0.06.em), color = c.inkMuted, modifier = m) }
+    val key = @Composable { m: Modifier -> Text(label, style = FsType.label(), color = c.inkMuted, modifier = m) }
+    val valueStyle = if (words) FsType.label() else FsType.data(15)
+    val valueColor = if (words) c.inkMuted else c.ink
     Column {
         // One line while the label, the value and the state all fit; with larger text, the label above the value and the
         // state, so nothing wraps mid-phrase or breaks mid-word.
         FsFirstThatFits(Modifier.semantics(mergeDescendants = true) {}) {
             Row(Modifier.fillMaxWidth().heightIn(min = 40.dp), verticalAlignment = Alignment.CenterVertically) {
                 key(Modifier.widthIn(min = 120.dp).padding(end = 8.dp))
-                Text(value, style = mono(15), color = c.ink, modifier = Modifier.weight(1f).padding(vertical = 6.dp))
+                Text(value, style = valueStyle, color = valueColor, modifier = Modifier.weight(1f).padding(vertical = 6.dp))
                 status()
             }
             Column(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 key(Modifier)
-                Text(value, style = mono(15), color = c.ink)
+                Text(value, style = valueStyle, color = valueColor)
                 status()
             }
         }
@@ -192,6 +193,6 @@ private fun SafeButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
     ) {
         Icon(painterResource(R.drawable.fs_safe), null, Modifier.size(28.dp), tint = c.ink)
-        Text("SAFE", style = mono(22, FontWeight.SemiBold), color = c.ink)
+        Text("SAFE", style = FsType.button(22).copy(letterSpacing = 0.04.em), color = c.ink)
     }
 }

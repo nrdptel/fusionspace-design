@@ -8,177 +8,6 @@
     "rect": [
      24.3,
      88.0,
-     353.7,
-     191.0
-    ]
-   },
-   {
-    "what": "Other 'FusionSpace'",
-    "rect": [
-     26.3,
-     90.0,
-     349.7,
-     164.3
-    ]
-   },
-   {
-    "what": "StaticText 'SURFACE WIND, 12, mph, Gusts 19 · from 270°, NEAR LIMIT, 9:37 AM · 4 min ago'",
-    "rect": [
-     44.3,
-     108.0,
-     124.7,
-     128.3
-    ]
-   },
-   {
-    "what": "StaticText 'SURFACE WIND'",
-    "rect": [
-     44.3,
-     108.0,
-     93.0,
-     14.0
-    ]
-   },
-   {
-    "what": "StaticText '12'",
-    "rect": [
-     44.3,
-     126.0,
-     40.0,
-     39.7
-    ]
-   },
-   {
-    "what": "StaticText 'mph'",
-    "rect": [
-     90.3,
-     146.7,
-     21.3,
-     14.0
-    ]
-   },
-   {
-    "what": "StaticText 'Gusts 19 · from 270°'",
-    "rect": [
-     44.3,
-     169.7,
-     124.7,
-     15.7
-    ]
-   },
-   {
-    "what": "Image 'Warning'",
-    "rect": [
-     50.3,
-     191.3,
-     15.3,
-     13.3
-    ]
-   },
-   {
-    "what": "StaticText 'NEAR LIMIT'",
-    "rect": [
-     73.7,
-     191.3,
-     70.3,
-     14.0
-    ]
-   },
-   {
-    "what": "StaticText '9:37 AM · 4 min ago'",
-    "rect": [
-     44.3,
-     223.0,
-     104.0,
-     13.3
-    ]
-   },
-   {
-    "what": "StaticText 'CEILING, 6,500, ft AGL'",
-    "rect": [
-     185.0,
-     108.0,
-     105.0,
-     39.3
-    ]
-   },
-   {
-    "what": "StaticText 'CEILING'",
-    "rect": [
-     185.0,
-     108.0,
-     54.3,
-     14.0
-    ]
-   },
-   {
-    "what": "StaticText '6,500'",
-    "rect": [
-     185.0,
-     124.0,
-     58.7,
-     23.3
-    ]
-   },
-   {
-    "what": "StaticText 'ft AGL'",
-    "rect": [
-     247.7,
-     131.7,
-     42.3,
-     14.0
-    ]
-   },
-   {
-    "what": "StaticText 'UPPER WIND, 31, mph, at 6,000 ft · 4 h old'",
-    "rect": [
-     185.0,
-     157.3,
-     115.3,
-     54.7
-    ]
-   },
-   {
-    "what": "StaticText 'UPPER WIND'",
-    "rect": [
-     199.0,
-     157.3,
-     77.3,
-     14.0
-    ]
-   },
-   {
-    "what": "StaticText '31'",
-    "rect": [
-     199.0,
-     173.3,
-     23.7,
-     23.3
-    ]
-   },
-   {
-    "what": "StaticText 'mph'",
-    "rect": [
-     226.7,
-     181.0,
-     21.3,
-     14.0
-    ]
-   },
-   {
-    "what": "StaticText 'at 6,000 ft · 4 h old'",
-    "rect": [
-     199.0,
-     198.7,
-     101.3,
-     13.3
-    ]
-   },
-   {
-    "what": "Icon 'FusionSpace'",
-    "rect": [
-     24.3,
-     288.7,
      168.3,
      191.0
     ]
@@ -187,34 +16,34 @@
     "what": "Other 'FusionSpace'",
     "rect": [
      26.3,
-     290.7,
+     90.0,
      164.3,
      164.3
     ]
    },
    {
-    "what": "StaticText 'SURFACE WIND, 12, mph, Gusts 19 · from 270°, NEAR LIMIT, 9:37 AM · 4 min ago'",
+    "what": "StaticText 'Surface wind, 12, mph, Gusts 19 · from 270°, NEAR LIMIT, 9:37 AM · 6 min ago'",
     "rect": [
-     46.3,
-     308.7,
-     124.7,
+     49.7,
+     108.0,
+     118.0,
      128.3
     ]
    },
    {
-    "what": "StaticText 'SURFACE WIND'",
+    "what": "StaticText 'Surface wind'",
     "rect": [
-     46.3,
-     308.7,
-     93.0,
-     14.0
+     49.7,
+     108.0,
+     77.7,
+     14.3
     ]
    },
    {
     "what": "StaticText '12'",
     "rect": [
-     46.3,
-     326.7,
+     49.7,
+     126.3,
      40.0,
      39.7
     ]
@@ -222,46 +51,217 @@
    {
     "what": "StaticText 'mph'",
     "rect": [
-     92.3,
-     347.3,
-     21.3,
-     14.0
+     95.7,
+     145.0,
+     24.7,
+     16.3
     ]
    },
    {
     "what": "StaticText 'Gusts 19 · from 270°'",
     "rect": [
-     46.3,
-     370.3,
-     124.7,
-     15.7
+     49.7,
+     170.0,
+     118.0,
+     14.3
     ]
    },
    {
     "what": "Image 'Warning'",
     "rect": [
-     52.3,
-     392.0,
-     15.3,
-     13.3
+     55.7,
+     190.3,
+     16.3,
+     14.3
     ]
    },
    {
     "what": "StaticText 'NEAR LIMIT'",
     "rect": [
-     75.7,
-     392.0,
-     70.3,
-     14.0
+     80.0,
+     190.7,
+     81.0,
+     14.3
     ]
    },
    {
-    "what": "StaticText '9:37 AM · 4 min ago'",
+    "what": "StaticText '9:37 AM · 6 min ago'",
     "rect": [
-     46.3,
-     423.7,
-     104.0,
-     13.3
+     49.7,
+     224.3,
+     96.7,
+     12.0
+    ]
+   },
+   {
+    "what": "Icon 'FusionSpace'",
+    "rect": [
+     24.3,
+     288.7,
+     353.7,
+     191.0
+    ]
+   },
+   {
+    "what": "Other 'FusionSpace'",
+    "rect": [
+     26.3,
+     290.7,
+     349.7,
+     164.3
+    ]
+   },
+   {
+    "what": "StaticText 'Surface wind, 12, mph, Gusts 19 · from 270°, NEAR LIMIT, 9:37 AM · 6 min ago'",
+    "rect": [
+     44.3,
+     308.7,
+     118.0,
+     128.3
+    ]
+   },
+   {
+    "what": "StaticText 'Surface wind'",
+    "rect": [
+     44.3,
+     308.7,
+     77.7,
+     14.3
+    ]
+   },
+   {
+    "what": "StaticText '12'",
+    "rect": [
+     44.3,
+     327.0,
+     40.0,
+     39.7
+    ]
+   },
+   {
+    "what": "StaticText 'mph'",
+    "rect": [
+     90.3,
+     345.7,
+     24.7,
+     16.3
+    ]
+   },
+   {
+    "what": "StaticText 'Gusts 19 · from 270°'",
+    "rect": [
+     44.3,
+     370.7,
+     118.0,
+     14.3
+    ]
+   },
+   {
+    "what": "Image 'Warning'",
+    "rect": [
+     50.3,
+     391.0,
+     16.3,
+     14.3
+    ]
+   },
+   {
+    "what": "StaticText 'NEAR LIMIT'",
+    "rect": [
+     74.7,
+     391.3,
+     81.0,
+     14.3
+    ]
+   },
+   {
+    "what": "StaticText '9:37 AM · 6 min ago'",
+    "rect": [
+     44.3,
+     425.0,
+     96.7,
+     12.0
+    ]
+   },
+   {
+    "what": "StaticText 'Ceiling, 6,500, ft AGL'",
+    "rect": [
+     178.3,
+     308.7,
+     112.0,
+     39.7
+    ]
+   },
+   {
+    "what": "StaticText 'Ceiling'",
+    "rect": [
+     178.3,
+     308.7,
+     42.0,
+     14.3
+    ]
+   },
+   {
+    "what": "StaticText '6,500'",
+    "rect": [
+     178.3,
+     325.0,
+     58.7,
+     23.3
+    ]
+   },
+   {
+    "what": "StaticText 'ft AGL'",
+    "rect": [
+     241.0,
+     330.7,
+     49.3,
+     16.3
+    ]
+   },
+   {
+    "what": "StaticText 'Upper wind, 31, mph, at 6,000 ft · 4 h old'",
+    "rect": [
+     178.3,
+     358.3,
+     102.7,
+     53.7
+    ]
+   },
+   {
+    "what": "StaticText 'Upper wind'",
+    "rect": [
+     192.3,
+     358.3,
+     67.7,
+     14.3
+    ]
+   },
+   {
+    "what": "StaticText '31'",
+    "rect": [
+     192.3,
+     374.7,
+     23.7,
+     23.3
+    ]
+   },
+   {
+    "what": "StaticText 'mph'",
+    "rect": [
+     220.0,
+     380.3,
+     24.7,
+     16.3
+    ]
+   },
+   {
+    "what": "StaticText 'at 6,000 ft · 4 h old'",
+    "rect": [
+     192.3,
+     400.0,
+     88.7,
+     12.0
     ]
    },
    {
@@ -284,177 +284,6 @@
     "rect": [
      24.3,
      88.0,
-     353.7,
-     191.0
-    ]
-   },
-   {
-    "what": "Other 'FusionSpace'",
-    "rect": [
-     26.3,
-     90.0,
-     349.7,
-     164.3
-    ]
-   },
-   {
-    "what": "StaticText 'SURFACE WIND, 12, mph, Gusts 19 · from 270°, NEAR LIMIT, 9:37 AM · 4 min ago'",
-    "rect": [
-     44.3,
-     108.0,
-     124.7,
-     128.3
-    ]
-   },
-   {
-    "what": "StaticText 'SURFACE WIND'",
-    "rect": [
-     44.3,
-     108.0,
-     93.0,
-     14.0
-    ]
-   },
-   {
-    "what": "StaticText '12'",
-    "rect": [
-     44.3,
-     126.0,
-     40.0,
-     39.7
-    ]
-   },
-   {
-    "what": "StaticText 'mph'",
-    "rect": [
-     90.3,
-     146.7,
-     21.3,
-     14.0
-    ]
-   },
-   {
-    "what": "StaticText 'Gusts 19 · from 270°'",
-    "rect": [
-     44.3,
-     169.7,
-     124.7,
-     15.7
-    ]
-   },
-   {
-    "what": "Image 'Warning'",
-    "rect": [
-     50.3,
-     191.3,
-     15.3,
-     13.3
-    ]
-   },
-   {
-    "what": "StaticText 'NEAR LIMIT'",
-    "rect": [
-     73.7,
-     191.3,
-     70.3,
-     14.0
-    ]
-   },
-   {
-    "what": "StaticText '9:37 AM · 4 min ago'",
-    "rect": [
-     44.3,
-     223.0,
-     104.0,
-     13.3
-    ]
-   },
-   {
-    "what": "StaticText 'CEILING, 6,500, ft AGL'",
-    "rect": [
-     185.0,
-     108.0,
-     105.0,
-     39.3
-    ]
-   },
-   {
-    "what": "StaticText 'CEILING'",
-    "rect": [
-     185.0,
-     108.0,
-     54.3,
-     14.0
-    ]
-   },
-   {
-    "what": "StaticText '6,500'",
-    "rect": [
-     185.0,
-     124.0,
-     58.7,
-     23.3
-    ]
-   },
-   {
-    "what": "StaticText 'ft AGL'",
-    "rect": [
-     247.7,
-     131.7,
-     42.3,
-     14.0
-    ]
-   },
-   {
-    "what": "StaticText 'UPPER WIND, 31, mph, at 6,000 ft · 4 h old'",
-    "rect": [
-     185.0,
-     157.3,
-     115.3,
-     54.7
-    ]
-   },
-   {
-    "what": "StaticText 'UPPER WIND'",
-    "rect": [
-     199.0,
-     157.3,
-     77.3,
-     14.0
-    ]
-   },
-   {
-    "what": "StaticText '31'",
-    "rect": [
-     199.0,
-     173.3,
-     23.7,
-     23.3
-    ]
-   },
-   {
-    "what": "StaticText 'mph'",
-    "rect": [
-     226.7,
-     181.0,
-     21.3,
-     14.0
-    ]
-   },
-   {
-    "what": "StaticText 'at 6,000 ft · 4 h old'",
-    "rect": [
-     199.0,
-     198.7,
-     101.3,
-     13.3
-    ]
-   },
-   {
-    "what": "Icon 'FusionSpace'",
-    "rect": [
-     24.3,
-     288.7,
      168.3,
      191.0
     ]
@@ -463,34 +292,34 @@
     "what": "Other 'FusionSpace'",
     "rect": [
      26.3,
-     290.7,
+     90.0,
      164.3,
      164.3
     ]
    },
    {
-    "what": "StaticText 'SURFACE WIND, 12, mph, Gusts 19 · from 270°, NEAR LIMIT, 9:37 AM · 4 min ago'",
+    "what": "StaticText 'Surface wind, 12, mph, Gusts 19 · from 270°, NEAR LIMIT, 9:37 AM · 6 min ago'",
     "rect": [
-     46.3,
-     308.7,
-     124.7,
+     49.7,
+     108.0,
+     118.0,
      128.3
     ]
    },
    {
-    "what": "StaticText 'SURFACE WIND'",
+    "what": "StaticText 'Surface wind'",
     "rect": [
-     46.3,
-     308.7,
-     93.0,
-     14.0
+     49.7,
+     108.0,
+     77.7,
+     14.3
     ]
    },
    {
     "what": "StaticText '12'",
     "rect": [
-     46.3,
-     326.7,
+     49.7,
+     126.3,
      40.0,
      39.7
     ]
@@ -498,46 +327,217 @@
    {
     "what": "StaticText 'mph'",
     "rect": [
-     92.3,
-     347.3,
-     21.3,
-     14.0
+     95.7,
+     145.0,
+     24.7,
+     16.3
     ]
    },
    {
     "what": "StaticText 'Gusts 19 · from 270°'",
     "rect": [
-     46.3,
-     370.3,
-     124.7,
-     15.7
+     49.7,
+     170.0,
+     118.0,
+     14.3
     ]
    },
    {
     "what": "Image 'Warning'",
     "rect": [
-     52.3,
-     392.0,
-     15.3,
-     13.3
+     55.7,
+     190.3,
+     16.3,
+     14.3
     ]
    },
    {
     "what": "StaticText 'NEAR LIMIT'",
     "rect": [
-     75.7,
-     392.0,
-     70.3,
-     14.0
+     80.0,
+     190.7,
+     81.0,
+     14.3
     ]
    },
    {
-    "what": "StaticText '9:37 AM · 4 min ago'",
+    "what": "StaticText '9:37 AM · 6 min ago'",
     "rect": [
-     46.3,
-     423.7,
-     104.0,
-     13.3
+     49.7,
+     224.3,
+     96.7,
+     12.0
+    ]
+   },
+   {
+    "what": "Icon 'FusionSpace'",
+    "rect": [
+     24.3,
+     288.7,
+     353.7,
+     191.0
+    ]
+   },
+   {
+    "what": "Other 'FusionSpace'",
+    "rect": [
+     26.3,
+     290.7,
+     349.7,
+     164.3
+    ]
+   },
+   {
+    "what": "StaticText 'Surface wind, 12, mph, Gusts 19 · from 270°, NEAR LIMIT, 9:37 AM · 6 min ago'",
+    "rect": [
+     44.3,
+     308.7,
+     118.0,
+     128.3
+    ]
+   },
+   {
+    "what": "StaticText 'Surface wind'",
+    "rect": [
+     44.3,
+     308.7,
+     77.7,
+     14.3
+    ]
+   },
+   {
+    "what": "StaticText '12'",
+    "rect": [
+     44.3,
+     327.0,
+     40.0,
+     39.7
+    ]
+   },
+   {
+    "what": "StaticText 'mph'",
+    "rect": [
+     90.3,
+     345.7,
+     24.7,
+     16.3
+    ]
+   },
+   {
+    "what": "StaticText 'Gusts 19 · from 270°'",
+    "rect": [
+     44.3,
+     370.7,
+     118.0,
+     14.3
+    ]
+   },
+   {
+    "what": "Image 'Warning'",
+    "rect": [
+     50.3,
+     391.0,
+     16.3,
+     14.3
+    ]
+   },
+   {
+    "what": "StaticText 'NEAR LIMIT'",
+    "rect": [
+     74.7,
+     391.3,
+     81.0,
+     14.3
+    ]
+   },
+   {
+    "what": "StaticText '9:37 AM · 6 min ago'",
+    "rect": [
+     44.3,
+     425.0,
+     96.7,
+     12.0
+    ]
+   },
+   {
+    "what": "StaticText 'Ceiling, 6,500, ft AGL'",
+    "rect": [
+     178.3,
+     308.7,
+     112.0,
+     39.7
+    ]
+   },
+   {
+    "what": "StaticText 'Ceiling'",
+    "rect": [
+     178.3,
+     308.7,
+     42.0,
+     14.3
+    ]
+   },
+   {
+    "what": "StaticText '6,500'",
+    "rect": [
+     178.3,
+     325.0,
+     58.7,
+     23.3
+    ]
+   },
+   {
+    "what": "StaticText 'ft AGL'",
+    "rect": [
+     241.0,
+     330.7,
+     49.3,
+     16.3
+    ]
+   },
+   {
+    "what": "StaticText 'Upper wind, 31, mph, at 6,000 ft · 4 h old'",
+    "rect": [
+     178.3,
+     358.3,
+     102.7,
+     53.7
+    ]
+   },
+   {
+    "what": "StaticText 'Upper wind'",
+    "rect": [
+     192.3,
+     358.3,
+     67.7,
+     14.3
+    ]
+   },
+   {
+    "what": "StaticText '31'",
+    "rect": [
+     192.3,
+     374.7,
+     23.7,
+     23.3
+    ]
+   },
+   {
+    "what": "StaticText 'mph'",
+    "rect": [
+     220.0,
+     380.3,
+     24.7,
+     16.3
+    ]
+   },
+   {
+    "what": "StaticText 'at 6,000 ft · 4 h old'",
+    "rect": [
+     192.3,
+     400.0,
+     88.7,
+     12.0
     ]
    },
    {
@@ -556,118 +556,118 @@
   "mode": "lock",
   "elements": [
    {
-    "what": "StaticText 'FLIGHT 04 · T+62 s'",
+    "what": "StaticText 'Flight 04 · T+62 s'",
     "rect": [
      28.0,
-     623.7,
-     126.7,
-     14.0
+     624.0,
+     102.0,
+     14.3
     ]
    },
    {
-    "what": "StaticText 'LINK 0.5 s'",
+    "what": "StaticText 'Link 0.4 s'",
     "rect": [
-     303.7,
-     623.7,
-     70.3,
-     14.0
+     317.7,
+     624.0,
+     56.3,
+     14.3
     ]
    },
    {
     "what": "Other 'Phase: main'",
     "rect": [
      28.0,
-     647.7,
+     648.3,
      346.0,
-     18.7
+     18.0
     ]
    },
    {
     "what": "StaticText 'PAD'",
     "rect": [
-     44.7,
-     651.7,
-     16.0,
-     10.7
+     43.0,
+     652.3,
+     19.3,
+     10.0
     ]
    },
    {
     "what": "StaticText 'BOOST'",
     "rect": [
-     88.7,
-     651.7,
-     26.7,
-     10.7
+     85.3,
+     652.3,
+     33.7,
+     10.0
     ]
    },
    {
     "what": "StaticText 'COAST'",
     "rect": [
-     138.3,
-     651.7,
-     26.7,
-     10.7
+     135.0,
+     652.3,
+     33.0,
+     10.0
     ]
    },
    {
     "what": "StaticText 'APOGEE'",
     "rect": [
-     185.3,
-     651.7,
-     31.7,
-     10.7
+     180.7,
+     652.3,
+     40.7,
+     10.0
     ]
    },
    {
     "what": "StaticText 'DROGUE'",
     "rect": [
-     234.7,
-     651.7,
-     31.7,
-     10.7
+     229.3,
+     652.3,
+     42.0,
+     10.0
     ]
    },
    {
     "what": "StaticText 'MAIN'",
     "rect": [
-     289.3,
-     651.7,
-     21.3,
-     10.7
+     287.7,
+     652.3,
+     24.3,
+     10.0
     ]
    },
    {
     "what": "StaticText 'LANDED'",
     "rect": [
-     333.3,
-     651.7,
-     31.7,
-     10.7
+     329.7,
+     652.3,
+     39.0,
+     10.0
     ]
    },
    {
-    "what": "StaticText 'ALTITUDE, 612, ft AGL'",
+    "what": "StaticText 'Altitude, 612 feet above ground'",
     "rect": [
      28.0,
      676.3,
-     99.3,
-     51.0
+     103.0,
+     51.3
     ]
    },
    {
-    "what": "StaticText 'ALTITUDE'",
+    "what": "StaticText 'Altitude'",
     "rect": [
      28.0,
      676.3,
-     56.3,
-     14.0
+     46.7,
+     14.3
     ]
    },
    {
     "what": "StaticText '612'",
     "rect": [
      28.0,
-     692.3,
+     692.7,
      53.0,
      35.0
     ]
@@ -676,34 +676,34 @@
     "what": "StaticText 'ft AGL'",
     "rect": [
      85.0,
-     709.0,
-     42.3,
-     14.0
+     708.3,
+     46.0,
+     15.3
     ]
    },
    {
-    "what": "StaticText 'FROM YOU, 1,352, ft, 062° T'",
+    "what": "StaticText 'From you, 1,352 feet, bearing 62 degrees true'",
     "rect": [
-     297.0,
+     296.0,
      676.3,
-     77.0,
+     78.0,
      55.7
     ]
    },
    {
-    "what": "StaticText 'FROM YOU'",
+    "what": "StaticText 'From you'",
     "rect": [
-     297.0,
+     296.0,
      676.3,
      56.3,
-     14.0
+     14.3
     ]
    },
    {
     "what": "StaticText '1,352'",
     "rect": [
-     297.0,
-     692.3,
+     296.0,
+     692.7,
      58.7,
      23.3
     ]
@@ -711,19 +711,19 @@
    {
     "what": "StaticText 'ft'",
     "rect": [
-     359.7,
-     700.0,
-     14.3,
-     14.0
+     358.7,
+     699.3,
+     15.3,
+     15.3
     ]
    },
    {
     "what": "StaticText '062° T'",
     "rect": [
-     297.0,
-     717.7,
-     39.3,
-     14.3
+     296.0,
+     718.0,
+     42.3,
+     14.0
     ]
    }
   ]
@@ -733,48 +733,48 @@
   "mode": "lock",
   "elements": [
    {
-    "what": "StaticText 'FLIGHT 04 · K535W'",
+    "what": "StaticText 'Flight 04 · K535W'",
     "rect": [
      28.0,
-     655.3,
-     119.7,
-     14.0
+     657.0,
+     105.0,
+     14.3
     ]
    },
    {
-    "what": "StaticText 'LINK 0.6 s'",
+    "what": "StaticText 'Link 0.4 s'",
     "rect": [
-     304.0,
-     655.3,
-     70.3,
-     14.0
+     317.7,
+     657.0,
+     56.3,
+     14.3
     ]
    },
    {
-    "what": "StaticText '3:49'",
+    "what": "StaticText '3:46'",
     "rect": [
      28.0,
-     680.7,
-     244.7,
+     681.7,
+     233.0,
      35.0
     ]
    },
    {
     "what": "StaticText 'Device state, safe'",
     "rect": [
-     280.7,
-     679.3,
-     93.7,
-     52.7
+     269.0,
+     681.3,
+     105.0,
+     50.7
     ]
    },
    {
     "what": "StaticText 'to your pad time, 9:45 AM'",
     "rect": [
      28.0,
-     717.7,
-     146.0,
-     14.3
+     718.7,
+     135.0,
+     13.3
     ]
    }
   ]
@@ -793,100 +793,91 @@
     ]
    },
    {
-    "what": "StaticText 'FS-VEGA-004 rev B'",
+    "what": "StaticText 'Pad 3 · Flight 04'",
     "rect": [
-     24.0,
-     121.0,
-     119.7,
-     14.0
+     16.0,
+     116.0,
+     250.3,
+     30.7
+    ]
+   },
+   {
+    "what": "StaticText 'FS-VEGA-004 rev B · K535W · dual deploy'",
+    "rect": [
+     16.0,
+     150.7,
+     320.0,
+     16.3
     ]
    },
    {
     "what": "Other 'Link, 0.3 s'",
     "rect": [
-     161.7,
-     116.0,
-     122.7,
+     16.0,
+     179.0,
+     101.0,
      24.0
     ]
    },
    {
     "what": "Image 'fs.link'",
     "rect": [
-     171.7,
-     122.0,
+     26.0,
+     185.0,
      12.0,
      12.0
     ]
    },
    {
-    "what": "StaticText 'LINK · 0.3 s'",
+    "what": "StaticText 'Link · 0.3 s'",
     "rect": [
-     191.7,
-     121.0,
-     84.7,
-     14.0
+     46.0,
+     183.8,
+     63.0,
+     14.3
     ]
    },
    {
-    "what": "StaticText 'Pad 3 · Flight 04'",
+    "what": "StaticText 'Screen stays on'",
     "rect": [
-     16.0,
-     152.0,
-     279.0,
-     32.7
-    ]
-   },
-   {
-    "what": "StaticText 'K535W · dual deploy · screen stays on'",
-    "rect": [
-     16.0,
-     188.7,
-     260.3,
-     14.0
-    ]
-   },
-   {
-    "what": "StaticText 'CHECKS'",
-    "rect": [
-     16.0,
-     224.7,
-     53.0,
+     129.0,
+     182.8,
+     106.7,
      16.3
     ]
    },
    {
-    "what": "StaticText 'Sheet 1 of 2'",
+    "what": "StaticText 'Checks'",
     "rect": [
-     300.7,
-     226.7,
-     85.3,
-     14.0
+     16.0,
+     225.0,
+     76.0,
+     19.7
     ]
    },
    {
-    "what": "Other 'SWITCH, ON, On'",
+    "what": "Other 'Switch, ON, On'",
     "rect": [
      16.0,
-     255.0,
+     258.7,
      370.0,
      24.0
     ]
    },
    {
-    "what": "StaticText 'SWITCH'",
+    "what": "StaticText 'Switch'",
     "rect": [
      16.0,
-     260.0,
-     46.7,
-     14.0
+     262.5,
+     45.0,
+     16.3
     ]
    },
    {
     "what": "StaticText 'ON'",
     "rect": [
      128.0,
-     258.2,
+     261.8,
      17.7,
      17.7
     ]
@@ -894,17 +885,17 @@
    {
     "what": "Other 'On'",
     "rect": [
-     334.0,
-     255.0,
-     52.0,
+     327.0,
+     258.7,
+     59.0,
      24.0
     ]
    },
    {
     "what": "Image 'Selected'",
     "rect": [
-     343.0,
-     260.0,
+     336.0,
+     263.7,
      13.7,
      13.7
     ]
@@ -912,35 +903,35 @@
    {
     "what": "StaticText 'ON'",
     "rect": [
-     363.7,
-     260.0,
-     14.3,
-     14.0
+     356.7,
+     263.5,
+     21.3,
+     14.3
     ]
    },
    {
-    "what": "Other 'BATTERY, 8.1 V, OK'",
+    "what": "Other 'Battery, 8.1 V, OK'",
     "rect": [
      16.0,
-     300.0,
+     303.7,
      370.0,
      24.0
     ]
    },
    {
-    "what": "StaticText 'BATTERY'",
+    "what": "StaticText 'Battery'",
     "rect": [
      16.0,
-     305.0,
-     54.3,
-     14.0
+     307.5,
+     48.3,
+     16.3
     ]
    },
    {
     "what": "StaticText '8.1 V'",
     "rect": [
      128.0,
-     303.2,
+     306.8,
      44.0,
      17.7
     ]
@@ -948,17 +939,17 @@
    {
     "what": "Other 'OK'",
     "rect": [
-     334.0,
-     300.0,
-     52.0,
+     327.3,
+     303.7,
+     58.7,
      24.0
     ]
    },
    {
     "what": "Image 'fs.battery'",
     "rect": [
-     343.3,
-     308.7,
+     336.7,
+     312.3,
      13.0,
      7.0
     ]
@@ -966,17 +957,17 @@
    {
     "what": "StaticText 'OK'",
     "rect": [
-     363.7,
-     305.0,
-     14.3,
-     14.0
+     357.0,
+     308.5,
+     21.0,
+     14.3
     ]
    },
    {
     "what": "Other 'GPS, 3D · 11 sat, Fix'",
     "rect": [
      16.0,
-     345.0,
+     348.7,
      370.0,
      24.0
     ]
@@ -985,16 +976,16 @@
     "what": "StaticText 'GPS'",
     "rect": [
      16.0,
-     350.0,
-     23.3,
-     14.0
+     352.5,
+     32.3,
+     16.3
     ]
    },
    {
     "what": "StaticText '3D · 11 sat'",
     "rect": [
      128.0,
-     348.2,
+     351.8,
      97.0,
      17.7
     ]
@@ -1002,17 +993,17 @@
    {
     "what": "Other 'Fix'",
     "rect": [
-     327.0,
-     345.0,
-     59.0,
+     325.3,
+     348.7,
+     60.7,
      24.0
     ]
    },
    {
     "what": "Image 'fs.gps-fix'",
     "rect": [
-     335.7,
-     350.0,
+     334.0,
+     353.7,
      14.3,
      14.3
     ]
@@ -1020,53 +1011,44 @@
    {
     "what": "StaticText 'FIX'",
     "rect": [
-     356.7,
-     350.0,
-     21.3,
-     14.0
+     355.0,
+     353.5,
+     23.0,
+     14.3
     ]
    },
    {
-    "what": "StaticText 'CHANNELS'",
+    "what": "StaticText 'Channels'",
     "rect": [
      16.0,
-     398.0,
-     70.7,
-     16.3
+     401.7,
+     94.7,
+     19.7
     ]
    },
    {
-    "what": "StaticText 'Sheet 2 of 2'",
-    "rect": [
-     300.7,
-     400.0,
-     85.3,
-     14.0
-    ]
-   },
-   {
-    "what": "Other '1 · DROGUE, Apogee + 0.4 s, Continuity'",
+    "what": "Other '1 · Drogue, Apogee + 0.4 s, Continuity'",
     "rect": [
      16.0,
-     428.3,
+     435.3,
      370.0,
      24.0
     ]
    },
    {
-    "what": "StaticText '1 · DROGUE'",
+    "what": "StaticText '1 · Drogue'",
     "rect": [
      16.0,
-     433.3,
-     77.3,
-     14.0
+     439.2,
+     68.7,
+     16.3
     ]
    },
    {
     "what": "StaticText 'Apogee + 0.4 s'",
     "rect": [
      128.0,
-     431.5,
+     438.5,
      123.3,
      17.7
     ]
@@ -1074,17 +1056,17 @@
    {
     "what": "Other 'Continuity'",
     "rect": [
-     320.0,
-     428.3,
-     66.0,
+     308.0,
+     435.3,
+     78.0,
      24.0
     ]
    },
    {
     "what": "Image 'fs.continuity'",
     "rect": [
-     329.7,
-     437.0,
+     317.7,
+     444.0,
      12.3,
      6.7
     ]
@@ -1092,35 +1074,35 @@
    {
     "what": "StaticText 'CONT'",
     "rect": [
-     349.7,
-     433.3,
-     28.3,
-     14.0
+     337.7,
+     440.2,
+     40.3,
+     14.3
     ]
    },
    {
-    "what": "Other '2 · MAIN, 700 ft desc., Continuity'",
+    "what": "Other '2 · Main, 700 ft desc., Continuity'",
     "rect": [
      16.0,
-     473.3,
+     480.3,
      370.0,
      24.0
     ]
    },
    {
-    "what": "StaticText '2 · MAIN'",
+    "what": "StaticText '2 · Main'",
     "rect": [
      16.0,
-     478.3,
-     62.0,
-     14.0
+     484.2,
+     52.7,
+     16.3
     ]
    },
    {
     "what": "StaticText '700 ft desc.'",
     "rect": [
      128.0,
-     476.5,
+     483.5,
      105.7,
      17.7
     ]
@@ -1128,17 +1110,17 @@
    {
     "what": "Other 'Continuity'",
     "rect": [
-     320.0,
-     473.3,
-     66.0,
+     308.0,
+     480.3,
+     78.0,
      24.0
     ]
    },
    {
     "what": "Image 'fs.continuity'",
     "rect": [
-     329.7,
-     482.0,
+     317.7,
+     489.0,
      12.3,
      6.7
     ]
@@ -1146,17 +1128,17 @@
    {
     "what": "StaticText 'CONT'",
     "rect": [
-     349.7,
-     478.3,
-     28.3,
-     14.0
+     337.7,
+     485.2,
+     40.3,
+     14.3
     ]
    },
    {
     "what": "Other '3 · —, Not used, Not used'",
     "rect": [
      16.0,
-     518.3,
+     525.3,
      370.0,
      24.0
     ]
@@ -1165,34 +1147,34 @@
     "what": "StaticText '3 · —'",
     "rect": [
      16.0,
-     523.3,
-     38.7,
-     14.0
+     529.2,
+     35.0,
+     16.3
     ]
    },
    {
     "what": "StaticText 'Not used'",
     "rect": [
      128.0,
-     521.5,
-     70.3,
-     17.7
+     529.2,
+     60.0,
+     16.3
     ]
    },
    {
     "what": "Other 'Not used'",
     "rect": [
-     293.3,
-     518.3,
-     92.7,
+     277.0,
+     525.3,
+     109.0,
      24.0
     ]
    },
    {
     "what": "Image 'Remove'",
     "rect": [
-     303.0,
-     529.7,
+     286.7,
+     536.7,
      11.0,
      1.7
     ]
@@ -1200,62 +1182,62 @@
    {
     "what": "StaticText 'NOT USED'",
     "rect": [
-     321.7,
-     523.3,
-     56.3,
-     14.0
+     305.3,
+     530.2,
+     72.7,
+     14.3
     ]
    },
    {
     "what": "StaticText 'Device state, safe'",
     "rect": [
      16.0,
-     591.3,
-     93.7,
-     52.7
+     593.3,
+     105.0,
+     50.7
     ]
    },
    {
     "what": "Other 'Commanded nothing. Confirmed SAFE, 0.3 s ago.'",
     "rect": [
-     125.7,
-     598.0,
-     216.0,
+     137.0,
+     599.0,
+     230.0,
      39.3
     ]
    },
    {
-    "what": "StaticText 'COMMANDED'",
+    "what": "StaticText 'Commanded'",
     "rect": [
-     125.7,
-     599.8,
-     63.3,
-     14.0
+     137.0,
+     600.7,
+     77.3,
+     14.3
     ]
    },
    {
     "what": "StaticText '—'",
     "rect": [
-     201.0,
-     598.0,
+     226.3,
+     599.0,
      9.0,
      17.7
     ]
    },
    {
-    "what": "StaticText 'CONFIRMED'",
+    "what": "StaticText 'Confirmed'",
     "rect": [
-     125.7,
-     621.5,
-     63.3,
-     14.0
+     137.0,
+     622.3,
+     63.0,
+     14.3
     ]
    },
    {
     "what": "StaticText 'SAFE · 0.3 s ago'",
     "rect": [
-     201.0,
-     619.7,
+     226.3,
+     620.7,
      140.7,
      17.7
     ]
@@ -1270,28 +1252,28 @@
     ]
    },
    {
-    "what": "StaticText 'HOLD TO ARM'",
+    "what": "StaticText 'Hold to arm'",
     "rect": [
      33.0,
-     690.7,
-     119.7,
-     16.3
+     687.8,
+     130.3,
+     19.7
     ]
    },
    {
     "what": "Image 'Disconnect'",
     "rect": [
      33.0,
-     694.3,
-     20.3,
-     9.0
+     691.7,
+     26.0,
+     11.7
     ]
    },
    {
     "what": "StaticText 'FS-VEGA-004 · 2 s'",
     "rect": [
      32.0,
-     713.0,
+     713.5,
      139.7,
      16.3
     ]
@@ -1300,9 +1282,9 @@
     "what": "StaticText 'Keep holding'",
     "rect": [
      32.0,
-     735.3,
-     84.7,
-     14.0
+     735.8,
+     90.3,
+     16.3
     ]
    },
    {
@@ -1318,7 +1300,7 @@
     "what": "Image 'Shield With The Left Half Filled'",
     "rect": [
      313.0,
-     693.3,
+     694.0,
      18.0,
      22.0
     ]
@@ -1326,10 +1308,10 @@
    {
     "what": "StaticText 'SAFE'",
     "rect": [
-     296.2,
-     723.2,
-     51.7,
-     25.7
+     290.8,
+     724.0,
+     62.3,
+     24.0
     ]
    },
    {
@@ -1348,154 +1330,145 @@
   "mode": "app",
   "elements": [
    {
-    "what": "StaticText 'FLIGHT 04 · FS-VEGA-004'",
+    "what": "StaticText 'Flight 04 · FS-VEGA-004'",
     "rect": [
-     24.0,
-     153.7,
-     162.0,
-     14.0
+     16.0,
+     150.5,
+     189.0,
+     16.3
     ]
    },
    {
     "what": "Other 'Link, 0.4 s'",
     "rect": [
-     204.0,
-     148.7,
-     122.3,
+     217.0,
+     146.7,
+     100.7,
      24.0
     ]
    },
    {
     "what": "Image 'fs.telemetry'",
     "rect": [
-     213.3,
-     154.3,
+     226.3,
+     152.3,
      13.0,
      13.0
     ]
    },
    {
-    "what": "StaticText 'LINK · 0.4 s'",
+    "what": "StaticText 'Link · 0.4 s'",
     "rect": [
-     233.7,
-     153.7,
-     84.7,
-     14.0
+     246.7,
+     151.5,
+     63.0,
+     14.3
     ]
    },
    {
     "what": "Other 'Phase: main, 6 of 7'",
     "rect": [
      16.0,
-     186.7,
+     184.7,
      370.0,
-     23.7
+     23.0
     ]
    },
    {
     "what": "StaticText 'PAD'",
     "rect": [
-     33.6,
-     192.7,
-     17.7,
-     11.7
+     31.9,
+     190.7,
+     21.0,
+     11.0
     ]
    },
    {
     "what": "StaticText 'BOOST'",
     "rect": [
-     80.6,
-     192.7,
-     29.3,
-     11.7
+     77.0,
+     190.7,
+     36.7,
+     11.0
     ]
    },
    {
     "what": "StaticText 'COAST'",
     "rect": [
-     133.5,
-     192.7,
-     29.3,
-     11.7
+     130.3,
+     190.7,
+     35.7,
+     11.0
     ]
    },
    {
     "what": "StaticText 'APOGEE'",
     "rect": [
-     183.3,
-     192.7,
-     35.3,
-     11.7
+     178.8,
+     190.7,
+     44.3,
+     11.0
     ]
    },
    {
     "what": "StaticText 'DROGUE'",
     "rect": [
-     236.2,
-     192.7,
-     35.3,
-     11.7
+     231.0,
+     190.7,
+     45.7,
+     11.0
     ]
    },
    {
     "what": "StaticText 'MAIN'",
     "rect": [
-     294.9,
-     192.7,
-     23.7,
-     11.7
+     293.4,
+     190.7,
+     26.7,
+     11.0
     ]
    },
    {
     "what": "StaticText 'LANDED'",
     "rect": [
-     341.9,
-     192.7,
-     35.3,
-     11.7
+     338.4,
+     190.7,
+     42.3,
+     11.0
     ]
    },
    {
-    "what": "StaticText 'NOW'",
+    "what": "StaticText 'Now'",
     "rect": [
      16.0,
-     234.3,
-     26.7,
-     16.3
-    ]
-   },
-   {
-    "what": "StaticText 'Sheet 1 of 2'",
-    "rect": [
-     300.7,
-     236.3,
-     85.3,
-     14.0
+     231.7,
+     46.0,
+     19.7
     ]
    },
    {
     "what": "Other 'Altitude'",
     "rect": [
      16.0,
-     258.7,
-     132.7,
-     70.0
+     259.3,
+     123.0,
+     69.3
     ]
    },
    {
-    "what": "StaticText 'ALTITUDE'",
+    "what": "StaticText 'Altitude'",
     "rect": [
      16.0,
-     258.7,
-     62.0,
-     14.0
+     259.3,
+     46.7,
+     14.3
     ]
    },
    {
     "what": "StaticText '612'",
     "rect": [
      16.0,
-     276.7,
+     277.7,
      49.3,
      32.7
     ]
@@ -1504,43 +1477,43 @@
     "what": "StaticText 'ft AGL'",
     "rect": [
      71.3,
-     291.7,
-     42.3,
-     14.0
+     290.7,
+     49.3,
+     16.3
     ]
    },
    {
     "what": "StaticText 'Barometer · 0.4 s ago'",
     "rect": [
      16.0,
-     313.3,
-     132.7,
-     15.3
+     314.3,
+     123.0,
+     14.3
     ]
    },
    {
     "what": "Other 'Descent'",
     "rect": [
      205.0,
-     258.7,
-     94.7,
-     70.0
+     259.3,
+     87.7,
+     69.3
     ]
    },
    {
-    "what": "StaticText 'DESCENT'",
+    "what": "StaticText 'Descent'",
     "rect": [
      205.0,
-     258.7,
-     54.3,
-     14.0
+     259.3,
+     50.0,
+     14.3
     ]
    },
    {
     "what": "StaticText '18'",
     "rect": [
      205.0,
-     276.7,
+     277.7,
      33.0,
      32.7
     ]
@@ -1549,18 +1522,18 @@
     "what": "StaticText 'ft/s'",
     "rect": [
      244.0,
-     291.7,
-     28.3,
-     14.0
+     290.7,
+     33.0,
+     16.3
     ]
    },
    {
     "what": "StaticText 'Under the main'",
     "rect": [
      205.0,
-     313.3,
-     94.7,
-     15.3
+     314.3,
+     87.7,
+     14.3
     ]
    },
    {
@@ -1573,46 +1546,37 @@
     ]
    },
    {
-    "what": "StaticText 'FIND IT'",
+    "what": "StaticText 'Find it'",
     "rect": [
      16.0,
      556.7,
-     61.7,
-     16.3
-    ]
-   },
-   {
-    "what": "StaticText 'Sheet 2 of 2'",
-    "rect": [
-     300.7,
-     558.7,
-     85.3,
-     14.0
+     61.0,
+     19.7
     ]
    },
    {
     "what": "Other 'Distance'",
     "rect": [
      16.0,
-     581.0,
-     96.7,
-     67.7
+     584.3,
+     99.0,
+     67.0
     ]
    },
    {
-    "what": "StaticText 'DISTANCE'",
+    "what": "StaticText 'Distance'",
     "rect": [
      16.0,
-     581.0,
-     62.0,
-     14.0
+     584.3,
+     53.3,
+     14.3
     ]
    },
    {
     "what": "StaticText '1,352'",
     "rect": [
      16.0,
-     599.0,
+     602.7,
      76.3,
      30.3
     ]
@@ -1621,43 +1585,43 @@
     "what": "StaticText 'ft'",
     "rect": [
      98.3,
-     612.0,
-     14.3,
-     14.0
+     613.7,
+     16.7,
+     16.3
     ]
    },
    {
     "what": "StaticText 'From you'",
     "rect": [
      16.0,
-     633.3,
-     59.0,
-     15.3
+     637.0,
+     54.7,
+     14.3
     ]
    },
    {
     "what": "Other 'Bearing'",
     "rect": [
      205.0,
-     581.0,
-     106.7,
-     67.7
+     584.3,
+     99.0,
+     67.0
     ]
    },
    {
-    "what": "StaticText 'BEARING'",
+    "what": "StaticText 'Bearing'",
     "rect": [
      205.0,
-     581.0,
-     54.3,
-     14.0
+     584.3,
+     47.0,
+     14.3
     ]
    },
    {
     "what": "StaticText '062°'",
     "rect": [
      205.0,
-     599.0,
+     602.7,
      61.0,
      30.3
     ]
@@ -1666,18 +1630,18 @@
     "what": "StaticText 'T'",
     "rect": [
      272.0,
-     612.0,
-     7.3,
-     14.0
+     613.7,
+     8.3,
+     16.3
     ]
    },
    {
     "what": "StaticText 'Declination 13° E'",
     "rect": [
      205.0,
-     633.3,
-     106.7,
-     15.3
+     637.0,
+     99.0,
+     14.3
     ]
    },
    {
@@ -1690,30 +1654,12 @@
     ]
    },
    {
-    "what": "Image 'fs.launch-rail'",
-    "rect": [
-     60.0,
-     802.0,
-     28.0,
-     27.0
-    ]
-   },
-   {
     "what": "Button 'Track'",
     "rect": [
      109.7,
      795.0,
      98.0,
      54.0
-    ]
-   },
-   {
-    "what": "Image 'fs.gps-fix'",
-    "rect": [
-     145.0,
-     801.3,
-     27.3,
-     27.3
     ]
    },
    {
@@ -1726,30 +1672,12 @@
     ]
    },
    {
-    "what": "Image 'fs.flight-log'",
-    "rect": [
-     229.3,
-     801.7,
-     28.0,
-     26.3
-    ]
-   },
-   {
     "what": "Button 'Devices'",
     "rect": [
      279.0,
      795.0,
      98.0,
      54.0
-    ]
-   },
-   {
-    "what": "Image 'fs.flight-computer'",
-    "rect": [
-     314.3,
-     805.7,
-     27.7,
-     21.7
     ]
    }
   ]
@@ -1770,16 +1698,16 @@
    {
     "what": "Other 'Rocket 1,352 feet away, 42 degrees to your right, bearing 62 degrees true'",
     "rect": [
-     38.8,
+     38.2,
      85.0,
-     84.5,
+     85.5,
      26.5
     ]
    },
    {
     "what": "StaticText '1,352'",
     "rect": [
-     38.8,
+     38.2,
      85.0,
      66.0,
      26.5
@@ -1788,10 +1716,10 @@
    {
     "what": "StaticText 'ft'",
     "rect": [
-     108.8,
-     95.0,
-     14.5,
-     14.0
+     108.2,
+     94.0,
+     15.5,
+     15.5
     ]
    },
    {
@@ -1831,16 +1759,16 @@
    {
     "what": "Other 'Rocket 1,352 feet away, 42 degrees to your right, bearing 62 degrees true'",
     "rect": [
-     38.8,
+     38.2,
      85.0,
-     84.5,
+     85.5,
      26.5
     ]
    },
    {
     "what": "StaticText '1,352'",
     "rect": [
-     38.8,
+     38.2,
      85.0,
      66.0,
      26.5
@@ -1849,10 +1777,10 @@
    {
     "what": "StaticText 'ft'",
     "rect": [
-     108.8,
-     95.0,
-     14.5,
-     14.0
+     108.2,
+     94.0,
+     15.5,
+     15.5
     ]
    },
    {
@@ -1892,35 +1820,35 @@
    {
     "what": "StaticText 'Device state, armed'",
     "rect": [
-     16.5,
-     48.5,
-     65.0,
-     27.0
+     10.0,
+     53.5,
+     73.5,
+     21.5
     ]
    },
    {
     "what": "Other 'FS-VEGA-004, link 0.3 s'",
     "rect": [
-     87.2,
-     49.8,
-     58.5,
-     24.5
+     89.2,
+     51.2,
+     63.0,
+     25.5
     ]
    },
    {
     "what": "StaticText 'FS-VEGA-004'",
     "rect": [
-     87.2,
-     49.8,
-     58.5,
-     10.5
+     89.2,
+     51.2,
+     63.0,
+     11.5
     ]
    },
    {
     "what": "StaticText '0.3 s'",
     "rect": [
-     87.2,
-     60.2,
+     89.2,
+     62.8,
      35.5,
      14.0
     ]
@@ -1929,34 +1857,34 @@
     "what": "Other 'Channel 1, drogue, continuity'",
     "rect": [
      9.5,
-     77.5,
+     78.0,
      143.0,
      20.0
     ]
    },
    {
-    "what": "StaticText '1 DROGUE'",
+    "what": "StaticText '1 · Drogue'",
     "rect": [
      9.5,
-     80.5,
-     56.5,
-     14.0
+     79.8,
+     61.5,
+     16.0
     ]
    },
    {
     "what": "Other 'Cont'",
     "rect": [
-     88.0,
-     77.5,
-     64.5,
+     85.0,
+     78.0,
+     67.5,
      20.0
     ]
    },
    {
     "what": "Image 'Selected'",
     "rect": [
-     97.0,
-     81.5,
+     92.0,
+     82.0,
      12.0,
      12.0
     ]
@@ -1964,44 +1892,44 @@
    {
     "what": "StaticText 'CONT'",
     "rect": [
-     116.0,
-     80.5,
-     28.5,
-     14.0
+     109.0,
+     81.0,
+     37.5,
+     13.5
     ]
    },
    {
     "what": "Other 'Channel 2, main, continuity'",
     "rect": [
      9.5,
-     99.5,
+     99.0,
      143.0,
      20.0
     ]
    },
    {
-    "what": "StaticText '2 MAIN'",
+    "what": "StaticText '2 · Main'",
     "rect": [
      9.5,
-     102.5,
-     42.5,
-     14.0
+     100.8,
+     48.0,
+     16.0
     ]
    },
    {
     "what": "Other 'Cont'",
     "rect": [
-     88.0,
-     99.5,
-     64.5,
+     85.0,
+     99.0,
+     67.5,
      20.0
     ]
    },
    {
     "what": "Image 'Selected'",
     "rect": [
-     97.0,
-     103.5,
+     92.0,
+     103.0,
      12.0,
      12.0
     ]
@@ -2009,62 +1937,62 @@
    {
     "what": "StaticText 'CONT'",
     "rect": [
-     116.0,
-     102.5,
-     28.5,
-     14.0
+     109.0,
+     102.0,
+     37.5,
+     13.5
     ]
    },
    {
     "what": "Other 'Channel 3, not used'",
     "rect": [
      9.5,
-     121.5,
+     120.0,
      143.0,
      20.0
     ]
    },
    {
-    "what": "StaticText '3 —'",
+    "what": "StaticText '3 · —'",
     "rect": [
      9.5,
-     124.5,
-     21.5,
-     14.0
+     121.8,
+     32.0,
+     16.0
     ]
    },
    {
     "what": "Other 'Not used'",
     "rect": [
-     61.0,
-     121.5,
-     91.5,
+     56.5,
+     120.0,
+     96.0,
      20.0
-    ]
-   },
-   {
-    "what": "Image 'Remove'",
-    "rect": [
-     70.5,
-     131.0,
-     10.0,
-     1.5
     ]
    },
    {
     "what": "StaticText 'NOT USED'",
     "rect": [
-     88.0,
-     124.5,
-     56.5,
-     14.0
+     79.5,
+     123.0,
+     67.0,
+     13.5
+    ]
+   },
+   {
+    "what": "Image 'Remove'",
+    "rect": [
+     64.0,
+     129.0,
+     10.0,
+     1.5
     ]
    },
    {
     "what": "StaticText 'Safe: switch or phone.'",
     "rect": [
      38.5,
-     143.5,
+     140.8,
      85.0,
      33.5
     ]
@@ -2076,37 +2004,55 @@
   "mode": "app",
   "elements": [
    {
-    "what": "StaticText 'Unfired charge, 2, MAIN. Approach as live. Disarm before handling.'",
+    "what": "StaticText 'Unfired charge, 2, Main. Approach as live. Disarm before handling.'",
     "rect": [
-     11.5,
-     52.0,
-     140.8,
-     68.2
+     22.8,
+     41.5,
+     116.5,
+     88.5
+    ]
+   },
+   {
+    "what": "StaticText 'UNFIRED'",
+    "rect": [
+     35.5,
+     41.5,
+     92.5,
+     16.5
     ]
    },
    {
     "what": "Image 'Warning'",
     "rect": [
-     11.5,
-     52.5,
+     35.5,
+     42.5,
      15.5,
      14.5
     ]
    },
    {
-    "what": "StaticText 'UNFIRED 2 · MAIN'",
+    "what": "StaticText 'UNFIRED'",
     "rect": [
-     32.2,
-     52.0,
-     120.0,
-     15.0
+     56.5,
+     41.5,
+     71.5,
+     16.5
+    ]
+   },
+   {
+    "what": "StaticText '2 · Main'",
+    "rect": [
+     51.8,
+     58.5,
+     58.5,
+     19.5
     ]
    },
    {
     "what": "StaticText 'Approach as live. Disarm before handling.'",
     "rect": [
      22.8,
-     70.2,
+     80.0,
      116.5,
      50.0
     ]
@@ -2115,7 +2061,7 @@
     "what": "Button 'OK'",
     "rect": [
      9.5,
-     122.5,
+     132.0,
      143.0,
      45.0
     ],
@@ -2139,16 +2085,16 @@
    {
     "what": "Other 'Rocket 1,352 feet away, 42 degrees to your right, bearing 62 degrees true'",
     "rect": [
-     63.2,
+     62.8,
      108.5,
-     84.5,
+     85.5,
      26.5
     ]
    },
    {
     "what": "StaticText '1,352'",
     "rect": [
-     63.2,
+     62.8,
      108.5,
      66.0,
      26.5
@@ -2157,10 +2103,10 @@
    {
     "what": "StaticText 'ft'",
     "rect": [
-     133.2,
-     118.5,
-     14.5,
-     14.0
+     132.8,
+     117.5,
+     15.5,
+     15.5
     ]
    },
    {
@@ -2200,16 +2146,16 @@
    {
     "what": "Other 'Rocket 1,352 feet away, 42 degrees to your right, bearing 62 degrees true'",
     "rect": [
-     63.2,
+     62.8,
      108.5,
-     84.5,
+     85.5,
      26.5
     ]
    },
    {
     "what": "StaticText '1,352'",
     "rect": [
-     63.2,
+     62.8,
      108.5,
      66.0,
      26.5
@@ -2218,10 +2164,10 @@
    {
     "what": "StaticText 'ft'",
     "rect": [
-     133.2,
-     118.5,
-     14.5,
-     14.0
+     132.8,
+     117.5,
+     15.5,
+     15.5
     ]
    },
    {
@@ -2261,17 +2207,17 @@
    {
     "what": "StaticText 'Device state, armed'",
     "rect": [
-     73.0,
-     77.0,
-     65.0,
-     27.0
+     69.0,
+     82.5,
+     73.5,
+     21.5
     ]
    },
    {
     "what": "StaticText 'FS-VEGA-004, link 0.3 s'",
     "rect": [
      38.5,
-     106.0,
+     104.8,
      134.0,
      14.0
     ]
@@ -2280,34 +2226,34 @@
     "what": "Other 'Channel 1, drogue, continuity'",
     "rect": [
      16.5,
-     122.0,
+     120.0,
      178.0,
      20.0
     ]
    },
    {
-    "what": "StaticText '1 DROGUE'",
+    "what": "StaticText '1 · Drogue'",
     "rect": [
      16.5,
-     125.0,
-     56.5,
-     14.0
+     121.2,
+     66.0,
+     17.0
     ]
    },
    {
     "what": "Other 'Cont'",
     "rect": [
-     129.0,
-     122.0,
-     65.5,
+     126.0,
+     120.0,
+     68.5,
      20.0
     ]
    },
    {
     "what": "Image 'Selected'",
     "rect": [
-     138.0,
-     125.5,
+     133.0,
+     123.5,
      13.0,
      13.0
     ]
@@ -2315,44 +2261,44 @@
    {
     "what": "StaticText 'CONT'",
     "rect": [
-     158.0,
-     125.0,
-     28.5,
-     14.0
+     151.0,
+     123.0,
+     37.5,
+     13.5
     ]
    },
    {
     "what": "Other 'Channel 2, main, continuity'",
     "rect": [
      16.5,
-     144.0,
+     141.0,
      178.0,
      20.0
     ]
    },
    {
-    "what": "StaticText '2 MAIN'",
+    "what": "StaticText '2 · Main'",
     "rect": [
      16.5,
-     147.0,
-     42.5,
-     14.0
+     142.2,
+     51.5,
+     17.0
     ]
    },
    {
     "what": "Other 'Cont'",
     "rect": [
-     129.0,
-     144.0,
-     65.5,
+     126.0,
+     141.0,
+     68.5,
      20.0
     ]
    },
    {
     "what": "Image 'Selected'",
     "rect": [
-     138.0,
-     147.5,
+     133.0,
+     144.5,
      13.0,
      13.0
     ]
@@ -2360,53 +2306,53 @@
    {
     "what": "StaticText 'CONT'",
     "rect": [
-     158.0,
-     147.0,
-     28.5,
-     14.0
+     151.0,
+     144.0,
+     37.5,
+     13.5
     ]
    },
    {
     "what": "Other 'Channel 3, not used'",
     "rect": [
      16.5,
-     166.0,
+     162.0,
      178.0,
      20.0
     ]
    },
    {
-    "what": "StaticText '3 —'",
+    "what": "StaticText '3 · —'",
     "rect": [
      16.5,
-     169.0,
-     21.5,
-     14.0
+     163.2,
+     34.0,
+     17.0
     ]
    },
    {
     "what": "Other 'Not used'",
     "rect": [
-     102.5,
-     166.0,
-     92.0,
+     98.0,
+     162.0,
+     96.5,
      20.0
     ]
    },
    {
     "what": "StaticText 'NOT USED'",
     "rect": [
-     130.0,
-     169.0,
-     56.5,
-     14.0
+     121.5,
+     165.0,
+     67.0,
+     13.5
     ]
    },
    {
     "what": "Image 'Remove'",
     "rect": [
-     112.0,
-     175.5,
+     105.5,
+     171.0,
      10.5,
      1.5
     ]
@@ -2415,7 +2361,7 @@
     "what": "StaticText 'Safe: switch or phone.'",
     "rect": [
      28.0,
-     188.0,
+     182.8,
      155.0,
      18.0
     ]
@@ -2427,55 +2373,55 @@
   "mode": "app",
   "elements": [
    {
-    "what": "StaticText 'Unfired charge, 2, MAIN. Approach as live. Disarm before handling.'",
+    "what": "StaticText 'Unfired charge, 2, Main. Approach as live. Disarm before handling.'",
     "rect": [
      22.0,
-     59.8,
+     60.8,
      167.0,
-     90.5
+     88.5
     ]
    },
    {
     "what": "StaticText 'UNFIRED'",
     "rect": [
-     45.0,
-     59.8,
-     122.5,
-     28.0
+     37.5,
+     60.8,
+     137.8,
+     26.5
     ]
    },
    {
     "what": "StaticText 'UNFIRED'",
     "rect": [
-     69.0,
-     59.8,
-     98.5,
-     28.0
+     61.2,
+     60.8,
+     114.0,
+     26.5
     ]
    },
    {
     "what": "Image 'Warning'",
     "rect": [
-     45.0,
+     37.5,
      66.5,
      16.5,
      15.0
     ]
    },
    {
-    "what": "StaticText '2 · MAIN'",
+    "what": "StaticText '2 · Main'",
     "rect": [
-     63.2,
-     91.8,
-     84.5,
-     21.0
+     74.8,
+     91.2,
+     61.5,
+     20.5
     ]
    },
    {
     "what": "StaticText 'Approach as live. Disarm before handling.'",
     "rect": [
      22.0,
-     116.8,
+     115.8,
      167.0,
      33.5
     ]
@@ -2484,7 +2430,7 @@
     "what": "Button 'OK'",
     "rect": [
      16.5,
-     158.5,
+     157.5,
      178.0,
      55.5
     ],

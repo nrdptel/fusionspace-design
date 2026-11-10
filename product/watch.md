@@ -45,8 +45,13 @@ Stack and tiles, and SwiftUI and Compose code).
 
 - **The dark roles, always.** A watch is an emissive screen on a black face, and OLED black draws no power. Ink is Paper on
   black; muted is Haze. The field theme isn't used: a watch's own brightness does that job.
-- **Type.** Cascadia Mono for readouts, labels, codes and the state box; the system font for titles, buttons and prose. At
-  least 12 pt/sp in apps (Apple's minimum on watchOS; default body text is 16-17 pt); complications follow the system's sizes.
+- **Type.** The watch's own font (SF Compact, Roboto) for titles, labels, buttons and prose, in sentence case ("1 · Drogue",
+  "Altitude"): SF Compact is drawn for 12 to 16 pt on a small screen and is narrower, which counts on a round face, and
+  Apple sets the phone in SF Pro and the watch in SF Compact the same way. The brand's signal parts are Archivo, as on the
+  phone: the state box and the chips. Cascadia Mono for readouts, units and designations. Capitals only for states (`SAFE`,
+  `ARMED`, `CONT`, `UNFIRED`, and a phase shown as the flight's state, `MAIN`). At least 12 pt/sp in apps (Apple's minimum
+  on watchOS; default body text is 16-17 pt), the chips included; complications follow the system's sizes, and a face sets
+  the labels in its corners in capitals itself, whatever the app sends.
 - **One number per screen.** A watch screen exists for one readout (distance, altitude) with its unit and its age; at most two
   supporting values under it, each with a unit. Ranges and charts stay on the phone.
 - **Signals.** The same words, shapes and fills as everywhere: `SAFE` in an outline box, `ARMED` inverted in Flare, `CONT` in
@@ -172,14 +177,18 @@ be cut, truncated or split, and at the largest sizes the screens scroll instead.
 - **Apple's audit doesn't see "…".** At the 40 mm watch's largest setting, Unfired's title was cut to `UNFIRED 2 ·…`, and
   the audit passed. Every capture is read back with text recognition in the build (`tools/build/kit_clip.py`), and a line
   ending in "…" stops it, as does any element of ours, from the element tree Device Hub records, that the screen's outline
-  cuts. Run them after changing anything in `product/watch/` or `product/tokens/`: compiling is not enough. On October 6, 2026
+  cuts. Each watch's largest text size is captured too (kept in `source/product/devices/`, not shown, since those screens
+  scroll) and read back the same way. Run them after changing anything in `product/watch/` or `product/tokens/`: compiling
+  is not enough. On October 6, 2026
 running them found layout bugs that every compile check had passed (a control taking the whole screen, text under a
 button, a border cut by a rounded end, units in capitals), all fixed in the files here.
 
 ## Checklist
 
 - [ ] Nothing on the watch commands hardware; safing is pointed to, not offered.
-- [ ] Dark roles only; at least 11 pt/sp; one readout per screen, with its unit and its age.
+- [ ] Dark roles only; at least 12 pt/sp, chips included; one readout per screen, with its unit and its age.
+- [ ] Labels and prose in the watch's font, in sentence case; the state box and chips in Archivo; numbers in Cascadia Mono;
+  capitals only for states.
 - [ ] Every state is a word and a shape; ARMED and UNFIRED survive Always On as words.
 - [ ] Always On / ambient: outlines, muted, no counting seconds, ages as times.
 - [ ] Complications and tiles: one value, unit, age; readable tinted; no logo; arrows from north; the age counts up and

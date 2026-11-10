@@ -6,13 +6,14 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose") version "2.4.20" apply false
 }
 
-/** The repository's root: the sample compiles product/ and bundles type/fonts from there instead of copying them. */
+/** The repository's root: the sample compiles product/ and bundles the fonts from there instead of copying them. */
 val repo: File = rootDir.resolve("../../../..").canonicalFile
 
 /**
- * Resources taken from the repository at build time instead of committed twice: Cascadia Mono (SIL OFL) from type/fonts into
- * res/font, the FusionSpace icons from product/icons/android into res/drawable, and the adaptive app icon from
- * kit/apps/android into res/mipmap.
+ * Resources taken from the repository at build time instead of committed twice: Cascadia Mono and Archivo (SIL OFL) from
+ * type/fonts and Archivo's wide cut from product/mobile/fonts into res/font (cascadia_mono_regular.ttf,
+ * archivo_widesemibold.ttf), the FusionSpace icons from product/icons/android into res/drawable, and the adaptive app icon
+ * from kit/apps/android into res/mipmap.
  */
 abstract class FsResources : DefaultTask() {
     @get:InputFiles abstract val fonts: ConfigurableFileCollection
@@ -24,7 +25,7 @@ abstract class FsResources : DefaultTask() {
         val root = outputDir.get().asFile.apply { deleteRecursively() }
         val font = root.resolve("font").apply { mkdirs() }
         val drawable = root.resolve("drawable").apply { mkdirs() }
-        fonts.forEach { it.copyTo(font.resolve(it.name.replace("CascadiaMono", "cascadia_mono").replace('-', '_').lowercase()), true) }
+        fonts.forEach { it.copyTo(font.resolve(it.name.replace("CascadiaMono", "cascadia_mono").replace('-', '_').lowercase()), true) }  // Archivo-WideSemiBold → archivo_widesemibold
         icons.forEach { it.copyTo(drawable.resolve(it.name), true) }  // as published: they tint with the framework's colorControlNormal
         val kit = launcher.get().asFile
         kit.resolve("ic_launcher.xml").copyTo(root.resolve("mipmap-anydpi/ic_launcher.xml"), true)
@@ -37,7 +38,9 @@ subprojects {
     extra["repo"] = repo
     pluginManager.withPlugin("com.android.application") {
         val res = tasks.register<FsResources>("fsResources") {
-            fonts.from(repo.resolve("type/fonts/CascadiaMono-Regular.ttf"), repo.resolve("type/fonts/CascadiaMono-SemiBold.ttf"))
+            fonts.from(repo.resolve("type/fonts/CascadiaMono-Regular.ttf"), repo.resolve("type/fonts/CascadiaMono-SemiBold.ttf"),
+                repo.resolve("type/fonts/Archivo-Regular.ttf"), repo.resolve("type/fonts/Archivo-SemiBold.ttf"),
+                repo.resolve("product/mobile/fonts/Archivo-WideSemiBold.ttf"))
             icons.from(fileTree(repo.resolve("product/icons/android")) { include("*.xml") }) // all; R8 drops unused ones in release
             launcher.set(repo.resolve("kit/apps/android"))
             outputDir.set(layout.buildDirectory.dir("generated/fsResources"))

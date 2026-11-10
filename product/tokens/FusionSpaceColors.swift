@@ -84,16 +84,48 @@ public enum FS {
     /// Identity only, always leading to trailing. Never a status or a data scale.
     public static let gradient = LinearGradient(colors: [Color(hex: 0xDA7C30), Color(hex: 0xD07D7A), Color(hex: 0xA188CB), Color(hex: 0x768DF5)], startPoint: .leading, endPoint: .trailing)
 
-    // Type: Cascadia Mono for titles, section heads, labels, readouts and codes; Archivo for prose in content; controls and
-    // list text stay in the system font. All scale with Dynamic Type.
-    public static func title() -> Font { .custom("CascadiaMono-SemiBold", size: 28, relativeTo: .title) }
-    public static func heading() -> Font { .custom("CascadiaMono-SemiBold", size: 14, relativeTo: .headline) }   // with .textCase(.uppercase)
-    public static func label() -> Font { .custom("CascadiaMono-Regular", size: 12, relativeTo: .caption) }      // with .textCase(.uppercase)
-    /// The label in the real SemiBold face: never .weight(.semibold) on a custom font (that synthesizes a bold whose
-    /// glyphs ink wider than their frame, which the accessibility audit reports as clipped text).
-    public static func labelStrong() -> Font { .custom("CascadiaMono-SemiBold", size: 12, relativeTo: .caption) }
+    // Type: one voice with the web (principles.md, Three levels). Archivo for everything the app draws, in sentence case:
+    // titles and section heads in its wide cut, labels, chips, the app's own buttons and prose at normal width. Capitals
+    // only for a state (SAFE, ARMED, CONT) and a record's drawing lettering. Cascadia Mono for numbers, units, codes and
+    // designations. The system font where the system draws: lists, menus, alerts, the keyboard. On Apple Watch, labels,
+    // titles and prose are the system's too (SF Compact); the state box and chips stay Archivo. Each style scales with
+    // Dynamic Type through relativeTo:. Bundle Archivo-Regular and -SemiBold (type/fonts), Archivo-WideSemiBold
+    // (product/mobile/fonts) and Cascadia Mono Regular and SemiBold.
+    // Use the real SemiBold faces, never .weight(.semibold) on a custom font: that synthesizes a bold whose glyphs ink
+    // wider than their frame, which the accessibility audit reports as clipped text.
+    #if os(watchOS)
+    // Apple Watch: the system font (SF Compact, drawn for small sizes and narrower) for titles, labels, buttons and prose.
+    public static func title() -> Font { .system(.title3, weight: .semibold) }
+    public static func heading() -> Font { .system(.headline) }
+    public static func label() -> Font { .system(.footnote) }
+    public static func labelStrong() -> Font { .system(.footnote, weight: .semibold) }
+    public static func button(_ size: CGFloat = 17, relativeTo style: Font.TextStyle = .body) -> Font { .system(style, weight: .semibold) }
+    public static func prose(_ size: CGFloat = 17, relativeTo style: Font.TextStyle = .body) -> Font { .system(style) }
+    public static let chipSize: CGFloat = 12
+    #else
+    /// A screen's title: Archivo's wide cut, 28.
+    public static func title() -> Font { .custom("Archivo-WideSemiBold", size: 28, relativeTo: .title) }
+    /// A section's head under its 2 pt rule: Archivo's wide cut, 18.
+    public static func heading() -> Font { .custom("Archivo-WideSemiBold", size: 18, relativeTo: .headline) }
+    /// A row's label, a caption, a line of status beside a chip: Archivo 15, as written.
+    public static func label() -> Font { .custom("Archivo-Regular", size: 15, relativeTo: .subheadline) }
+    /// A field's or a readout's label: Archivo SemiBold 13, as written.
+    public static func labelStrong() -> Font { .custom("Archivo-SemiBold", size: 13, relativeTo: .footnote) }
+    /// The app's own buttons (Hold to arm, SAFE): Archivo SemiBold.
+    public static func button(_ size: CGFloat = 17, relativeTo style: Font.TextStyle = .body) -> Font { .custom("Archivo-SemiBold", size: size, relativeTo: style) }
+    /// Prose in content and text buttons: Archivo 17.
+    public static func prose(_ size: CGFloat = 17, relativeTo style: Font.TextStyle = .body) -> Font { .custom("Archivo-Regular", size: size, relativeTo: style) }
+    public static let chipSize: CGFloat = 13
+    #endif
+    /// A status chip's word and detail, and the state box (at its own size): Archivo SemiBold on every platform, the
+    /// watch included. 13 on a phone, 12 on a watch (watch.md's minimum).
+    public static func chip(_ size: CGFloat = chipSize, relativeTo style: Font.TextStyle = .footnote) -> Font { .custom("Archivo-SemiBold", size: size, relativeTo: style) }
+    /// A number someone came for, with tabular figures: Cascadia Mono.
     public static func readout(_ size: CGFloat = 28, relativeTo style: Font.TextStyle = .title) -> Font { .custom("CascadiaMono-Regular", size: size, relativeTo: style).monospacedDigit() }
-    public static func prose() -> Font { .custom("Archivo-Regular", size: 17, relativeTo: .body) }
+    /// Data in a line: a designation, a motor, coordinates, a value in a row. Cascadia Mono 14.
+    public static func data(_ size: CGFloat = 14, relativeTo style: Font.TextStyle = .footnote) -> Font { .custom("CascadiaMono-Regular", size: size, relativeTo: style).monospacedDigit() }
+    /// A record's drawing lettering: SHEET n / N, a title block's keys. Cascadia Mono 12, with .textCase(.uppercase).
+    public static func lettering() -> Font { .custom("CascadiaMono-Regular", size: 12, relativeTo: .caption) }
 
     public static let fieldTarget: CGFloat = 96   // pt, controls used at the pad (about 15 mm)
     public static let gloveTarget: CGFloat = 128   // pt, the one critical control used with gloves (about 20 mm)

@@ -13,10 +13,13 @@ for act in ${=ACTS:-pad flight}; do
   while [[ $(date +%S) != 01 ]]; do sleep 0.3; done
   xcrun simctl launch $P co.fusionspace.sample -screen pad -activity $act >/dev/null; sleep 5
   ds "b p" >/dev/null; sleep 2; ds "b p" >/dev/null                       # lock, then wake: the Lock Screen
-  hp=$(grep "label: 'Allow'" $OUT/last-tree.txt | sed -E 's/.*hitPoint: \{([0-9.]+), ([0-9.]+)\}.*/\1 \2/' | head -1)
-  [[ -n $hp ]] && ds "t $hp" >/dev/null                                   # "Allow Live Activities from FusionSpace?"
-  sleep 40; ds "" >/dev/null                                              # the Control Center hint at the top fades
-  grep -q "FLIGHT 04" $OUT/last-tree.txt || { echo "no card for $act (run it again)"; continue; }
+  allow() {                                                               # "Allow Live Activities from FusionSpace?", or
+    hp=$(grep -E "label: '(Always )?Allow'" $OUT/last-tree.txt | sed -E 's/.*hitPoint: \{([0-9.]+), ([0-9.]+)\}.*/\1 \2/' | head -1)
+    [[ -n $hp ]] && ds "t $hp" >/dev/null                                 # later "continue to allow ...?": Always Allow
+  }
+  allow; sleep 40; ds "" >/dev/null; allow                                # the Control Center hint at the top fades
+  grep -qE "label: '(Always )?Allow'" $OUT/last-tree.txt || ds "" >/dev/null
+  grep -q "Flight 04" $OUT/last-tree.txt || { echo "no card for $act (run it again)"; continue; }
   xcrun simctl io $P screenshot --mask=alpha $OUT/ios-lock-$act.png >/dev/null 2>&1 && echo "captured ios-lock-$act"
   cp $OUT/last-tree.txt $OUT/ios-lock-$act.tree.txt
 done
