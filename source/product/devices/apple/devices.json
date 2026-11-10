@@ -375,7 +375,8 @@
   "shows": "Pad at the largest accessibility text size (AX5): the top of the screen, as it scrolls",
   "simulator": "Xcode 27.0",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-11-09"
+  "captured": "2026-11-09",
+  "check_only": true
  },
  {
   "file": "ios-pad-ax5-end.png",
@@ -393,7 +394,8 @@
   "shows": "Pad at AX5, scrolled to its end: the state, Hold to arm and SAFE stacked, and the confirmation link",
   "simulator": "Xcode 27.0",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-11-09"
+  "captured": "2026-11-09",
+  "check_only": true
  },
  {
   "file": "ios-track-ax5.png",
