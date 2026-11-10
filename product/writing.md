@@ -267,7 +267,7 @@ layout), with the hazard, the consequence and the avoidance:
   analyze, gray, catalog). FusionSpace is a US brand making tools for US flyers first. A product or command name keeps the
   spelling it shipped with.
 - **Punctuation:** commas, colons and periods; no em dashes. An en dash only in ranges (`5,100–5,500 ft`). A middle dot with
-  spaces (` · `) separates fields on one line: `FS · SW · TOOL 002`, `ALTITUDE · ft AGL`.
+  spaces (` · `) separates fields on one line: `FS · SW · TOOL 002`, `Altitude · ft AGL`.
 - **Numbers and units** as in [`data.md`](data.md#numbers).
 - **Lists:** a list when there are three or more parallel items; otherwise a sentence.
 - **Links** say where they go: "the Accuracy page", not "here".

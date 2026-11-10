@@ -425,7 +425,7 @@ body { margin: 0; background: #fff; }
 .g-ph li[data-s="done"] { color: var(--fs-ink); }
 .g-ph li[data-s="now"] { background: var(--fs-ink); color: var(--fs-canvas); font-weight: 600; }
 .g-ph li[data-s="next"] { color: var(--fs-ink-muted); }
-.fs-status { min-height: 22px; font-size: 11px; }
+.fs-status { min-height: 22px; padding: 2px 8px; font-size: 11px; }
 
 /* Lock Screen Live Activity */
 .la { width: %(la_w)spx; box-sizing: border-box; min-height: %(la_min)spx; max-height: %(la_max)spx; padding: 14px; border-radius: 24px;

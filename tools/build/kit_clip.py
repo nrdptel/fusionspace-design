@@ -11,7 +11,8 @@ meaning (status chips, tags, state boxes, buttons, with their own corner radius)
 
 A box is tested along its own rounded outline (a capsule's corners are round), text by its rectangle.
 
-The same module checks web pages (check_pages: no sideways scrolling, no text cut by a box, no text on text), SVG
+The same module checks web pages (check_pages, in Chromium and WebKit: no sideways scrolling, no text cut by a box or
+reaching past one drawn around it, no text on text), SVG
 graphics (check_svgs: every visible line of text inside the canvas and off the other text), the real-screen captures
 (check_captures: no text cut short with "…", and every element of ours inside the screen's own outline) and the Office
 templates (check_office: rendered by LibreOffice with the repo's fonts, every line inside its box, the page and the text
@@ -172,6 +173,41 @@ PAGE_JS = r"""
     if (wide.length) out.push(`page scrolls sideways: ${de.scrollWidth} > ${innerWidth}: ${wide.join(', ')}`);
   }
   const label = (el, t) => (t || el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 40);
+  // A box drawn around its content (a chip, button, tag or panel with a fill, or with borders on both sides): text or an
+  // icon that reaches past it reads as cut off, though nothing hides it. Content in a scroller, or in something positioned
+  // on its own, is held to the boxes inside that only.
+  const alpha = c => { if (!c || c === 'transparent') return 0; const sl = c.match(/\/\s*([\d.]+)(%?)\s*\)$/);
+    if (sl) return sl[2] ? sl[1] / 100 : +sl[1]; const m = c.match(/^rgba\(([^)]+)\)/); return m ? +m[1].split(',')[3] : 1; };
+  const drawnCache = new Map();
+  const drawn = a => {
+    if (!drawnCache.has(a)) {
+      const s = getComputedStyle(a);
+      const side = k => parseFloat(s[`border${k}Width`]) > 0 && s[`border${k}Style`] !== 'none' && alpha(s[`border${k}Color`]) > 0;
+      drawnCache.set(a, alpha(s.backgroundColor) > 0 || s.backgroundImage !== 'none' || (side('Left') && side('Right')));
+    }
+    return drawnCache.get(a);
+  };
+  const spills = (el, rects, what) => {
+    for (let a = el; a && a !== document.body; a = a.parentElement) {
+      const s = getComputedStyle(a);
+      if (/(auto|scroll)/.test(s.overflowX + s.overflowY)) return;
+      if (drawn(a)) {
+        const ar = a.getBoundingClientRect();
+        const sides = new Set(rects.flatMap(r => {
+          const v = Math.max(1, (r.height - parseFloat(getComputedStyle(el instanceof Element ? el : a).fontSize || 0)) / 2 + 1);   // a glyph box taller than a tight line
+          return [r.left < ar.left - 1 && 'left', r.right > ar.right + 1 && 'right', r.top < ar.top - v && 'top', r.bottom > ar.bottom + v && 'bottom'].filter(Boolean);
+        }));
+        if (sides.size) { out.push(`${what} reaches past the ${[...sides].join(' and ')} edge of its box (${a.tagName.toLowerCase()}.${String(a.className.baseVal ?? a.className).split(' ')[0]})`); return; }
+      }
+      if (/(absolute|fixed)/.test(s.position)) return;
+    }
+  };
+  for (const svg of document.querySelectorAll('body svg')) {
+    const r = svg.getBoundingClientRect();
+    if (r.width < 1 || r.width > 40 || r.height > 40 || svg.parentElement.closest('svg')) continue;     // icons, not charts
+    if (!svg.checkVisibility({opacityProperty: true, visibilityProperty: true}) || (svg.closest('details:not([open])') && !svg.closest('summary'))) continue;
+    if (svg.parentElement) spills(svg.parentElement, [r], `an icon in "${label(svg.parentElement)}"`);
+  }
   const runs = [];
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n;
   while ((n = walker.nextNode())) {
@@ -181,6 +217,13 @@ PAGE_JS = r"""
     // only what the browser actually draws (closed <details>, display:none ancestors, hidden or transparent text)
     if (!el.checkVisibility({contentVisibilityAuto: true, opacityProperty: true, visibilityProperty: true})) continue;
     if (el.closest('details:not([open])') && !el.closest('summary')) continue;
+    // visually hidden for screen readers (the system's .fs-visually-hidden: a 1 px box that hides its overflow), never drawn
+    let hidden = false;
+    for (let a = el; a && a !== document.body; a = a.parentElement) {
+      const r = a.getBoundingClientRect(), s = getComputedStyle(a);
+      if (r.width <= 1 && r.height <= 1 && (/(hidden|clip)/.test(s.overflowX + s.overflowY) || s.clipPath !== 'none')) { hidden = true; break; }
+    }
+    if (hidden) continue;
     const range = document.createRange(); range.selectNodeContents(n);
     const rects = [...range.getClientRects()].filter(r => r.width > 0.5 && r.height > 0.5);
     if (!rects.length) continue;
@@ -196,6 +239,7 @@ PAGE_JS = r"""
       }
     }
     if (el.scrollWidth > el.clientWidth + 1 && /(hidden|clip)/.test(cs.overflowX) ) out.push(`"${label(el, n.textContent)}" overflows its own box`);
+    if (!(el instanceof SVGElement)) spills(el, rects, `"${label(el, n.textContent)}"`);
     // overlap: rotated SVG labels have loose axis-aligned boxes (skip them); text in a scroller counts only where it shows
     if (el instanceof SVGGraphicsElement) { const m = el.getCTM(); if (m && Math.abs(m.b) > 0.01) continue; }
     let sc = null;
@@ -245,26 +289,55 @@ def check_page(page):
     system, prose the width of its column and the reading scale (SYSTEM_JS)."""
     return page.evaluate(PAGE_JS) + page.evaluate(SYSTEM_JS)
 
-# Phones (320 is WCAG's reflow width), a tablet, and laptop and desktop windows: 1024 is where the reading scale starts to
-# grow, 1512 a 14-inch MacBook Pro's default window, 1920 a desktop monitor's.
-WIDTHS = (320, 360, 390, 768, 1024, 1280, 1512, 1920)
+# Phones (320 is WCAG's reflow width), the narrowest width a table stays a table (600: below it, tables stack), a tablet,
+# and laptop and desktop windows: 1024 is where the reading scale starts to grow, 1512 a 14-inch MacBook Pro's default
+# window, 1920 a desktop monitor's.
+WIDTHS = (320, 360, 390, 600, 768, 1024, 1280, 1512, 1920)
 
-def check_pages(paths, widths=WIDTHS, schemes=("light",)):
-    """Run check_page on local HTML files at several widths; returns ["file @ width: problem", ...]."""
+def check_pages(paths, widths=WIDTHS, schemes=("light",), engines=("chromium", "webkit")):
+    """Run check_page on local HTML files at several widths, in Chromium and in WebKit (Safari's engine, which sizes some
+    boxes differently); returns ["file @ width: problem", ...]. Pages are served over http from the repo, as a person opens
+    them: Safari won't load a file:// page's stylesheet from a parent folder."""
+    import functools, threading, urllib.parse
+    from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
     from playwright.sync_api import sync_playwright
+
+    class Quiet(SimpleHTTPRequestHandler):
+        def log_message(self, *a): pass
+
+    class Server(ThreadingHTTPServer):
+        def handle_error(self, request, client_address):        # a browser closing a spare connection when its page closes
+            import sys
+            if not isinstance(sys.exc_info()[1], (ConnectionResetError, BrokenPipeError)): super().handle_error(request, client_address)
+    srv = Server(("127.0.0.1", 0), functools.partial(Quiet, directory=build.ROOT))
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+
+    def url(path):
+        rel = os.path.relpath(os.path.abspath(path), build.ROOT)
+        if rel.startswith(".."): return "file://" + os.path.abspath(path)
+        return f"http://127.0.0.1:{srv.server_address[1]}/" + urllib.parse.quote(rel.replace(os.sep, "/"))
+
     check_js = os.path.join(build.OUT, "product", "web", "check", "fusionspace-check.js")
     out = []
-    with sync_playwright() as p_:
-        b = p_.chromium.launch()
-        for path in paths:
-            for w in widths:
-                for sc in schemes:
-                    pg = b.new_page(viewport={"width": w, "height": 900}, color_scheme=sc)
-                    pg.goto("file://" + os.path.abspath(path)); pg.evaluate("document.fonts.ready"); pg.wait_for_timeout(200)
-                    if os.path.exists(check_js): pg.add_script_tag(path=check_js)
-                    out += [f"{os.path.relpath(path, build.ROOT)} @ {w}px{'' if sc == 'light' else ' ' + sc}: {x}" for x in check_page(pg)]
-                    pg.close()
-        b.close()
+    try:
+        with sync_playwright() as p_:
+            for engine in engines:
+                try:
+                    b = getattr(p_, engine).launch()
+                except Exception:
+                    print(f"WARN web check: Playwright's {engine} isn't installed (playwright install {engine}), pages not checked in it"); continue
+                for path in paths:
+                    for w in widths:
+                        for sc in schemes:
+                            pg = b.new_page(viewport={"width": w, "height": 900}, color_scheme=sc)
+                            pg.goto(url(path)); pg.evaluate("document.fonts.ready"); pg.wait_for_timeout(200)
+                            if os.path.exists(check_js): pg.add_script_tag(path=check_js)
+                            where = f"{os.path.relpath(path, build.ROOT)} @ {w}px{'' if sc == 'light' else ' ' + sc}{'' if engine == 'chromium' else ' in ' + engine}"
+                            out += [f"{where}: {x}" for x in check_page(pg)]
+                            pg.close()
+                b.close()
+    finally:
+        srv.shutdown()
     return out
 
 SVG_JS = r"""

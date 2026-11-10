@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-level="tool">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -18,9 +18,6 @@
 #simbad svg { width: 14px; height: 14px; vertical-align: -2px; }
 .c-star { font: var(--fs-type-display); overflow-wrap: anywhere; }
 .c-code { font: 600 20px/28px var(--fs-font-mono); letter-spacing: 0.02em; }
-.c-facts { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 16px; margin: 0; border-top: 1px solid var(--fs-rule); padding-top: 12px; }
-.c-facts dt { font: var(--fs-type-label); text-transform: uppercase; letter-spacing: 0.06em; color: var(--fs-ink-muted); padding-top: 3px; }
-.c-facts dd { margin: 0; font: var(--fs-type-code); overflow-wrap: anywhere; }
 .c-used { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--fs-rule); }
 .c-used li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 0; border-bottom: 1px solid var(--fs-rule); font: var(--fs-type-code); }
 .c-range { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; align-items: center; }
@@ -39,18 +36,17 @@ pre.c-cli { overflow-x: auto; }
 <div class="fs-strip"></div>
 <div class="fs-page">
 <header class="fs-header">
-  <span class="fs-logo" aria-label="FusionSpace">{{logo}}</span>
+  <div class="fs-brand"><span class="fs-logo" aria-label="FusionSpace">{{logo}}</span><span class="fs-toolname">Callsign</span></div>
   <span></span>
   {{theme_switch}}
 </header>
 <main>
-<section style="padding:40px 0 24px;display:grid;gap:12px">
-  <div class="fs-row"><span class="fs-tag">{{designation}}</span>{{status_released}}</div>
+<section class="fs-intro">
   <h1>Callsign</h1>
   <p class="fs-lead">A project takes a constellation, and each of its products takes one of that constellation's IAU-approved stars as its internal name. Draw a constellation for a new project, or a star for the next product.</p>
 </section>
 
-<section class="fs-sheet" id="draw"><div class="fs-sheet-rail"><span class="fs-sheet-no">SHEET 1 / 3</span><h2>Draw</h2></div><div class="fs-sheet-body">
+<section class="fs-part" id="draw" aria-labelledby="draw-h"><h2 id="draw-h">Draw</h2><div class="fs-sheet-body">
 <div class="fs-split">
   <form class="fs-stack" id="filters" onsubmit="return false">
     <div class="fs-field"><label for="con">Project · constellation</label>
@@ -86,7 +82,7 @@ pre.c-cli { overflow-x: auto; }
   <div class="fs-stack fs-sticky">
     <div class="fs-panel fs-stack" style="border:2px solid var(--fs-ink)" id="result" aria-live="polite">
       <div class="fs-readout"><span class="fs-label">Star</span><span class="c-star" id="star-name">–</span><span class="c-code" id="star-code"></span><span class="fs-small fs-muted" id="star-project"></span></div>
-      <dl class="c-facts" id="facts"></dl>
+      <dl class="fs-facts" id="facts"></dl>
       <div class="fs-row">
         <button class="fs-btn" type="button" id="again">{{icon:refresh}}Draw a star</button>
         <button class="fs-btn" data-variant="secondary" type="button" id="copy">{{icon:copy}}Copy the code</button>
@@ -99,7 +95,7 @@ pre.c-cli { overflow-x: auto; }
 </div>
 </div></section>
 
-<section class="fs-sheet" id="catalog"><div class="fs-sheet-rail"><span class="fs-sheet-no">SHEET 2 / 3</span><h2>Catalog</h2><p class="fs-small fs-muted">Every star that matches the filters. Pick one by its name.</p></div><div class="fs-sheet-body">
+<section class="fs-part" id="catalog" aria-labelledby="catalog-h"><div class="fs-stack" style="gap:6px"><h2 id="catalog-h">Catalog</h2><p class="fs-small fs-muted">Every star that matches the filters. Pick one by its name.</p></div><div class="fs-sheet-body">
 <p class="fs-scroll-hint" aria-hidden="true">Wide table: scroll it sideways.</p>
 <div class="fs-table-wrap"><table class="fs-table c-table">
   <caption id="caption"></caption>
@@ -115,9 +111,9 @@ pre.c-cli { overflow-x: auto; }
 </table></div>
 </div></section>
 
-<section class="fs-sheet" id="source"><div class="fs-sheet-rail"><span class="fs-sheet-no">SHEET 3 / 3</span><h2>Source</h2></div><div class="fs-sheet-body fs-stack">
+<section class="fs-part" id="source" aria-labelledby="source-h"><h2 id="source-h">Source</h2><div class="fs-sheet-body fs-stack">
 <p>The names are the IAU's own: the <a href="https://iauarchive.eso.org/public/themes/naming_stars/#n4">Current List of IAU Star Names</a> on the IAU's Naming Stars page, kept by its Working Group on Star Names. Positions are J2000 in degrees, as the IAU gives them; vmag is the visual magnitude it lists.</p>
-<dl class="c-facts" id="list-facts"></dl>
+<dl class="fs-facts" id="list-facts"></dl>
 <p class="fs-small" id="update-status" role="status"></p>
 <div class="fs-row">
   <button class="fs-btn" data-variant="secondary" type="button" id="check">{{icon:refresh}}Check for a newer list</button>
@@ -139,7 +135,7 @@ python3 callsign.py update                     # read the IAU list now
 python3 callsign.py --help                     # everything else: --json, --plain, --skip</pre>
 </div></section>
 
-{{titleblock}}
+{{foot}}
 </main>
 </div>
 <div class="fs-toast" id="toast" role="status" hidden></div>
