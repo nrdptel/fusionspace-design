@@ -84,8 +84,11 @@ Titles and section heads are Archivo's wide cut on both platforms; labels, chips
 Archivo; readouts, designations and codes are Cascadia Mono; the system's lists are the system font. The large title is the
 platform's (a large navigation title on iOS, the top app bar's title on Android) set in Archivo's wide cut through its
 theming, not a custom bar. On iOS 26 and later that is `ToolbarItem(placement: .largeTitle)`: `UINavigationBarAppearance`
-fonts are not applied to large titles on iOS 27. The wide cut is 18% wider than Archivo, so a title wraps at the largest
-text sizes rather than being cut: nothing is ever cut with "…" (below).
+fonts are not applied to large titles on iOS 27. At accessibility text sizes iOS keeps a large title near its default
+size, below the section heads it leads, so there a screen sets its own title as its first line (`FS.title()`, which grows
+with Dynamic Type), hides the bar it would leave empty and keeps the canvas behind the status bar, so the screen scrolls
+under that and not under the time. The wide cut is 18% wider than Archivo, so a title wraps at the largest text sizes
+rather than being cut: nothing is ever cut with "…" (below).
 
 ## Field use
 

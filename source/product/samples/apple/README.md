@@ -149,7 +149,9 @@ them, at every size each platform offers, found:
 - **The Lock Screen** asks "continue to allow Live Activities from FusionSpace?" on iOS 27 with Don't Allow and Always
   Allow; `lock.sh` answers Always Allow (it only knew Allow) and finds the card by "Flight 04", now in sentence case.
 - **The large title** stays near its default size at accessibility sizes (iOS caps navigation-bar titles), so at
-  Accessibility 5 "Track" is smaller than its section heads. That's the platform's title; left as it is.
+  Accessibility 5 "Track" was smaller than its section heads. From Accessibility 1 up, Track now sets its own title as its
+  first line in `FS.title()` and hides the bar, with a band of canvas behind the status bar so the screen scrolls under
+  that, not under the time; at the other sizes the title is still the platform's.
 
 ## What running them found (October 6, 2026)
 

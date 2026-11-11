@@ -410,10 +410,10 @@
    402,
    874
   ],
-  "shows": "Track at AX5: the phase strip gives way to the current phase and a tick per phase",
+  "shows": "Track at AX5: the screen sets its own title, which grows with the text (iOS keeps a large title near its default size), and the phase strip gives way to the current phase and a tick per phase",
   "simulator": "Xcode 27.0",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-11-09",
+  "captured": "2026-11-10",
   "check_only": true
  },
  {
