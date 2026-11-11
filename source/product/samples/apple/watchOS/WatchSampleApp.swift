@@ -19,13 +19,13 @@ struct WatchRoot: View {
         case "pad":
             NavigationStack {
                 FSWatchState(designation: Sample.designation, armed: true, channels: [
-                    .init(1, "DROGUE", .ok, "Cont", spoken: "Continuity"), .init(2, "MAIN", .ok, "Cont", spoken: "Continuity"),
+                    .init(1, "Drogue", .ok, "Cont", spoken: "Continuity"), .init(2, "Main", .ok, "Cont", spoken: "Continuity"),
                     .init(3, "—", .off, "Not used"),
                 ], linkAge: "0.3\u{00A0}s")
                 .navigationTitle("Pad 3")
             }
         case "unfired":
-            FSWatchUnfired(channel: "2 · MAIN") {}
+            FSWatchUnfired(channel: "2 · Main") {}
         case "find-aod":
             find.environment(\.isLuminanceReduced, true)
         default:

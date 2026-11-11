@@ -37,13 +37,17 @@ targets:
         buildPhase: resources
       - path: ../../../../type/fonts/Archivo-Regular.ttf
         buildPhase: resources
+      - path: ../../../../type/fonts/Archivo-SemiBold.ttf
+        buildPhase: resources
+      - path: ../../../../product/mobile/fonts/Archivo-WideSemiBold.ttf
+        buildPhase: resources
     info:
       path: build-info/iOS-Info.plist
       properties:
         FSCaptureClock: $(FS_CAPTURE_CLOCK)         # empty unless a capture build sets it (Shared/CaptureClock.swift)
         CFBundleDisplayName: FusionSpace
         UILaunchScreen: {}
-        UIAppFonts: [CascadiaMono-Regular.ttf, CascadiaMono-SemiBold.ttf, Archivo-Regular.ttf]
+        UIAppFonts: [CascadiaMono-Regular.ttf, CascadiaMono-SemiBold.ttf, Archivo-Regular.ttf, Archivo-SemiBold.ttf, Archivo-WideSemiBold.ttf]
         NSSupportsLiveActivities: true
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
     dependencies:
@@ -70,13 +74,15 @@ targets:
         buildPhase: resources
       - path: ../../../../type/fonts/Archivo-Regular.ttf
         buildPhase: resources
+      - path: ../../../../type/fonts/Archivo-SemiBold.ttf
+        buildPhase: resources
     info:
       path: build-info/watchOS-Info.plist
       properties:
         CFBundleDisplayName: FusionSpace
         WKApplication: true
         WKWatchOnly: true
-        UIAppFonts: [CascadiaMono-Regular.ttf, CascadiaMono-SemiBold.ttf, Archivo-Regular.ttf]
+        UIAppFonts: [CascadiaMono-Regular.ttf, CascadiaMono-SemiBold.ttf, Archivo-Regular.ttf, Archivo-SemiBold.ttf]
     dependencies:
       - target: FusionSpaceWatchWidgets
     settings:
@@ -99,12 +105,16 @@ targets:
         buildPhase: resources
       - path: ../../../../type/fonts/Archivo-Regular.ttf
         buildPhase: resources
+      - path: ../../../../type/fonts/Archivo-SemiBold.ttf
+        buildPhase: resources
+      - path: ../../../../product/mobile/fonts/Archivo-WideSemiBold.ttf
+        buildPhase: resources
     info:
       path: build-info/Widgets-Info.plist
       properties:
         FSCaptureClock: $(FS_CAPTURE_CLOCK)         # empty unless a capture build sets it (Shared/CaptureClock.swift)
         CFBundleDisplayName: FusionSpace
-        UIAppFonts: [CascadiaMono-Regular.ttf, CascadiaMono-SemiBold.ttf, Archivo-Regular.ttf]
+        UIAppFonts: [CascadiaMono-Regular.ttf, CascadiaMono-SemiBold.ttf, Archivo-Regular.ttf, Archivo-SemiBold.ttf, Archivo-WideSemiBold.ttf]
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:
@@ -125,11 +135,13 @@ targets:
         buildPhase: resources
       - path: ../../../../type/fonts/CascadiaMono-SemiBold.ttf
         buildPhase: resources
+      - path: ../../../../type/fonts/Archivo-SemiBold.ttf
+        buildPhase: resources
     info:
       path: build-info/WatchWidgets-Info.plist
       properties:
         CFBundleDisplayName: FusionSpace
-        UIAppFonts: [CascadiaMono-Regular.ttf, CascadiaMono-SemiBold.ttf]
+        UIAppFonts: [CascadiaMono-Regular.ttf, CascadiaMono-SemiBold.ttf, Archivo-SemiBold.ttf]
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:

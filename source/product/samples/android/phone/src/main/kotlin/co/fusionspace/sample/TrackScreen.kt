@@ -53,6 +53,7 @@ import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -66,9 +67,10 @@ import co.fusionspace.design.FsReadout
 import co.fusionspace.design.FsSheetHeader
 import co.fusionspace.design.FsSignal
 import co.fusionspace.design.FsStatus
-import co.fusionspace.design.FsTag
+import co.fusionspace.design.FsType
+import co.fusionspace.design.fsUnbroken
 import co.fusionspace.design.LocalFsColors
-import co.fusionspace.design.LocalFsMono
+import co.fusionspace.design.LocalFsText
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -91,19 +93,22 @@ fun TrackScreen(onBack: () -> Unit) {
                 .padding(horizontal = 16.dp).padding(bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp), itemVerticalAlignment = Alignment.CenterVertically) {
-                FsTag("FLIGHT 04 · FS-VEGA-004")
-                FsStatus("Link", FsSignal.Ok, detail = "0.4\u00A0s", icon = { StatusIcon(R.drawable.fs_telemetry) })
+            // the title first, then the flight and device as a data line, with the link
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text("Track", style = FsType.title(), color = c.ink, modifier = Modifier.semantics { heading() })
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp), itemVerticalAlignment = Alignment.CenterVertically) {
+                    Text("Flight 04 · ${fsUnbroken("FS-VEGA-004")}", style = FsType.data(), color = c.inkMuted)
+                    FsStatus("Link", FsSignal.Ok, detail = "0.4\u00A0s", icon = { StatusIcon(R.drawable.fs_telemetry) })
+                }
             }
-            Text("Track", style = MaterialTheme.typography.headlineMedium, color = c.ink)
             FsPhaseStrip(current = 5)
-            FsSheetHeader("Now", 1, 2)
+            FsSheetHeader("Now")
             Pair(
                 { FsReadout("Altitude", "612", "ft AGL", it, qualifier = "Barometer · 0.4\u00A0s ago", spokenUnit = "feet above ground level") },
                 { FsReadout("Descent", "18", "ft/s", it, qualifier = "Under the main", spokenUnit = "feet per second") },
             )
             MapStandIn()
-            FsSheetHeader("Find it", 2, 2)
+            FsSheetHeader("Find it")
             Pair(
                 { FsReadout("Distance", "1,352", "ft", it, qualifier = "From you", spokenUnit = "feet") },
                 { FsReadout("Bearing", "062°", "T", it, qualifier = "Declination 13° E", spokenUnit = "true") },
@@ -112,10 +117,6 @@ fun TrackScreen(onBack: () -> Unit) {
         }
     }
 }
-
-@Composable
-private fun mono(size: Int, weight: FontWeight = FontWeight.Normal) =
-    TextStyle(fontFamily = LocalFsMono.current, fontSize = size.sp, fontWeight = weight, letterSpacing = 0.02.em)
 
 /** Two readouts side by side, or one above the other when they don't both fit on a line at the text size. */
 @Composable
@@ -128,12 +129,13 @@ private fun Pair(first: @Composable (Modifier) -> Unit, second: @Composable (Mod
 
 /**
  * A drawn stand-in for the offline map: the flight path, the pad, the rocket and the predicted landing (dashed, Nebula).
- * A drawing: its labels keep their size at every text size (they'd cover the map otherwise); the map has a description.
+ * A drawing: its labels keep their size at every text size (they'd cover the map otherwise), in the chart face (Archivo,
+ * sentence case, as on the web's charts); the map has a description.
  */
 @Composable
 private fun MapStandIn() {
     val c = LocalFsColors.current
-    val label = TextStyle(fontFamily = LocalFsMono.current, fontSize = with(LocalDensity.current) { 11.dp.toSp() }, letterSpacing = 0.02.em)
+    val label = TextStyle(fontFamily = LocalFsText.current, fontSize = with(LocalDensity.current) { 11.dp.toSp() })
     Box(Modifier.fillMaxWidth().aspectRatio(1.6f).border(1.dp, c.ruleStrong).background(c.surface)
         .semantics { contentDescription = "Map: Vega 1,352 feet from you at 62 degrees true, predicted landing to the north-east" }) {
         Canvas(Modifier.fillMaxSize()) {
@@ -157,10 +159,10 @@ private fun MapStandIn() {
         }
         Row(Modifier.fillMaxWidth().padding(10.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Text("GPS 11\u00A0sat · HDOP 0.9", style = label, color = c.inkMuted, modifier = Modifier.weight(1f))
-            Text("PREDICTED LANDING", style = label, color = c.predicted, textAlign = TextAlign.End, modifier = Modifier.weight(1f))
+            Text("Predicted landing", style = label, color = c.predicted, textAlign = TextAlign.End, modifier = Modifier.weight(1f))
         }
-        Text("VEGA · 0.4\u00A0s", style = label, color = c.ink, modifier = Modifier.align(Alignment.CenterEnd).padding(end = 64.dp, top = 40.dp))
-        Text("TILES 2026-10-03", style = label, color = c.inkMuted, modifier = Modifier.align(Alignment.BottomEnd).padding(10.dp))
+        Text("Vega · 0.4\u00A0s", style = label, color = c.ink, modifier = Modifier.align(Alignment.CenterEnd).padding(end = 64.dp, top = 40.dp))
+        Text("Tiles 2026-10-03", style = label, color = c.inkMuted, modifier = Modifier.align(Alignment.BottomEnd).padding(10.dp))
     }
 }
 
@@ -172,11 +174,11 @@ private fun Coordinates(text: String) {
     Column {
         Box(Modifier.fillMaxWidth().height(1.dp).background(c.rule))
         Row(Modifier.fillMaxWidth().heightIn(min = 48.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text(text, style = mono(16), color = c.ink, modifier = Modifier.weight(1f))
+            Text(text, style = FsType.data(16), color = c.ink, modifier = Modifier.weight(1f))
             TextButton(onClick = { scope.launch { clipboard.setClipEntry(ClipEntry(ClipData.newPlainText("Coordinates", text))) } }) {
                 Icon(painterResource(R.drawable.fs_copy), null, Modifier.size(20.dp))
                 Spacer(Modifier.width(8.dp))
-                Text("Copy")
+                Text("Copy", style = FsType.button(15))
             }
         }
     }

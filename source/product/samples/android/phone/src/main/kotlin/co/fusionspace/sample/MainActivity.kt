@@ -32,11 +32,16 @@ import androidx.core.view.WindowCompat
 import co.fusionspace.design.FsTheme
 import co.fusionspace.design.FusionSpaceTheme
 
-/** Cascadia Mono, bundled from type/fonts by the build (see the root build.gradle.kts). */
+/** Cascadia Mono, Archivo and Archivo's wide cut, bundled from type/fonts and product/mobile/fonts by the build (see the root build.gradle.kts). */
 val CascadiaMono = FontFamily(
     Font(R.font.cascadia_mono_regular, FontWeight.Normal),
     Font(R.font.cascadia_mono_semibold, FontWeight.SemiBold),
 )
+val Archivo = FontFamily(
+    Font(R.font.archivo_regular, FontWeight.Normal),
+    Font(R.font.archivo_semibold, FontWeight.SemiBold),
+)
+val ArchivoWide = FontFamily(Font(R.font.archivo_widesemibold, FontWeight.SemiBold))
 
 enum class Screen { Home, Pad, Track }
 
@@ -49,16 +54,16 @@ class MainActivity : ComponentActivity() {
         open(intent)
         setContent {
             when (screen) {
-                Screen.Home -> FusionSpaceTheme(FsTheme.Light, mono = CascadiaMono) {
+                Screen.Home -> FusionSpaceTheme(FsTheme.Light, mono = CascadiaMono, text = Archivo, wide = ArchivoWide) {
                     SystemBars(dark = false)
                     Home(onOpen = { screen = it }, onLive = { postLiveUpdate(this) })
                 }
-                Screen.Pad -> FusionSpaceTheme(FsTheme.Field, mono = CascadiaMono) {
+                Screen.Pad -> FusionSpaceTheme(FsTheme.Field, mono = CascadiaMono, text = Archivo, wide = ArchivoWide) {
                     SystemBars(dark = false)
                     BackHandler { screen = Screen.Home }
                     PadScreen(onBack = { screen = Screen.Home })
                 }
-                Screen.Track -> FusionSpaceTheme(FsTheme.Dark, mono = CascadiaMono) {
+                Screen.Track -> FusionSpaceTheme(FsTheme.Dark, mono = CascadiaMono, text = Archivo, wide = ArchivoWide) {
                     SystemBars(dark = true)
                     BackHandler { screen = Screen.Home }
                     TrackScreen(onBack = { screen = Screen.Home })

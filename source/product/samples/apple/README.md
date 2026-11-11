@@ -15,7 +15,8 @@ The apps also use the FusionSpace SF Symbols (`product/icons/sf-symbols/`) in th
 app icon (`kit/apps/ios/AppIcon-1024.png`, put in an asset catalog under `build-info/` by `tools/app-icon.sh` when XcodeGen
 runs).
 
-Fonts come from `type/fonts/` (SIL OFL).
+Fonts (SIL OFL), listed in each target's `UIAppFonts`: Archivo Regular and SemiBold and Cascadia Mono Regular and SemiBold
+from `type/fonts/`, and Archivo's wide cut, `Archivo-WideSemiBold.ttf`, from `product/mobile/fonts/` (the build makes it).
 
 ## Build and run
 
@@ -80,16 +81,23 @@ cd tools/capture
 python3 devicehub.py &          # one lasting connection to Xcode's device tools (xcrun mcpbridge), for ds and xc.py
 CLOCK=9:41 ./build.sh           # XcodeGen, build both apps with the capture clock, install on the three simulators
 ./app.sh                        # Pad and Track, opened from the Home Screen icon (no "◂ Calendar" back-link)
+AX5=1 ./app.sh                  # the same at Accessibility 5, and Pad scrolled to its end (check-only, below)
 ./home.sh                       # the wind widgets on the Home Screen, dark and light
 ./lock.sh                       # the Live Activity on the Lock Screen, locked and woken with the power button
+./island.sh                     # the Live Activity in the Dynamic Island, over Settings
 ./watch.sh                      # Find, Find in Always On, Pad, Unfired on both watches, with their element trees
-./face.sh ultra; AT_SECOND=27 ./face.sh se40      # a watch face with our complications, awake and in Always On
+LARGEST=1 ./watch.sh            # the same at each watch's largest text size (check-only)
+AT_TIME=10:09 ./face.sh ultra; AT_TIME=10:09 AT_SECOND=27 ./face.sh se40   # a face with our complications, awake and in Always On
 python3 keep.py ios-pad.png app # copy one into source/product/devices/apple, with its row and its element frames
 ```
 
 Captures land in `build/captures/` (not committed) with the element tree Device Hub returned (`*.tree.txt`); `keep.py`
 records our elements' frames in `elements.json`, and the build tests each one against the screen's outline and reads every
-capture back with text recognition for "…" (`tools/build/kit_clip.py`, `check_captures`). One-time setup by hand through
+capture back with text recognition for "…" (`tools/build/kit_clip.py`, `check_captures`). The largest-size captures are
+kept with no mode (`python3 keep.py ios-pad-ax5.png`) and marked `check_only` in `devices.json`: those screens scroll, and a
+still frame of one shows a row running off the edge, so the build reads them for "…" but doesn't publish them or test
+their element frames. `face.sh` waits for the Mac's clock in 24-hour time, so 10:09 in the evening is `AT_TIME=22:09`.
+One-time setup by hand through
 `ds` (or Device Hub's window): the widgets on page 2 of the Home Screen (long-press, Edit, Add Widget, FusionSpace, the
 medium size, then the small one), and a face with complication slots on each watch (long-press the face, swipe to New,
 Modular Ultra on the Ultra and Infograph on the SE, Edit, the complications page, FusionSpace › Find the rocket in each
@@ -114,6 +122,35 @@ slot, the crown to scroll the list).
   home: `kill $(xcrun simctl spawn <watch> launchctl list | awk '$3=="com.apple.Carousel"{print $1}')` (it relaunches).
   Bump the version again if a placeholder ever comes back.
 
+## What the phone and watch pass found (November 9, 2026)
+
+The pass moved the parts to the web's one voice (Archivo, sentence case, states in capitals; product/principles.md). Running
+them, at every size each platform offers, found:
+
+- **At Accessibility 5** the designation broke at its hyphen ("FS-" / "VEGA-004"). `FS.unbroken(_:)` puts a word joiner
+  after each hyphen, so a code moves to the next line whole; the sample's data lines and `FSHoldToConfirm` use it.
+- **On the 40 mm SE, at its default text size,** Pad scrolled, with its last row and note under the bezel. The 12 pt chips
+  (10 before) made the first row 3 pt too wide (a 4 pt spacer between 4 pt gaps), and `ViewThatFits` measured the compact
+  layouts taller than they draw: the state box, squeezed beside the designation, measured three lines tall, and the note
+  two. The box now keeps to one line (`fixedSize`), the note takes the screen's width, the compact layouts keep each
+  channel on one line, and a watch chip has 6 pt padding and a 4 pt gap, as the mock-up draws it. Pad fits again, as
+  before the pass.
+- **On the Ultra's face** the rectangular complication's top line was cut to "Vega · LA…": a face sets system-font text
+  larger than the app asks (the Cascadia Mono it had kept its size), and the name, the phase and the fix's age no longer
+  shared the line. The name and phase have the line to themselves now, and the age follows the bearing on the last line
+  ("062° T · fix 22sec"). The build's text recognition found it.
+- **In dark appearance,** Pad drew its field theme's light canvas but kept the system's dark-mode tint: "Arm with a
+  confirmation instead" in pale blue on white, about 3 : 1, which Apple's audit failed. Pad now sets a light color scheme
+  for itself and its navigation bar, as the field theme is light, and the link takes the app's button face
+  (`FS.button()`, Archivo SemiBold, as the web's buttons). The October runs of the audit had been in light appearance.
+- **The audit itself** hung when it reported that issue: the test sat with Pad on screen until it was stopped. The tests
+  now keep each issue as the audit hands it over and read its element (label, frame) after the audit returns.
+- **On the map,** the "Pad 3" label sat on the line from you to the rocket; it's left of the square now.
+- **The Lock Screen** asks "continue to allow Live Activities from FusionSpace?" on iOS 27 with Don't Allow and Always
+  Allow; `lock.sh` answers Always Allow (it only knew Allow) and finds the card by "Flight 04", now in sentence case.
+- **The large title** stays near its default size at accessibility sizes (iOS caps navigation-bar titles), so at
+  Accessibility 5 "Track" is smaller than its section heads. That's the platform's title; left as it is.
+
 ## What running them found (October 6, 2026)
 
 Everything below compiled before; it broke or looked wrong only when it ran:
@@ -131,8 +168,8 @@ Everything below compiled before; it broke or looked wrong only when it ran:
   button in the content.
 - In the Dynamic Island the SAFE box's border was cut by the island's rounded end, and the countdown pushed the island over
   the clock: the box is inset and the countdown fits the compact width.
-- `UINavigationBarAppearance` fonts aren't applied to large titles on iOS 27: the sample sets the Cascadia Mono large title
-  with `ToolbarItem(placement: .largeTitle)`.
+- `UINavigationBarAppearance` fonts aren't applied to large titles on iOS 27: the sample sets its large title (Archivo's
+  wide cut since November 2026) with `ToolbarItem(placement: .largeTitle)`.
 
 ## What Device Hub found (October 7, 2026, later)
 

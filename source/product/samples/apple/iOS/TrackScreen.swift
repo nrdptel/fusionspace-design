@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0 · Copyright 2026 Neer Patel
-// The track screen (product/mobile.md#screens): dark; the phase, the two numbers that matter under the main, the offline
-// map, then distance, bearing and the coordinates.
+// The track screen (product/mobile.md#screens), a tool: dark; the title, the flight and device as a data line with the
+// link, the phase, the two numbers that matter under the main, the offline map, then distance and bearing.
 import SwiftUI
 
 struct TrackScreen: View {
@@ -9,13 +9,14 @@ struct TrackScreen: View {
         FSPaletteReader { p in
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
+                    // under the platform's large title: the flight and device as a data line, then the link
                     ViewThatFits(in: .horizontal) {
-                        HStack(spacing: 8) { FSTag("FLIGHT 04 · \(Sample.designation)"); FSStatus("Link", signal: .ok, detail: "0.4\u{00A0}s", symbol: "fs.telemetry") }
-                        VStack(alignment: .leading, spacing: 6) { FSTag("FLIGHT 04 · \(Sample.designation)"); FSStatus("Link", signal: .ok, detail: "0.4\u{00A0}s", symbol: "fs.telemetry") }
+                        HStack(spacing: 12) { flight(p); link }
+                        VStack(alignment: .leading, spacing: 6) { flight(p); link }
                     }
                     FSPhaseStrip(current: 5)
                     VStack(spacing: 8) {
-                        FSSheetHeader("Now", number: 1, of: 2)
+                        FSSheetHeader("Now")
                         pair {
                             FSReadout("Altitude", value: "612", unit: "ft AGL", qualifier: "Barometer · 0.4\u{00A0}s ago", spokenUnit: "feet above ground level")
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -25,7 +26,7 @@ struct TrackScreen: View {
                     }
                     RecoveryMap().frame(height: 190)
                     VStack(spacing: 8) {
-                        FSSheetHeader("Find it", number: 2, of: 2)
+                        FSSheetHeader("Find it")
                         pair {
                             FSReadout("Distance", value: "1,352", unit: "ft", qualifier: "From you", size: 26, spokenUnit: "feet")
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -39,8 +40,8 @@ struct TrackScreen: View {
             }
             .background(p.canvas)
             .navigationTitle("Track")
-            // The large title is the platform's, set in Cascadia Mono through the toolbar (iOS 26+). The bar's appearance
-            // fonts (UINavigationBarAppearance) aren't applied to large titles on iOS 27.
+            // The large title is the platform's, set in Archivo's wide cut through the toolbar (iOS 26+). The bar's
+            // appearance fonts (UINavigationBarAppearance) aren't applied to large titles on iOS 27.
             .toolbar { ToolbarItem(placement: .largeTitle) {
                 Text("Track").font(FS.title()).foregroundStyle(p.ink).frame(maxWidth: .infinity, alignment: .leading)
             } }
@@ -48,6 +49,11 @@ struct TrackScreen: View {
         }
         .fsKeepsScreenOn()          // follows the system appearance (captured in dark)
     }
+
+    private func flight(_ p: FSPalette) -> some View {
+        Text("Flight 04 · \(FS.unbroken(Sample.designation))").font(FS.data()).foregroundStyle(p.inkMuted).fixedSize(horizontal: false, vertical: true)
+    }
+    private var link: FSStatus { FSStatus("Link", signal: .ok, detail: "0.4\u{00A0}s", symbol: "fs.telemetry") }
 
     /// Two readouts side by side, or one above the other at accessibility text sizes.
     private func pair<C: View>(@ViewBuilder _ content: () -> C) -> some View {
@@ -84,12 +90,15 @@ struct RecoveryMap: View {
                 ctx.fill(diamond, with: .color(p.ink))
                 ctx.fill(Path(ellipseIn: CGRect(x: you.x - 11, y: you.y - 11, width: 22, height: 22)), with: .color(p.action.opacity(0.18)))
                 ctx.fill(Path(ellipseIn: CGRect(x: you.x - 6, y: you.y - 6, width: 12, height: 12)), with: .color(p.action))
-                let mono = Font.custom("CascadiaMono-Regular", fixedSize: 11)   // a drawing: its labels keep their size; the map has an accessibility label
-                ctx.draw(Text("VEGA · 0.4\u{00A0}s").font(mono).foregroundStyle(p.ink), at: CGPoint(x: rocket.x, y: rocket.y + 22))
-                ctx.draw(Text("PAD 3").font(mono).foregroundStyle(p.inkMuted), at: CGPoint(x: pad.x + 30, y: pad.y + 4))
-                ctx.draw(Text("PREDICTED").font(mono).foregroundStyle(p.predicted), at: CGPoint(x: landing.minX - 6, y: landing.midY), anchor: .trailing)
+                // a drawing: its labels keep their size, in the chart face (Archivo, sentence case, as on the web's charts);
+                // the map has an accessibility label
+                let mono = Font.custom("Archivo-Regular", fixedSize: 11)
+                ctx.draw(Text("Vega · 0.4\u{00A0}s").font(mono).foregroundStyle(p.ink), at: CGPoint(x: rocket.x, y: rocket.y + 22))
+                // left of the square: the line from you to the rocket runs to its right
+                ctx.draw(Text("Pad 3").font(mono).foregroundStyle(p.inkMuted), at: CGPoint(x: pad.x - 12, y: pad.y), anchor: .trailing)
+                ctx.draw(Text("Predicted").font(mono).foregroundStyle(p.predicted), at: CGPoint(x: landing.minX - 6, y: landing.midY), anchor: .trailing)
                 ctx.draw(Text("GPS 11 sat · HDOP 0.9").font(mono).foregroundStyle(p.inkMuted), at: CGPoint(x: 12, y: 14), anchor: .leading)
-                ctx.draw(Text("TILES 2026-10-03").font(mono).foregroundStyle(p.inkMuted), at: CGPoint(x: w - 12, y: h - 12), anchor: .trailing)
+                ctx.draw(Text("Tiles 2026-10-03").font(mono).foregroundStyle(p.inkMuted), at: CGPoint(x: w - 12, y: h - 12), anchor: .trailing)
                 var scale = Path(); scale.move(to: CGPoint(x: 12, y: h - 18)); scale.addLine(to: CGPoint(x: 12, y: h - 12))
                 scale.addLine(to: CGPoint(x: 92, y: h - 12)); scale.addLine(to: CGPoint(x: 92, y: h - 18))
                 ctx.stroke(scale, with: .color(p.ink), lineWidth: 1.5)

@@ -13,7 +13,7 @@
    411,
    923
   ],
-  "captured": "2026-10-07"
+  "captured": "2026-11-09"
  },
  {
   "file": "phone-track.png",
@@ -29,7 +29,7 @@
    411,
    923
   ],
-  "captured": "2026-10-07"
+  "captured": "2026-11-09"
  },
  {
   "file": "phone-live-update.png",
@@ -45,7 +45,7 @@
    411,
    923
   ],
-  "captured": "2026-10-07"
+  "captured": "2026-11-09"
  },
  {
   "file": "phone-live-update-android16.png",
@@ -77,7 +77,7 @@
    227,
    227
   ],
-  "captured": "2026-10-07"
+  "captured": "2026-11-09"
  },
  {
   "file": "wear-pad.png",
@@ -93,7 +93,7 @@
    227,
    227
   ],
-  "captured": "2026-10-07"
+  "captured": "2026-11-09"
  },
  {
   "file": "wear-unfired.png",
@@ -109,7 +109,7 @@
    227,
    227
   ],
-  "captured": "2026-10-07"
+  "captured": "2026-11-09"
  },
  {
   "file": "wear-find-ambient.png",
@@ -125,7 +125,7 @@
    227,
    227
   ],
-  "captured": "2026-10-07"
+  "captured": "2026-11-09"
  },
  {
   "file": "wear-tile-find.png",
@@ -141,7 +141,7 @@
    227,
    227
   ],
-  "captured": "2026-10-07"
+  "captured": "2026-11-09"
  },
  {
   "file": "wear-small-find.png",
@@ -157,6 +157,108 @@
    192,
    192
   ],
-  "captured": "2026-10-07"
+  "captured": "2026-11-09"
+ },
+ {
+  "file": "phone-pad-fs200.png",
+  "what": "Pad at font scale 2.0, the largest: the top of the screen, as it scrolls",
+  "device": "pixel_10 (AVD profile; display cutout emulation: hole)",
+  "os": "Android 17, API 37.0 (Google APIs arm64 system image r6, build CE2A.260420.019)",
+  "size_px": [
+   1080,
+   2424
+  ],
+  "density_dpi": 420,
+  "size_dp": [
+   411,
+   923
+  ],
+  "captured": "2026-11-09",
+  "check_only": true
+ },
+ {
+  "file": "phone-pad-fs200-end.png",
+  "what": "Pad at font scale 2.0, scrolled to its end: the state, Hold to arm and SAFE stacked",
+  "device": "pixel_10 (AVD profile; display cutout emulation: hole)",
+  "os": "Android 17, API 37.0 (Google APIs arm64 system image r6, build CE2A.260420.019)",
+  "size_px": [
+   1080,
+   2424
+  ],
+  "density_dpi": 420,
+  "size_dp": [
+   411,
+   923
+  ],
+  "captured": "2026-11-09",
+  "check_only": true
+ },
+ {
+  "file": "phone-track-fs200.png",
+  "what": "Track at font scale 2.0: the phase strip gives way to the current phase and a tick per phase",
+  "device": "pixel_10 (AVD profile; display cutout emulation: hole)",
+  "os": "Android 17, API 37.0 (Google APIs arm64 system image r6, build CE2A.260420.019)",
+  "size_px": [
+   1080,
+   2424
+  ],
+  "density_dpi": 420,
+  "size_dp": [
+   411,
+   923
+  ],
+  "captured": "2026-11-09",
+  "check_only": true
+ },
+ {
+  "file": "wear-find-fs124.png",
+  "what": "Find at font scale 1.24, the largest Wear OS offers",
+  "device": "wearos_large_round (AVD profile, round)",
+  "os": "Wear OS 7.0, API 37.0 (android-wear-signed arm64 system image r1, build CP2A.260330.028.E2)",
+  "size_px": [
+   454,
+   454
+  ],
+  "density_dpi": 320,
+  "size_dp": [
+   227,
+   227
+  ],
+  "captured": "2026-11-09",
+  "check_only": true
+ },
+ {
+  "file": "wear-pad-fs124.png",
+  "what": "Pad at font scale 1.24: it scrolls, and nothing is cut with …",
+  "device": "wearos_large_round (AVD profile, round)",
+  "os": "Wear OS 7.0, API 37.0 (android-wear-signed arm64 system image r1, build CP2A.260330.028.E2)",
+  "size_px": [
+   454,
+   454
+  ],
+  "density_dpi": 320,
+  "size_dp": [
+   227,
+   227
+  ],
+  "captured": "2026-11-09",
+  "check_only": true
+ },
+ {
+  "file": "wear-unfired-fs124.png",
+  "what": "Unfired at font scale 1.24",
+  "device": "wearos_large_round (AVD profile, round)",
+  "os": "Wear OS 7.0, API 37.0 (android-wear-signed arm64 system image r1, build CP2A.260330.028.E2)",
+  "size_px": [
+   454,
+   454
+  ],
+  "density_dpi": 320,
+  "size_dp": [
+   227,
+   227
+  ],
+  "captured": "2026-11-09",
+  "check_only": true
  }
 ]

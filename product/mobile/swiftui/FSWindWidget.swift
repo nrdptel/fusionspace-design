@@ -67,15 +67,15 @@ struct FSWindView: View {
 
     private var main: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("SURFACE WIND").font(FS.label()).tracking(0.7).foregroundStyle(p.inkMuted)
+            Text("Surface wind").font(FS.labelStrong()).foregroundStyle(p.inkMuted)
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 Text("\(entry.windMph)").font(FS.readout(34, relativeTo: .largeTitle))
                     .foregroundStyle(stale ? p.inkMuted : p.ink)
                     .widgetAccentable()
-                Text("mph").font(FS.label()).foregroundStyle(p.inkMuted)
+                Text("mph").font(FS.data()).foregroundStyle(p.inkMuted)
             }
             if let g = entry.gustMph {
-                Text("Gusts \(g) · from \(entry.fromDegrees)°").font(.footnote).foregroundStyle(p.inkMuted)
+                Text("Gusts \(g) · from \(entry.fromDegrees)°").font(FS.prose(13, relativeTo: .footnote)).foregroundStyle(p.inkMuted)
             }
             if entry.nearLimit { limitTag }
             Spacer(minLength: 0)
@@ -84,7 +84,7 @@ struct FSWindView: View {
                 Text(stale ? "Stale · \(measured) · \(age)" : "\(measured) · \(age)")
                 Text(stale ? "Stale · \(age)" : age)
             }
-            .font(.caption2).foregroundStyle(p.inkMuted).lineLimit(1)
+            .font(FS.prose(11, relativeTo: .caption2)).foregroundStyle(p.inkMuted).lineLimit(1)
         }
         .accessibilityElement(children: .combine)
     }
@@ -97,10 +97,10 @@ struct FSWindView: View {
         VStack(alignment: .leading, spacing: 10) {
             if let c = entry.ceilingFtAGL {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("CEILING").font(FS.label()).tracking(0.7).foregroundStyle(p.inkMuted)
+                    Text("Ceiling").font(FS.labelStrong()).foregroundStyle(p.inkMuted)
                     HStack(alignment: .firstTextBaseline, spacing: 4) {
                         Text(c.formatted()).font(FS.readout(20, relativeTo: .title3)).foregroundStyle(p.ink).widgetAccentable()
-                        Text("ft AGL").font(FS.label()).foregroundStyle(p.inkMuted)
+                        Text("ft AGL").font(FS.data()).foregroundStyle(p.inkMuted)
                     }
                 }
                 .accessibilityElement(children: .combine)
@@ -110,12 +110,12 @@ struct FSWindView: View {
                 HStack(alignment: .top, spacing: 8) {
                     if old { FSHatch(color: p.inkFaint).frame(width: 6) }
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("UPPER WIND").font(FS.label()).tracking(0.7).foregroundStyle(p.inkMuted)
+                        Text("Upper wind").font(FS.labelStrong()).foregroundStyle(p.inkMuted)
                         HStack(alignment: .firstTextBaseline, spacing: 4) {
                             Text("\(u)").font(FS.readout(20, relativeTo: .title3)).foregroundStyle(old ? p.inkMuted : p.ink)
-                            Text("mph").font(FS.label()).foregroundStyle(p.inkMuted)
+                            Text("mph").font(FS.data()).foregroundStyle(p.inkMuted)
                         }
-                        Text(upperQualifier).font(.caption2).foregroundStyle(p.inkMuted)
+                        Text(upperQualifier).font(FS.prose(11, relativeTo: .caption2)).foregroundStyle(p.inkMuted)
                     }
                 }
                 .fixedSize(horizontal: false, vertical: true)
@@ -136,7 +136,7 @@ struct FSWindView: View {
         let word = entry.overLimit ? "OVER LIMIT" : "NEAR LIMIT"
         let full = mode == .fullColor
         return Label(word, systemImage: "exclamationmark.triangle")
-            .font(FS.labelStrong())
+            .font(FS.chip()).tracking(FS.chipSize * 0.06)
             .padding(.horizontal, 6).padding(.vertical, 2)
             .foregroundStyle(full ? FS.onCautionFill : p.ink)
             .background(full ? FS.cautionFill : Color.clear)
@@ -146,9 +146,9 @@ struct FSWindView: View {
     #if os(iOS)
     private var rectangular: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("WIND · \(age)").font(FS.label())
+            Text("Wind · \(age)").font(FS.labelStrong())
             Text("\(entry.windMph)\u{00A0}mph\(gust)").font(FS.readout(20, relativeTo: .headline)).widgetAccentable()
-            if entry.nearLimit { Label("near the \(entry.limitMph)\u{00A0}mph limit", systemImage: "exclamationmark.triangle").font(.caption2) }
+            if entry.nearLimit { Label("near the \(entry.limitMph)\u{00A0}mph limit", systemImage: "exclamationmark.triangle").font(FS.prose(11, relativeTo: .caption2)) }
         }
     }
     #endif

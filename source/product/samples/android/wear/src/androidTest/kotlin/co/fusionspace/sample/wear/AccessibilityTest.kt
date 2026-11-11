@@ -50,7 +50,7 @@ class AccessibilityTest {
     }
 
     private val find = @Composable { FsWearFind(1352, 62f, 20f, System.currentTimeMillis() - 4_000, onFound = {}) }
-    private val unfired = @Composable { FsWearUnfired("2 · MAIN", onAcknowledge = {}) }
+    private val unfired = @Composable { FsWearUnfired("2 · Main", onAcknowledge = {}) }
 
     @Test fun find() = check(screen = find)
     @Test fun findLargeText() = check(1.24f, find)

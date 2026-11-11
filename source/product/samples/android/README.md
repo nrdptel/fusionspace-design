@@ -9,8 +9,8 @@ reference file shows up in the next build. Apache-2.0, like the code it runs.
 | `phone` | `co.fusionspace.sample` | Pad (field theme), Track (dark), the Live Update | `product/tokens/FusionSpaceColors.kt`, `product/mobile/compose/FsComponents.kt`, `product/mobile/compose/FsLiveUpdate.kt` |
 | `wear` | `co.fusionspace.sample.wear` | Find, Pad, Unfired; the Find tile and complication | `product/watch/compose/FsWear.kt`, `product/watch/compose/FsWearTile.kt` |
 
-The build also takes, at build time and into `build/generated/fsResources` (nothing is committed twice): Cascadia Mono from
-`type/fonts/` into `res/font`, the icons from `product/icons/android/` into `res/drawable` as published (they tint with the
+The build also takes, at build time and into `build/generated/fsResources` (nothing is committed twice): Cascadia Mono and
+Archivo from `type/fonts/` and Archivo's wide cut from `product/mobile/fonts/` into `res/font` (`archivo_widesemibold`), the icons from `product/icons/android/` into `res/drawable` as published (they tint with the
 framework's `?android:attr/colorControlNormal`, so they work without AppCompat, which this app doesn't have), and the
 adaptive app icon from `kit/apps/android/` into `res/mipmap`.
 
@@ -120,15 +120,19 @@ capture: the AOSP image doesn't take the Pixel 10 overlays (no camera cutout, AO
 ## Large text
 
 Checked by hand, every screen scrolled top to bottom, at 200% on the phone (Pad, Track; also Pad at 150%) and at 124% on the
-large and small round watches (Find, Pad, Unfired), then back at 100% to confirm the default screens didn't change. At
-those sizes the screens scroll, so there are no large-text captures in the repo: a still frame always shows the next row
-cut by the bottom edge. What the parts do as the text grows (product/mobile/compose, product/watch/compose):
+large and small round watches (Find, Pad, Unfired), then back at 100% to confirm the default screens didn't change. The
+largest sizes are captured too (`FS200=1 tools/phone-captures.sh`, `FS124=1 tools/wear-captures.sh`) and kept in
+`source/product/devices/android/` marked `check_only`: the build reads them back for "…" but doesn't publish them, since a
+still frame of a screen that scrolls shows the next row cut by the bottom edge. What the parts do as the text grows
+(product/mobile/compose, product/watch/compose):
 
 - `FsStatus`: the state word is never split; the detail ("· 0.3 s") keeps its whole width on the chip's line while there's
   room, and only then wraps, the chip growing taller.
 - `FsReadout`: the number never wraps. It stays beside its unit, a little smaller if that fits, else the unit goes under
   it (and only then does the number shrink further).
-- `FsSheetHeader`: name and `SHEET n / N` on one line, or the number under the name.
+- `FsSheetHeader`: a tool's section is its name alone, which wraps; a record's sheet has the name and `SHEET n / N` on one
+  line, or the number under the name.
+- `fsUnbroken("FS-VEGA-004")`: a word joiner after each hyphen, so a designation moves to the next line whole.
 - `FsCommandedConfirmed`: each label beside its value, or above it when both don't fit.
 - `FsPhaseStrip`: the seven names in one row, or "MAIN · 6 of 7" with a tick per phase (never abbreviated).
 - `FsTag`, `FsHoldToConfirm`: wrap at spaces, never truncate.
@@ -154,6 +158,10 @@ the rows lower on the circle.
   ARMED; the watch Pad doesn't use it.
 - Wear OS: at 124% the time ran into the first row (the scaffold's padding doesn't grow); on the small watch Unfired needs
   a scroll at 124%, and the OK edge button stays collapsed until the list reaches its end (the platform's behaviour).
+- Wear OS (November 2026): a channel's state word sat at the top of its chip, not the middle (the text took the chip's
+  minimum height); it's centred now, in a 20 dp chip with 6 dp padding, as on Apple Watch. On the small round watch the
+  time's scrim cut the top of the filled ARMED box; the sample's Pad list starts 6 dp lower (text never showed it). Pad
+  scrolls there at the default size, as a Wear list does: three channels and the note are more than 192 dp holds.
 - Android 16: `Build.VERSION.SDK_INT_FULL` is in the API 36 SDK, so the 36.0 branch (the `android.requestPromotedOngoing`
   extra) doesn't need a guard; 36.1 takes `setRequestPromotedOngoing`. Checked on 36.1 and on 36.0 (above).
 

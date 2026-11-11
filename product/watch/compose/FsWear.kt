@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -114,13 +115,16 @@ object FsWearColors {
 
 /**
  * Material 3 for Wear OS with the static FusionSpace scheme: the action color as primary, Void/black background, the danger
- * fill as error. Not dynamic color: anything that carries meaning must not shift with the watch face. [mono] is the bundled
- * Cascadia Mono (`FontFamily(Font(R.font.cascadia_mono_regular))`); readouts and labels use it, everything else Roboto.
+ * fill as error. Not dynamic color: anything that carries meaning must not shift with the watch face. Type (watch.md): the
+ * watch's own font (Roboto) for labels, titles, buttons and prose, in sentence case; [text], the bundled Archivo
+ * (`FontFamily(Font(R.font.archivo_semibold, FontWeight.SemiBold))`), for the brand's signal parts, the state box and the
+ * chips, as on the phone; [mono], the bundled Cascadia Mono (`FontFamily(Font(R.font.cascadia_mono_regular))`), for
+ * numbers, units and designations.
  * It also provides LocalAmbientModeManager when the app hasn't (its default is null, which would keep every screen
  * here out of ambient mode for good).
  */
 @Composable
-fun FusionSpaceWearTheme(mono: FontFamily = FontFamily.Monospace, content: @Composable () -> Unit) {
+fun FusionSpaceWearTheme(mono: FontFamily = FontFamily.Monospace, text: FontFamily = FontFamily.SansSerif, content: @Composable () -> Unit) {
     val c = FsWearColors
     MaterialTheme(
         colorScheme = ColorScheme(
@@ -129,7 +133,7 @@ fun FusionSpaceWearTheme(mono: FontFamily = FontFamily.Monospace, content: @Comp
             error = c.dangerFill, onError = c.onDangerFill,
         ),
     ) {
-        FsWearMono.family = mono
+        FsWearMono.family = mono; FsWearMono.text = text
         if (LocalAmbientModeManager.current != null) content()
         else CompositionLocalProvider(LocalAmbientModeManager provides rememberAmbientModeManager(), content = content)
     }
@@ -147,9 +151,12 @@ fun fsClearOfTime(padding: PaddingValues): PaddingValues {
         top = padding.calculateTopPadding() + grow, bottom = padding.calculateBottomPadding())
 }
 
-internal object FsWearMono { var family: FontFamily = FontFamily.Monospace }
-private fun label() = TextStyle(fontFamily = FsWearMono.family, fontSize = 11.sp, letterSpacing = 0.06.em, color = FsWearColors.inkMuted)
+internal object FsWearMono { var family: FontFamily = FontFamily.Monospace; var text: FontFamily = FontFamily.SansSerif }
+/** Data in a line (a bearing and an age, a unit): Cascadia Mono, muted. */
+private fun data(size: Int = 12) = TextStyle(fontFamily = FsWearMono.family, fontSize = size.sp, fontFeatureSettings = "tnum, zero", color = FsWearColors.inkMuted)
 private fun readout(size: Int) = TextStyle(fontFamily = FsWearMono.family, fontSize = size.sp, fontFeatureSettings = "tnum, zero")
+/** A state, in the state box and the chips: Archivo SemiBold, in capitals. 12 sp in a chip (watch.md's minimum). */
+private fun signal(size: Int) = TextStyle(fontFamily = FsWearMono.text, fontWeight = FontWeight.SemiBold, fontSize = size.sp, letterSpacing = 0.04.em)
 
 /**
  * How old a fix is, as drawn, in whole seconds: "4 s ago", "4 min ago", "2 h ago" (number and unit kept together). Whole
@@ -263,11 +270,11 @@ fun FsWearFind(distanceFt: Int, bearingTrue: Float, headingTrue: Float?, fixedAt
                         FsBearingArrow(bearingTrue - (headingTrue ?: 0f), Modifier.size(if (small) 56.dp else 84.dp), outline = ambient)
                         Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                             Text("%,d".format(distanceFt), style = readout(if (small) 24 else 28), color = if (ambient) c.inkMuted else c.ink)
-                            Text("ft", style = label(), modifier = Modifier.padding(bottom = 5.dp))
+                            Text("ft", style = data(13), modifier = Modifier.padding(bottom = 5.dp))
                         }
                         val bearing = "%03d°\u00A0T".format(bearingTrue.toInt() % 360)
                         Text(if (ambient) "$bearing · as of $asOf" else "$bearing · fix $fixAge" + if (headingTrue == null) " · from north" else "",
-                            style = label().copy(letterSpacing = 0.em), textAlign = TextAlign.Center)
+                            style = data(), textAlign = TextAlign.Center)
                     }
                 }
             }
@@ -280,7 +287,8 @@ fun FsWearFind(distanceFt: Int, bearingTrue: Float, headingTrue: Float?, fixedAt
 /**
  * The device's state at the pad, read only: SAFE outlined or ARMED inverted. Safing is the switch or the phone. In ambient
  * the fill becomes an outline (ARMED stays a word in its box, in danger ink) and SAFE turns muted. TalkBack hears "Device
- * state, safe", not a bare "SAFE" that would sound like a button.
+ * state, safe", not a bare "SAFE" that would sound like a button. As a list's first item, give it 6 dp more than
+ * [fsClearOfTime] above it: a filled box shows the time's scrim cutting its top where text wouldn't (small round watches).
  */
 @Composable
 fun FsWearStateBox(armed: Boolean, modifier: Modifier = Modifier) {
@@ -289,7 +297,7 @@ fun FsWearStateBox(armed: Boolean, modifier: Modifier = Modifier) {
     val ink = when { ambient && armed -> c.danger; ambient -> c.inkMuted; armed -> c.onDangerFill; else -> c.ink }
     val word = if (armed) "ARMED" else "SAFE"
     Text(
-        word, style = readout(20).copy(fontWeight = FontWeight.SemiBold), color = ink,
+        word, style = signal(20), color = ink,
         modifier = modifier.clearAndSetSemantics { contentDescription = "Device state, ${word.lowercase()}" }.background(if (armed && !ambient) c.dangerFill else Color.Transparent)
             .border(3.dp, if (armed && !ambient) c.dangerFill else ink).padding(horizontal = 10.dp, vertical = 5.dp),
     )
@@ -328,9 +336,9 @@ fun FsWearUnfired(channel: String, onAcknowledge: () -> Unit) {
                                 contentDescription = "Unfired charge, ${channel.replace(" · ", ", ").lowercase()}. Approach as live. Disarm before handling."
                                 heading()
                             }) {
-                        Text("UNFIRED", style = readout(22).copy(fontWeight = FontWeight.SemiBold), color = fg,
+                        Text("UNFIRED", style = signal(22), color = fg,
                             modifier = if (ambient) Modifier.border(2.dp, c.danger).padding(horizontal = 8.dp, vertical = 2.dp) else Modifier)
-                        Text(channel, style = readout(16), color = fg)
+                        Text(channel, color = fg, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                         Text("Approach as live. Disarm before handling.", color = fg, textAlign = TextAlign.Center, fontSize = 12.sp)
                     }
                 }
@@ -340,23 +348,25 @@ fun FsWearUnfired(channel: String, onAcknowledge: () -> Unit) {
 }
 
 /**
- * A channel and its continuity, read only: [word] filled in Aurora when [ok] ("CONT"), outlined and gray otherwise ("NOT
- * USED"); no fills in ambient. The name and the state share a line, or the state goes under the name when the text is too
- * large for both. One TalkBack stop: "Channel 1, drogue, continuity" ([spoken] for an abbreviated word); a channel with no
- * charge ("—") is just its state: "Channel 3, not used".
+ * A channel and its continuity, read only: [word], the state, in capitals in a chip, filled in Aurora when [ok] ("Cont"
+ * shows as CONT), outlined and gray otherwise ("Not used"); no fills in ambient. The channel's number and [name] in the
+ * watch's font, as written: "1 · Drogue". The name and the state share a line, or the state goes under the name when the
+ * text is too large for both. One TalkBack stop: "Channel 1, drogue, continuity" ([spoken] for an abbreviated word); a
+ * channel with no charge ("—") is just its state: "Channel 3, not used".
  */
 @Composable
 fun FsWearChannel(number: Int, name: String, word: String, ok: Boolean, modifier: Modifier = Modifier, spoken: String? = null) {
     val c = FsWearColors
     val filled = ok && LocalAmbientModeManager.current?.currentAmbientMode !is AmbientMode.Ambient
     val named = name.trim().takeUnless { it.isEmpty() || it == "—" }
-    val nameText = @Composable { Text("$number ${name.trim()}", style = readout(15).copy(letterSpacing = 0.04.em), color = c.ink, maxLines = 1, softWrap = false) }
+    val nameText = @Composable { Text("$number · ${name.trim()}", color = c.ink, fontSize = 15.sp, maxLines = 1, softWrap = false) }
     val state = @Composable {
         Text(
-            word, style = readout(13).copy(fontWeight = FontWeight.SemiBold, letterSpacing = 0.04.em),
+            word.uppercase(), style = signal(12).copy(letterSpacing = 0.06.em),
             color = if (filled) c.onOkFill else if (ok) c.ok else c.inkMuted, maxLines = 1, softWrap = false,
             modifier = (if (filled) Modifier.background(c.okFill) else Modifier.border(1.dp, if (ok) c.ok else c.ruleStrong))
-                .heightIn(min = 24.dp).padding(horizontal = 8.dp, vertical = 3.dp),
+                // 20 dp tall at least, the word centred in it (watch.css's chip; the same as on Apple Watch)
+                .heightIn(min = 20.dp).wrapContentHeight(Alignment.CenterVertically).padding(horizontal = 6.dp, vertical = 2.dp),
         )
     }
     val label = "Channel $number, " + (named?.let { "${it.lowercase()}, " } ?: "") + (spoken ?: word).lowercase()

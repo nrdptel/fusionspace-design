@@ -1,10 +1,13 @@
 """FusionSpace product system, phones: product/mobile/ (reference screens, glanceable surfaces, SwiftUI and Compose parts).
 
 product/mobile.md says what the platform owns and what FusionSpace owns; this draws it. Every screen exists twice, once per
-platform, with the same content and each platform's own chrome: an iPhone 17 Pro on iOS 26 (Liquid Glass navigation and
-tab bar, system lists, SF Pro) and a Pixel 10 on Android 16 (Material 3 app bar and navigation bar, Roboto). The content
-layer is the same on both: Cascadia Mono titles, labels and readouts, the signal colors, sheets with 2 px edges, the title
-block as the About screen. Screens are HTML pages using product/web/fusionspace.css, shot with Playwright at 2x.
+platform, with the same content and each platform's own chrome: an iPhone 17 Pro on iOS 27 (Liquid Glass navigation and
+tab bar, system lists, SF Pro) and a Pixel 10 on Android 17 (Material 3 app bar and navigation bar, Roboto). The content
+layer is the same on both, in the web's one voice (principles.md, Three levels): titles and section heads in Archivo's
+wide cut, labels in Archivo in sentence case, states in capitals, readouts and codes in Cascadia Mono, the signal colors,
+sections under 2 px rules, the title block as the About screen. The working screens (Pad, Track, Device) are tools; the
+flight report is a record, with sheet numbers and a foot line. Screens are HTML pages using product/web/fusionspace.css,
+shot with Playwright at 2x.
 
 The glanceable surfaces (Live Activity, Dynamic Island, Live Update, widgets) are drawn the same way, on one page.
 
@@ -114,12 +117,23 @@ status = kp.status
 readout = kp.readout
 num = kp.num
 
-def sheet(n, total, name, body, aside=""):
-    return (f'<section class="m-sheet"><header><h2>{name}</h2><span class="no">{aside}SHEET {n} / {total}</span></header>{body}</section>')
+def part(name, body):
+    """A tool's section: a 2 px rule and its name. No sheet number: a screen that scrolls has no sheets."""
+    return f'<section class="m-sheet"><header><h2>{name}</h2></header>{body}</section>'
+def sheet(n, total, name, body):
+    """A record's sheet: the rule, its name and SHEET n / N in the drawing's lettering."""
+    return (f'<section class="m-sheet"><header><h2>{name}</h2><span class="no">SHEET {n} / {total}</span></header>{body}</section>')
 def rows(items):
-    """Label / value / state rows: the content layer's own table, in Cascadia Mono."""
+    """Label / value / state rows: the label in Archivo, the value in Cascadia Mono, the state as a chip."""
     return '<div class="m-rows">' + "".join(
         f'<div class="m-row"><span class="k">{k}</span><span class="v">{v}</span>{s}</div>' for k, v, s in items) + "</div>"
+def state(kind, word, icon=None):
+    """A state chip: the word in capitals (writing.md's status words), as the web's data-caps."""
+    return status(kind, word, icon).replace('class="fs-status"', 'class="fs-status" data-caps', 1)
+def head(title, sub, line=""):
+    """A screen's head, as on the web: the title, then the designation as a plain data line, and after it the link and the
+    like, on the same line when they fit and on the next when they don't (one wrapping row)."""
+    return f'<h1 class="m-title">{title}</h1><div class="m-head"><span class="m-sub">{sub}</span>{line}</div>'
 def phases(current, done_all=False):
     names = ["PAD", "BOOST", "COAST", "APOGEE", "DROGUE", "MAIN", "LANDED"]
     i = names.index(current)
@@ -145,33 +159,34 @@ DESIG = "FS-VEGA-004"
 def scr_pad(p):
     """At the pad, field theme: checks and channels, then the device's state next to the controls that change it: arming is
     a held second step showing the device's designation, SAFE is one action to its right (product/embedded.md)."""
-    tags = f'<div class="m-tags"><span class="fs-tag">{DESIG} rev B</span>{status("ok", 'Link · 0.3 <span class="u">s</span>', "link")}</div>'
-    head = f'{tags}<h1 class="m-title">Pad 3 · Flight 04</h1><p class="m-sub">K535W · dual deploy · screen stays on</p>'
+    top = head("Pad 3 · Flight 04", f"{DESIG} rev B · K535W · dual deploy",
+               status("ok", 'Link · 0.3 <span class="u">s</span>', "link") + "<span>Screen stays on</span>")
     checks = rows([
-        ("Switch", "ON", status("ok", "On", "ok")),
-        ("Battery", '8.1 <span class="u">V</span>', status("ok", "OK", "battery")),
-        ("GPS", '3D · 11 sat', status("ok", "Fix", "gps-fix")),
+        ("Switch", "ON", state("ok", "On", "ok")),
+        ("Battery", '8.1 <span class="u">V</span>', state("ok", "OK", "battery")),
+        ("GPS", '3D · 11 sat', state("ok", "Fix", "gps-fix")),
     ])
     chans = rows([
-        ("1 · DROGUE", "Apogee + 0.4 s", status("ok", "Cont", "continuity")),
-        ("2 · MAIN", "700 ft desc.", status("ok", "Cont", "continuity")),
-        ("3 · —", '<span class="fs-muted">Not used</span>', status("off", "Not used")),
+        ("1 · Drogue", "Apogee + 0.4 s", state("ok", "Cont", "continuity")),
+        ("2 · Main", "700 ft desc.", state("ok", "Cont", "continuity")),
+        ("3 · —", '<span class="fs-muted">Not used</span>', state("off", "Not used")),
     ])
-    body = head + sheet(1, 2, "Checks", checks) + sheet(2, 2, "Channels", chans)
+    body = top + part("Checks", checks) + part("Channels", chans)
     act = ('<div class="m-arm">'
            '<div class="m-state"><span class="box">SAFE</span><dl>'
            '<div><dt>Commanded</dt><dd>—</dd></div><div><dt>Confirmed</dt><dd>SAFE · 0.3 s ago</dd></div></dl></div>'
            '<div class="hold" role="button" aria-label="Arm FS-VEGA-004: press and hold for 2 seconds">'
            '<span class="fill" style="width:62%"></span>'
            f'<span class="hl">{ico("armed")}Hold to arm</span><span class="hd">{DESIG} · 2 s</span>'
-           '<span class="hk">Keep holding · 0.8 s</span><span class="bar"><span style="width:62%"></span></span></div>'
+           '<span class="hk">Keep holding · <span class="n">0.8 s</span></span><span class="bar"><span style="width:62%"></span></span></div>'
            f'<div class="safe" role="button">{ico("safe")}<span>SAFE</span></div>'
            '<div class="alt">Arm with a confirmation instead</div></div>')
     return chrome(p, "field", body, title="Pad 3", back="Flights", trailing=(ELLIPSIS if p == "ios" else ""), extra=act)
 
 def track_map(theme, w=370, h=200):
     """Offline recovery map (product/data.md#maps): muted base, north up, scale bar, pad square, measured track, rocket
-    diamond with its age, the predicted landing as a dashed Nebula ellipse, the phone as the platform's location dot."""
+    diamond with its age, the predicted landing as a dashed Nebula ellipse, the phone as the platform's location dot. Its
+    labels are the web's chart labels: Archivo, sentence case."""
     c = lambda r: kp.role(r, theme)
     o = [f'<svg class="m-map" viewBox="0 0 {w} {h}" width="{w}" height="{h}" overflow="hidden" role="img" aria-label="Recovery map: rocket 1,352 feet from you, bearing 62 degrees true">',
          f'<rect width="{w}" height="{h}" fill="{c("surface")}"/>']
@@ -181,42 +196,42 @@ def track_map(theme, w=370, h=200):
     o.append(f'<path d="M0 {h - 40} C {w * .3} {h - 70}, {w * .6} {h - 20}, {w} {h - 60}" fill="none" stroke="{c("rule")}" stroke-width="5" stroke-linecap="round"/>')
     # positions were laid out on a 236-high map; scale them to this height so nothing lands on the edge
     k = h / 236
-    pad = (110, round(176 * k)); you = (64, round(206 * k) - 12); rk = (258, round(92 * k)); pl = (300, round(62 * k))
+    pad = (110, round(176 * k)); you = (64, round(206 * k) - 12); rk = (258, round(92 * k)); pl = (286, round(62 * k))   # clear of the north arrow
     o.append(f'<ellipse cx="{pl[0]}" cy="{pl[1]}" rx="48" ry="25" transform="rotate(-24 {pl[0]} {pl[1]})" fill="{c("predicted")}" fill-opacity=".08" stroke="{c("predicted")}" stroke-width="2" stroke-dasharray="8 4"/>')
-    o.append(f'<text x="{pl[0] - 36}" y="{pl[1] - 36}" font-family="Cascadia Mono" font-size="11" fill="{c("predicted")}" text-anchor="middle">PREDICTED LANDING</text>')
+    o.append(f'<text x="{pl[0] - 36}" y="{pl[1] - 36}" font-family="Archivo" font-size="11" fill="{c("predicted")}" text-anchor="middle">Predicted landing</text>')
     tr = [(110, 176), (124, 150), (146, 126), (174, 112), (202, 104), (226, 98), (244, 95), (258, 92)]
     tr = [(x, round(y * k)) for x, y in tr]
     o.append('<polyline points="' + " ".join(f"{x},{y}" for x, y in tr) + f'" fill="none" stroke="{c("ink")}" stroke-width="2" stroke-linejoin="round"/>')
     for x, y in tr[1:-1]: o.append(f'<circle cx="{x}" cy="{y}" r="2" fill="{c("ink")}"/>')
     o.append(f'<line x1="{you[0]}" y1="{you[1]}" x2="{rk[0]}" y2="{rk[1]}" stroke="{c("ink-muted")}" stroke-width="1" stroke-dasharray="24 3 1 3"/>')
     o.append(f'<rect x="{pad[0] - 6}" y="{pad[1] - 6}" width="12" height="12" fill="{c("ink")}"/>')
-    o.append(f'<text x="{pad[0] + 12}" y="{pad[1] + 4}" font-family="Cascadia Mono" font-size="11" fill="{c("ink-muted")}">PAD 3</text>')
+    o.append(f'<text x="{pad[0] + 12}" y="{pad[1] + 4}" font-family="Archivo" font-size="11" fill="{c("ink-muted")}">Pad 3</text>')
     o.append(f'<rect x="{rk[0] - 7}" y="{rk[1] - 7}" width="14" height="14" transform="rotate(45 {rk[0]} {rk[1]})" fill="{c("ink")}" stroke="{c("surface")}" stroke-width="2"/>')
-    o.append(f'<text x="{rk[0]}" y="{rk[1] + 26}" font-family="Cascadia Mono" font-size="11" fill="{c("ink")}" text-anchor="middle">VEGA · 0.4 s</text>')
+    o.append(f'<text x="{rk[0]}" y="{rk[1] + 26}" font-family="Archivo" font-size="11" fill="{c("ink")}" text-anchor="middle">Vega · 0.4 s</text>')
     o.append(f'<circle cx="{you[0]}" cy="{you[1]}" r="11" fill="{c("action")}" fill-opacity=".18"/><circle cx="{you[0]}" cy="{you[1]}" r="6" fill="{c("action")}" stroke="{c("surface")}" stroke-width="2"/>')
     # north arrow and scale bar
-    o.append(f'<g transform="translate({w - 24},24)"><path d="M0 -12 6 6 0 2 -6 6Z" fill="{c("ink")}"/><text y="20" font-family="Cascadia Mono" font-size="11" fill="{c("ink")}" text-anchor="middle">N</text></g>')
-    o.append(f'<g transform="translate(12,{h - 14})" font-family="Cascadia Mono" font-size="11" fill="{c("ink-muted")}"><path d="M0 -6V0H80V-6" fill="none" stroke="{c("ink")}" stroke-width="1.5"/><text x="88" y="0">500 ft</text></g>')
-    o.append(f'<text x="{w - 12}" y="{h - 10}" font-family="Cascadia Mono" font-size="11" fill="{c("ink-muted")}" text-anchor="end">TILES 2026-10-03</text>')
-    o.append(f'<text x="12" y="20" font-family="Cascadia Mono" font-size="11" fill="{c("ink-muted")}">GPS 11 sat · HDOP 0.9</text>')
+    o.append(f'<g transform="translate({w - 24},24)"><path d="M0 -12 6 6 0 2 -6 6Z" fill="{c("ink")}"/><text y="20" font-family="Archivo" font-size="11" fill="{c("ink")}" text-anchor="middle">N</text></g>')
+    o.append(f'<g transform="translate(12,{h - 14})" font-family="Archivo" font-size="11" fill="{c("ink-muted")}"><path d="M0 -6V0H80V-6" fill="none" stroke="{c("ink")}" stroke-width="1.5"/><text x="88" y="0">500 ft</text></g>')
+    o.append(f'<text x="{w - 12}" y="{h - 10}" font-family="Archivo" font-size="11" fill="{c("ink-muted")}" text-anchor="end">Tiles 2026-10-03</text>')
+    o.append(f'<text x="12" y="20" font-family="Archivo" font-size="11" fill="{c("ink-muted")}">GPS 11 sat · HDOP 0.9</text>')
     o.append(f'<rect x=".5" y=".5" width="{w - 1}" height="{h - 1}" fill="none" stroke="{c("rule-strong")}"/></svg>')
     return "".join(o)
 
 def scr_track(p):
     """Recovery, dark theme: the phase, the readouts that matter now, the map, distance and bearing."""
-    head = (f'<div class="m-tags"><span class="fs-tag">FLIGHT 04 · {DESIG}</span>{status("ok", 'Link · 0.4 <span class="u">s</span>', "telemetry")}</div>'
-            f'<h1 class="m-title">Track</h1>{phases("MAIN")}')
+    top = head("Track", f"Flight 04 · {DESIG}", status("ok", 'Link · 0.4 <span class="u">s</span>', "telemetry")) + phases("MAIN")
     now = ('<div class="fs-readouts">' + readout("Altitude", "612", "ft AGL", "Barometer · 0.4 s ago")
            + readout("Descent", "18", "ft/s", "Under the main") + "</div>")
     find = ('<div class="fs-readouts">' + readout("Distance", "1,352", "ft", "From you", size="m")
             + readout("Bearing", "062° T", "", "Declination 13° E", size="m") + "</div>"
             + '<div class="m-coord"><span class="fs-mono">40.86512, −119.06274</span>'
             + f'<span class="m-copy">{ico("copy")}Copy</span></div>')
-    body = head + sheet(1, 2, "Now", now) + track_map("dark") + sheet(2, 2, "Find it", find)
+    body = top + part("Now", now) + track_map("dark") + part("Find it", find)
     return chrome(p, "dark", body, title="Track", tab="track")
 
 def mini_chart(theme, w=370, h=196):
-    """Altitude only, for a phone: measured solid, predicted dashed Nebula with its band, events as numbered balloons."""
+    """Altitude only, for a phone: measured solid, predicted dashed Nebula with its band, events as numbered balloons. The
+    web's chart labels: Archivo, sentence case."""
     import numpy as np
     pred, meas = kp.example_flight(); ev = meas["events"]
     c = lambda r: kp.role(r, theme)
@@ -225,14 +240,14 @@ def mini_chart(theme, w=370, h=196):
     X = lambda t: left + (w - left - right) * t / tmax
     Y = lambda v: top + (h - top - bot) * (1 - v / hi)
     o = [f'<svg class="m-chart" viewBox="0 0 {w} {h}" width="{w}" height="{h}" role="img" aria-label="Altitude against time, measured and predicted">']
-    o.append(f'<g font-family="Cascadia Mono" font-size="11" fill="{c("ink-muted")}">')
+    o.append(f'<g font-family="Archivo" font-size="11" fill="{c("ink-muted")}" style="font-variant-numeric:tabular-nums">')
     for v in range(0, hi + 1, 2000):
         o.append(f'<line x1="{left}" x2="{w - right}" y1="{Y(v):.1f}" y2="{Y(v):.1f}" stroke="{c("rule")}"/>'
                  f'<text x="{left - 6}" y="{Y(v) + 4:.1f}" text-anchor="end">{v:,}</text>')
     for t in range(0, int(tmax) + 1, 20):
         o.append(f'<text x="{X(t):.1f}" y="{h - 8}" text-anchor="middle">{t}</text>')
-    o.append(f'<text x="{w - right}" y="{h - 8 - 14}" text-anchor="end">s</text>')
-    o.append(f'<text x="{left}" y="12" fill="{c("ink")}">ALTITUDE · ft AGL</text></g>')
+    o.append(f'<text x="{w - right}" y="{h - 8}" text-anchor="end">s</text>')      # the unit on the tick row, clear of the lines
+    o.append(f'<text x="{left}" y="12" fill="{c("ink")}">Altitude · ft AGL</text></g>')
     t = pred["t"]; pa = pred["alt"]; band = 0.04 * pa + 8
     up = " ".join(f"{X(a):.1f},{Y(b):.1f}" for a, b in zip(t[::20], (pa + band)[::20]))
     dn = " ".join(f"{X(a):.1f},{Y(b):.1f}" for a, b in zip(t[::20][::-1], (pa - band)[::20][::-1]))
@@ -248,32 +263,32 @@ def mini_chart(theme, w=370, h=196):
         o.append(f'<line x1="{x:.1f}" y1="{top}" x2="{x:.1f}" y2="{h - bot}" stroke="{c("ink-muted")}" stroke-dasharray="1 3"/>')
         if bx != x: o.append(f'<line x1="{x:.1f}" y1="{top}" x2="{bx:.1f}" y2="{top - 6}" stroke="{c("ink-muted")}" stroke-dasharray="1 3"/>')
         o.append(f'<circle cx="{bx:.1f}" cy="{top - 13}" r="8" fill="{c("canvas")}" stroke="{c("ink")}"/>'
-                 f'<text x="{bx:.1f}" y="{top - 9.5:.1f}" font-family="Cascadia Mono" font-size="10" fill="{c("ink")}" text-anchor="middle">{i + 1}</text>')
+                 f'<text x="{bx:.1f}" y="{top - 9.5:.1f}" font-family="Archivo" font-size="10" fill="{c("ink")}" text-anchor="middle">{i + 1}</text>')
     o.append("</svg>")
     return "".join(o)
 
 def scr_report(p):
-    """A flight report, light theme: the same numbers as product/web/examples/flight-report.html, on a phone."""
+    """A flight report, light theme: the same numbers as product/web/examples/flight-report.html, on a phone. A record: its
+    sheets keep their numbers, and the designation and status close it in a foot line, as on the web."""
     pred, meas = kp.example_flight(); ev = meas["events"]
     ap, pap = float(meas["alt"].max()), float(pred["alt"].max())
     spread = 0.04 * pap + 8
-    head = (f'<div class="m-tags"><span class="fs-tag">FS-VEGA · REPORT 003</span>{status("ok", "Released", "check")}</div>'
-            f'<h1 class="m-title">Flight 03</h1><p class="m-sub">J350W-L · 2026-10-04 · dual deploy</p>'
-            f'<p class="m-lead">Apogee {num(pap - ap)} ft ({(1 - ap / pap) * 100:.1f}%) under the prediction.</p>')
+    top = (head("Flight 03", "J350W-L · 2026-10-04 · dual deploy")
+           + f'<p class="m-lead">Apogee {num(pap - ap)} ft ({(1 - ap / pap) * 100:.1f}%) under the prediction.</p>')
     reads = ('<div class="fs-readouts">' + readout("Apogee", num(ap), "ft AGL", "Barometer, 20 Hz", size="m")
              + readout("Predicted", num(pap), "ft AGL", f"±{num(spread)} ft · hpr-sim 0.9", "predicted", size="m")
              + "</div>")
     chart = mini_chart("light") + '<p class="m-note">Solid measured, dashed predicted. 1 liftoff · 3 apogee · 5 main · 6 landing.</p>'
-    ch = rows([("1 · DROGUE", f'{ev["drogue"]:.2f} <span class="u">s</span>', status("ok", "Fired", "check")),
-               ("2 · MAIN", f'{ev["main"]:.2f} <span class="u">s</span>', status("ok", "Fired", "check"))])
-    body = head + sheet(1, 2, "Flight", reads + chart) + sheet(2, 2, "Channels", ch)
+    ch = rows([("1 · Drogue", f'{ev["drogue"]:.2f} <span class="u">s</span>', state("ok", "Fired", "check")),
+               ("2 · Main", f'{ev["main"]:.2f} <span class="u">s</span>', state("ok", "Fired", "check"))])
+    foot = f'<footer class="m-foot"><span>FS-VEGA · REPORT 003</span><span>2026-10-04</span>{status("ok", "Released", "check")}</footer>'
+    body = top + sheet(1, 2, "Flight", reads + chart) + sheet(2, 2, "Channels", ch) + foot
     share = f'{ico("upload")}' if p == "ios" else f'<span class="ibtn">{ico("upload")}</span>'
     return chrome(p, "light", body, title="Flight 03", back="Flights", trailing=share, tab="flights")
 
 def scr_device(p):
     """A connected flight computer, light theme: system lists for settings (the platform's), the title block as About."""
-    head = (f'<div class="m-tags"><span class="fs-tag">{DESIG} rev B</span>{status("ok", "Connected", "link")}</div>'
-            f'<h1 class="m-title">Vega</h1><p class="m-sub">Flight computer · −64 dBm · 0.2 s</p>')
+    top = head("Vega", f"{DESIG} rev B", status("ok", 'Link · 0.2 <span class="u">s</span>', "link") + '<span class="fs-num">−64 dBm</span>')
     tr = CHEV_RIGHT if p == "ios" else ""
     chans = system_list(p, "Channels", [("1 · Drogue", "Apogee + 0.4 s", tr, ""), ("2 · Main", "700 ft, descending", tr, ""),
                                         ("3", "Not used", tr, "")],
@@ -284,7 +299,7 @@ def scr_device(p):
           + "".join(f'<div{" class=wide" if wide else ""}><span class="k">{k}</span><span class="v">{v}</span></div>' for k, v, wide in (
               ("Title", "Vega", False), ("Designation", "FS-VEGA-004", False), ("Rev", "B", False),
               ("Firmware", "1.2.0 (412)", False), ("App", "2.0.1 (88)", False), ("Data", "Motors 2026-09 · tiles 2026-10-03", True))) + "</div>")
-    body = head + chans + fw + sheet(1, 1, "About", tb)
+    body = top + chans + fw + part("About", tb)
     return chrome(p, "light", body, title="Vega", tab="devices")
 
 def _mark():
@@ -322,24 +337,24 @@ def _phases_row(cur, cls="g-ph"):
     names = ["PAD", "BOOST", "COAST", "APOGEE", "DROGUE", "MAIN", "LANDED"]; i = names.index(cur)
     return f'<ol class="{cls}">' + "".join(f'<li data-s="{"done" if j < i else "now" if j == i else "next"}">{n}</li>' for j, n in enumerate(names)) + "</ol>"
 
-def la_card(state):
+def la_card(when):
     """The Lock Screen Live Activity in its three states. Dark roles on Abyss (activityBackgroundTint), 14 pt margins."""
-    if state == "pad":
-        inner = ('<div class="la-top"><span class="g-k">PAD 3 · FLIGHT 04</span><span class="g-k">LINK 0.3 <span class="u">s</span></span></div>'
+    if when == "pad":
+        inner = ('<div class="la-top"><span class="g-k">Pad 3 · Flight 04</span><span class="g-k">Link <span class="g-n">0.3 s</span></span></div>'
                  '<div class="la-mid"><div><div class="g-big">T−00:04:45</div><div class="g-q">to your pad time, 2:30 PM MDT</div></div>'
                  '<span class="g-box">SAFE</span></div>'
-                 f'<div class="la-bot"><span class="g-q">{DESIG} · K535W</span>{status("ok", "Cont 1 · 2", "continuity")}</div>')
-    elif state == "flight":
-        inner = (f'<div class="la-top"><span class="g-k">FLIGHT 04 · T+00:01:02</span><span class="g-k">LINK 0.4 <span class="u">s</span></span></div>'
+                 f'<div class="la-bot"><span class="g-d">{DESIG} · K535W</span>{state("ok", "Cont 1 · 2", "continuity")}</div>')
+    elif when == "flight":
+        inner = (f'<div class="la-top"><span class="g-k">Flight 04 · <span class="g-n">T+00:01:02</span></span><span class="g-k">Link <span class="g-n">0.4 s</span></span></div>'
                  + _phases_row("MAIN")
-                 + '<div class="la-mid"><div><span class="g-k">ALTITUDE</span><div class="g-big">612 <span class="u">ft AGL</span></div></div>'
-                 '<div><span class="g-k">DESCENT</span><div class="g-mid">18 <span class="u">ft/s</span></div></div>'
-                 '<div><span class="g-k">FROM YOU</span><div class="g-mid">1,352 <span class="u">ft</span></div><div class="g-q">062° T</div></div></div>')
+                 + '<div class="la-mid"><div><span class="g-k">Altitude</span><div class="g-big">612 <span class="u">ft AGL</span></div></div>'
+                 '<div><span class="g-k">Descent</span><div class="g-mid">18 <span class="u">ft/s</span></div></div>'
+                 '<div><span class="g-k">From you</span><div class="g-mid">1,352 <span class="u">ft</span></div><div class="g-d">062° T</div></div></div>')
     else:
-        inner = ('<div class="la-top"><span class="g-k">FLIGHT 04 · LANDED 0:42 AGO</span><span class="g-k">FIX 4 <span class="u">s</span></span></div>'
-                 '<div class="la-mid"><div><span class="g-k">FROM YOU</span><div class="g-big">1,352 <span class="u">ft</span></div></div>'
-                 '<div><span class="g-k">BEARING</span><div class="g-big">062° T</div></div></div>'
-                 f'<div class="la-bot"><span class="g-q">Apogee 5,104 ft AGL</span>{status("ok", "Both fired", "check")}</div>')
+        inner = ('<div class="la-top"><span class="g-k">Flight 04 · landed <span class="g-n">0:42</span> ago</span><span class="g-k">Fix <span class="g-n">4 s</span></span></div>'
+                 '<div class="la-mid"><div><span class="g-k">From you</span><div class="g-big">1,352 <span class="u">ft</span></div></div>'
+                 '<div><span class="g-k">Bearing</span><div class="g-big">062° T</div></div></div>'
+                 f'<div class="la-bot"><span class="g-q">Apogee <span class="g-n">5,104 ft AGL</span></span>{status("ok", "Both fired", "check")}</div>')
     return f'<div class="la t-dark">{inner}</div>'
 
 def island(kind):
@@ -347,13 +362,13 @@ def island(kind):
         return ('<div class="di compact t-island"><span class="di-l g-mono">T−4:45</span><span class="di-cam"></span>'
                 '<span class="di-r"><span class="g-boxs">SAFE</span></span></div>')
     if kind == "compact-flight":
-        return ('<div class="di compact t-island"><span class="di-l g-mono">MAIN</span><span class="di-cam"></span>'
+        return ('<div class="di compact t-island"><span class="di-l g-st">MAIN</span><span class="di-cam"></span>'
                 '<span class="di-r g-mono">612<span class="u"> ft</span></span></div>')
     if kind == "minimal":
         return '<div class="di minimal t-island"><span class="g-mono">612<span class="u">ft</span></span></div>'
-    return ('<div class="di expanded t-island"><div class="di-row"><div><span class="g-k">ALTITUDE</span><div class="g-big">612 <span class="u">ft AGL</span></div></div>'
-            '<div class="di-cam2"></div><div style="text-align:right"><span class="g-k">FROM YOU</span><div class="g-mid">1,352 <span class="u">ft</span></div><div class="g-q">062° T</div></div></div>'
-            + _phases_row("MAIN") + f'<div class="di-foot"><span class="g-q">{DESIG} · T+00:01:02 · link 0.4 s</span></div></div>')
+    return ('<div class="di expanded t-island"><div class="di-row"><div><span class="g-k">Altitude</span><div class="g-big">612 <span class="u">ft AGL</span></div></div>'
+            '<div class="di-cam2"></div><div style="text-align:right"><span class="g-k">From you</span><div class="g-mid">1,352 <span class="u">ft</span></div><div class="g-d">062° T</div></div></div>'
+            + _phases_row("MAIN") + f'<div class="di-foot"><span class="g-d">{DESIG} · T+00:01:02 · link 0.4 s</span></div></div>')
 
 def widget(size, mode):
     """Window's widget: surface wind with its age, and how close the gusts are to the limit, as words and a shape.
@@ -361,20 +376,20 @@ def widget(size, mode):
     th = {"light": "t-light", "dark": "t-dark", "tinted": "t-dark acc tinted", "clear": "t-dark acc clear"}[mode]
     caution = (f'<span class="w-caution">{ico("caution")}NEAR LIMIT</span>')
     if size == "small":
-        body = ('<span class="g-k">SURFACE WIND</span><div class="w-big">12 <span class="u">mph</span></div>'
+        body = ('<span class="g-k">Surface wind</span><div class="w-big">12 <span class="u">mph</span></div>'
                 '<div class="g-q">Gusts 19 · from 270°</div>' + caution + '<div class="g-q w-age">2:10 PM · 4 min ago</div>')
     else:
-        body = ('<div class="w-cols"><div class="w-main"><span class="g-k">SURFACE WIND</span><div class="w-big">12 <span class="u">mph</span></div>'
+        body = ('<div class="w-cols"><div class="w-main"><span class="g-k">Surface wind</span><div class="w-big">12 <span class="u">mph</span></div>'
                 '<div class="g-q">Gusts 19 · from 270°</div>' + caution + '<div class="g-q">2:10 PM · 4 min ago</div></div>'
-                '<div class="w-side"><div><span class="g-k">CEILING</span><div class="g-mid">6,500 <span class="u">ft AGL</span></div></div>'
-                '<div class="w-stale"><span class="g-k">UPPER WIND</span><div class="g-mid">31 <span class="u">mph</span></div><div class="g-q">at 6,000 ft · 4 h old</div></div></div></div>')
+                '<div class="w-side"><div><span class="g-k">Ceiling</span><div class="g-mid">6,500 <span class="u">ft AGL</span></div></div>'
+                '<div class="w-stale"><span class="g-k">Upper wind</span><div class="g-mid">31 <span class="u">mph</span></div><div class="g-q">at 6,000 ft · 4 h old</div></div></div></div>')
     return f'<div class="wg {size} {th}">{body}</div>'
 
 def accessories():
     return ('<div class="acc-row">'
-            '<div class="acc rect"><span class="g-k">WIND · 4 MIN</span><div class="g-mid">12 <span class="u">mph</span> G19</div>'
+            '<div class="acc rect"><span class="g-k">Wind · <span class="g-n">4 min</span></span><div class="g-mid">12 <span class="u">mph</span> G19</div>'
             f'<div class="g-q">{ico("caution")} near the 20 mph limit</div></div>'
-            '<div class="acc circ"><span class="g-k">MPH</span><div class="g-mid">12</div><span class="g-k">G19</span></div>'
+            '<div class="acc circ"><span class="g-d">mph</span><div class="g-mid">12</div><span class="g-d">G19</span></div>'
             '<div class="acc inline">Wind 12 mph G19 · 4 min</div></div>')
 
 def android_shade():
@@ -398,34 +413,39 @@ def android_shade():
 
 def watch_la():
     w, h = GLANCE["watch"]
-    return (f'<div class="watch t-island" style="width:{w}px;height:{h}px"><div class="la-top"><span class="g-k">FLIGHT 04 · MAIN</span><span class="g-k">0.4 <span class="u">s</span></span></div>'
+    # On the watch: the watch's own font for words, in sentence case; the phase alone is the flight's state, in capitals.
+    return (f'<div class="watch t-island" style="width:{w}px;height:{h}px"><div class="la-top"><span class="g-k">Flight 04 · MAIN</span><span class="g-d">0.4 s</span></div>'
             '<div class="g-mid">612 <span class="u">ft AGL</span></div><div class="g-q">1,352 ft from you · 062° T</div></div>')
 
 GLANCE_CSS = """
 body { margin: 0; background: #fff; }
 .fig { max-width: 100%%; overflow-x: auto; box-sizing: border-box; display: inline-block; padding: 24px; background: var(--paper); }
-.fig > h2 { font: 600 15px/20px 'Cascadia Mono', monospace; margin: 0 0 4px; color: #0B0F1C; }
-.fig > p.cap { font: 400 13px/18px 'Cascadia Mono', monospace; color: #566079; margin: 0 0 16px; max-width: 780px; }
+.fig > h2 { font: 600 15px/20px 'Archivo', sans-serif; margin: 0 0 4px; color: #0B0F1C; }
+.fig > p.cap { font: 400 13px/18px 'Archivo', sans-serif; color: #566079; margin: 0 0 16px; max-width: 780px; }
 .row { display: flex; gap: 20px; align-items: flex-start; flex-wrap: nowrap; }
 .col { display: grid; gap: 14px; justify-items: start; }
-.lab { font: 400 12px/16px 'Cascadia Mono', monospace; color: #566079; }
+.lab { font: 400 12px/16px 'Archivo', sans-serif; color: #566079; }
 .wall { background: #0B0F1C url('../../../kit/wallpapers/phone-1206x2622-dark.png') center 38%% / cover; padding: 14px; border-radius: 28px; }
 .u { color: var(--fs-ink-muted); text-transform: none; letter-spacing: 0; }
-.g-k { font: 400 11px/14px 'Cascadia Mono', monospace; letter-spacing: .06em; color: var(--fs-ink-muted); text-transform: uppercase; }
+/* the web's one voice: labels in Archivo, sentence case; data in Cascadia Mono; states in capitals */
+.g-k { font: 600 12px/16px 'Archivo', sans-serif; color: var(--fs-ink-muted); }
 .g-q { font: 400 12px/16px 'Archivo', sans-serif; color: var(--fs-ink-muted); }
+.g-d { font: 400 12px/16px 'Cascadia Mono', monospace; color: var(--fs-ink-muted); font-variant-numeric: tabular-nums; }
+.g-n { font-family: 'Cascadia Mono', monospace; font-weight: 400; font-variant-numeric: tabular-nums; }
+.g-st { font: 600 15px/18px 'Archivo', sans-serif; letter-spacing: .04em; }
 .g-big { font: 400 30px/34px 'Cascadia Mono', monospace; font-variant-numeric: tabular-nums slashed-zero; }
 .g-big .u, .g-mid .u { font-size: 13px; }
 .g-mid { font: 400 20px/24px 'Cascadia Mono', monospace; font-variant-numeric: tabular-nums slashed-zero; }
 .g-mono { font: 600 15px/18px 'Cascadia Mono', monospace; font-variant-numeric: tabular-nums; }
-.g-box { font: 600 20px/1 'Cascadia Mono', monospace; padding: 8px 10px; border: 2px solid var(--fs-ink); }
-.g-boxs { font: 600 11px/1 'Cascadia Mono', monospace; padding: 3px 5px; border: 1.5px solid var(--fs-ink); }
+.g-box { font: 600 20px/1 'Archivo', sans-serif; letter-spacing: .02em; padding: 8px 10px; border: 2px solid var(--fs-ink); }
+.g-boxs { font: 600 11px/1 'Archivo', sans-serif; letter-spacing: .03em; padding: 3px 5px; border: 1.5px solid var(--fs-ink); }
 .g-ph { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, 1fr); border: 1px solid var(--fs-rule-strong); }
-.g-ph li { font: 400 8.5px/12px 'Cascadia Mono', monospace; text-align: center; padding: 4px 0; border-right: 1px solid var(--fs-rule); }
+.g-ph li { font: 400 8.5px/12px 'Archivo', sans-serif; letter-spacing: .03em; text-align: center; padding: 4px 0; border-right: 1px solid var(--fs-rule); }
 .g-ph li:last-child { border-right: 0; }
 .g-ph li[data-s="done"] { color: var(--fs-ink); }
 .g-ph li[data-s="now"] { background: var(--fs-ink); color: var(--fs-canvas); font-weight: 600; }
 .g-ph li[data-s="next"] { color: var(--fs-ink-muted); }
-.fs-status { min-height: 22px; padding: 2px 8px; font-size: 11px; }
+.fs-status { min-height: 22px; padding: 2px 8px; font-size: 12px; }
 
 /* Lock Screen Live Activity */
 .la { width: %(la_w)spx; box-sizing: border-box; min-height: %(la_min)spx; max-height: %(la_max)spx; padding: 14px; border-radius: 24px;
@@ -455,7 +475,7 @@ body { margin: 0; background: #fff; }
 .w-big { font: 400 34px/38px 'Cascadia Mono', monospace; }
 .w-big .u { font-size: 14px; }
 .w-caution { display: inline-flex; width: fit-content; align-items: center; gap: 4px; margin-top: 4px; padding: 2px 6px;
-  font: 600 11px/14px 'Cascadia Mono', monospace; background: var(--fs-caution-fill); color: var(--fs-on-caution-fill); }
+  font: 600 12px/14px 'Archivo', sans-serif; letter-spacing: .06em; background: var(--fs-caution-fill); color: var(--fs-on-caution-fill); }
 .w-caution svg { width: 13px; height: 13px; }
 .w-age { position: absolute; left: 16px; bottom: 12px; font-size: 11px; }
 .w-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -492,7 +512,7 @@ body { margin: 0; background: #fff; }
 .lu { margin: 0 12px; padding: 14px 16px; border-radius: 24px; background: #2a2b33; display: grid; gap: 4px; font-family: Roboto, sans-serif; }
 .lu svg { width: 16px; height: 16px; }
 .lu-h { display: flex; align-items: center; gap: 8px; font: 400 12px/16px Roboto, sans-serif; color: #b9bac6; }
-.lu-sem { margin-left: auto; font: 600 11px/14px 'Cascadia Mono', monospace; padding: 2px 6px; background: #0A6355; color: #fff; }
+.lu-sem { margin-left: auto; font: 500 11px/14px Roboto, sans-serif; letter-spacing: .04em; padding: 2px 6px; background: #0A6355; color: #fff; }
 .lu-t { font: 500 16px/22px Roboto, sans-serif; color: #f2f2f8; }
 .lu-x { font: 400 14px/20px Roboto, sans-serif; color: #c9cad4; }
 .lu-bar { position: relative; display: flex; gap: 4px; height: 8px; margin: 14px 0 10px; }
@@ -507,6 +527,7 @@ body { margin: 0; background: #fff; }
 .aw { box-sizing: border-box; padding: 16px; border-radius: 24px; background: var(--fs-surface); position: relative; display: grid; gap: 4px; align-content: start; }
 /* watch Smart Stack */
 .watch { box-sizing: border-box; padding: 8px 10px; border-radius: 16px; background: #1c1d22; display: grid; gap: 4px; }
+.watch .g-k, .watch .g-q { font-family: 'SF Compact Text', -apple-system, system-ui, sans-serif; }
 .watch .g-mid { font-size: 18px; }
 """
 
@@ -647,7 +668,10 @@ units, Material's default purple in Compose dialogs, the Dynamic Island cutting 
 checked by `tools/build/kit_clip.py`: nothing may be cut by the screen's real outline or sit under a bar.
 
 `fonts/Roboto.woff2` is a Latin subset of Roboto (SIL OFL, `fonts/OFL-Roboto.txt`) so the Android mock-ups show Android's
-type; apps get Roboto from the system.
+type; apps get Roboto from the system. `fonts/Archivo-WideSemiBold.ttf` is for apps: the web's heading cut of Archivo (weight
+640, width 118%) as a whole static font with its own names (PostScript `Archivo-WideSemiBold`; `archivo_widesemibold` in an
+Android `res/font`), bundled beside Archivo Regular and SemiBold and Cascadia Mono from `type/fonts` (SIL OFL,
+`fonts/OFL-Archivo.txt`).
 """
 def build_readme():
     d = DEVICES
@@ -658,7 +682,8 @@ def build_readme():
 # ================================================================ build
 def build_fonts():
     """product/mobile/fonts/Roboto.woff2: a Latin subset of Roboto (variable, SIL OFL), so the Android mock-ups show
-    Android's own type. Only the mock-ups use it; apps get Roboto from the system."""
+    Android's own type. Only the mock-ups use it; apps get Roboto from the system. Also the heading face for apps,
+    build_wide_font()."""
     from fontTools import subset
     os.makedirs(out("fonts"), exist_ok=True)
     opts = subset.Options(); opts.flavor = "woff2"; opts.layout_features = ["*"]; opts.name_IDs = ["*"]; opts.notdef_outline = True
@@ -667,6 +692,31 @@ def build_fonts():
     if "head" in f_: f_["head"].modified = f_["head"].created
     subset.save_font(f_, out("fonts/Roboto.woff2"), opts)
     shutil.copy(os.path.join(SRC, "fonts", "OFL-Roboto.txt"), out("fonts/OFL-Roboto.txt"))
+    build_wide_font()
+
+# The heading face for apps (product/mobile.md, Type): the same cut of the variable font the web uses for headings
+# (kit_product.WIDE: weight 640, width 118%), as a whole static TTF that an app bundles beside Archivo-Regular and
+# Archivo-SemiBold from type/fonts. Its own names, so it never stands in for Archivo SemiBold: PostScript name
+# Archivo-WideSemiBold (SwiftUI's .custom), file name archivo_widesemibold.ttf in an Android res/font folder.
+WIDE_TTF = "Archivo-WideSemiBold.ttf"
+def build_wide_font():
+    from fontTools.ttLib import TTFont
+    from fontTools.varLib import instancer
+    w = kp.WIDE
+    f_ = instancer.instantiateVariableFont(TTFont(os.path.join(build.ROOT, "type", "fonts", w["src"] + ".ttf")),
+                                           {"wght": w["wght"], "wdth": w["wdth"]})
+    names = {1: "Archivo Wide SemiBold", 2: "Regular", 3: "Archivo-WideSemiBold;instance wght 640 wdth 118",
+             4: "Archivo Wide SemiBold", 6: "Archivo-WideSemiBold", 16: "Archivo Wide", 17: "SemiBold"}
+    nt = f_["name"]
+    nt.names = [n for n in nt.names if n.nameID not in names and n.nameID not in (21, 22, 25)]
+    for i, s in names.items():
+        nt.setName(s, i, 3, 1, 0x409); nt.setName(s, i, 1, 0, 0)
+    for t in ("STAT",):
+        if t in f_: del f_[t]
+    f_["OS/2"].usWeightClass = 600; f_["OS/2"].usWidthClass = 6                # SemiBold; semi-expanded (112.5%, the nearest class)
+    if "head" in f_: f_["head"].modified = f_["head"].created
+    f_.save(out("fonts/" + WIDE_TTF))
+    shutil.copy(os.path.join(build.ROOT, "type", "fonts", "OFL-Archivo.txt"), out("fonts/OFL-Archivo.txt"))
 
 def shots(jobs):
     """jobs: (html rel path, png rel path, width, height, selector or None). Playwright, at SCALE. False if missing."""
@@ -706,8 +756,9 @@ def build_screens():
     return shots(jobs)
 
 def _font(size, semibold=False):
+    """The contact sheets' captions: Archivo, as the web's labels (principles.md, Three levels)."""
     from PIL import ImageFont
-    try: return ImageFont.truetype(os.path.join(build.ROOT, "type", "fonts", "CascadiaMono-SemiBold.ttf" if semibold else "CascadiaMono-Regular.ttf"), size)
+    try: return ImageFont.truetype(os.path.join(build.ROOT, "type", "fonts", "Archivo-SemiBold.ttf" if semibold else "Archivo-Regular.ttf"), size)
     except OSError: return ImageFont.load_default()
 
 def screen_tile(png, w, h, mask=None, radius=0, circle=False, pad=8, gap=4, line=2):

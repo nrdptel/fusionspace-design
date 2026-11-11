@@ -11,7 +11,7 @@ enum SampleActivity {
             for a in Activity<FSFlightAttributes>.activities { await a.end(nil, dismissalPolicy: .immediate) }
             return
         }
-        let attributes = FSFlightAttributes(flight: "FLIGHT 04", designation: Sample.designation, motor: "K535W")
+        let attributes = FSFlightAttributes(flight: "Flight 04", designation: Sample.designation, motor: "K535W")
         let state: FSFlightAttributes.ContentState
         if kind == "pad" {
             state = .init(phase: .pad, armed: false, altitudeFt: nil, verticalFtS: nil, distanceFt: nil, bearingTrue: nil,

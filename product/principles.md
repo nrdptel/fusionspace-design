@@ -28,8 +28,9 @@ in Archivo, numbers in Cascadia Mono, the same spacing and the same footer line.
 The levels differ only in the parts a page uses: a record numbers its sheets, in the drawing's lettering, and its footer
 line carries its designation and status. No page wears its designation as a tag over its title. Every level also keeps the line types, the trust notes, the signal colors and their
 words, units on screen, the field theme, and the two-step arming. Those carry meaning, not style. The platform pages ([`mobile.md`](mobile.md),
-[`desktop.md`](desktop.md), [`watch.md`](watch.md)) describe tools, and are being moved to these levels. Where one still
-differs, this page settles it.
+[`desktop.md`](desktop.md), [`watch.md`](watch.md)) use the same levels: a working screen or window is a tool, a report is
+a record on every platform, and an app's About screen keeps the title block. A watch sets its labels and prose in its own
+font, the one difference in type. Where a page and this one differ, this page settles it.
 
 **Shape each page from its content.** A sequence is drawn as a timeline, a program's output as a terminal, a check
 against real flights as its chart. A page whose sections all look alike is a template, whatever it's dressed in. A front

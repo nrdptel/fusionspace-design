@@ -22,8 +22,10 @@ Composer layers, Android adaptive layers with a monochrome layer, macOS, Google 
   resizing on large screens.
 - **Controls.** System switches, steppers, pickers, text fields, date pickers. Restyle color and type through the platform's
   theming, not by rebuilding the control.
-- **Text scaling.** Dynamic Type on iOS (test at the largest accessibility size) and font scaling to 200% on Android. Body
-  text and controls use the system font (SF Pro, Roboto) so they scale and read like the rest of the phone.
+- **Text scaling.** Dynamic Type on iOS (test at the largest accessibility size) and font scaling to 200% on Android. Every
+  style the app draws scales with it, Archivo and Cascadia Mono included (`relativeTo:` on iOS, `sp` on Android).
+- **Its own text.** Lists and settings, menus, alerts, the share sheet and the keyboard are the system's, in the system
+  font (SF Pro, Roboto).
 - **Accessibility.** VoiceOver and TalkBack labels, Bold Text, Reduce Motion, Increase Contrast, Smart Invert, and Android
   16's outline text (which replaced high-contrast text). A readout is one element: label, value, unit spoken in words
   ("feet above ground level"), qualifier.
@@ -36,14 +38,23 @@ Composer layers, Android adaptive layers with a monochrome layer, macOS, Google 
   screen at most. Signal colors exactly as in [`foundations.md`](foundations.md#color), with the same fills on every theme.
   Android uses a **static** brand scheme (`FsLightScheme`, `FsDarkScheme`): Material allows it, and anything carrying meaning
   must not shift with the wallpaper. Dynamic color may be offered as a setting for chrome only.
-- **Type in content.** Cascadia Mono for titles, section heads, labels, readouts and codes; Archivo for longer prose in
-  content (help, descriptions); controls and list text in the system font. All scaled with `relativeTo:` (iOS) and `sp`
-  (Android) so they follow the user's text size. Fonts ship in the app
-  bundle (SIL OFL).
+- **Type: the web's one voice** ([`principles.md`](principles.md#three-levels)). Archivo for everything the app draws:
+  titles and section heads in its wide cut, labels, chips, the app's own buttons ("Hold to arm", SAFE) and prose at normal
+  width, in sentence case. Capitals only for a state (`ON`, `OK`, `FIX`, `CONT`, `NOT USED`, `SAFE`, `ARMED`) and for a
+  flight's phase shown as its state (`MAIN`); inside a sentence a phase is lower case ("under the main"). Cascadia Mono for
+  numbers, units, codes and designations, and a word in a value column ("Not used") takes the label's font. The system
+  font only where the system draws (above). `FS.title()`, `FS.label()`, `FS.chip()` and the rest in the token file, and
+  `FsType` in Compose, carry the sizes. Fonts ship in the app bundle (SIL OFL): Archivo Regular and SemiBold and Cascadia
+  Mono Regular and SemiBold from `type/fonts/`, and `mobile/fonts/Archivo-WideSemiBold.ttf`, the web's heading cut as a
+  static font.
 - **Data display.** Readouts, charts, tables, units and line types as in [`data.md`](data.md). Charts with Swift Charts or
   Compose Canvas/Vico, styled to the chart rules, with an audio graph (iOS) or a semantics summary (Android).
-- **The sheet and the title block** inside scrolling content: 2 px top rules on sections, `SHEET n / N` labels, the title block
-  as the About screen (designation, version, build, data versions, licenses).
+- **The levels** ([`principles.md`](principles.md#three-levels)). A working screen is a tool, like Charge on the web: the
+  title first, the designation as a plain data line under it (`FS-VEGA-004 rev B · K535W · dual deploy`), never a tag over
+  the title, and sections under a 2 px rule with no sheet numbers (a screen that scrolls has no sheets). A flight report is
+  a record, on the phone as on the web: the same type, `SHEET n / N` on each sheet in the drawing's lettering, and the
+  designation, date and status in a foot line at its end. The About screen keeps the title block (designation, version,
+  build, data versions, licenses).
 - **Domain icons** from [`icons/`](icons/): on iOS and watchOS the ready-made SF Symbols custom symbols in
   [`icons/sf-symbols/FusionSpaceSymbols.xcassets`](icons/sf-symbols/) (`Image("fs.rocket")`, `Tab("Pad", image:
   "fs.launch-rail", …)`, `FS.icon(_:)`, small, medium and large scales); on Android the vector drawables in `icons/android/`.
@@ -63,15 +74,18 @@ Each is drawn on an {{MOBILE.DEVICES['ios']['name']}} ({{MOBILE.DEVICES['ios']['
 - **Track** (dark): the phase strip (done in ink, now inverted, next faint), the two numbers that matter under the main,
   the offline map (tiles dated, GPS fix shown, predicted landing dashed in Nebula), then distance, bearing in degrees true,
   and the coordinates with a copy button.
-- **Flight report** (light): the same numbers as the web report, as readouts, an altitude chart with the prediction's band
-  and numbered events, and the channels.
+- **Flight report** (light), a record: the same numbers as the web report, as readouts, an altitude chart with the
+  prediction's band and numbered events and the web's chart labels, and the channels, on numbered sheets; the designation,
+  date and status close it in a foot line.
 - **Device** (light): settings are system lists, with the platform's shapes and type, headed by FusionSpace labels;
   nothing there can fire a channel. The About sheet is the title block.
 
-Titles, labels and readouts are Cascadia Mono on both platforms; list rows, buttons and prose are the system font. The large
-title is the platform's (a large navigation title on iOS, the top app bar's title on Android) set in Cascadia Mono through
-its theming, not a custom bar. On iOS 26 and later that is `ToolbarItem(placement: .largeTitle)`: `UINavigationBarAppearance`
-fonts are not applied to large titles on iOS 27.
+Titles and section heads are Archivo's wide cut on both platforms; labels, chips, the app's own buttons and prose are
+Archivo; readouts, designations and codes are Cascadia Mono; the system's lists are the system font. The large title is the
+platform's (a large navigation title on iOS, the top app bar's title on Android) set in Archivo's wide cut through its
+theming, not a custom bar. On iOS 26 and later that is `ToolbarItem(placement: .largeTitle)`: `UINavigationBarAppearance`
+fonts are not applied to large titles on iOS 27. The wide cut is 18% wider than Archivo, so a title wraps at the largest
+text sizes rather than being cut: nothing is ever cut with "…" (below).
 
 ## Field use
 
@@ -153,13 +167,17 @@ Xcode 27's Device Hub), the Live Activity on the Lock Screen (locked and woken w
 Island, and the Live Update on Android 17 (MetricStyle) and Android 16 (ProgressStyle, with its status-bar chip). The apps also carry the platforms' accessibility
 checks as tests (Apple's audit as UI tests; on Android, the Accessibility Test Framework in instrumented tests, at 100% and
 200% text), and the screens are checked by eye at xxxLarge and Accessibility XXXL (on Android at font scale 2.0): nothing
-may be cut, truncated or split, and at the largest sizes the screens scroll instead. Run them after changing anything in `product/mobile/` or `product/tokens/`: compiling is not enough. On October 6, 2026
+may be cut, truncated or split, and at the largest sizes the screens scroll instead. Those largest sizes are captured too
+(Accessibility 5, font scale 2.0; kept in `source/product/devices/`, not shown, since a screen caught mid-scroll has a row
+running off its edge), and the build reads every capture back with text recognition and stops on a line ending in "…". Run them after changing anything in `product/mobile/` or `product/tokens/`: compiling is not enough. On October 6, 2026
 running them found layout bugs that every compile check had passed (a control taking the whole screen, text under a
 button, a border cut by a rounded end, units in capitals), all fixed in the files here.
 
 ## Checklist
 
 - [ ] System navigation, controls and gestures, unmodified except for tint and fonts.
+- [ ] Titles in Archivo's wide cut, labels in Archivo in sentence case, capitals only for states; numbers and codes in
+  Cascadia Mono; no tag over a title and no sheet numbers on a working screen.
 - [ ] Every text style scales; tested at the largest size and at 200%.
 - [ ] Runs in the sample app on a simulator or emulator, smallest screen included, with nothing cut by an edge or a corner.
 - [ ] Colors from `FS` / `FsColors` only; static scheme on Android.
@@ -169,6 +187,7 @@ button, a border cut by a rounded end, units in capitals), all fixed in the file
 - [ ] Every control's target is at least 44 pt (48 dp), including text buttons: the frame inside the button, not around it.
 - [ ] Two actions for anything that arms, fires or erases; commanded vs confirmed shown.
 - [ ] Works in airplane mode after the pre-trip sync.
-- [ ] About screen is a title block with designation, version, build and data versions.
+- [ ] About screen is a title block with designation, version, build and data versions; a report has its sheet numbers and
+  a foot line.
 - [ ] Live Activity / Live Update and widgets read in every rendering mode, with units and ages, and say when they're stale;
   the Live Activity's units spoken as words (the Live Update's are the system's).

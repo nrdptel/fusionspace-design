@@ -44,11 +44,12 @@ import co.fusionspace.design.wear.FsWearUnfired
 import co.fusionspace.design.wear.FusionSpaceWearTheme
 import co.fusionspace.design.wear.fsClearOfTime
 
-/** Cascadia Mono, bundled from type/fonts by the build (see the root build.gradle.kts). */
+/** Cascadia Mono and Archivo, bundled from type/fonts by the build (see the root build.gradle.kts). */
 val CascadiaMono = FontFamily(
     Font(R.font.cascadia_mono_regular, FontWeight.Normal),
     Font(R.font.cascadia_mono_semibold, FontWeight.SemiBold),
 )
+val Archivo = FontFamily(Font(R.font.archivo_regular, FontWeight.Normal), Font(R.font.archivo_semibold, FontWeight.SemiBold))
 
 enum class Screen { Find, Pad, Unfired }
 
@@ -62,12 +63,12 @@ open class MainActivity : ComponentActivity() {
         open(intent)
         setContent {
             // The theme provides LocalAmbientModeManager, so the screens follow ambient mode.
-            FusionSpaceWearTheme(mono = CascadiaMono) {
+            FusionSpaceWearTheme(mono = CascadiaMono, text = Archivo) {
                 when (screen) {
                     // The example from product/watch.md: 1,352 ft at 062° T, the wrist pointing 020°.
                     Screen.Find -> FsWearFind(distanceFt = 1352, bearingTrue = 62f, headingTrue = 20f, fixedAtMs = fixedAt, onFound = { finish() })
                     Screen.Pad -> WearPad()
-                    Screen.Unfired -> FsWearUnfired("2 · MAIN", onAcknowledge = { screen = Screen.Find })
+                    Screen.Unfired -> FsWearUnfired("2 · Main", onAcknowledge = { screen = Screen.Find })
                 }
             }
         }
@@ -108,16 +109,17 @@ internal fun WearPad() {
             // Larger text pushes the rows lower on the circle, where it's narrower: the margins grow with it.
             val side = (LocalConfiguration.current.screenWidthDp * 0.14f + (LocalDensity.current.fontScale - 1f).coerceAtLeast(0f) * 56).dp
             val clear = fsClearOfTime(padding)  // the top grows with the time at large text sizes
-            val inset = PaddingValues(start = side, end = side, top = clear.calculateTopPadding(), bottom = clear.calculateBottomPadding())
+            // 6 dp more at the top: the state box is a filled block, and the time's scrim cut its top on the small round watch
+            val inset = PaddingValues(start = side, end = side, top = clear.calculateTopPadding() + 6.dp, bottom = clear.calculateBottomPadding())
             TransformingLazyColumn(state = state, contentPadding = inset, verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 item { FsWearStateBox(armed = true) }
                 item {
                     Text("FS-VEGA-004 ·\u00A00.3\u00A0s", style = mono(13), color = c.inkMuted,
                         modifier = Modifier.clearAndSetSemantics { contentDescription = "FS-VEGA-004, link 0.3 seconds" })
                 }
-                item { FsWearChannel(1, "DROGUE", "CONT", ok = true, spoken = "Continuity") }
-                item { FsWearChannel(2, "MAIN", "CONT", ok = true, spoken = "Continuity") }
-                item { FsWearChannel(3, "—", "NOT USED", ok = false) }
+                item { FsWearChannel(1, "Drogue", "Cont", ok = true, spoken = "Continuity") }
+                item { FsWearChannel(2, "Main", "Cont", ok = true, spoken = "Continuity") }
+                item { FsWearChannel(3, "—", "Not used", ok = false) }
                 item {
                     Text("Safe it with the switch or the phone.", color = c.inkMuted, fontSize = 14.sp, textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth())

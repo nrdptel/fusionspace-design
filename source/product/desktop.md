@@ -6,8 +6,8 @@ sessions with dense data, real files and real hardware, on three platforms with 
 
 The rule is the same as on phones (principle 8): **the platform owns behavior and chrome, FusionSpace owns content.** A
 FusionSpace Mac app has a proper menu bar and a Settings window; a Windows app has access keys and follows contrast themes; a
-Linux app installs its icons where the desktop looks for them. Inside the window, the content is a FusionSpace drawing: sheets,
-readouts, charts, line types, title blocks.
+Linux app installs its icons where the desktop looks for them. Inside the window, the content is FusionSpace's: readouts,
+charts, line types and status in the web's type, a report as a record, the About window as a title block.
 
 Packaging files: [`desktop/`](desktop/) (Windows ICO and MSIX tiles, Linux hicolor and symbolic icons, a `.desktop` entry,
 AppStream metadata and a udev rule, all as templates). macOS icons: `kit/apps/macos/`.
@@ -51,8 +51,13 @@ is and screen readers reach the content through each platform's web accessibilit
 
 ## What FusionSpace owns
 
-- **Content.** Sheets, readouts, tables, charts, line types, status chips, notes and title blocks, from
-  [`foundations.md`](foundations.md) and [`data.md`](data.md), in Cascadia Mono and Archivo.
+- **Content.** Readouts, tables, charts, line types, status chips and notes, from [`foundations.md`](foundations.md) and
+  [`data.md`](data.md).
+- **The levels** ([`principles.md`](principles.md#three-levels)). The working window is a tool, in the web's one voice:
+  headings in Archivo's wide cut, labels and the app's own controls in Archivo in sentence case, numbers, units and codes in
+  Cascadia Mono, sections under a 2 px rule without sheet numbers. A Tauri app gets this from `product/web/fusionspace.css`
+  as it is. An exported report is a record: numbered sheets, and the designation, revision, date and status in its foot
+  line, as on the web.
 - **The About window is a title block:** designation, version, build, the data versions inside (motor database, atmosphere
   model), licenses.
 - **Domain icons** from [`icons/`](icons/) inside content; system icons (SF Symbols, Segoe Fluent Icons, Adwaita symbolic
@@ -140,7 +145,8 @@ One master: the mark on its Void tile (`logo/favicon/app-icon.svg`), no baked sh
 ## Checklist
 
 - [ ] Native title bar, menus, dialogs, settings window; every command in a menu; standard shortcuts untouched.
-- [ ] System font and accent in chrome; FusionSpace content inside; no brand-tinted chrome.
+- [ ] System font and accent in chrome; FusionSpace content inside, in Archivo and Cascadia Mono; no brand-tinted chrome.
+- [ ] The working window is a tool (no sheet numbers, no tag over a title); exported reports are records.
 - [ ] Autosave and crash recovery; named undo; units as a setting.
 - [ ] Serial devices open without a driver install on Windows; the udev rule shipped and the permission panel written on Linux.
 - [ ] Icons for all three platforms, including Windows unplated targets and the Linux symbolic icon.

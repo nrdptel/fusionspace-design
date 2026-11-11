@@ -1,9 +1,12 @@
 /* FusionSpace watch mock-ups (product/watch/screens/). Not a stylesheet for apps: watch apps use the system's navigation,
    time and buttons. This file draws stand-ins for the platform's chrome (watchOS 26-27, Wear OS 6 Material 3 Expressive) and
-   the watch version of the content layer, on top of fusionspace.css. */
+   the watch version of the content layer, on top of fusionspace.css. Type (watch.md): the watch's own font (SF Compact,
+   Roboto) for labels, titles and prose, in sentence case; Archivo for the brand's signal parts, the state box and the
+   chips, as on the phone; Cascadia Mono for numbers, units and designations; capitals only for states. The build renders
+   the watchOS shots with the system's SF Compact where the Mac has it (kit_watch.SF_COMPACT). */
 
 @font-face { font-family: 'Roboto'; font-style: normal; font-weight: 100 900; font-stretch: 75% 100%; src: url('../../mobile/fonts/Roboto.woff2') format('woff2'); }
-:root { --sys: -apple-system, 'SF Compact', system-ui, sans-serif; }
+:root { --sys: 'SF Compact', -apple-system, system-ui, sans-serif; }
 .wearos { --sys: 'Roboto', sans-serif; }
 html, body { margin: 0; }
 body { width: var(--w); height: var(--h); overflow: hidden; background: #000; }
@@ -40,7 +43,9 @@ body { width: var(--w); height: var(--h); overflow: hidden; background: #000; }
 /* ------------------------------------------------------------------ the content layer, on a watch */
 .wbody { position: absolute; inset: 46px 14px 12px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
 .wearos .wbody { inset: 30px 22px 46px; justify-content: center; }
-.w-k { font: 400 12px/15px var(--fs-font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--fs-ink-muted); }
+.w-k { font: 400 13px/16px var(--sys); color: var(--fs-ink-muted); }             /* a label, in sentence case */
+.w-d { font: 400 12px/16px var(--fs-font-mono); color: var(--fs-ink-muted); }      /* data in a line: a designation, an age */
+.w-st { font: 600 13px/16px var(--fs-font-text); letter-spacing: .06em; color: var(--fs-ink); }   /* a state word, no box */
 .w-read { display: flex; align-items: baseline; gap: 5px; }
 .w-big { font: 400 34px/38px var(--fs-font-mono); font-variant-numeric: tabular-nums slashed-zero; }
 .w-read .u { font: 400 13px/16px var(--fs-font-mono); }
@@ -48,7 +53,7 @@ body { width: var(--w); height: var(--h); overflow: hidden; background: #000; }
 .w-v { font: 400 18px/22px var(--fs-font-mono); font-variant-numeric: tabular-nums; }
 .w-v .u { font-size: 12px; }
 .w-row { display: flex; justify-content: space-between; align-items: baseline; width: 100%; border-top: 1px solid var(--fs-rule); padding-top: 4px; }
-.w-note { font: 400 12px/15px var(--fs-font-text); color: var(--fs-ink-muted); text-align: center; margin-top: 2px; }
+.w-note { font: 400 13px/16px var(--sys); color: var(--fs-ink-muted); text-align: center; margin-top: 2px; }
 
 .w-find { display: grid; justify-items: center; gap: 2px; }
 .wearos .w-find { margin-top: -6px; gap: 0; }
@@ -67,19 +72,20 @@ body { width: var(--w); height: var(--h); overflow: hidden; background: #000; }
 .w-ticks li[data-s="next"] { background: transparent; border: 1px solid var(--fs-rule-strong); box-sizing: border-box; }
 
 .w-pad { width: 100%; display: grid; justify-items: center; gap: 6px; }
-.w-box { font: 600 24px/1 var(--fs-font-display); padding: 7px 12px; border: 3px solid var(--fs-ink); letter-spacing: .02em; }
+.w-box { font: 600 24px/1 var(--fs-font-text); padding: 7px 12px; border: 3px solid var(--fs-ink); letter-spacing: .02em; }
 .w-box.armed { background: var(--fs-danger-fill); color: var(--fs-on-danger-fill); border-color: var(--fs-danger-fill); }
-.w-ch { width: 100%; display: flex; justify-content: space-between; align-items: center; font: 400 12px/16px var(--fs-font-mono); }
-.w-ch .fs-status { min-height: 20px; font-size: 10px; padding: 1px 6px; gap: 4px; }
+.w-ch { width: 100%; display: flex; justify-content: space-between; align-items: center; font: 400 14px/18px var(--sys); }
+.w-ch .fs-status { min-height: 20px; font-size: 12px; padding: 1px 6px; gap: 4px; }     /* 12 pt: the watch's minimum */
 .w-ch .fs-status svg { width: 11px; height: 11px; }
+.watchos .w-ch { padding-right: 6px; box-sizing: border-box; }   /* the chips clear of the page dots */
 .wearos .w-pad { width: 86%; gap: 4px; }
 .wearos .w-pad .w-box { font-size: 20px; padding: 5px 10px; }
 
 .w-alert { display: grid; justify-items: center; text-align: center; gap: 2px; color: #fff; margin-top: 2px; }
 .w-alert svg { width: 30px; height: 30px; }
-.w-alert-h { font: 600 26px/30px var(--fs-font-display); letter-spacing: .04em; }
-.w-alert-c { font: 400 18px/22px var(--fs-font-mono); }
-.w-alert p { font: 400 13px/17px var(--fs-font-text); margin-top: 4px; max-width: 170px; }
+.w-alert-h { font: 600 26px/30px var(--fs-font-text); letter-spacing: .04em; }
+.w-alert-c { font: 600 17px/22px var(--sys); }
+.w-alert p { font: 400 13px/17px var(--sys); margin-top: 4px; max-width: 170px; }
 .alert .wt-title, .alert .wt-time, .alert .timetext text { color: #fff; fill: #fff; }
 .alert .wt-dots { display: none; }
 .wearos .w-alert svg { width: 24px; height: 24px; }
