@@ -166,6 +166,52 @@ TYPE = [  # (token, size, line height, family, weight, case, tracking em, use)
     ("readout-l", 40, 44, "mono",   400, "none",  0,    "The value a screen exists to show"),
     ("code",     14, 20, "mono",    400, "none",  0,    "Code, commands, file names, part numbers"),
 ]
+# Phone and watch type: the web's one voice in apps (mobile.md, watch.md). Sizes are pt on Apple platforms and sp on
+# Android, and each scales with Dynamic Type or font scaling from its iOS text style. One table for FS.title() and the rest
+# in FusionSpaceColors.swift and for the app-type group in primitives.tokens.json; Compose's FsType
+# (mobile/compose/FsComponents.kt) is written by hand and checked against it (check_compose_type).
+APP_FACES = {("wide", 600): "Archivo-WideSemiBold", ("text", 400): "Archivo-Regular", ("text", 600): "Archivo-SemiBold",
+             ("mono", 400): "CascadiaMono-Regular"}
+APP_TYPE = [  # (token, Swift, Compose, family, weight, size, line, capitals, tracking em, iOS text style, takes a size,
+              #  iOS size where it isn't Android's, use, Swift doc lines)
+    ("title", "title", "title", "wide", 600, 28, 32, False, 0, "title", False, None,
+     "A screen's title.", ["A screen's title: Archivo's wide cut, 28."]),
+    ("heading", "heading", "heading", "wide", 600, 18, 24, False, 0, "headline", False, None,
+     "A section's head, under its 2 pt rule.", ["A section's head under its 2 pt rule: Archivo's wide cut, 18."]),
+    ("label", "label", "label", "text", 400, 15, 20, False, 0, "subheadline", False, None,
+     "A row's label, a caption, a line of status beside a chip, as written.",
+     ["A row's label, a caption, a line of status beside a chip: Archivo 15, as written."]),
+    ("label-strong", "labelStrong", "labelStrong", "text", 600, 13, 18, False, 0, "footnote", False, None,
+     "A field's or a readout's label, as written.", ["A field's or a readout's label: Archivo SemiBold 13, as written."]),
+    ("button", "button", "button", "text", 600, 16, 20, False, 0, "body", True, 17,
+     "The app's own buttons (Hold to arm, SAFE). 17 pt on iOS, each platform's body size.",
+     ["The app's own buttons (Hold to arm, SAFE): Archivo SemiBold."]),
+    ("prose", "prose", "body", "text", 400, 16, 24, False, 0, "body", True, 17,
+     "Prose in content and text buttons. 17 pt on iOS, each platform's body size.", ["Prose in content and text buttons: Archivo 17."]),
+    ("chip", "chip", "chip", "text", 600, 13, 16, False, 0, "footnote", True, None,
+     "A status chip's word and detail, and the state box at its own size; a state in capitals.",
+     ["A status chip's word and detail, and the state box (at its own size): Archivo SemiBold on every platform, the",
+      "watch included. 13 on a phone, 12 on a watch (watch.md's minimum)."]),
+    ("readout", "readout", "readout", "mono", 400, 28, 32, False, 0, "title", True, None,
+     "A number someone came for, with tabular figures.", ["A number someone came for, with tabular figures: Cascadia Mono."]),
+    ("data", "data", "data", "mono", 400, 14, 20, False, 0, "footnote", True, None,
+     "Data in a line: a designation, a motor, coordinates, a value in a row.",
+     ["Data in a line: a designation, a motor, coordinates, a value in a row. Cascadia Mono 14."]),
+    ("lettering", "lettering", "lettering", "mono", 400, 12, 16, True, 0.06, "caption", False, None,
+     "A record's drawing lettering: SHEET n / N, a title block's keys.",
+     ["A record's drawing lettering: SHEET n / N, a title block's keys. Cascadia Mono 12, with .textCase(.uppercase)."]),
+]
+APP_SHARED = ("chip", "readout", "data", "lettering")       # the same functions on the watch; the rest are phone-only in Swift
+# On a watch, titles, labels, buttons and prose are the watch's own font in its text styles (watch.md); the brand sets
+# the chips and the state box in Archivo and numbers in Cascadia Mono. The watch parts leave line height to the font, so
+# the tokens take the phone's (size + 3, + 4, + 6). (token, family, weight, watchOS size, Wear OS size, line, use)
+WATCH_TYPE = [
+    ("chip", "text", 600, 12, 12, 15, "A status chip and the state box's smallest size: Archivo SemiBold, watch.md's 12 pt minimum."),
+    ("readout", "mono", 400, 32, 28, 36, "The one number a watch screen exists for (Find's distance). 28 sp on Wear OS."),
+    ("data", "mono", 400, 12, 12, 18, "A unit, a bearing, an age, a designation, muted."),
+]
+WATCH_SYSTEM_STYLES = {"title": "title3, semibold", "heading": "headline", "label": "footnote", "label-strong": "footnote, semibold",
+                       "button": "body, semibold", "prose": "body"}
 SPACE = [0, 2, 4, 8, 12, 16, 24, 32, 48, 64, 96]          # px; 4 px base, 8 px rhythm
 LINES = {"thin": 1, "thick": 2, "heavy": 4}                 # ISO 128 widths in the ratio 1 : 2 : 4
 DASH = {"dashed": "8 4", "chain": "24 3 1 3", "dotted": "1 3"}   # at 1-2 px: hidden line, long-dash dot, dots
@@ -223,12 +269,60 @@ def tokens_primitives():
     t["chamfer"] = {k: {"$type": "dimension", "$value": {"value": v, "unit": "px"}} for k, v in CHAMFER.items()}
     t["duration"] = {k: {"$type": "duration", "$value": {"value": v, "unit": "ms"}} for k, v in MOTION.items()}
     t["easing"] = {"standard": {"$type": "cubicBezier", "$value": [0.2, 0, 0, 1]}, "exit": {"$type": "cubicBezier", "$value": [0.3, 0, 1, 1]}}
-    t["type"] = {}
+    t["font"]["wide"] = {"$type": "fontFamily", "$value": ["Archivo Wide", "Archivo"],
+                         "$description": "Archivo's wide cut, for headings: the variable font at 118% width and weight 640. Apps bundle it as "
+                                         "product/mobile/fonts/Archivo-WideSemiBold.ttf (family Archivo Wide, SemiBold); the web declares "
+                                         "it as Archivo at font-stretch 118% (fonts.css)."}
+    typo = lambda fam, size, lh, w, tr=0: {"fontFamily": "{font.%s}" % fam, "fontSize": {"value": size, "unit": "px"},
+                                            "lineHeight": round(lh / size, 4), "fontWeight": w, "letterSpacing": {"value": round(tr * size, 2), "unit": "px"}}
+    t["type"] = {"$description": "The drawing scale: a record's lettering, title blocks and device screens (foundations.md, Type). "
+                                 "Web pages set their words with fusionspace.css; phones and watches with app-type."}
     for name, size, lh, fam, w, case, tr, use in TYPE:
-        t["type"][name] = {"$type": "typography", "$description": use,
-                           "$value": {"fontFamily": "{font.%s}" % fam, "fontSize": {"value": size, "unit": "px"},
-                                      "lineHeight": round(lh / size, 4), "fontWeight": w, "letterSpacing": {"value": round(tr * size, 2), "unit": "px"}}}
+        t["type"][name] = {"$type": "typography", "$description": use, "$value": typo(fam, size, lh, w, tr)}
+    t["app-type"] = {"$description": "Phone and watch type, the web's one voice in apps (mobile.md, watch.md): Archivo for words, its wide "
+                                     "cut for titles and section heads, Cascadia Mono for numbers. Sizes are pt on Apple platforms and sp "
+                                     "on Android, written as px, and each scales with Dynamic Type or font scaling from its iOS text style "
+                                     "(co.fusionspace.ios.textStyle). FusionSpaceColors.swift's FS.title() and the rest and Compose's "
+                                     "FsType carry the same values."}
+    t["app-type"]["phone"] = {}
+    for name, _sw, _co, fam, w, size, lh, caps, tr, style, _p, ios, use, _doc in APP_TYPE:
+        ext = {"textCase": "uppercase" if caps else "none", "ios": {"textStyle": style}}
+        if ios: ext["ios"]["fontSize"] = {"value": ios, "unit": "px"}
+        t["app-type"]["phone"][name] = {"$type": "typography", "$description": use, "$value": typo(fam, size, lh, w, tr),
+                                        "$extensions": {"co.fusionspace": ext}}
+    t["app-type"]["watch"] = {"$description": "On a watch the watch's own font (SF Compact, Roboto) sets titles, labels, buttons and prose in "
+                                              "its text styles (co.fusionspace.systemTextStyles, watchOS names); the brand sets the chips "
+                                              "and the state box in Archivo and numbers in Cascadia Mono. States in capitals.",
+                              "$extensions": {"co.fusionspace": {"systemTextStyles": WATCH_SYSTEM_STYLES}}}
+    for name, fam, w, apple, wear, lh, use in WATCH_TYPE:
+        ext = {"textCase": "none"}
+        if wear != apple: ext["wearOS"] = {"fontSize": {"value": wear, "unit": "px"}}
+        t["app-type"]["watch"][name] = {"$type": "typography", "$description": use, "$value": typo(fam, apple, lh, w),
+                                        "$extensions": {"co.fusionspace": ext}}
     return t
+
+def check_compose_type():
+    """Compose's FsType is written by hand (mobile/compose/FsComponents.kt): fail the build if a size, line height, family
+    or weight there differs from APP_TYPE, which the Swift tokens and the JSON come from."""
+    src = open(os.path.join(build.SRC, "product", "mobile", "compose", "FsComponents.kt"), encoding="utf-8").read()
+    body = src.split("object FsType {", 1)[1].split("\n}", 1)[0]
+    found = {}
+    for m in re.finditer(r"fun (\w+)\(([^)]*)\) = TextStyle\((.*)\)\s*$", body, re.M):
+        name, params, args = m.groups()
+        get = lambda k: (re.search(k + r" = ([^,]+?)(?:,|$)", args) or [None, None])[1]
+        found[name] = {"default": (re.search(r"= (\d+)", params) or [None, None])[1], "family": re.search(r"LocalFs(\w+)\.current", args).group(1).lower(),
+                       "weight": {"SemiBold": 600, None: 400}[(re.search(r"FontWeight\.(\w+)", args) or [None, None])[1]],
+                       "size": get("fontSize"), "line": get("lineHeight"), "tracking": get("letterSpacing")}
+    errs = []
+    for name, _sw, co, fam, w, size, lh, caps, tr, *_ in APP_TYPE:
+        f = found.get(co)
+        if not f: errs.append(f"FsType.{co}() is missing"); continue
+        n = int(f["default"]) if f["default"] else size
+        ev = lambda e: eval(e.removesuffix(".sp").replace("size", str(n)), {"__builtins__": {}})
+        got = (f["family"], f["weight"], ev(f["size"]), ev(f["line"]), float(f["tracking"].removesuffix(".em")) if f["tracking"] else 0)
+        if f["default"] is not None and n != size: errs.append(f"FsType.{co}'s default size is {n}, the table's {size}")
+        if got != (fam, w, size, lh, tr): errs.append(f"FsType.{co} is {got}, the table has {(fam, w, size, lh, tr)}")
+    if errs: raise SystemExit("product type: Compose's FsType disagrees with APP_TYPE (kit_product.py):\n  " + "\n  ".join(errs))
 
 def _ref(h):
     """Alias a hex to its primitive token where one exists."""
@@ -305,6 +399,21 @@ def css_tokens():
             "@media print {", "  :root, :root[data-theme] {", "    color-scheme: light;", "\n".join("  " + x for x in block("light").split("\n")).replace("--fs-canvas: #F3F4F7", "--fs-canvas: #FFFFFF"), "  }", "}"])
     return "\n".join(body) + "\n"
 
+def swift_type(rows):
+    """FS.title() and the rest from APP_TYPE: the face for the family and weight, scaled with Dynamic Type from the text style."""
+    L = []
+    for name, sw, _co, fam, w, size, lh, caps, tr, style, sized, ios, use, doc in rows:
+        L += [f"    /// {d}" for d in doc]
+        digits = ".monospacedDigit()" if fam == "mono" and not caps else ""
+        face = APP_FACES[fam, w]
+        if sized:
+            dflt = "chipSize" if name == "chip" else (ios or size)
+            L.append(f"    public static func {sw}(_ size: CGFloat = {dflt}, relativeTo style: Font.TextStyle = .{style}) -> Font "
+                     f"{{ .custom(\"{face}\", size: size, relativeTo: style){digits} }}")
+        else:
+            L.append(f"    public static func {sw}() -> Font {{ .custom(\"{face}\", size: {ios or size}, relativeTo: .{style}){digits} }}")
+    return L
+
 def swift_tokens():
     ident = lambda n: re.sub(r"-(\w)", lambda m: m.group(1).upper(), n)
     names = [r[0] for r in ROLES]
@@ -357,32 +466,12 @@ def swift_tokens():
           "    public static func labelStrong() -> Font { .system(.footnote, weight: .semibold) }",
           "    public static func button(_ size: CGFloat = 17, relativeTo style: Font.TextStyle = .body) -> Font { .system(style, weight: .semibold) }",
           "    public static func prose(_ size: CGFloat = 17, relativeTo style: Font.TextStyle = .body) -> Font { .system(style) }",
-          "    public static let chipSize: CGFloat = 12",
-          "    #else",
-          "    /// A screen's title: Archivo's wide cut, 28.",
-          "    public static func title() -> Font { .custom(\"Archivo-WideSemiBold\", size: 28, relativeTo: .title) }",
-          "    /// A section's head under its 2 pt rule: Archivo's wide cut, 18.",
-          "    public static func heading() -> Font { .custom(\"Archivo-WideSemiBold\", size: 18, relativeTo: .headline) }",
-          "    /// A row's label, a caption, a line of status beside a chip: Archivo 15, as written.",
-          "    public static func label() -> Font { .custom(\"Archivo-Regular\", size: 15, relativeTo: .subheadline) }",
-          "    /// A field's or a readout's label: Archivo SemiBold 13, as written.",
-          "    public static func labelStrong() -> Font { .custom(\"Archivo-SemiBold\", size: 13, relativeTo: .footnote) }",
-          "    /// The app's own buttons (Hold to arm, SAFE): Archivo SemiBold.",
-          "    public static func button(_ size: CGFloat = 17, relativeTo style: Font.TextStyle = .body) -> Font { .custom(\"Archivo-SemiBold\", size: size, relativeTo: style) }",
-          "    /// Prose in content and text buttons: Archivo 17.",
-          "    public static func prose(_ size: CGFloat = 17, relativeTo style: Font.TextStyle = .body) -> Font { .custom(\"Archivo-Regular\", size: size, relativeTo: style) }",
-          "    public static let chipSize: CGFloat = 13",
-          "    #endif",
-          "    /// A status chip's word and detail, and the state box (at its own size): Archivo SemiBold on every platform, the",
-          "    /// watch included. 13 on a phone, 12 on a watch (watch.md's minimum).",
-          "    public static func chip(_ size: CGFloat = chipSize, relativeTo style: Font.TextStyle = .footnote) -> Font { .custom(\"Archivo-SemiBold\", size: size, relativeTo: style) }",
-          "    /// A number someone came for, with tabular figures: Cascadia Mono.",
-          "    public static func readout(_ size: CGFloat = 28, relativeTo style: Font.TextStyle = .title) -> Font { .custom(\"CascadiaMono-Regular\", size: size, relativeTo: style).monospacedDigit() }",
-          "    /// Data in a line: a designation, a motor, coordinates, a value in a row. Cascadia Mono 14.",
-          "    public static func data(_ size: CGFloat = 14, relativeTo style: Font.TextStyle = .footnote) -> Font { .custom(\"CascadiaMono-Regular\", size: size, relativeTo: style).monospacedDigit() }",
-          "    /// A record's drawing lettering: SHEET n / N, a title block's keys. Cascadia Mono 12, with .textCase(.uppercase).",
-          "    public static func lettering() -> Font { .custom(\"CascadiaMono-Regular\", size: 12, relativeTo: .caption) }",
-          "",
+          f"    public static let chipSize: CGFloat = {dict((r[0], r[3]) for r in WATCH_TYPE)['chip']}",
+          "    #else"]
+    L += swift_type([r for r in APP_TYPE if r[0] not in APP_SHARED])
+    L += [f"    public static let chipSize: CGFloat = {next(r[5] for r in APP_TYPE if r[0] == 'chip')}", "    #endif"]
+    L += swift_type([r for r in APP_TYPE if r[0] in APP_SHARED])
+    L += ["",
           f"    public static let fieldTarget: CGFloat = {TARGET['field']}   // pt, controls used at the pad (about 15 mm)",
           f"    public static let gloveTarget: CGFloat = {TARGET['glove']}   // pt, the one critical control used with gloves (about 20 mm)",
           "",
@@ -480,7 +569,7 @@ def c_tokens():
     return "\n".join(L)
 
 def build_tokens():
-    rows = check_contrast(); cvd = check_cvd()
+    rows = check_contrast(); cvd = check_cvd(); check_compose_type()
     wr("tokens/primitives.tokens.json", json.dumps(tokens_primitives(), indent=2, ensure_ascii=False) + "\n")
     for t in THEMES: wr(f"tokens/{t}.tokens.json", json.dumps(tokens_theme(t), indent=2, ensure_ascii=False) + "\n")
     wr("tokens/fusionspace-ui.css", css_tokens())
@@ -2177,7 +2266,8 @@ def build_web():
 FOLDER_READMES = {
     "tokens/README.md": "# Tokens\n\nEvery value in `product/foundations.md`, generated by `tools/build/kit_product.py`. Copy the file for your platform into the project; "
                         "don't edit the copy, change the build and copy again.\n\n| File | For |\n|---|---|\n"
-                        "| `primitives.tokens.json` + `light`, `dark`, `field.tokens.json` | Design Tokens Community Group format 2025.10 (Style Dictionary 5 and others) |\n"
+                        "| `primitives.tokens.json` + `light`, `dark`, `field.tokens.json` | Design Tokens Community Group format 2025.10 (Style Dictionary 5 and others). "
+                        "Type: `type` is the drawing scale, `app-type.phone` and `app-type.watch` the phone and watch roles |\n"
                         "| `fusionspace-ui.css` | Web custom properties; the full stylesheet is `../web/fusionspace.css` |\n"
                         "| `FusionSpaceColors.swift` | SwiftUI |\n| `FusionSpaceColors.kt` | Jetpack Compose |\n| `fusionspace_ui.h` | Firmware (RGB888, RGB565, flash timings) |\n",
     "icons/README.md": "# Icons\n\nOne SVG per icon (24 x 24, `currentColor`, 1.5 px strokes), `sprite.svg` with every icon as a `<symbol id=\"fs-name\">`, `android/` with each as a VectorDrawable (`fs_name.xml`, tinted by the theme), and `sf-symbols/` with each as an SF Symbols custom symbol for iOS and watchOS (`fs.name`). "

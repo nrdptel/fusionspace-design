@@ -43,10 +43,10 @@ Composer layers, Android adaptive layers with a monochrome layer, macOS, Google 
   width, in sentence case. Capitals only for a state (`ON`, `OK`, `FIX`, `CONT`, `NOT USED`, `SAFE`, `ARMED`) and for a
   flight's phase shown as its state (`MAIN`); inside a sentence a phase is lower case ("under the main"). Cascadia Mono for
   numbers, units, codes and designations, and a word in a value column ("Not used") takes the label's font. The system
-  font only where the system draws (above). `FS.title()`, `FS.label()`, `FS.chip()` and the rest in the token file, and
-  `FsType` in Compose, carry the sizes. Fonts ship in the app bundle (SIL OFL): Archivo Regular and SemiBold and Cascadia
-  Mono Regular and SemiBold from `type/fonts/`, and `mobile/fonts/Archivo-WideSemiBold.ttf`, the web's heading cut as a
-  static font.
+  font only where the system draws (above). `FS.title()`, `FS.label()`, `FS.chip()` and the rest in the token file,
+  `FsType` in Compose and `app-type.phone` in the DTCG tokens (`primitives.tokens.json`) carry the sizes. Fonts ship in
+  the app bundle (SIL OFL): Archivo Regular and SemiBold and Cascadia Mono Regular and SemiBold from `type/fonts/`, and
+  `mobile/fonts/Archivo-WideSemiBold.ttf`, the web's heading cut as a static font.
 - **Data display.** Readouts, charts, tables, units and line types as in [`data.md`](data.md). Charts with Swift Charts or
   Compose Canvas/Vico, styled to the chart rules, with an audio graph (iOS) or a semantics summary (Android).
 - **The levels** ([`principles.md`](principles.md#three-levels)). A working screen is a tool, like Charge on the web: the
