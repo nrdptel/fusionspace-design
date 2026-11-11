@@ -160,6 +160,39 @@
   "captured": "2026-11-09"
  },
  {
+  "file": "wear-small-pad.png",
+  "what": "Pad at the small size class: a smaller state box, the designation on one line, closer rows and the short note, so it fits the circle without scrolling",
+  "device": "wearos_small_round (AVD profile, round)",
+  "os": "Wear OS 7.0, API 37.0 (android-wear-signed arm64 system image r1, build CP2A.260330.028.E2)",
+  "size_px": [
+   384,
+   384
+  ],
+  "density_dpi": 320,
+  "size_dp": [
+   192,
+   192
+  ],
+  "captured": "2026-11-10"
+ },
+ {
+  "file": "wear-small-pad-fs124.png",
+  "what": "Pad at the small size class and font scale 1.24: it scrolls, and nothing is cut with …",
+  "device": "wearos_small_round (AVD profile, round)",
+  "os": "Wear OS 7.0, API 37.0 (android-wear-signed arm64 system image r1, build CP2A.260330.028.E2)",
+  "size_px": [
+   384,
+   384
+  ],
+  "density_dpi": 320,
+  "size_dp": [
+   192,
+   192
+  ],
+  "captured": "2026-11-10",
+  "check_only": true
+ },
+ {
   "file": "phone-pad-fs200.png",
   "what": "Pad at font scale 2.0, the largest: the top of the screen, as it scrolls",
   "device": "pixel_10 (AVD profile; display cutout emulation: hole)",

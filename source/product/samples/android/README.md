@@ -161,7 +161,10 @@ the rows lower on the circle.
 - Wear OS (November 2026): a channel's state word sat at the top of its chip, not the middle (the text took the chip's
   minimum height); it's centred now, in a 20 dp chip with 6 dp padding, as on Apple Watch. On the small round watch the
   time's scrim cut the top of the filled ARMED box; the sample's Pad list starts 6 dp lower (text never showed it). Pad
-  scrolls there at the default size, as a Wear list does: three channels and the note are more than 192 dp holds.
+  scrolled there at the default size: three channels and the note were more than 192 dp holds. On the small class it now
+  takes the 40 mm Apple Watch's tighter layout (`FsWearStateBox(compact = true)`, the designation and link on one line at
+  12 sp, rows 3 dp apart, "Safe: switch or phone.") and fits the circle without scrolling (`wear-small-pad.png`); it
+  scrolls only at 124%.
 - Android 16: `Build.VERSION.SDK_INT_FULL` is in the API 36 SDK, so the 36.0 branch (the `android.requestPromotedOngoing`
   extra) doesn't need a guard; 36.1 takes `setRequestPromotedOngoing`. Checked on 36.1 and on 36.0 (above).
 
