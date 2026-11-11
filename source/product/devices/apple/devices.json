@@ -303,7 +303,7 @@
   "shows": "Modular Ultra with Find the rocket in the middle (rectangular) and bottom-middle (circular) slots",
   "simulator": "Xcode 27.0 (27A266a)",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-11-09"
+  "captured": "2026-11-11"
  },
  {
   "file": "watch-ultra-face-aod.png",
@@ -321,7 +321,7 @@
   "shows": "The same face in Always On: the age to the minute",
   "simulator": "Xcode 27.0 (27A266a)",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-11-09"
+  "captured": "2026-11-11"
  },
  {
   "file": "watch-se40-face.png",
@@ -357,7 +357,7 @@
   "shows": "The same face in Always On",
   "simulator": "Xcode 27.0 (27A266a)",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-11-09"
+  "captured": "2026-11-11"
  },
  {
   "file": "ios-pad-ax5.png",

@@ -4,7 +4,7 @@
 # in each slot; see README). The published faces are taken at 10:09 AM, the watch convention: the hands frame the top of
 # the dial and keep out of the lower subdials, and the SE's Earth subdial shows the day side.
 # AT_TIME is the Mac's clock in 24-hour time (the watch shows it; watchOS has no clock override): 22:09 is 10:09 PM.
-# Start it at least two minutes before; it builds the test bundle first.
+# Start it at least three minutes before; it builds the test bundle and redraws both faces first.
 #
 # The complication's fix is fresh for 60 s after the watch app is installed (the extension starts again and dates its
 # example fix 4 s back), so each watch reinstalls the app shortly before its awake capture, and its Always On capture
@@ -19,7 +19,7 @@ M=$(date -j -f "%Y-%m-%d %H:%M:%S" "$(date +%Y-%m-%d) $AT_TIME:00" +%s)
 cd $APPLE
 xcodebuild build-for-testing -project FusionSpaceSample.xcodeproj -scheme FusionSpaceSampleWatchUITests -destination "id=$U" \
   -derivedDataPath $DD-test > $OUT/face-build.log 2>&1 || { echo "the test bundle didn't build: $OUT/face-build.log"; exit 1; }
-(( M - $(date +%s) < 75 )) && { echo "too close to $AT_TIME: start at least two minutes before"; exit 1; }
+(( M - $(date +%s) < 90 )) && { echo "too close to $AT_TIME: start at least three minutes before"; exit 1; }
 
 at() { while (( $(date +%s) < $1 )); do sleep 0.1; done; }
 face() {      # bring a watch to its face: the crown goes from an app to the face, and from the face to the app grid
@@ -38,7 +38,11 @@ aod() {       # dim the watch, capture it, raise it again
   (( $(date +%s) < M + 60 )) || echo "$2: Always On was captured after the minute: run it again"
   wait; t $1 $2 testWake; echo "woke $2"
 }
+redraw() {    # dim and wake a watch once, so its face draws afresh: a face left up for hours keeps what it drew then
+  TEST_RUNNER_FS_HOLD=2 t $1 $2 testAlwaysOn && t $1 $2 testWake || echo "$2: didn't redraw its face"
+}
 
+redraw $U ultra & redraw $E se40 & wait     # the SE's Earth subdial otherwise still shows the night it drew it in
 at $(( M - 70 )); face $U ultra; face $E se40
 ( at $(( M - 20 )); xcrun simctl install $U $APP; at $M; shoot $U ultra-face; aod $U ultra ) &
 ( at $(( M + 5 )); xcrun simctl install $E $APP; at $(( M + 27 )); shoot $E se40-face; aod $E se40 ) &

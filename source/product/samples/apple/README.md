@@ -97,8 +97,10 @@ capture back with text recognition for "…" (`tools/build/kit_clip.py`, `check_
 kept with no mode (`python3 keep.py ios-pad-ax5.png`) and marked `check_only` in `devices.json`: those screens scroll, and a
 still frame of one shows a row running off the edge, so the build reads them for "…" but doesn't publish them or test
 their element frames. `face.sh` waits for the Mac's clock in 24-hour time, so 10:09 in the evening is `AT_TIME=22:09`;
-the published faces are taken at 10:09 AM, when the SE's Earth subdial shows the day side. The complication's fix is fresh
-for 60 s after the watch app is installed, so the script reinstalls it on each watch shortly before that watch's capture.
+the published faces are taken at 10:09 AM, when the SE's Earth subdial shows the day side. A face left up for hours keeps
+the Earth it drew then, so the script first dims and wakes each watch once to redraw it; start it three minutes before.
+The complication's fix is fresh for 60 s after the watch app is installed, so the script reinstalls it on each watch
+shortly before that watch's capture.
 One-time setup by hand through
 `ds` (or Device Hub's window): the widgets on page 2 of the Home Screen (long-press, Edit, Add Widget, FusionSpace, the
 medium size, then the small one), and a face with complication slots on each watch (long-press the face, swipe to New,
