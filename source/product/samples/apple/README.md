@@ -87,7 +87,7 @@ AX5=1 ./app.sh                  # the same at Accessibility 5, and Pad scrolled 
 ./island.sh                     # the Live Activity in the Dynamic Island, over Settings
 ./watch.sh                      # Find, Find in Always On, Pad, Unfired on both watches, with their element trees
 LARGEST=1 ./watch.sh            # the same at each watch's largest text size (check-only)
-AT_TIME=10:09 ./face.sh ultra; AT_TIME=10:09 AT_SECOND=27 ./face.sh se40   # a face with our complications, awake and in Always On
+AT_TIME=10:09 ./face.sh          # both faces with our complications, awake and in Always On, inside one minute
 python3 keep.py ios-pad.png app # copy one into source/product/devices/apple, with its row and its element frames
 ```
 
@@ -96,7 +96,9 @@ records our elements' frames in `elements.json`, and the build tests each one ag
 capture back with text recognition for "…" (`tools/build/kit_clip.py`, `check_captures`). The largest-size captures are
 kept with no mode (`python3 keep.py ios-pad-ax5.png`) and marked `check_only` in `devices.json`: those screens scroll, and a
 still frame of one shows a row running off the edge, so the build reads them for "…" but doesn't publish them or test
-their element frames. `face.sh` waits for the Mac's clock in 24-hour time, so 10:09 in the evening is `AT_TIME=22:09`.
+their element frames. `face.sh` waits for the Mac's clock in 24-hour time, so 10:09 in the evening is `AT_TIME=22:09`;
+the published faces are taken at 10:09 AM, when the SE's Earth subdial shows the day side. The complication's fix is fresh
+for 60 s after the watch app is installed, so the script reinstalls it on each watch shortly before that watch's capture.
 One-time setup by hand through
 `ds` (or Device Hub's window): the widgets on page 2 of the Home Screen (long-press, Edit, Add Widget, FusionSpace, the
 medium size, then the small one), and a face with complication slots on each watch (long-press the face, swipe to New,
