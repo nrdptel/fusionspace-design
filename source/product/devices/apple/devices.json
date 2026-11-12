@@ -303,7 +303,7 @@
   "shows": "Modular Ultra with Find the rocket in the middle (rectangular) and bottom-middle (circular) slots",
   "simulator": "Xcode 27.0 (27A266a)",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-11-09"
+  "captured": "2026-11-11"
  },
  {
   "file": "watch-ultra-face-aod.png",
@@ -321,7 +321,7 @@
   "shows": "The same face in Always On: the age to the minute",
   "simulator": "Xcode 27.0 (27A266a)",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-11-09"
+  "captured": "2026-11-11"
  },
  {
   "file": "watch-se40-face.png",
@@ -336,10 +336,10 @@
    162,
    197
   ],
-  "shows": "Infograph with Find the rocket in the top-right corner and the right sub-dial, at 10:10; the fix is past its 60 s limit, so the corner says STALE and the arrow is outlined",
+  "shows": "Infograph with Find the rocket in the top-right corner and the right sub-dial, at 10:09 AM with a fresh fix",
   "simulator": "Xcode 27.0 (27A266a)",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-11-09"
+  "captured": "2026-11-12"
  },
  {
   "file": "watch-se40-face-aod.png",
@@ -357,7 +357,7 @@
   "shows": "The same face in Always On",
   "simulator": "Xcode 27.0 (27A266a)",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-11-09"
+  "captured": "2026-11-11"
  },
  {
   "file": "ios-pad-ax5.png",
@@ -410,10 +410,10 @@
    402,
    874
   ],
-  "shows": "Track at AX5: the phase strip gives way to the current phase and a tick per phase",
+  "shows": "Track at AX5: the screen sets its own title, which grows with the text (iOS keeps a large title near its default size), and the phase strip gives way to the current phase and a tick per phase",
   "simulator": "Xcode 27.0",
   "mask": "alpha (simctl io screenshot --mask=alpha)",
-  "captured": "2026-11-09",
+  "captured": "2026-11-10",
   "check_only": true
  },
  {

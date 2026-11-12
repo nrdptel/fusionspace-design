@@ -18,7 +18,7 @@ from `source/product/devices/`, where `devices.json` records each capture's devi
 | `watch-ultra-unfired.png` | Apple Watch Ultra 4, watchOS 27.0 (24R362) | FSWatchUnfired |
 | `watch-ultra-face.png` | Apple Watch Ultra 4, watchOS 27.0 (24R362) | Modular Ultra with Find the rocket in the middle (rectangular) and bottom-middle (circular) slots |
 | `watch-ultra-face-aod.png` | Apple Watch Ultra 4, watchOS 27.0 (24R362) | The same face in Always On: the age to the minute |
-| `watch-se40-face.png` | Apple Watch SE 3, watchOS 27.0 (24R362) | Infograph with Find the rocket in the top-right corner and the right sub-dial, at 10:10; the fix is past its 60 s limit, so the corner says STALE and the arrow is outlined |
+| `watch-se40-face.png` | Apple Watch SE 3, watchOS 27.0 (24R362) | Infograph with Find the rocket in the top-right corner and the right sub-dial, at 10:09 AM with a fresh fix |
 | `watch-se40-face-aod.png` | Apple Watch SE 3, watchOS 27.0 (24R362) | The same face in Always On |
 | `wear-find.png` | Wear OS large round, Wear OS 7.0, API 37.0 (android-wear-signed arm64 system image r1, build CP2A.260330.028.E2) | Find |
 | `wear-pad.png` | Wear OS large round, Wear OS 7.0, API 37.0 (android-wear-signed arm64 system image r1, build CP2A.260330.028.E2) | Pad, read only |
@@ -26,6 +26,7 @@ from `source/product/devices/`, where `devices.json` records each capture's devi
 | `wear-find-ambient.png` | Wear OS large round, Wear OS 7.0, API 37.0 (android-wear-signed arm64 system image r1, build CP2A.260330.028.E2) | Find in ambient mode (KEYCODE_SLEEP) |
 | `wear-tile-find.png` | Wear OS large round, Wear OS 7.0, API 37.0 (android-wear-signed arm64 system image r1, build CP2A.260330.028.E2) | Find tile |
 | `wear-small-find.png` | Wear OS small round, Wear OS 7.0, API 37.0 (android-wear-signed arm64 system image r1, build CP2A.260330.028.E2) | Find at the small size class |
+| `wear-small-pad.png` | Wear OS small round, Wear OS 7.0, API 37.0 (android-wear-signed arm64 system image r1, build CP2A.260330.028.E2) | Pad at the small size class: a smaller state box, the designation on one line, closer rows and the short note, so it fits the circle without scrolling |
 
 The screens were also captured at the largest text size each platform offers (Accessibility 5 on iPhone, font scale 2.0
 on Android, Accessibility 3 and 1 on the 49 mm and 40 mm watches, 1.24 on Wear OS). There they scroll, so those captures,

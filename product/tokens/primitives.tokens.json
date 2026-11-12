@@ -519,6 +519,14 @@
         "Consolas",
         "monospace"
       ]
+    },
+    "wide": {
+      "$type": "fontFamily",
+      "$value": [
+        "Archivo Wide",
+        "Archivo"
+      ],
+      "$description": "Archivo's wide cut, for headings: the variable font at 118% width and weight 640. Apps bundle it as product/mobile/fonts/Archivo-WideSemiBold.ttf (family Archivo Wide, SemiBold); the web declares it as Archivo at font-stretch 118% (fonts.css)."
     }
   },
   "space": {
@@ -683,6 +691,7 @@
     }
   },
   "type": {
+    "$description": "The drawing scale: a record's lettering, title blocks and device screens (foundations.md, Type). Web pages set their words with fusionspace.css; phones and watches with app-type.",
     "label": {
       "$type": "typography",
       "$description": "Field labels, column heads, title-block cells, sheet numbers",
@@ -884,6 +893,356 @@
         "letterSpacing": {
           "value": 0,
           "unit": "px"
+        }
+      }
+    }
+  },
+  "app-type": {
+    "$description": "Phone and watch type, the web's one voice in apps (mobile.md, watch.md): Archivo for words, its wide cut for titles and section heads, Cascadia Mono for numbers. Sizes are pt on Apple platforms and sp on Android, written as px, and each scales with Dynamic Type or font scaling from its iOS text style (co.fusionspace.ios.textStyle). FusionSpaceColors.swift's FS.title() and the rest and Compose's FsType carry the same values.",
+    "phone": {
+      "title": {
+        "$type": "typography",
+        "$description": "A screen's title.",
+        "$value": {
+          "fontFamily": "{font.wide}",
+          "fontSize": {
+            "value": 28,
+            "unit": "px"
+          },
+          "lineHeight": 1.1429,
+          "fontWeight": 600,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          }
+        },
+        "$extensions": {
+          "co.fusionspace": {
+            "textCase": "none",
+            "ios": {
+              "textStyle": "title"
+            }
+          }
+        }
+      },
+      "heading": {
+        "$type": "typography",
+        "$description": "A section's head, under its 2 pt rule.",
+        "$value": {
+          "fontFamily": "{font.wide}",
+          "fontSize": {
+            "value": 18,
+            "unit": "px"
+          },
+          "lineHeight": 1.3333,
+          "fontWeight": 600,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          }
+        },
+        "$extensions": {
+          "co.fusionspace": {
+            "textCase": "none",
+            "ios": {
+              "textStyle": "headline"
+            }
+          }
+        }
+      },
+      "label": {
+        "$type": "typography",
+        "$description": "A row's label, a caption, a line of status beside a chip, as written.",
+        "$value": {
+          "fontFamily": "{font.text}",
+          "fontSize": {
+            "value": 15,
+            "unit": "px"
+          },
+          "lineHeight": 1.3333,
+          "fontWeight": 400,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          }
+        },
+        "$extensions": {
+          "co.fusionspace": {
+            "textCase": "none",
+            "ios": {
+              "textStyle": "subheadline"
+            }
+          }
+        }
+      },
+      "label-strong": {
+        "$type": "typography",
+        "$description": "A field's or a readout's label, as written.",
+        "$value": {
+          "fontFamily": "{font.text}",
+          "fontSize": {
+            "value": 13,
+            "unit": "px"
+          },
+          "lineHeight": 1.3846,
+          "fontWeight": 600,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          }
+        },
+        "$extensions": {
+          "co.fusionspace": {
+            "textCase": "none",
+            "ios": {
+              "textStyle": "footnote"
+            }
+          }
+        }
+      },
+      "button": {
+        "$type": "typography",
+        "$description": "The app's own buttons (Hold to arm, SAFE). 17 pt on iOS, each platform's body size.",
+        "$value": {
+          "fontFamily": "{font.text}",
+          "fontSize": {
+            "value": 16,
+            "unit": "px"
+          },
+          "lineHeight": 1.25,
+          "fontWeight": 600,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          }
+        },
+        "$extensions": {
+          "co.fusionspace": {
+            "textCase": "none",
+            "ios": {
+              "textStyle": "body",
+              "fontSize": {
+                "value": 17,
+                "unit": "px"
+              }
+            }
+          }
+        }
+      },
+      "prose": {
+        "$type": "typography",
+        "$description": "Prose in content and text buttons. 17 pt on iOS, each platform's body size.",
+        "$value": {
+          "fontFamily": "{font.text}",
+          "fontSize": {
+            "value": 16,
+            "unit": "px"
+          },
+          "lineHeight": 1.5,
+          "fontWeight": 400,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          }
+        },
+        "$extensions": {
+          "co.fusionspace": {
+            "textCase": "none",
+            "ios": {
+              "textStyle": "body",
+              "fontSize": {
+                "value": 17,
+                "unit": "px"
+              }
+            }
+          }
+        }
+      },
+      "chip": {
+        "$type": "typography",
+        "$description": "A status chip's word and detail, and the state box at its own size; a state in capitals.",
+        "$value": {
+          "fontFamily": "{font.text}",
+          "fontSize": {
+            "value": 13,
+            "unit": "px"
+          },
+          "lineHeight": 1.2308,
+          "fontWeight": 600,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          }
+        },
+        "$extensions": {
+          "co.fusionspace": {
+            "textCase": "none",
+            "ios": {
+              "textStyle": "footnote"
+            }
+          }
+        }
+      },
+      "readout": {
+        "$type": "typography",
+        "$description": "A number someone came for, with tabular figures.",
+        "$value": {
+          "fontFamily": "{font.mono}",
+          "fontSize": {
+            "value": 28,
+            "unit": "px"
+          },
+          "lineHeight": 1.1429,
+          "fontWeight": 400,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          }
+        },
+        "$extensions": {
+          "co.fusionspace": {
+            "textCase": "none",
+            "ios": {
+              "textStyle": "title"
+            }
+          }
+        }
+      },
+      "data": {
+        "$type": "typography",
+        "$description": "Data in a line: a designation, a motor, coordinates, a value in a row.",
+        "$value": {
+          "fontFamily": "{font.mono}",
+          "fontSize": {
+            "value": 14,
+            "unit": "px"
+          },
+          "lineHeight": 1.4286,
+          "fontWeight": 400,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          }
+        },
+        "$extensions": {
+          "co.fusionspace": {
+            "textCase": "none",
+            "ios": {
+              "textStyle": "footnote"
+            }
+          }
+        }
+      },
+      "lettering": {
+        "$type": "typography",
+        "$description": "A record's drawing lettering: SHEET n / N, a title block's keys.",
+        "$value": {
+          "fontFamily": "{font.mono}",
+          "fontSize": {
+            "value": 12,
+            "unit": "px"
+          },
+          "lineHeight": 1.3333,
+          "fontWeight": 400,
+          "letterSpacing": {
+            "value": 0.72,
+            "unit": "px"
+          }
+        },
+        "$extensions": {
+          "co.fusionspace": {
+            "textCase": "uppercase",
+            "ios": {
+              "textStyle": "caption"
+            }
+          }
+        }
+      }
+    },
+    "watch": {
+      "$description": "On a watch the watch's own font (SF Compact, Roboto) sets titles, labels, buttons and prose in its text styles (co.fusionspace.systemTextStyles, watchOS names); the brand sets the chips and the state box in Archivo and numbers in Cascadia Mono. States in capitals.",
+      "$extensions": {
+        "co.fusionspace": {
+          "systemTextStyles": {
+            "title": "title3, semibold",
+            "heading": "headline",
+            "label": "footnote",
+            "label-strong": "footnote, semibold",
+            "button": "body, semibold",
+            "prose": "body"
+          }
+        }
+      },
+      "chip": {
+        "$type": "typography",
+        "$description": "A status chip and the state box's smallest size: Archivo SemiBold, watch.md's 12 pt minimum.",
+        "$value": {
+          "fontFamily": "{font.text}",
+          "fontSize": {
+            "value": 12,
+            "unit": "px"
+          },
+          "lineHeight": 1.25,
+          "fontWeight": 600,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          }
+        },
+        "$extensions": {
+          "co.fusionspace": {
+            "textCase": "none"
+          }
+        }
+      },
+      "readout": {
+        "$type": "typography",
+        "$description": "The one number a watch screen exists for (Find's distance). 28 sp on Wear OS.",
+        "$value": {
+          "fontFamily": "{font.mono}",
+          "fontSize": {
+            "value": 32,
+            "unit": "px"
+          },
+          "lineHeight": 1.125,
+          "fontWeight": 400,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          }
+        },
+        "$extensions": {
+          "co.fusionspace": {
+            "textCase": "none",
+            "wearOS": {
+              "fontSize": {
+                "value": 28,
+                "unit": "px"
+              }
+            }
+          }
+        }
+      },
+      "data": {
+        "$type": "typography",
+        "$description": "A unit, a bearing, an age, a designation, muted.",
+        "$value": {
+          "fontFamily": "{font.mono}",
+          "fontSize": {
+            "value": 12,
+            "unit": "px"
+          },
+          "lineHeight": 1.5,
+          "fontWeight": 400,
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          }
+        },
+        "$extensions": {
+          "co.fusionspace": {
+            "textCase": "none"
+          }
         }
       }
     }

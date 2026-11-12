@@ -5,11 +5,19 @@ import SwiftUI
 
 struct TrackScreen: View {
     @Environment(\.dynamicTypeSize) private var typeSize
+    /// At accessibility sizes iOS keeps a large title near its default size, so "Track" would sit below the section heads
+    /// it leads. There the screen sets its own title as its first line, in FS.title(), which grows with Dynamic Type, and
+    /// hides the bar it would have left empty. At every other size the title is the platform's (mobile.md).
+    private var ownTitle: Bool { typeSize.isAccessibilitySize }
     var body: some View {
         FSPaletteReader { p in
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
-                    // under the platform's large title: the flight and device as a data line, then the link
+                    if ownTitle {
+                        Text("Track").font(FS.title()).foregroundStyle(p.ink).accessibilityAddTraits(.isHeader)
+                            .fixedSize(horizontal: false, vertical: true).padding(.top, 12)
+                    }
+                    // under the title: the flight and device as a data line, then the link
                     ViewThatFits(in: .horizontal) {
                         HStack(spacing: 12) { flight(p); link }
                         VStack(alignment: .leading, spacing: 6) { flight(p); link }
@@ -39,12 +47,21 @@ struct TrackScreen: View {
                 .padding(.bottom, 16)
             }
             .background(p.canvas)
+            // With the bar hidden, a band of canvas behind the status bar: the screen scrolls under it, not under the time.
+            .safeAreaInset(edge: .top, spacing: 0) {
+                if ownTitle { Color.clear.frame(height: 0).background(p.canvas.ignoresSafeArea(edges: .top)) }
+            }
             .navigationTitle("Track")
             // The large title is the platform's, set in Archivo's wide cut through the toolbar (iOS 26+). The bar's
             // appearance fonts (UINavigationBarAppearance) aren't applied to large titles on iOS 27.
-            .toolbar { ToolbarItem(placement: .largeTitle) {
-                Text("Track").font(FS.title()).foregroundStyle(p.ink).frame(maxWidth: .infinity, alignment: .leading)
-            } }
+            .toolbar {
+                if !ownTitle {
+                    ToolbarItem(placement: .largeTitle) {
+                        Text("Track").font(FS.title()).foregroundStyle(p.ink).frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+            }
+            .toolbar(ownTitle ? .hidden : .automatic, for: .navigationBar)
             .toolbarBackground(p.canvas, for: .navigationBar)
         }
         .fsKeepsScreenOn()          // follows the system appearance (captured in dark)

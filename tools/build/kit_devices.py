@@ -28,7 +28,7 @@ ORDER = ["ios-pad", "ios-track", "ios-home-widgets-light", "ios-home-widgets-dar
          "phone-pad", "phone-track", "phone-live-update", "phone-live-update-android16",
          "watch-ultra-find", "watch-ultra-find-aod", "watch-ultra-pad", "watch-ultra-unfired", "watch-ultra-face", "watch-ultra-face-aod",
          "watch-se40-find", "watch-se40-find-aod", "watch-se40-pad", "watch-se40-unfired", "watch-se40-face", "watch-se40-face-aod",
-         "wear-find", "wear-find-ambient", "wear-pad", "wear-unfired", "wear-tile-find", "wear-small-find"]
+         "wear-find", "wear-find-ambient", "wear-pad", "wear-unfired", "wear-tile-find", "wear-small-find", "wear-small-pad"]
 def _rank(r):
     stem = r["file"][:-4]
     return ORDER.index(stem) if stem in ORDER else len(ORDER)

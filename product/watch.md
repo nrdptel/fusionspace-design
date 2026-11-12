@@ -51,7 +51,8 @@ Stack and tiles, and SwiftUI and Compose code).
   phone: the state box and the chips. Cascadia Mono for readouts, units and designations. Capitals only for states (`SAFE`,
   `ARMED`, `CONT`, `UNFIRED`, and a phase shown as the flight's state, `MAIN`). At least 12 pt/sp in apps (Apple's minimum
   on watchOS; default body text is 16-17 pt), the chips included; complications follow the system's sizes, and a face sets
-  the labels in its corners in capitals itself, whatever the app sends.
+  the labels in its corners in capitals itself, whatever the app sends. The DTCG tokens carry the brand's watch sizes and
+  the system's text styles in `app-type.watch` (`primitives.tokens.json`).
 - **One number per screen.** A watch screen exists for one readout (distance, altitude) with its unit and its age; at most two
   supporting values under it, each with a unit. Ranges and charts stay on the phone.
 - **Signals.** The same words, shapes and fills as everywhere: `SAFE` in an outline box, `ARMED` inverted in Flare, `CONT` in

@@ -112,7 +112,8 @@ Two families for words, both open source (SIL OFL), and one for equations, all i
 
 The table is the drawing scale: a record's lettering, title blocks and device screens keep it. Every web page, at every
 level, and every phone and desktop screen sets its words this way ([`principles.md`](principles.md#three-levels); the
-phone sizes are in `FS.title()`, `FS.label()` and the rest of the Swift token file, and `FsType` in Compose):
+phone and watch sizes are in `FS.title()`, `FS.label()` and the rest of the Swift token file, `FsType` in Compose, and
+the `app-type` group of `primitives.tokens.json`):
 
 | Role on the web | Size / line | Family | Weight | Width | Case |
 |---|---|---|---|---|---|

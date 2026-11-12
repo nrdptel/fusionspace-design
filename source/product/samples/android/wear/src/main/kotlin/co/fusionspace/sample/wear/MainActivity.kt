@@ -111,17 +111,21 @@ internal fun WearPad() {
             val clear = fsClearOfTime(padding)  // the top grows with the time at large text sizes
             // 6 dp more at the top: the state box is a filled block, and the time's scrim cut its top on the small round watch
             val inset = PaddingValues(start = side, end = side, top = clear.calculateTopPadding() + 6.dp, bottom = clear.calculateBottomPadding())
-            TransformingLazyColumn(state = state, contentPadding = inset, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                item { FsWearStateBox(armed = true) }
+            // Wear OS's small class (192-224 dp), as the 40 mm Apple Watch: a tighter state box, the designation and link on
+            // one line at 12 sp, closer rows and the short note, so Pad fits the circle without scrolling at the default size.
+            val small = LocalConfiguration.current.screenWidthDp < 225
+            TransformingLazyColumn(state = state, contentPadding = inset, verticalArrangement = Arrangement.spacedBy(if (small) 3.dp else 6.dp)) {
+                item { FsWearStateBox(armed = true, compact = small) }
                 item {
-                    Text("FS-VEGA-004 ·\u00A00.3\u00A0s", style = mono(13), color = c.inkMuted,
+                    Text("FS-VEGA-004 ·\u00A00.3\u00A0s", style = if (small) mono(12, tracking = 0f) else mono(13), color = c.inkMuted,
                         modifier = Modifier.clearAndSetSemantics { contentDescription = "FS-VEGA-004, link 0.3 seconds" })
                 }
                 item { FsWearChannel(1, "Drogue", "Cont", ok = true, spoken = "Continuity") }
                 item { FsWearChannel(2, "Main", "Cont", ok = true, spoken = "Continuity") }
                 item { FsWearChannel(3, "—", "Not used", ok = false) }
                 item {
-                    Text("Safe it with the switch or the phone.", color = c.inkMuted, fontSize = 14.sp, textAlign = TextAlign.Center,
+                    Text(if (small) "Safe: switch or phone." else "Safe it with the switch or the phone.", color = c.inkMuted,
+                        fontSize = if (small) 12.sp else 14.sp, textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth())
                 }
             }
@@ -129,5 +133,5 @@ internal fun WearPad() {
     }
 }
 
-private fun mono(size: Int, weight: FontWeight = FontWeight.Normal) =
-    TextStyle(fontFamily = CascadiaMono, fontSize = size.sp, fontWeight = weight, letterSpacing = 0.04.em)
+private fun mono(size: Int, weight: FontWeight = FontWeight.Normal, tracking: Float = 0.04f) =
+    TextStyle(fontFamily = CascadiaMono, fontSize = size.sp, fontWeight = weight, letterSpacing = tracking.em)

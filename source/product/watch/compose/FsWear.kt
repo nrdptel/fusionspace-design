@@ -268,17 +268,19 @@ fun FsWearFind(distanceFt: Int, bearingTrue: Float, headingTrue: Float?, fixedAt
  * the fill becomes an outline (ARMED stays a word in its box, in danger ink) and SAFE turns muted. TalkBack hears "Device
  * state, safe", not a bare "SAFE" that would sound like a button. As a list's first item, give it 6 dp more than
  * [fsClearOfTime] above it: a filled box shows the time's scrim cutting its top where text wouldn't (small round watches).
+ * [compact] for Wear OS's small class (192-224 dp): a smaller word and padding, as on the 40 mm Apple Watch.
  */
 @Composable
-fun FsWearStateBox(armed: Boolean, modifier: Modifier = Modifier) {
+fun FsWearStateBox(armed: Boolean, modifier: Modifier = Modifier, compact: Boolean = false) {
     val c = FsWearColors
     val ambient = LocalAmbientModeManager.current?.currentAmbientMode is AmbientMode.Ambient
     val ink = when { ambient && armed -> c.danger; ambient -> c.inkMuted; armed -> c.onDangerFill; else -> c.ink }
     val word = if (armed) "ARMED" else "SAFE"
     Text(
-        word, style = signal(20), color = ink,
+        word, style = signal(if (compact) 16 else 20), color = ink,
         modifier = modifier.clearAndSetSemantics { contentDescription = "Device state, ${word.lowercase()}" }.background(if (armed && !ambient) c.dangerFill else Color.Transparent)
-            .border(3.dp, if (armed && !ambient) c.dangerFill else ink).padding(horizontal = 10.dp, vertical = 5.dp),
+            .border(3.dp, if (armed && !ambient) c.dangerFill else ink)
+            .padding(horizontal = if (compact) 6.dp else 10.dp, vertical = if (compact) 2.dp else 5.dp),
     )
 }
 

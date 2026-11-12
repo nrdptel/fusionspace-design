@@ -43,10 +43,10 @@ Composer layers, Android adaptive layers with a monochrome layer, macOS, Google 
   width, in sentence case. Capitals only for a state (`ON`, `OK`, `FIX`, `CONT`, `NOT USED`, `SAFE`, `ARMED`) and for a
   flight's phase shown as its state (`MAIN`); inside a sentence a phase is lower case ("under the main"). Cascadia Mono for
   numbers, units, codes and designations, and a word in a value column ("Not used") takes the label's font. The system
-  font only where the system draws (above). `FS.title()`, `FS.label()`, `FS.chip()` and the rest in the token file, and
-  `FsType` in Compose, carry the sizes. Fonts ship in the app bundle (SIL OFL): Archivo Regular and SemiBold and Cascadia
-  Mono Regular and SemiBold from `type/fonts/`, and `mobile/fonts/Archivo-WideSemiBold.ttf`, the web's heading cut as a
-  static font.
+  font only where the system draws (above). `FS.title()`, `FS.label()`, `FS.chip()` and the rest in the token file,
+  `FsType` in Compose and `app-type.phone` in the DTCG tokens (`primitives.tokens.json`) carry the sizes. Fonts ship in
+  the app bundle (SIL OFL): Archivo Regular and SemiBold and Cascadia Mono Regular and SemiBold from `type/fonts/`, and
+  `mobile/fonts/Archivo-WideSemiBold.ttf`, the web's heading cut as a static font.
 - **Data display.** Readouts, charts, tables, units and line types as in [`data.md`](data.md). Charts with Swift Charts or
   Compose Canvas/Vico, styled to the chart rules, with an audio graph (iOS) or a semantics summary (Android).
 - **The levels** ([`principles.md`](principles.md#three-levels)). A working screen is a tool, like Charge on the web: the
@@ -84,8 +84,11 @@ Titles and section heads are Archivo's wide cut on both platforms; labels, chips
 Archivo; readouts, designations and codes are Cascadia Mono; the system's lists are the system font. The large title is the
 platform's (a large navigation title on iOS, the top app bar's title on Android) set in Archivo's wide cut through its
 theming, not a custom bar. On iOS 26 and later that is `ToolbarItem(placement: .largeTitle)`: `UINavigationBarAppearance`
-fonts are not applied to large titles on iOS 27. The wide cut is 18% wider than Archivo, so a title wraps at the largest
-text sizes rather than being cut: nothing is ever cut with "…" (below).
+fonts are not applied to large titles on iOS 27. At accessibility text sizes iOS keeps a large title near its default
+size, below the section heads it leads, so there a screen sets its own title as its first line (`FS.title()`, which grows
+with Dynamic Type), hides the bar it would leave empty and keeps the canvas behind the status bar, so the screen scrolls
+under that and not under the time. The wide cut is 18% wider than Archivo, so a title wraps at the largest text sizes
+rather than being cut: nothing is ever cut with "…" (below).
 
 ## Field use
 
